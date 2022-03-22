@@ -377,7 +377,7 @@ public with sharing class NKS_PersonBadgesController {
                             guardienship.navn = relatedPersonMap.get(guardienship.motpartsPersonident).CRM_Account__c ==
                                 null
                                 ? guardienship.navn
-                                : relatedPersonMap.get(guardienship.motpartsPersonident).CRM_Account__r.Name;
+                                : new Navn(relatedPersonMap.get(guardienship.motpartsPersonident).CRM_Account__r.Name);
                         }
                     }
                 }
@@ -523,14 +523,24 @@ public with sharing class NKS_PersonBadgesController {
             return '';
         }
     }
-
+    public class Navn {
+        @AuraEnabled
+        public String fornavn;
+        @AuraEnabled
+        public String mellomnavn;
+        @AuraEnabled
+        public String etternavn;
+        public Navn(String navn){
+            fornavn = navn;
+        }
+    }
     public class GuardianshipOrFuturePowerOfAttorney {
         @AuraEnabled
         public String type;
         @AuraEnabled
         public String embete;
         @AuraEnabled
-        public String navn;
+        public Navn navn;
         @AuraEnabled
         public String motpartsPersonident;
         @AuraEnabled

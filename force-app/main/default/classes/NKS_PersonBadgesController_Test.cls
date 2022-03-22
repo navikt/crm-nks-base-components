@@ -85,7 +85,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorney() {
-        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01098130094","embete":"fylkesmannenITromsOgFinnmark"}]';
+        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Vasilij","etternavn":"Pupkin"},"motpartsPersonident":"01098130094","embete":"fylkesmannenITromsOgFinnmark"}]';
 
         Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
             new Person__c(INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString)
@@ -103,6 +103,7 @@ private with sharing class NKS_PersonBadgesController_Test {
             'Expected "Ja" since omfangetErInnenPersonligOmraade = "true"'
         );
         System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
+        System.assertEquals('Pupkin', result.guardianships[0].navn.etternavn, 'Expected surname');
     }
 
     @IsTest
