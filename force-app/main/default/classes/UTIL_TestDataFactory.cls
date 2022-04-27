@@ -105,7 +105,7 @@ public class UTIL_TestDataFactory {
                 if (objectName != 'User')
                     records[i].put(uniqFieldName, 'Test ' + i);
                 if (objectName == 'User')
-                    records[i].put(uniqFieldName, 'Test' + i + '@test.com');
+                    records[i].put(uniqFieldName, generateRandomUsername());
             }
         }
         if (doInsert)
@@ -207,6 +207,13 @@ public class UTIL_TestDataFactory {
         return randStr;
     }
 
+    public static String generateRandomUsername() {
+        String orgId = UserInfo.getOrganizationId();
+        String dateString = String.valueof(Datetime.now()).replace(' ', '').replace(':', '').replace('-', '');
+        String rand = generateRandomString(4);
+        return orgId + dateString + rand + '@test.com';
+    }
+
     /**
      * @description: Generates a string of random numbers of given length
      * Used for i.e. generating random person idents.
@@ -252,7 +259,8 @@ public class UTIL_TestDataFactory {
                 .Id,
                 'Alias' => generateRandomString(8),
                 'Email' => generateRandomString(8) + '@test.com',
-                'isActive' => true
+                'isActive' => true,
+                'username' => generateRandomUsername()
             };
         }
         public Map<String, String> getDmlFields() {
