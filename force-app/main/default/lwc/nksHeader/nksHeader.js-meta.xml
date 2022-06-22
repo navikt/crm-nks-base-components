@@ -16,6 +16,10 @@
             <property name="input" label="Text" type="String" default="This is a header" />
             <property name="headertag" label="Header" type="String" default="h1" />
             <property name="center" label="Center" type="Boolean" default="false" description="Set to true to center header in its container" />
+            <supportedFormFactors>
+                <supportedFormFactor type="Small" />
+                <supportedFormFactor type="Large" />
+            </supportedFormFactors>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
