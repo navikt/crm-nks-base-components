@@ -1,5 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getPersonId from '@salesforce/apex/NKS_FagsystemController.getPersonId';
+import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import PERSON_ACTOR_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import { refreshApex } from '@salesforce/apex';
@@ -11,6 +12,11 @@ export default class NksFagsystemer extends LightningElement {
     @api objectApiName;
     @track personId;
     @track showLinks;
+    @track inFagsone = false;
+
+    connectedCallback() {
+        checkFagsoneIpRange().then((res) => (this.inFagsone = res));
+    }
 
     get size() {
         return 6;

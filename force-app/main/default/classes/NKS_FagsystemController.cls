@@ -27,4 +27,11 @@ public with sharing class NKS_FagsystemController {
         }
         return (String) currentObj.get(splitQuery[splitQuery.size() - 1]);
     }
+
+    @AuraEnabled(cacheable=true)
+    public static boolean checkFagsoneIpRange() {
+        Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
+        Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(currentSession.get('SourceIp'));
+        return isInFagsone;
+    }
 }
