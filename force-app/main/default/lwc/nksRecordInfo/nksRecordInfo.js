@@ -2,6 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import { getRecord } from 'lightning/uiRecordApi';
+import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { refreshApex } from '@salesforce/apex';
 
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
@@ -22,11 +23,31 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api wireFields;
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
+    @api copyFields;
     showSpinner = false;
     subscription;
+    hasListeners;
 
     @wire(MessageContext)
     messageContext;
+
+    renderedCallback(){
+        if(this.hasListeners || this.copyFieldsNr.length == 0)
+            return;
+        //adding eventListeners to copy buttons
+        this.fieldList
+            .filter(
+                (e) =>{
+                    return e.copyButton;
+                }
+            ).forEach(
+                (e) => {
+                    let button = this.template.querySelector("div."+e.buttonName);
+                    button.addEventListener("click", () => { this.handleCopy(e.fieldName); },this);
+                },this
+            );
+        this.hasListeners = true;
+    }
 
     disconnectedCallback() {
         this.unsubscribeToMessageChannel();
@@ -64,6 +85,14 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         this.viewedRecordId = this.viewedRecordId ? this.viewedRecordId : this.recordId;
 
         this.wireFields = [this.viewedObjectApiName + '.Id'];
+
+        this.fieldList.forEach(
+            (e) => { 
+                this.wireFields.push(this.viewedObjectApiName + "." + e.fieldName); 
+            },
+            this
+        );
+
         this.parentWireFields = [this.objectApiName + '.Id'];
     }
 
@@ -99,8 +128,41 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     get fieldList() {
-        let fieldList = this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : [];
+        let fieldList = (this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : [])
+            .map(
+                (e,i)=>{
+                    return {
+                        fieldName  : e,
+                        copyButton : this.wireRecord.data ? this.copyFieldsNr.includes(i) : false,
+                        buttonName : this.viewedObjectApiName + "_" + e + "_copyButton",
+                        buttonTip  : this.wireObjectInfo.data ? "Kopier " + this.wireObjectInfo.data.fields[e].label : ''
+                    }
+                }
+            )
+        ;
         return fieldList;
+    }
+
+    get copyFieldsNr() {
+        let copyFieldsNr = this.copyFields != null ? this.copyFields.replace(/\s/g, '').split(',').map( e => parseInt(e)-1) : [];
+        return copyFieldsNr;
+    }
+
+    handleCopy(field){
+        var hiddenInput = document.createElement('input');
+        hiddenInput.value = this.wireRecord.data.fields[field].value;
+        document.body.appendChild(hiddenInput);
+        hiddenInput.focus();
+        hiddenInput.select();
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            // TODO: add toast/alert to show value is copied to clipboard
+            console.log('Copying text command was ' + msg);
+        } catch (error) {
+            console.log('Oops, unable to copy');
+        }
+        document.body.removeChild(hiddenInput);
     }
 
     //Opens the account page on click
@@ -114,6 +176,11 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             }
         });
     }
+    
+    @wire(getObjectInfo, {
+        objectApiName: '$viewedObjectApiName'
+    })
+    wireObjectInfo;
 
     @wire(getRecord, {
         recordId: '$viewedRecordId',
@@ -144,7 +211,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 this.showSpinner = false;
             });
     }
-
+    
     recordLoaded(event) {
         let recordFields = event.detail.records[this.viewedRecordId].fields;
         //Sending event to tell parent the record is loaded

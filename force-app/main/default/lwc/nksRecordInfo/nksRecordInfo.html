@@ -21,9 +21,10 @@
                             <template iterator:it={fieldList}>
                                 <template if:true={it.first}>
                                     <lightning-layout-item
-                                        key={it.value}
+                                        key={it.value.fieldName}
                                         size={columnWidth}
                                         class="slds-p-right_medium"
+                                        style="position: relative;"
                                     >
                                         <template if:true={showLink}>
                                             <template if:false={hideLabels}>
@@ -31,7 +32,7 @@
                                                     class="fieldStyle"
                                                     style="cursor: pointer"
                                                     field-class="slds-text-link"
-                                                    field-name={it.value}
+                                                    field-name={it.value.fieldName}
                                                     onclick={navigateToRecord}
                                                     tabindex="0"
                                                     role="link"
@@ -43,7 +44,7 @@
                                                     class="fieldStyle"
                                                     style="cursor: pointer"
                                                     field-class="slds-text-link"
-                                                    field-name={it.value}
+                                                    field-name={it.value.fieldName}
                                                     onclick={navigateToRecord}
                                                     tabindex="0"
                                                     role="link"
@@ -54,38 +55,58 @@
                                         </template>
                                         <template if:false={showLink}>
                                             <template if:false={hideLabels}>
-                                                <lightning-output-field class="fieldStyle" field-name={it.value}>
+                                                <lightning-output-field class="fieldStyle" field-name={it.value.fieldName}>
                                                 </lightning-output-field>
                                             </template>
                                             <template if:true={hideLabels}>
                                                 <lightning-output-field
                                                     variant="label-hidden"
                                                     class="fieldStyle"
-                                                    field-name={it.value}
+                                                    field-name={it.value.fieldName}
                                                 >
                                                 </lightning-output-field>
                                             </template>
                                         </template>
+                                        <div if:true={it.value.copyButton} style="position: absolute;right: 20px;bottom: 15px;" class={it.value.buttonName}>
+                                            <lightning-button-icon
+                                                class="copy-icon"
+                                                icon-name="utility:copy"
+                                                variant="bare"
+                                                alternative-text={it.value.buttonTip}
+                                                title={it.value.buttonTip}
+                                            ></lightning-button-icon>
+                                        </div>
                                     </lightning-layout-item>
                                 </template>
                                 <template if:false={it.first}>
                                     <lightning-layout-item
-                                        key={it.value}
+                                        key={it.value.fieldName}
                                         size={columnWidth}
                                         class="slds-p-right_medium"
+                                        style="position: relative;"
                                     >
                                         <template if:false={hideLabels}>
-                                            <lightning-output-field class="fieldStyle" field-name={it.value}>
+                                            <lightning-output-field class="fieldStyle" field-name={it.value.fieldName}>
                                             </lightning-output-field>
                                         </template>
                                         <template if:true={hideLabels}>
                                             <lightning-output-field
                                                 variant="label-hidden"
                                                 class="fieldStyle"
-                                                field-name={it.value}
+                                                field-name={it.value.fieldName}
                                             >
                                             </lightning-output-field>
                                         </template>
+                                        <div if:true={it.value.copyButton} style="position: absolute;right: 20px;bottom: 15px;" class={it.value.buttonName}>
+                                            <lightning-button-icon
+                                                class="copy-icon"
+                                                icon-name="utility:copy"
+                                                variant="bare"
+                                                alternative-text={it.value.buttonTip}
+                                                title={it.value.buttonTip}
+                                                id={it.value.buttonName}
+                                            ></lightning-button-icon>
+                                        </div>
                                     </lightning-layout-item>
                                 </template>
                             </template>
