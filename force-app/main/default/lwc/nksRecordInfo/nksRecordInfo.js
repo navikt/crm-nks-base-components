@@ -4,6 +4,7 @@ import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelate
 import { getRecord } from 'lightning/uiRecordApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { refreshApex } from '@salesforce/apex';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
 import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
@@ -32,7 +33,12 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     messageContext;
 
     renderedCallback(){
-        if(this.hasListeners || this.copyFieldsNr.length == 0)
+        if(
+            this.hasListeners || 
+            this.copyFieldsNr.length == 0 ||
+            !this.viewedObjectApiName ||
+            !this.wireRecord
+        )
             return;
         //adding eventListeners to copy buttons
         this.fieldList
@@ -42,8 +48,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 }
             ).forEach(
                 (e) => {
-                    let button = this.template.querySelector("div."+e.buttonName);
-                    button.addEventListener("click", () => { this.handleCopy(e.fieldName); },this);
+                    let button = this.template.querySelector('div.'+e.buttonName);
+                    button.addEventListener('click', () => { this.handleCopy(e.fieldName); },this);
                 },this
             );
         this.hasListeners = true;
@@ -133,9 +139,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 (e,i)=>{
                     return {
                         fieldName  : e,
-                        copyButton : this.wireRecord.data ? this.copyFieldsNr.includes(i) : false,
-                        buttonName : this.viewedObjectApiName + "_" + e + "_copyButton",
-                        buttonTip  : this.wireObjectInfo.data ? "Kopier " + this.wireObjectInfo.data.fields[e].label : ''
+                        copyButton : this.copyFieldsNr.includes(i),
+                        buttonName : this.viewedObjectApiName + '_' + e + '_copyButton',
+                        buttonTip  : this.wireObjectInfo.data ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label : '',
                     }
                 }
             )
@@ -149,6 +155,10 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     handleCopy(field){
+        if(!this.wireRecord.data.fields[field].value){
+            this.showCopyToast(field,'warning');
+            return;
+        }
         var hiddenInput = document.createElement('input');
         hiddenInput.value = this.wireRecord.data.fields[field].value;
         document.body.appendChild(hiddenInput);
@@ -156,13 +166,26 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         hiddenInput.select();
         try {
             var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            // TODO: add toast/alert to show value is copied to clipboard
-            console.log('Copying text command was ' + msg);
+            this.showCopyToast(field, successful?'success':'error');
         } catch (error) {
-            console.log('Oops, unable to copy');
+            this.showCopyToast(field, 'error');
         }
         document.body.removeChild(hiddenInput);
+    }
+
+    showCopyToast(field,status){
+        const evt = new ShowToastEvent(
+            {
+                message : status === 'success' ?
+                this.wireRecord.data.fields[field].value : 
+                    status === 'warning' ? 
+                        'Feltet ' + this.wireObjectInfo.data.fields[field].label + ' er tomt.' : 
+                        'Feil ved kopiering av ' + this.wireObjectInfo.data.fields[field].label,
+                variant : status,
+                mode: 'pester'
+            }
+        );
+        this.dispatchEvent(evt);
     }
 
     //Opens the account page on click
@@ -211,7 +234,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 this.showSpinner = false;
             });
     }
-    
+
     recordLoaded(event) {
         let recordFields = event.detail.records[this.viewedRecordId].fields;
         //Sending event to tell parent the record is loaded
