@@ -141,7 +141,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                         fieldName  : e,
                         copyButton : this.copyFieldsNr.includes(i),
                         buttonName : this.viewedObjectApiName + '_' + e + '_copyButton',
-                        buttonTip  : this.wireObjectInfo.data ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label : '',
+                        buttonTip  : this.wireObjectInfo.data && this.wireObjectInfo.data.fields ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label : '',
                     }
                 }
             )
