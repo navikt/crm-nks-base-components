@@ -46,8 +46,7 @@
                 label="Show 'Copy' button for fields (field number, comma separated)"
                 description="example: 1,3,6"
                 type="String"
-                required="true"
-                default="1,2"
+                default=""
             />
             <property
                 name="showLink"
