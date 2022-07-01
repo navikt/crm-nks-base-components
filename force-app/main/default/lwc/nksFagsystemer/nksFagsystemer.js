@@ -2,7 +2,7 @@ import { LightningElement, api, track, wire } from 'lwc';
 import getPersonId from '@salesforce/apex/NKS_FagsystemController.getPersonId';
 import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
-import PERSON_ACTOR_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
+import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 
 export default class NksFagsystemer extends LightningElement {
@@ -37,7 +37,7 @@ export default class NksFagsystemer extends LightningElement {
         }
     }
 
-    @wire(getRecord, { recordId: '$personId', fields: PERSON_ACTOR_FIELD })
+    @wire(getRecord, { recordId: '$personId', fields: PERSON_IDENT_FIELD })
     person;
 
     refreshRecord() {
@@ -54,8 +54,8 @@ export default class NksFagsystemer extends LightningElement {
 
     handleAAClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
-            const actorId = getFieldValue(this.person.data, PERSON_ACTOR_FIELD);
-            fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
+            const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
+            fetch('https://arbeid-og-inntekt-q1.dev.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
                 headers: {
                     'Nav-Personident': actorId
