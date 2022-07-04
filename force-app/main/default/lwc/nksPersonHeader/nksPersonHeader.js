@@ -157,7 +157,7 @@ export default class NksPersonHeader extends LightningElement {
             this.btnShowFullmakt = this.fullmaktHistData.length > 0;
         }
         if (error) {
-            this.addError(error);
+            console.log(error);
         }
     }
 
