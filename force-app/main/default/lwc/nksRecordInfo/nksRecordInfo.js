@@ -49,7 +49,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             ).forEach(
                 (e) => {
                     let button = this.template.querySelector('div.'+e.buttonName);
-                    button.addEventListener('click', () => { this.handleCopy(e.fieldName); },this);
+                    button.addEventListener('click', () => { this.handleCopy(e); },this);
                 },this
             );
         this.hasListeners = true;
@@ -155,32 +155,33 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     handleCopy(field){
-        if(!this.wireRecord.data.fields[field].value){
-            this.showCopyToast(field,'warning');
+        if(!this.wireRecord.data.fields[field.fieldName].value){
+            this.showCopyToast(field.fieldName,'warning');
             return;
         }
         var hiddenInput = document.createElement('input');
-        hiddenInput.value = this.wireRecord.data.fields[field].value;
+        hiddenInput.value = this.wireRecord.data.fields[field.fieldName].value;
         document.body.appendChild(hiddenInput);
         hiddenInput.focus();
         hiddenInput.select();
         try {
             var successful = document.execCommand('copy');
-            this.showCopyToast(field, successful?'success':'error');
+            this.showCopyToast(field.fieldName, successful?'success':'error');
         } catch (error) {
-            this.showCopyToast(field, 'error');
+            this.showCopyToast(field.fieldName, 'error');
         }
         document.body.removeChild(hiddenInput);
+        this.template.querySelector('div.'+field.buttonName).firstChild.focus();
     }
 
     showCopyToast(field,status){
         const evt = new ShowToastEvent(
             {
                 message : status === 'success' ?
-                this.wireRecord.data.fields[field].value : 
+                this.wireObjectInfo.data.fields[field].label + ' ble kopiert til utklippstavlen.' : 
                     status === 'warning' ? 
-                        'Feltet ' + this.wireObjectInfo.data.fields[field].label + ' er tomt.' : 
-                        'Feil ved kopiering av ' + this.wireObjectInfo.data.fields[field].label,
+                        this.wireObjectInfo.data.fields[field].label + ' er tomt.' : 
+                        'Kunne ikke kopiere ' + this.wireObjectInfo.data.fields[field].label,
                 variant : status,
                 mode: 'pester'
             }
