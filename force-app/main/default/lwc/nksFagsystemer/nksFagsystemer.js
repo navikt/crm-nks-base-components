@@ -55,7 +55,7 @@ export default class NksFagsystemer extends LightningElement {
     handleAAClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
-            fetch('https://arbeid-og-inntekt-q1.dev.adeo.no/api/v2/redirect/sok/arbeidstaker', {
+            fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
                 headers: {
                     'Nav-Personident': actorId
@@ -69,6 +69,7 @@ export default class NksFagsystemer extends LightningElement {
                 .catch((error) => {
                     console.log('An error occured while retrieving AA-reg link');
                     console.log(error);
+                    window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
         }
     }
