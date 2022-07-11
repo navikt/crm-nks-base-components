@@ -15,7 +15,12 @@ export default class NksFagsystemer extends LightningElement {
     @track inFagsone = false;
 
     connectedCallback() {
-        checkFagsoneIpRange().then((res) => (this.inFagsone = res));
+        checkFagsoneIpRange().then((res) => {
+            this.inFagsone = res.isInFagsone;
+            if (this.inFagsone === false) {
+                console.log('Ip is: ' + res.ip);
+            }
+        });
     }
 
     get size() {
