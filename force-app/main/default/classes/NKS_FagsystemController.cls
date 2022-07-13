@@ -29,9 +29,22 @@ public with sharing class NKS_FagsystemController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static boolean checkFagsoneIpRange() {
+    public static FagsoneIp checkFagsoneIpRange() {
         Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
-        Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(currentSession.get('SourceIp'));
-        return isInFagsone;
+        String ip = currentSession.get('SourceIp');
+        Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
+        return new FagsoneIp(ip, isInFagsone);
+    }
+
+    public class FagsoneIp {
+        @AuraEnabled
+        public String ip;
+        @AuraEnabled
+        public Boolean isInFagsone;
+
+        public FagsoneIp(String ip, Boolean isInFagsone) {
+            this.ip = ip;
+            this.isInFagsone = isInFagsone;
+        }
     }
 }
