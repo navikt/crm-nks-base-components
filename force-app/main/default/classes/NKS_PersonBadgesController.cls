@@ -22,7 +22,7 @@ public with sharing class NKS_PersonBadgesController {
                 for (Common_Code__c land : [
                     SELECT Id, Name, CRM_Code__c
                     FROM Common_Code__c
-                    WHERE CRM_Code_set__c IN ('LandkoderISO2', 'Landkoder')
+                    WHERE CRM_Code_set__c = 'Språk'
                 ]) {
                     landMap.put(land.CRM_Code__c, land.Name);
                 }
@@ -530,7 +530,7 @@ public with sharing class NKS_PersonBadgesController {
         public String mellomnavn;
         @AuraEnabled
         public String etternavn;
-        public Navn(String navn){
+        public Navn(String navn) {
             fornavn = navn;
         }
     }
