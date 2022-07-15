@@ -15,19 +15,19 @@ public with sharing class NKS_PersonBadgesController {
         'HOT_WritenInterpreting__c'
     };
 
-    private static Map<String, String> landMap {
+    private static Map<String, String> languageMap {
         get {
-            if (landMap == null) {
-                landMap = new Map<String, String>();
+            if (languageMap == null) {
+                languageMap = new Map<String, String>();
                 for (Common_Code__c land : [
                     SELECT Id, Name, CRM_Code__c
                     FROM Common_Code__c
-                    WHERE CRM_Code_set__c IN ('LandkoderISO2', 'Landkoder')
+                    WHERE CRM_Code_set__c = 'Språk'
                 ]) {
-                    landMap.put(land.CRM_Code__c, land.Name);
+                    languageMap.put(land.CRM_Code__c, land.Name);
                 }
             }
-            return landMap;
+            return languageMap;
         }
         private set {
         }
@@ -247,8 +247,8 @@ public with sharing class NKS_PersonBadgesController {
 
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
-                        if (landMap.containsKey(language)) {
-                            String capCase = landMap.get(language).toLowerCase().capitalize();
+                        if (languageMap.containsKey(language)) {
+                            String capCase = languageMap.get(language).toLowerCase().capitalize();
                             spokenLanguagesIntepreter.add(capCase + ' (' + language + ')');
                         } else {
                             spokenLanguagesIntepreter.add(language);
@@ -530,7 +530,7 @@ public with sharing class NKS_PersonBadgesController {
         public String mellomnavn;
         @AuraEnabled
         public String etternavn;
-        public Navn(String navn){
+        public Navn(String navn) {
             fornavn = navn;
         }
     }
