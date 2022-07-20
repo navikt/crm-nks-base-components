@@ -10,6 +10,10 @@ public with sharing class nksUtilityBackgroundController {
                 if (c.Origin == 'Phone') {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
                 }
+                else if(c.Origin == 'STO') {
+                    //TO BE INTRODUCED AFTER STO PILOT
+                    //tabname = c.STO_Category__c;
+                }
             }
             return tabname;
         } catch (Exception e) {
