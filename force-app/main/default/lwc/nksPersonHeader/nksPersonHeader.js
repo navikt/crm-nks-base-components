@@ -23,8 +23,6 @@ export default class NksPersonHeader extends LightningElement {
     citizenship;
     maritalStatus;
     wireFields;
-    @api condition1;
-    @api condition2;
     @api btnClick = false;
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
