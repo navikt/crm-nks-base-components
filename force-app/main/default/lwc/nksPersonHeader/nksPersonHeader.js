@@ -15,6 +15,8 @@ export default class NksPersonHeader extends LightningElement {
     @api objectApiName;
     @api relationshipField;
     @api showPersonBadges = false;
+    @api condition1; //deprecated
+    @api condition2; //deprecated
     personId;
     fullName;
     personIdent;
@@ -23,8 +25,6 @@ export default class NksPersonHeader extends LightningElement {
     citizenship;
     maritalStatus;
     wireFields;
-    @api condition1;
-    @api condition2;
     @api btnClick = false;
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
@@ -60,11 +60,11 @@ export default class NksPersonHeader extends LightningElement {
         return this.genderIcon;
     }
 
-    get condition1() {
+    get check1() {
         if (this.age && (this.citizenship || this.maritalStatus)) return true;
     }
 
-    get condition2() {
+    get check2() {
         if (this.citizenship && this.maritalStatus) return true;
     }
 
