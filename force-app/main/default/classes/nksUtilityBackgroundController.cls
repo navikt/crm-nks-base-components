@@ -9,6 +9,8 @@ public with sharing class nksUtilityBackgroundController {
                 Case c = [SELECT NKS_Puzzel_Queue_Name__c, Id, Origin FROM Case WHERE Id = :recordId LIMIT 1];
                 if (c.Origin == 'Phone') {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
+                } else if (c.Origin == 'STO') {
+                    tabname = c.STO_Category__c;
                 }
             }
             return tabname;
