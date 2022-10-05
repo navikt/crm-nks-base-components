@@ -446,12 +446,10 @@ public with sharing class NKS_PersonBadgesController {
             if(c.RecordType.DeveloperName == 'STO_Case'){
                 theme = c.STO_Category__c;
             } 
-            if(c.RecordType.DeveloperName == 'NKS_Phone_Case'){
+            if(c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null){
                 theme = c.NKS_Theme_Group__r.Name;
             }
-            if(Test.isRunningTest()){
-                theme = c.STO_Category__c;
-            }
+            
             if(theme == null) return;
 
             String caseRecordType = Test.isRunningTest() ? null : 'STO_Case';
