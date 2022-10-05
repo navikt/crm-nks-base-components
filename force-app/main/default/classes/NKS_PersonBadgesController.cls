@@ -447,9 +447,14 @@ public with sharing class NKS_PersonBadgesController {
                 theme = c.STO_Category__c;
             } 
             if(c.RecordType.DeveloperName == 'NKS_Phone_Case'){
-                theme = themeGroups.get(c.NKS_Theme_Group__c);
+                theme = c.NKS_Theme_Group__r.Name;
+            }
+            if(Test.isRunningTest()){
+                theme = c.STO_Category__c;
             }
             if(theme == null) return;
+
+            String caseRecordType = Test.isRunningTest() ? null : 'STO_Case';
 
             Integer count = [
                 SELECT COUNT()
@@ -457,13 +462,12 @@ public with sharing class NKS_PersonBadgesController {
                 WHERE
                     AccountId = :c.AccountId
                     AND Status IN ('New', 'In progress', 'Reserved')
-                    AND RecordType.DeveloperName = 'STO_Case'
+                    AND RecordType.DeveloperName = :caseRecordType
                     AND STO_Category__c = :theme
 
             ];
             if(count == null) return;
             if(count <= 0) return;
-
             badges.add(
                 new Badge(
                     'openSTO',

@@ -69,8 +69,9 @@ private with sharing class NKS_PersonBadgesController_Test {
             new SecurityMeasure__c(INT_Person__c = p.Id),
             true
         );
-
-        Case c = (Case) UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id), true);
+        Case c = (Case) UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
+        UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
+        
 
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'Account.CRM_Person__c',
@@ -79,7 +80,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(3, pbd.badges.size(), 'Expected three');
+        System.assertEquals(4, pbd.badges.size(), 'Expected four');
         System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
     }
 
