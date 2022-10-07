@@ -449,7 +449,7 @@ public with sharing class NKS_PersonBadgesController {
             if(c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null){
                 theme = c.NKS_Theme_Group__r.Name;
             }
-            
+
             if(theme == null) return;
 
             String caseRecordType = Test.isRunningTest() ? null : 'STO_Case';
@@ -459,7 +459,7 @@ public with sharing class NKS_PersonBadgesController {
                 FROM Case
                 WHERE
                     AccountId = :c.AccountId
-                    AND Status IN ('New', 'In progress', 'Reserved')
+                    AND IsClosed = false
                     AND RecordType.DeveloperName = :caseRecordType
                     AND STO_Category__c = :theme
 
