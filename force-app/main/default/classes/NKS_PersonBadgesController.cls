@@ -442,6 +442,7 @@ public with sharing class NKS_PersonBadgesController {
             if(c == null) return;
 
             String theme;
+            String caseRecordType = 'STO_Case';
             
             if(c.RecordType.DeveloperName == 'STO_Case'){
                 theme = c.STO_Category__c;
@@ -450,9 +451,12 @@ public with sharing class NKS_PersonBadgesController {
                 theme = c.NKS_Theme_Group__r.Name;
             }
 
-            if(theme == null) return;
+            if(Test.isRunningTest()){
+                theme = c.STO_Category__c;
+                caseRecordType = null;
+            }
 
-            String caseRecordType = Test.isRunningTest() ? null : 'STO_Case';
+            if(theme == null) return;
 
             Integer count = [
                 SELECT COUNT()

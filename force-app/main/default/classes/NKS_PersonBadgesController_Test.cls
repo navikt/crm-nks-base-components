@@ -72,6 +72,13 @@ private with sharing class NKS_PersonBadgesController_Test {
         Case c = (Case) UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
         UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
         
+        System.debug([SELECT COUNT()
+        FROM Case
+        WHERE
+            AccountId = :acc.Id
+            AND IsClosed = false
+            AND RecordType.DeveloperName = null
+            AND STO_Category__c = 'Arbeid']);
 
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'Account.CRM_Person__c',
