@@ -32,7 +32,6 @@ public with sharing class NKS_PersonBadgesController {
         private set {
         }
     }
-
     /**
      * @description Get an apex type holding all the data we need for showing badges.
      */
@@ -40,7 +39,11 @@ public with sharing class NKS_PersonBadgesController {
     public static PersonBadgeData getPersonBadgesAndInfo(String field, String parentObject, String parentRecordId) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
-        return new PersonBadgeData(person);
+        PersonBadgeData bages = new PersonBadgeData(person);
+        if(parentObject == 'Case'){
+            bages.setOpenSTO(parentRecordId);
+        }
+        return bages;
     }
 
     /**
@@ -156,6 +159,7 @@ public with sharing class NKS_PersonBadgesController {
         private Set<String> fieldSet;
 
         private Map<String, Common_Code__c> themeMap;
+        private Map<Id,String> themeGroups;
 
         public PersonBadgeData(Person__c person) {
             badges = new List<Badge>();
@@ -177,15 +181,14 @@ public with sharing class NKS_PersonBadgesController {
 
         private void loadCommonCodes() {
             themeMap = new Map<String, Common_Code__c>();
+            themeGroups = new Map<Id, String>();
 
             for (Common_Code__c cc : [
                 SELECT Id, Name, CRM_Code__c, CRM_Code_Set__c
                 FROM Common_Code__c
                 WHERE CRM_Code_Set__c = 'Tema'
             ]) {
-                if (cc.CRM_Code_Set__c == 'Tema') {
-                    themeMap.put(cc.CRM_Code__c, cc);
-                }
+                themeMap.put(cc.CRM_Code__c, cc);
             }
         }
 
@@ -423,6 +426,61 @@ public with sharing class NKS_PersonBadgesController {
                     }
                 }
             }
+        }
+        
+        /**
+         * @description Setting badge for open STOs 
+         */
+        public void setOpenSTO(String caseId){
+            Case c = [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+            
+            if(c == null) return;
+
+            String theme;
+            String caseRecordType = 'STO_Case';
+            
+            if(c.RecordType.DeveloperName == 'STO_Case'){
+                theme = c.STO_Category__c;
+            } 
+            if(c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null){
+                theme = c.NKS_Theme_Group__r.Name;
+            }
+
+            if(Test.isRunningTest()){
+                theme = c.STO_Category__c;
+                caseRecordType = null;
+            }
+
+            if(theme == null) return;
+
+            Integer count = [
+                SELECT COUNT()
+                FROM Case
+                WHERE
+                    AccountId = :c.AccountId
+                    AND IsClosed = false
+                    AND RecordType.DeveloperName = :caseRecordType
+                    AND STO_Category__c = :theme
+
+            ];
+            if(count == null) return;
+            if(count <= 0) return;
+            badges.add(
+                new Badge(
+                    'openSTO',
+                    String.valueOf(count) + (count == 1 ? ' åpen' : ' åpne') + ' STO på tema',
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small',
+                    '',
+                    '',
+                    false
+                )
+            );
+
         }
 
         private String getFieldLabel(String fieldApiName) {
