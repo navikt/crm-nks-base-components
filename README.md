@@ -1,89 +1,75 @@
-Template repository for CRM packages. Necessary steps after using template:
+# crm-nks-base-components
 
-1. Add secrets (see [description](https://github.com/navikt/crm-workflows-base))
-    - PROD_SFDX_URL `[REQUIRED]` (contact #crm-platform-team on Slack)
-    - PREPROD_SFDX_URL `[REQUIRED]` (contact #crm-platform-team on Slack)
-    - INTEGRATION_SANDBOX_SFDX_URL `[REQUIRED]` (contact #crm-platform-team on Slack)
-    - PACKAGE_KEY `[REQUIRED]`
-    - DEPLOYMENT_PAT `[REQUIRED]` ([documentation](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), give repo access)
-    - UAT_SFDX_URL `[OPTIONAL]`
-    - DEV_SFDX_URL `[OPTIONAL]`
-    - DEPLOY_TO_DEV_AFTER_PACKAGE_CREATION `[OPTIONAL]`
-    - DEPLOY_TO_UAT_AFTER_PACKAGE_CREATION `[OPTIONAL]`
-2. Create an init release in GitHub (not pre-release)
-    - Important! Release creation will fail if an init release has not been made!
-3. Create file `.sfdx/sfdx-config.json` (to create package)
-    - Add `{"defaultdevhubusername": "[your_devhub_user]","defaultusername": "" }` to it and change the DevHub username
-4. Create a package in SFDX
-    - `sfdx force:package:create -n YourPackageName -t Unlocked -r force-app`
-    - If you receive an error, contact #crm-platform-team on Slack to create the package
-5. Create an test metadata file in `force-app` folder to initiate init package creation (can be just a CustomLabel file)
-6. Push changes made to `force-app` and `sfdx-project.json` (remember to fetch Package ID if #crm-platform-team creates the package)
-
-Navn på prosjekt
-================
+[![Build](https://github.com/navikt/crm-shared-template/workflows/%5BPUSH%5D%20Create%20Package/badge.svg)](https://github.com/navikt/crm-shared-template/actions?query=workflow%3Acreate)
+[![GitHub version](https://badgen.net/github/release/navikt/crm-nks-base-components/stable)](https://github.com/navikt/crm-nks-base-components)
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/navikt/crm-shared-template/blob/master/LICENSE)
 
+Dette er en samling komponenter som i all hovedsak benyttes av [crm-nks-base](https://github.com/navikt/crm-nks-base)
 
-Kort beskrivelse av hva prosjektet dreier seg om.
+## Avhengigheter
 
-# Komme i gang
+Denne pakken er avhengig av følgende pakker
 
-Hvordan bygge, teste og kjøre koden viss aktuelt.
+-   [crm-platform-base](https://github.com/navikt/crm-platform-base)
+-   [crm-platform-integration](https://github.com/navikt/crm-platform-integration)
 
----
+## Installasjon
 
-## Dependencies
-
-This package is dependant on the following packages
-
--   [XXXXXXXXXXXXX](https://github.com/navikt/XXXXXXXXXXXXX)
--   [XXXXXXXXXXXXX](https://github.com/navikt/XXXXXXXXXXXXX)
-
-## Installation
-
-1. Install [npm](https://nodejs.org/en/download/)
-1. Install [Salesforce DX CLI](https://developer.salesforce.com/tools/sfdxcli)
-    - Alternative: `npm install sfdx-cli --global`
-1. Clone this repository ([GitHub Desktop](https://desktop.github.com) is recommended for non-developers)
-1. Run `npm install` from the project root folder
-1. Install [SSDX](https://github.com/navikt/ssdx)
-    - **Non-developers may stop after this step**
-1. Install [VS Code](https://code.visualstudio.com) (recommended)
-    - Install [Salesforce Extension Pack](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode)
-    - **Install recommended plugins!** A notification should appear when opening VS Code. It will prompt you to install recommended plugins.
-1. Install [AdoptOpenJDK](https://adoptopenjdk.net) (only version 8 or 11)
-1. Open VS Code settings and search for `salesforcedx-vscode-apex`
-1. Under `Java Home`, add the following:
+1. Installer [npm](https://nodejs.org/en/download/)
+1. Installer [Salesforce DX CLI](https://developer.salesforce.com/tools/sfdxcli): `npm install sfdx-cli --global`
+1. Klon dette repoet ([GitHub Desktop](https://desktop.github.com) for ikke utviklere)
+1. Kjør `npm install` fra prosjekt roten
+1. Installer [SSDX](https://github.com/navikt/ssdx)
+    - **Ikke utviklere kan stoppe etter dette steget**
+1. Installer [VS Code](https://code.visualstudio.com) (anbefalt)
+    - Installer [Salesforce Extension Pack](https://marketplace.visualstudio.com/items?itemName=salesforce.salesforcedx-vscode)
+    - **Installer anbefalte plugins!** En notifikasjon burde dukke opp når man åpner VS Code. Den vil liste opp pluginsene.
+1. Installer Java JDK versjon 8 eller 11 (f.eks [AdoptOpenJDK](https://adoptopenjdk.net))
+1. Åpne VS Code settings og søk etter `salesforcedx-vscode-apex`
+1. Under `Java Home`, legg til path til den JDK versjonen du installerte. F.eks:
     - macOS: `/Library/Java/JavaVirtualMachines/adoptopenjdk-[VERSION_NUMBER].jdk/Contents/Home`
     - Windows: `C:\\Program Files\\AdoptOpenJDK\\jdk-[VERSION_NUMBER]-hotspot`
 
-## Build
+## Bygge Scratch Org
 
-To build locally without using SSDX, do the following:
+For å bygge lokalt uten å bruke SSDX så kan man gjøre følgende:
 
-1. If you haven't authenticated a DX user to production / DevHub, run `sfdx auth:web:login -d -a production` and log in
-    - Ask `#crm-platform-team` on Slack if you don't have a user
-    - If you change from one repo to another, you can change the default DevHub username in `.sfdx/sfdx-config.json`, but you can also just run the command above
-1. Create a scratch org, install dependencies and push metadata:
+1. Sjekk om du er koblet til DevHub'en(Produksjon) med en DX bruker, hvis ikke kjør `sfdx auth:web:login -d -a production` og logg inn.
+    - Kontakt `#crm-platform-team` på Slack dersom du ikke har en bruker.
+    - Hvis du veksler fra et repo til et annet så kan du endre DevHub brukernavnet her: `.sfdx/sfdx-config.json`, evt. kjøre kommandoen nevnt over.
+1. Opprett en scratch org, installer avhengigheter og push metadata:
 
 ```bash
+key=<PACKAGE KEY>
+
 sfdx force:org:create -f ./config/project-scratch-def.json --setalias scratch_org --durationdays 1 --setdefaultusername
+
 echo y | sfdx plugins:install sfpowerkit@2.0.1
-keys="" && for p in $(sfdx force:package:list --json | jq '.result | .[].Name' -r); do keys+=$p":{key} "; done
+
+keys="" && for p in $(sfdx force:package:list --json | jq '.result | .[].Name' -r); do keys+=$p":${key}"; done
+
 sfdx sfpowerkit:package:dependencies:install -u scratch_org -r -a -w 60 -k ${keys}
+
 sfdx force:source:push
+
+sfdx force:data:tree:import -p dummy-data/baseData/plan.json
+
 sfdx force:org:open
 ```
+
+## Utvikling
+
+For å skru på debug mode og mocks for testing/debuggig av LWC komponentene så er det lagt inn scripts i `package.json`.
+
+Dersom man kjører `npm run scratch:postCreate` så settes debug mode, mock skrus på og det kjøres et skript som justerer testdata.
+
+TypeScript linting er konfigurert i `force-app\main\default\lwc\jsconfig.json`, SAF spesifikke typer ligger i `saf.d.ts`
 
 # Henvendelser
 
 Enten:
 Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub
 
-Eller:
-Spørsmål knyttet til koden eller prosjektet kan stilles til teamalias@nav.no
-
 ## For NAV-ansatte
 
-Interne henvendelser kan sendes via Slack i kanalen #teamkanal.
+Interne henvendelser kan sendes via Slack i kanalen #crm-nks eller #crm-platform-team
