@@ -5,6 +5,7 @@
 
 # lwc config
 **/jsconfig.json
+!force-app/main/default/lwc/jsconfig.json
 
 
 # NOTE!! USE **/ before
