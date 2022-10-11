@@ -1,8 +1,8 @@
 # crm-nks-base-components
 
-[![Build](https://github.com/navikt/crm-shared-template/workflows/%5BPUSH%5D%20Create%20Package/badge.svg)](https://github.com/navikt/crm-shared-template/actions?query=workflow%3Acreate)
+[![Build](https://github.com/navikt/crm-nks-base-components/workflows/%5BPUSH%5D%20Create%20Package/badge.svg)](https://github.com/navikt/crm-nks-base-components/actions?query=workflow%3Acreate)
 [![GitHub version](https://badgen.net/github/release/navikt/crm-nks-base-components/stable)](https://github.com/navikt/crm-nks-base-components)
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/navikt/crm-shared-template/blob/master/LICENSE)
+[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/navikt/crm-nks-base-components/blob/master/LICENSE)
 
 Dette er en samling komponenter som i all hovedsak benyttes av [crm-nks-base](https://github.com/navikt/crm-nks-base)
 
