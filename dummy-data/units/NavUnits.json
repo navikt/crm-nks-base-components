@@ -1,0 +1,13 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "NavUnit__c",
+                "referenceId": "NavUnit__cRef1"
+            },
+            "Name": "NAV Sagene",
+            "INT_UnitNumber__c": "0314",
+            "INT_ShutDownDate__c": null
+        }
+    ]
+}
