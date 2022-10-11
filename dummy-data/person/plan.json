@@ -4,11 +4,5 @@
         "saveRefs": true,
         "resolveRefs": true,
         "files": ["persons.json"]
-    },
-    {
-        "sobject": "SecurityMeasure__c",
-        "saveRefs": true,
-        "resolveRefs": true,
-        "files": ["securitymeasures.json"]
     }
 ]
