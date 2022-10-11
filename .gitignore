@@ -9,6 +9,7 @@
 
 
 # NOTE!! USE **/ before
+!**/scratch-org/**
 !**/unpackagable/profiles/* 
 # NOTE!! USE **/ before
 
