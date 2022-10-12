@@ -1,0 +1,820 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef1"
+            },
+            "Name": "Tilleggsstønad arbeidssøkere",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "TSR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaTSR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef2"
+            },
+            "Name": "Oppfølging - Arbeidsgiver",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "OPA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaOPA",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef3"
+            },
+            "Name": "Tiltak",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "TIL",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaTIL",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef4"
+            },
+            "Name": "Sanksjon - Arbeidsgiver",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "SAA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSAA",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef5"
+            },
+            "Name": "Rekruttering og Stilling",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "REK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaREK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef6"
+            },
+            "Name": "Permittering og masseoppsigelser",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "PER",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaPER",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef7"
+            },
+            "Name": "Ventelønn",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "VEN",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaVEN",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef8"
+            },
+            "Name": "Mob.stønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "MOB",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaMOB",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef9"
+            },
+            "Name": "Medlemskap",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "MED",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaMED",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef10"
+            },
+            "Name": "Lønnsgaranti",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "LGA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaLGA",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef11"
+            },
+            "Name": "Individstønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "IND",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaIND",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef12"
+            },
+            "Name": "Inkluderende Arbeidsliv",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "IAR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaIAR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef13"
+            },
+            "Name": "Kompensasjon selvstendig næringsdrivende/frilansere",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FRI",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFRI",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef14"
+            },
+            "Name": "Dagpenger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "DAG",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaDAG",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef15"
+            },
+            "Name": "Aa-registeret",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "AAR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaAAR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef16"
+            },
+            "Name": "Arbeidsavklaringspenger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "AAP",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaAAP",
+            "CRM_Parent_Code__c": "@ThemeGroupRef2"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef17"
+            },
+            "Name": "Omsorgspenger- Pleiepenger og opplæringspenger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "OMS",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaOMS",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef18"
+            },
+            "Name": "Kontantstøtte",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "KON",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaKON",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef19"
+            },
+            "Name": "Gravferdsstønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "GRA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaGRA",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef20"
+            },
+            "Name": "Foreldre- og svangerskapspenger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FOR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFOR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef21"
+            },
+            "Name": "Barnetrygd",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "BAR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaBAR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef22"
+            },
+            "Name": "Enslig forsørger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "ENF",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaENF",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef23"
+            },
+            "Name": "Bidrag innkreving",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "BII",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaBII",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef24"
+            },
+            "Name": "Bidrag",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "BID",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaBID",
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef25"
+            },
+            "Name": "Farskap",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FAR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFAR",
+
+            "CRM_Parent_Code__c": "@ThemeGroupRef6"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef26"
+            },
+            "Name": "Forsikring",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FOS",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFOS",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef27"
+            },
+            "Name": "Grunn- og hjelpestønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "GRU",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaGRU",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef28"
+            },
+            "Name": "Helsetjenester og ort. Hjelpemidler",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "HEL",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaHEL",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef29"
+            },
+            "Name": "Hjelpemidler",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "HJE",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaHJE",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef30"
+            },
+            "Name": "Sykemeldinger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SYM",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSYM",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef31"
+            },
+            "Name": "Sykepenger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SYK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSYK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef32"
+            },
+            "Name": "Rehabilitering",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "REH",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaREH",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef33"
+            },
+            "Name": "Uføretrygd",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "UFO",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaUFO",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef34"
+            },
+            "Name": "Yrkesskade / Menerstatning",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "YRK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaYRK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef5"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef35"
+            },
+            "Name": "Bil",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "BIL",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaBIL",
+            "CRM_Parent_Code__c": "@ThemeGroupRef4"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef36"
+            },
+            "Name": "Ajourhold - Grunnopplysninger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "AGR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaAGR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef37"
+            },
+            "Name": "Klage/Anke",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "KLA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaKLA",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef38"
+            },
+            "Name": "Kontroll",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "KTR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaKTR",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef39"
+            },
+            "Name": "Skanning",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "MOT",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaMOT",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef40"
+            },
+            "Name": "Økonomi",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "OKO",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaOKO",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef41"
+            },
+            "Name": "Oppfølging",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "OPP",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaOPP",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef42"
+            },
+            "Name": "Retting av personopplysninger",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "RPO",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaRPO",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef43"
+            },
+            "Name": "Rettferdsvederlag",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "RVE",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaRVE",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef44"
+            },
+            "Name": "Saksomkostning",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SAK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSAK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef45"
+            },
+            "Name": "Sanksjon - Person",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SAP",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSAP",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef46"
+            },
+            "Name": "Fullmakt",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FUL",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFUL",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef47"
+            },
+            "Name": "Generell",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "GEN",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaGEN",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef48"
+            },
+            "Name": "Erstatning",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "ERS",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaERS",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef49"
+            },
+            "Name": "Serviceklager",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SER",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSER",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef50"
+            },
+            "Name": "Sikkerhetstiltak",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SIK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSIK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef51"
+            },
+            "Name": "Regnskap/utbetaling",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "STO",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSTO",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef52"
+            },
+            "Name": "Trekkhåndtering",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "TRK",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaTRK",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef53"
+            },
+            "Name": "Trygdeavgift",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "TRY",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaTRY",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef54"
+            },
+            "Name": "Tilleggsstønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "TSO",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaTSO",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef55"
+            },
+            "Name": "Unntak fra medlemskap",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "UFM",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaUFM",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef56"
+            },
+            "Name": "Ukjent",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "UKJ",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaUKJ",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef57"
+            },
+            "Name": "Feilutbetaling",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "FEI",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaFEI",
+            "CRM_Parent_Code__c": "@ThemeGroupRef3"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef58"
+            },
+            "Name": "Supplerende stønad",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "SUP",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaSUP",
+            "CRM_Parent_Code__c": "@ThemeGroupRef1"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef59"
+            },
+            "Name": "Pensjon",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": true,
+            "CRM_Code__c": "PEN",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaPEN",
+            "CRM_Parent_Code__c": "@ThemeGroupRef1"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef60"
+            },
+            "Name": "Yrkesrettet attføring",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "YRA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaYRA"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef61"
+            },
+            "Name": "Øvrig",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "OVR",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaOVR"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef62"
+            },
+            "Name": "Kommunale tjenester",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "KOM",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaKOM"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "Common_Code__cRef63"
+            },
+            "Name": "Kontakt NAV",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "KNA",
+            "CRM_Code_Set__c": "Tema",
+            "CRM_UniqueKey__c": "TemaKNA"
+        }
+    ]
+}
