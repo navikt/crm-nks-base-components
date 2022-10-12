@@ -1,84 +1,103 @@
 @IsTest
 private with sharing class NKS_PersonBadgesController_Test {
-    @IsTest
-    static void getPersonBadgesAndInfo_FromAccount() {
-        Account acc = (Account) UTIL_TestDataFactory.createRecord(new Account(Name = 'Harry Potter'), true);
+    static String toIso(Date d) {
+        return Datetime.newInstanceGmt(d, Time.newInstance(12, 0, 0, 0)).format('yyyy-MM-dd');
+    }
+
+    @TestSetup
+    static void makeData() {
         Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
             new Person__c(
-                CRM_Account__c = acc.Id,
-                INT_IsNavEmployee__c = true,
-                INT_SpokenLanguageIntepreter__c = 'AM;EN',
-                INT_IsDeceased__c = true,
-                INT_Confidential__c = 'FORTROLIG'
-            ),
-            true
-        );
-        acc.CRM_Person__c = p.Id;
-        update acc;
-
-        SecurityMeasure__c sm1 = (SecurityMeasure__c) UTIL_TestDataFactory.createRecord(
-            new SecurityMeasure__c(
-                INT_Person__c = p.Id,
-                INT_SecurityMeasure__c = 'FTUS',
-                INT_ValidFromDate__c = Date.today().addDays(-30),
-                INT_ValidToDate__c = Date.today()
+                Name = '12345678901',
+                INT_FirstName__c = 'Harry',
+                INT_LastName__c = 'Potter',
+                INT_Confidential__c = 'UGRADERT'
             ),
             true
         );
 
-        SecurityMeasure__c sm2 = (SecurityMeasure__c) UTIL_TestDataFactory.createRecord(
-            new SecurityMeasure__c(
-                INT_Person__c = p.Id,
-                INT_SecurityMeasure__c = 'FTUS',
-                INT_ValidFromDate__c = Date.today().addDays(-60),
-                INT_ValidToDate__c = Date.today().addDays(-1)
+        Person__c p2 = (Person__c) UTIL_TestDataFactory.createRecord(
+            new Person__c(
+                Name = '01234567890',
+                INT_FirstName__c = 'Motpart',
+                INT_LastName__c = 'Motpartsen',
+                INT_Confidential__c = 'UGRADERT'
             ),
             true
         );
 
+        insert new List<Common_Code__c>{
+            new Common_Code__c(
+                CRM_Active__c = true,
+                CRM_Archive_Theme__c = true,
+                CRM_Code__c = 'AAP',
+                CRM_Code_Set__c = 'Tema',
+                CRM_Display_Name__c = '',
+                CRM_UniqueKey__c = 'TemaAAP',
+                Name = 'Arbeidsavklaringspenger'
+            ),
+            new Common_Code__c(
+                CRM_Active__c = true,
+                CRM_Archive_Theme__c = true,
+                CRM_Code__c = 'DAG',
+                CRM_Code_Set__c = 'Tema',
+                CRM_Display_Name__c = '',
+                CRM_UniqueKey__c = 'TemaDAG',
+                Name = 'Dagpenger'
+            )
+        };
+    }
+
+    @IsTest
+    static void getPersonBadgesAndInfo_FromAccount() {
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_IsNavEmployee__c = true;
+        p.INT_SpokenLanguageIntepreter__c = 'AM;EN';
+        p.INT_IsDeceased__c = true;
+        p.INT_Confidential__c = 'FORTROLIG';
+        p.INT_SecurityMeasures__c =
+            '[{\"Tiltakstype\":\"FTUS\",\"Beskrivelse\":\"Telefonisk utestengelse\",\"GyldigFraOgMed\":\"' +
+            toIso(Date.today().addDays(-30)) +
+            '\",\"GyldigTilOgMed\":\"' +
+            toIso(Date.today()) +
+            '\",\"Kontaktperson\":null},{\"Tiltakstype\":\"FTUS\",\"Beskrivelse\":\"Telefonisk utestengelse\",\"GyldigFraOgMed\":\"' +
+            toIso(Date.today().addDays(-60)) +
+            '\",\"GyldigTilOgMed\":\"' +
+            toIso(Date.today().addDays(-1)) +
+            '\",\"Kontaktperson\":null}]';
+        update p;
+
+        Test.startTest();
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'CRM_Person__c',
             'Account',
-            acc.Id
+            p.CRM_Account__c
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(sm1.Id, pbd.securityMeasures[0].RecordId, 'Expected the first security measure we added.');
         System.assertEquals(3, pbd.badges.size(), 'Expected three');
         System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
+        Test.stopTest();
     }
 
     @IsTest
     static void getPersonBadgesAndInfo_FromCase() {
-        Account acc = (Account) UTIL_TestDataFactory.createRecord(new Account(Name = 'Harry Potter'), true);
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_IsNavEmployee__c = true;
+        p.INT_SpokenLanguageIntepreter__c = 'AM;EN';
+        p.INT_IsDeceased__c = true;
+        p.INT_SecurityMeasures__c =
+            '[{\"Tiltakstype\":\"FTUS\",\"Beskrivelse\":\"Telefonisk utestengelse\",\"GyldigFraOgMed\":\"' +
+            toIso(Date.today().addDays(-30)) +
+            '\",\"GyldigTilOgMed\":\"' +
+            toIso(Date.today()) +
+            '\",\"Kontaktperson\":null}]';
+        update p;
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
-            new Person__c(
-                CRM_Account__c = acc.Id,
-                INT_IsNavEmployee__c = true,
-                INT_SpokenLanguageIntepreter__c = 'AM;EN',
-                INT_IsDeceased__c = true
-            ),
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
             true
         );
-
-        acc.CRM_Person__c = p.Id;
-        update acc;
-
-        SecurityMeasure__c sm = (SecurityMeasure__c) UTIL_TestDataFactory.createRecord(
-            new SecurityMeasure__c(INT_Person__c = p.Id),
-            true
-        );
-        Case c = (Case) UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
-        UTIL_TestDataFactory.createRecord(new Case(AccountId = acc.Id, STO_Category__c = 'Arbeid', Status = 'New' ), true);
-        
-        System.debug([SELECT COUNT()
-        FROM Case
-        WHERE
-            AccountId = :acc.Id
-            AND IsClosed = false
-            AND RecordType.DeveloperName = null
-            AND STO_Category__c = 'Arbeid']);
 
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'Account.CRM_Person__c',
@@ -93,15 +112,15 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorney() {
-        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Vasilij","etternavn":"Pupkin"},"motpartsPersonident":"01098130094","embete":"fylkesmannenITromsOgFinnmark"}]';
+        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland"}]';
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
-            new Person__c(INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString)
-        );
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
+        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = new NKS_PersonBadgesController.PersonBadgeData(p);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
         Test.stopTest();
 
         System.assertEquals(1, result.guardianships.size(), 'Expected one guardianship');
@@ -111,20 +130,30 @@ private with sharing class NKS_PersonBadgesController_Test {
             'Expected "Ja" since omfangetErInnenPersonligOmraade = "true"'
         );
         System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
-        System.assertEquals('Pupkin', result.guardianships[0].navn.etternavn, 'Expected surname');
+        System.assertEquals('Motpart Motpartsen', result.guardianships[0].navn.fullName, 'Wrong name');
+        System.assertNotEquals(
+            result.guardianships[0].omfang,
+            result.guardianships[0].omfangLabel,
+            'Expected omfang to have a label'
+        );
+        System.assertNotEquals(
+            result.guardianships[0].type,
+            result.guardianships[0].typeLabel,
+            'Expected type to have a label'
+        );
     }
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorneyError() {
-        String jsonString = '{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01098130094","embete":"fylkesmannenITromsOgFinnmark"}]';
+        String jsonString = '{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01234567890","embete":"fylkesmannenITromsOgFinnmark"}]';
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
-            new Person__c(INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString)
-        );
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
+        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = new NKS_PersonBadgesController.PersonBadgeData(p);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
         Test.stopTest();
 
         System.assertEquals(0, result.guardianships.size(), 'Expected one guardianship');
@@ -134,26 +163,31 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_PowerOfAttorneyAllAreas() {
-        NKS_PersonBadgesController.PowerOfAttorney poa = new NKS_PersonBadgesController.PowerOfAttorney();
-        poa.motpartsRolle = 'FULLMEKTIG';
-        poa.motpartsPersonident = '40000000000';
-        poa.omraader = new List<String>{ '*' };
-        poa.gyldigFraOgMed = Date.today();
-        poa.gyldigTilOgMed = Date.today().addDays(1);
+        NKS_PersonBadgesController.PowerOfAttorney poa1 = new NKS_PersonBadgesController.PowerOfAttorney();
+        poa1.motpartsRolle = 'FULLMEKTIG';
+        poa1.motpartsPersonident = '01234567890';
+        poa1.omraader = new List<String>{ '*' };
+        poa1.gyldigFraOgMed = Date.today();
+        poa1.gyldigTilOgMed = Date.today().addDays(1);
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
-            new Person__c(
-                INT_PowerOfAttorney__c = JSON.serialize(new List<NKS_PersonBadgesController.PowerOfAttorney>{ poa })
-            )
-        );
+        NKS_PersonBadgesController.PowerOfAttorney poa2 = new NKS_PersonBadgesController.PowerOfAttorney();
+        poa2.motpartsRolle = 'FULLMEKTIG';
+        poa2.motpartsPersonident = '01234567890';
+        poa2.omraader = new List<String>{ 'PEN', 'DAG' };
+        poa2.gyldigFraOgMed = Date.today();
+        poa2.gyldigTilOgMed = Date.today().addDays(1);
+
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_PowerOfAttorney__c = JSON.serialize(new List<NKS_PersonBadgesController.PowerOfAttorney>{ poa1, poa2 });
+        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = new NKS_PersonBadgesController.PersonBadgeData(p);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
         Test.stopTest();
 
-        System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one guardianship');
-        System.assertEquals('40000000000', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 40000000000');
+        System.assertEquals(2, result.powerOfAttorneys.size(), 'Expected one guardianship');
+        System.assertEquals('01234567890', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 01234567890');
         System.assertEquals('Fullmektig', result.powerOfAttorneys[0].motpartsRolle, 'Expected Fullmektig');
         System.assertEquals(
             'Gjelder alle ytelser',
@@ -173,15 +207,13 @@ private with sharing class NKS_PersonBadgesController_Test {
         poa.gyldigFraOgMed = Date.today();
         poa.gyldigTilOgMed = Date.today().addDays(1);
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(
-            new Person__c(
-                INT_PowerOfAttorney__c = JSON.serialize(new List<NKS_PersonBadgesController.PowerOfAttorney>{ poa })
-            )
-        );
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_PowerOfAttorney__c = JSON.serialize(new List<NKS_PersonBadgesController.PowerOfAttorney>{ poa });
+        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = new NKS_PersonBadgesController.PersonBadgeData(p);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
         Test.stopTest();
 
         System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one guardianship');
@@ -196,11 +228,13 @@ private with sharing class NKS_PersonBadgesController_Test {
     static void setBadgeData_PowerOfAttorneyError() {
         String jsonString = '{"motpartsRolle": "FULLMEKTIG","motpartsPersonident": "40000000000","omraader": ["ARB"],"gyldigFraOgMed": "2020-02-05","gyldigTilOgMed": "2021-02-05"}]';
 
-        Person__c p = (Person__c) UTIL_TestDataFactory.createRecord(new Person__c(INT_PowerOfAttorney__c = jsonString));
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
+        p.INT_PowerOfAttorney__c = jsonString;
+        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = new NKS_PersonBadgesController.PersonBadgeData(p);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
         Test.stopTest();
 
         System.assertEquals(0, result.powerOfAttorneys.size(), 'Expected no guardianships');

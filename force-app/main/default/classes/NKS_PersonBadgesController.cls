@@ -40,7 +40,7 @@ public with sharing class NKS_PersonBadgesController {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
         PersonBadgeData bages = new PersonBadgeData(person);
-        if(parentObject == 'Case'){
+        if (parentObject == 'Case') {
             bages.setOpenSTO(parentRecordId);
         }
         return bages;
@@ -130,11 +130,7 @@ public with sharing class NKS_PersonBadgesController {
 
         List<Person__c> personList = (List<Person__c>) Database.query(queryString);
 
-        if (true == personList.isEmpty()) {
-            return null;
-        }
-
-        return personList[0];
+        return personList.isEmpty() ? null : personList[0];
     }
 
     /**
@@ -159,7 +155,8 @@ public with sharing class NKS_PersonBadgesController {
         private Set<String> fieldSet;
 
         private Map<String, Common_Code__c> themeMap;
-        private Map<Id,String> themeGroups;
+        private Map<Id, String> themeGroups;
+        private Map<String, String> personIdentNameMap;
 
         public PersonBadgeData(Person__c person) {
             badges = new List<Badge>();
@@ -169,6 +166,7 @@ public with sharing class NKS_PersonBadgesController {
             powerOfAttorneys = new List<PowerOfAttorney>();
             entitlements = new List<String>();
             errors = new List<String>();
+            personIdentNameMap = new Map<String, String>();
 
             if (null != person) {
                 this.person = person;
@@ -200,6 +198,7 @@ public with sharing class NKS_PersonBadgesController {
             setSpokenLanguagesIntepreter();
             setDegreeOfHearingAndVisualImpairment();
             setEntitlements();
+            setPersonName();
         }
 
         private void setSecurityMeasures() {
@@ -282,7 +281,8 @@ public with sharing class NKS_PersonBadgesController {
                     ) {
                         if (poa.gyldigFraOgMed <= Date.today() && poa.gyldigTilOgMed >= Date.today()) {
                             poa.id = '' + i;
-                            relatedPersonMap.put(poa.motpartsPersonident, null);
+                            personIdentNameMap.put(poa.motpartsPersonident, '');
+
                             if (poa.omraader != null && poa.omraader.size() > 0) {
                                 if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
                                     poa.omraader[0] = 'Gjelder alle ytelser';
@@ -301,22 +301,6 @@ public with sharing class NKS_PersonBadgesController {
                     }
 
                     if (powerOfAttorneys.size() > 0) {
-                        for (Person__c p : [
-                            SELECT Id, Name, CRM_Account__c, CRM_Account__r.Name
-                            FROM Person__c
-                            WHERE Name IN :relatedPersonMap.keySet()
-                        ]) {
-                            relatedPersonMap.put(p.Name, p);
-                        }
-
-                        for (PowerOfAttorney poa : powerOfAttorneys) {
-                            if (null != relatedPersonMap.get(poa.motpartsPersonident)) {
-                                poa.motpartsNavn = relatedPersonMap.get(poa.motpartsPersonident).CRM_Account__c == null
-                                    ? null
-                                    : relatedPersonMap.get(poa.motpartsPersonident).CRM_Account__r.Name;
-                            }
-                        }
-
                         badges.add(
                             new Badge(
                                 'powerOfAttorney',
@@ -346,7 +330,7 @@ public with sharing class NKS_PersonBadgesController {
                         true
                     )
                 );
-                Map<String, Person__c> relatedPersonMap = new Map<String, Person__c>();
+
                 try {
                     Integer i = 0;
                     for (
@@ -357,32 +341,13 @@ public with sharing class NKS_PersonBadgesController {
                     ) {
                         guardienship.id = '' + i;
                         if (String.isNotBlank(guardienship.motpartsPersonident)) {
-                            relatedPersonMap.put(guardienship.motpartsPersonident, null);
+                            personIdentNameMap.put(guardienship.motpartsPersonident, '');
                         }
                         guardianships.add(guardienship);
                         i++;
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av vergemål detaljer');
-                }
-
-                if (relatedPersonMap.size() > 0) {
-                    for (Person__c p : [
-                        SELECT Id, Name, CRM_Account__c, CRM_Account__r.Name
-                        FROM Person__c
-                        WHERE Name IN :relatedPersonMap.keySet()
-                    ]) {
-                        relatedPersonMap.put(p.Name, p);
-                    }
-
-                    for (GuardianshipOrFuturePowerOfAttorney guardienship : guardianships) {
-                        if (null != relatedPersonMap.get(guardienship.motpartsPersonident)) {
-                            guardienship.navn = relatedPersonMap.get(guardienship.motpartsPersonident).CRM_Account__c ==
-                                null
-                                ? guardienship.navn
-                                : new Navn(relatedPersonMap.get(guardienship.motpartsPersonident).CRM_Account__r.Name);
-                        }
-                    }
                 }
             }
         }
@@ -427,60 +392,93 @@ public with sharing class NKS_PersonBadgesController {
                 }
             }
         }
-        
+
         /**
-         * @description Setting badge for open STOs 
+         * @description Setting badge for open STOs
          */
-        public void setOpenSTO(String caseId){
+        public void setOpenSTO(String caseId) {
             Case c = [
                 SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
                 FROM Case
                 WHERE Id = :caseId
                 LIMIT 1
             ];
-            
-            if(c == null) return;
+
+            if (c == null) {
+                return;
+            }
 
             String theme;
             String caseRecordType = 'STO_Case';
-            
-            if(c.RecordType.DeveloperName == 'STO_Case'){
+
+            if (c.RecordType.DeveloperName == 'STO_Case') {
                 theme = c.STO_Category__c;
-            } 
-            if(c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null){
+            }
+            if (c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null) {
                 theme = c.NKS_Theme_Group__r.Name;
             }
 
-            if(Test.isRunningTest()){
+            if (Test.isRunningTest()) {
                 theme = c.STO_Category__c;
                 caseRecordType = null;
             }
 
-            if(theme == null) return;
+            if (theme == null) {
+                return;
+            }
 
             Integer count = [
                 SELECT COUNT()
                 FROM Case
                 WHERE
                     AccountId = :c.AccountId
-                    AND IsClosed = false
+                    AND IsClosed = FALSE
                     AND RecordType.DeveloperName = :caseRecordType
                     AND STO_Category__c = :theme
-
             ];
-            if(count == null) return;
-            if(count <= 0) return;
+            if (count == null) {
+                return;
+            }
+            if (count <= 0) {
+                return;
+            }
             badges.add(
                 new Badge(
                     'openSTO',
-                    String.valueOf(count) + (count == 1 ? ' åpen' : ' åpne') + ' STO på tema',
+                    String.valueOf(count) +
+                    (count == 1 ? ' åpen' : ' åpne') +
+                    ' STO på tema',
                     'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small',
                     '',
                     '',
                     false
                 )
             );
+        }
 
+        private void setPersonName() {
+            for (Account acc : [
+                SELECT Name, CRM_Person__r.Name
+                FROM Account
+                WHERE CRM_Person__c != NULL AND CRM_Person__r.Name IN :personIdentNameMap.keySet()
+                WITH SYSTEM_MODE
+            ]) {
+                personIdentNameMap.put(acc.CRM_Person__r.Name, acc.Name);
+            }
+
+            for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {
+                String name = personIdentNameMap.get(gofoa.motpartsPersonident);
+                if (String.isNotBlank(name)) {
+                    gofoa.navn = new Navn(name);
+                }
+            }
+
+            for (PowerOfAttorney poa : powerOfAttorneys) {
+                String name = personIdentNameMap.get(poa.motpartsPersonident);
+                if (String.isNotBlank(name)) {
+                    poa.motpartsNavn = name;
+                }
+            }
         }
 
         private String getFieldLabel(String fieldApiName) {
@@ -591,8 +589,42 @@ public with sharing class NKS_PersonBadgesController {
         public Navn(String navn) {
             fornavn = navn;
         }
+        @AuraEnabled
+        public String fullName {
+            get {
+                return String.join(new List<String>{ this.fornavn, this.mellomnavn, this.etternavn }, ' ')
+                    .normalizeSpace();
+            }
+        }
     }
+
     public class GuardianshipOrFuturePowerOfAttorney {
+        private Map<String, String> omfangMap {
+            get {
+                return new Map<String, String>{
+                    'utlendingssakerPersonligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)',
+                    'personligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området',
+                    'oekonomiskeInteresser' => 'Ivareta personens interesser innenfor det økonomiske området',
+                    'personligeInteresser' => 'Ivareta personens interesser innenfor det personlige området'
+                };
+            }
+        }
+
+        private Map<String, String> typeMap {
+            get {
+                return new Map<String, String>{
+                    'ensligMindreaarigAsylsoeker' => 'Enslig mindreårig asylsøker',
+                    'ensligMindreaarigFlyktning' => 'Enslig mindreårig flyktning inklusive midlertidige saker for denne gruppen',
+                    'voksen' => 'Voksen',
+                    'midlertidigForVoksen' => 'Voksen midlertidig',
+                    'mindreaarig' => 'Mindreårig (unntatt EMF)',
+                    'midlertidigForMindreaarig' => 'Mindreårig midlertidig (unntatt EMF)',
+                    'forvaltningUtenforVergemaal' => 'Forvaltning utenfor vergemål',
+                    'stadfestetFremtidsfullmakt' => 'Fremtidsfullmakt'
+                };
+            }
+        }
+
         @AuraEnabled
         public String type;
         @AuraEnabled
@@ -610,7 +642,6 @@ public with sharing class NKS_PersonBadgesController {
             get {
                 return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
             }
-            set;
         }
         @AuraEnabled
         public String id;
@@ -618,58 +649,16 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String omfangLabel {
             get {
-                switch on omfang {
-                    when 'utlendingssakerPersonligeOgOekonomiskeInteresser' {
-                        return 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)';
-                    }
-                    when 'personligeOgOekonomiskeInteresser' {
-                        return 'Ivareta personens interesser innenfor det personlige og økonomiske området';
-                    }
-                    when 'oekonomiskeInteresser' {
-                        return 'Ivareta personens interesser innenfor det økonomiske området';
-                    }
-                    when 'personligeInteresser' {
-                        return 'Ivareta personens interesser innenfor det personlige området';
-                    }
-                    when else {
-                        return omfang;
-                    }
-                }
+                String label = this.omfangMap.get(this.omfang);
+                return String.isNotBlank(label) ? label : this.omfang;
             }
         }
 
         @AuraEnabled
         public String typeLabel {
             get {
-                switch on type {
-                    when 'ensligMindreaarigAsylsoeker' {
-                        return 'Enslig mindreårig asylsøker';
-                    }
-                    when 'ensligMindreaarigFlyktning' {
-                        return 'Enslig mindreårig flyktning inklusive midlertidige saker for denne gruppen';
-                    }
-                    when 'voksen' {
-                        return 'Voksen';
-                    }
-                    when 'midlertidigForVoksen' {
-                        return 'Voksen midlertidig';
-                    }
-                    when 'mindreaarig' {
-                        return 'Mindreårig (unntatt EMF)';
-                    }
-                    when 'midlertidigForMindreaarig' {
-                        return 'Mindreårig midlertidig (unntatt EMF)';
-                    }
-                    when 'forvaltningUtenforVergemaal' {
-                        return 'Forvaltning utenfor vergemål';
-                    }
-                    when 'stadfestetFremtidsfullmakt' {
-                        return 'Fremtidsfullmakt';
-                    }
-                    when else {
-                        return type;
-                    }
-                }
+                String label = this.typeMap.get(this.type);
+                return String.isNotBlank(label) ? label : this.type;
             }
         }
     }
