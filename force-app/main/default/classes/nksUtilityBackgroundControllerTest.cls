@@ -3,8 +3,8 @@ public with sharing class nksUtilityBackgroundControllerTest {
     @TestSetup
     static void makeData() {
         UTIL_TestDataFactory.createRecord(new LiveChatTranscript());
+        UTIL_TestDataFactory.createRecord(new Case(Origin = 'STO', STO_Category__c = 'Arbeid'), true);
         UTIL_TestDataFactory.createRecord(new Case(Origin = 'Phone', NKS_Puzzel_Queue_Name__c = 'TEST'));
-        //UTIL_TestDataFactory.createRecord(new Case(Origin = 'STO', STO_Category__c = 'Arbeid'));
     }
 
     @isTest

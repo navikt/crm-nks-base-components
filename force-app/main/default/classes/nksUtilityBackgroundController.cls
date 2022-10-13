@@ -6,7 +6,12 @@ public with sharing class nksUtilityBackgroundController {
             SObjectType objectName = Id.valueOf(recordId).getSobjectType();
 
             if (objectName == Schema.Case.getSObjectType()) {
-                Case c = [SELECT NKS_Puzzel_Queue_Name__c, Id, Origin FROM Case WHERE Id = :recordId LIMIT 1];
+                Case c = [
+                    SELECT STO_Category__c, NKS_Puzzel_Queue_Name__c, Id, Origin
+                    FROM Case
+                    WHERE Id = :recordId
+                    LIMIT 1
+                ];
                 if (c.Origin == 'Phone') {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
                 } else if (c.Origin == 'STO') {
@@ -24,6 +29,6 @@ public with sharing class nksUtilityBackgroundController {
             [SELECT Id FROM ServicePresenceStatus WHERE DeveloperName = 'Available_for_Chat']
             ?.Id
         );
-        return statusId.substring(0, 15);
+        return statusId?.substring(0, 15);
     }
 }
