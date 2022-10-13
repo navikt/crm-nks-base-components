@@ -113,7 +113,12 @@ export default class NksPersonBadges extends LightningElement {
         const { data, error } = this.wiredBadge;
 
         if (data) {
-            this.badges = data.badges;
+            /*
+             * Det er foreløpig ikke avgjort hvordan åpne STO skal vises
+             * så vi legger den ikke til i layouten. Lar imidlertid koden
+             * ligge sånn at vi kan se på performancen.
+             */
+            this.badges = data.badges.filter((badge) => badge.name !== 'openSTO');
             this.securityMeasures = data.securityMeasures;
             this.interpreterSpokenLanguages = data.spokenLanguagesIntepreter;
             this.guardianships = data.guardianships;
