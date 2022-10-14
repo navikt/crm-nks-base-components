@@ -6,7 +6,7 @@ public with sharing class nksUtilityBackgroundController {
             SObjectType objectName = Id.valueOf(recordId).getSobjectType();
 
             if (objectName == Schema.Case.getSObjectType()) {
-                Case c = [SELECT NKS_Puzzel_Queue_Name__c, Id, Origin FROM Case WHERE Id = :recordId LIMIT 1];
+                Case c = [SELECT NKS_Puzzel_Queue_Name__c, Id, Origin, STO_Category__c FROM Case WHERE Id = :recordId LIMIT 1];
                 if (c.Origin == 'Phone') {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
                 } else if (c.Origin == 'STO') {
