@@ -7,7 +7,7 @@ public with sharing class nksUtilityBackgroundController {
 
             if (objectName == Schema.Case.getSObjectType()) {
                 Case c = [
-                    SELECT STO_Category__c, NKS_Puzzel_Queue_Name__c, Id, Origin
+                    SELECT NKS_Puzzel_Queue_Name__c, Id, Origin, STO_Category__c
                     FROM Case
                     WHERE Id = :recordId
                     LIMIT 1
