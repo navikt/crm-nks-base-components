@@ -1,0 +1,76 @@
+{
+    "records": [
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef1"
+            },
+            "Name": "Pensjon",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "PENS",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperPENS"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef2"
+            },
+            "Name": "Arbeid",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "ARBD",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperARBD"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef3"
+            },
+            "Name": "Øvrige",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "OVRG",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperOVRG"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef4"
+            },
+            "Name": "Hjelpemidler",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "HJLPM",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperHJLPM"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef5"
+            },
+            "Name": "Helse",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "HELSE",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperHELSE"
+        },
+        {
+            "attributes": {
+                "type": "Common_Code__c",
+                "referenceId": "ThemeGroupRef6"
+            },
+            "Name": "Familie",
+            "CRM_Active__c": true,
+            "CRM_Archive_Theme__c": false,
+            "CRM_Code__c": "FMLI",
+            "CRM_Code_Set__c": "Temagrupper",
+            "CRM_UniqueKey__c": "TemagrupperFMLI"
+        }
+    ]
+}

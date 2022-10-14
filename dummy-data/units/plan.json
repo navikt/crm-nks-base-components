@@ -1,0 +1,8 @@
+[
+    {
+        "sobject": "NavUnit__c",
+        "saveRefs": true,
+        "resolveRefs": false,
+        "files": ["NavUnits.json"]
+    }
+]
