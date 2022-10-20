@@ -4,12 +4,17 @@ import { refreshApex } from '@salesforce/apex';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 
+import {MessageContext, subscribe, unsubscribe} from 'lightning/messageService';
+import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
+
 export default class NksPersonBadges extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api personRelationField;
     @api addBoxLayout = false;
     @api assistiveHeader;
+
+    krrSubscription = null;
 
     @track wiredBadge;
     @track wiredPersonAccessBadge;
@@ -75,6 +80,11 @@ export default class NksPersonBadges extends LightningElement {
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
+        this.subscribeToKrrUpdates();
+    }
+    
+    disconnectedCallback() {
+        this.unsubscribeToKrrUpdates();
     }
 
     @wire(getRecord, {
@@ -238,4 +248,32 @@ export default class NksPersonBadges extends LightningElement {
 
         this.uuAlertText = alertText;
     }
+
+    @wire(MessageContext)
+    messageContext;
+
+    subscribeToKrrUpdates(){
+        if(!this.krrSubscription){
+            this.krrSubscription = subscribe(
+                this.messageContext,
+                krrUpdateChannel,
+                (message) => {this.handleKrrUpdate(message);},
+                null
+            );
+        }
+    }
+    unsubscribeToKrrUpdates() {
+        unsubscribe(this.krrSubscription);
+        this.krrSubscription = null;
+    }
+    handleKrrUpdate(message){
+        if(message.updated === true){
+            refreshApex(this.wiredBadge)
+                .then(() => {
+                    this.setWiredBadge();
+                }
+            );
+        }
+    }
+
 }

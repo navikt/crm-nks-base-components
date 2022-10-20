@@ -97,6 +97,7 @@ public with sharing class NKS_PersonBadgesController {
         fields.add('INT_IsDeceased__c');
         fields.add('INT_PowerOfAttorney__c');
         fields.add('INT_SpokenLanguageIntepreter__c');
+        fields.add('INT_KRR_Reservation__c');
         fields.add('NKS_NumberOfSecurityMeasures__c');
 
         //HOT Fields
@@ -199,6 +200,7 @@ public with sharing class NKS_PersonBadgesController {
             setDegreeOfHearingAndVisualImpairment();
             setEntitlements();
             setPersonName();
+            setKrrReservation();
         }
 
         private void setSecurityMeasures() {
@@ -262,6 +264,15 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
+        private void setKrrReservation(){
+            if(true == person.INT_KRR_Reservation__c){
+                badges.add(new Badge(
+                    'krr',
+                    getFieldLabel('INT_KRR_Reservation__c')
+                ));
+            }
+        }
+        
         private void setIsDeceased() {
             if (true == person.INT_IsDeceased__c) {
                 badges.add(new Badge('isDeceased', getFieldLabel('INT_IsDeceased__c')));

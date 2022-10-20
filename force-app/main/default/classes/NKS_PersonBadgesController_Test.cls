@@ -86,6 +86,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         p.INT_IsNavEmployee__c = true;
         p.INT_SpokenLanguageIntepreter__c = 'AM;EN';
         p.INT_IsDeceased__c = true;
+        p.INT_KRR_Reservation__c = true;
         p.INT_SecurityMeasures__c =
             '[{\"Tiltakstype\":\"FTUS\",\"Beskrivelse\":\"Telefonisk utestengelse\",\"GyldigFraOgMed\":\"' +
             toIso(Date.today().addDays(-30)) +
@@ -106,7 +107,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(4, pbd.badges.size(), 'Expected four');
+        System.assertEquals(5, pbd.badges.size(), 'Expected five');
         System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
     }
 
