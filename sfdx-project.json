@@ -4,6 +4,7 @@
             "path": "force-app",
             "default": true,
             "package": "crm-nks-base-components",
+            "versionName": "ver 0.1",
             "versionNumber": "0.9.0.NEXT",
             "dependencies": [
                 {
