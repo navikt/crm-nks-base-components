@@ -16,4 +16,12 @@
         <shortDescription>NAV_Unit_Error_person_not_accessible</shortDescription>
         <value>Har ikke tilgangsrettigheter på bruker. Oppslaget på enhet krever tilgang på bruker.</value>
     </labels>
+    <labels>
+        <fullName>NAV_Unit_Subheader_more_actions</fullName>
+        <categories>NAV Unit</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>NAV_Unit_Subheader_more_actions</shortDescription>
+        <value>More actions</value>
+    </labels>
 </CustomLabels>
