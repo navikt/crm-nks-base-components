@@ -8,4 +8,8 @@
         <label>Har ikke tilgangsrettigheter på bruker. Oppslaget på enhet krever tilgang på bruker.</label>
         <name>NAV_Unit_Error_person_not_accessible</name>
     </customLabels>
+    <customLabels>
+        <label>Flere handlinger</label>
+        <name>NAV_Unit_Subheader_more_actions</name>
+    </customLabels>
 </Translations>
