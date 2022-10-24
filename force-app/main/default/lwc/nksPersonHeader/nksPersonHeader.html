@@ -51,13 +51,7 @@
                     <template if:true={maritalStatus}> {maritalStatus} </template>
                 </lightning-layout-item>
 
-                <lightning-layout-item
-                    size="5"
-                    small-device-size="5"
-                    medium-device-size="5"
-                    large-device-size="5"
-                    class="slds-var-p-right_small"
-                >
+                <lightning-layout-item flexibility="grow" class="slds-var-p-right_small">
                     <template if:true={showPersonBadges}>
                         <c-nks-person-badges
                             record-id={recordId}
@@ -69,6 +63,7 @@
                 </lightning-layout-item>
                 <lightning-layout-item
                     class="slds-var-p-right_small"
+                    if:true={btnShowFullmakt}
                     size="1"
                     small-device-size="1"
                     medium-device-size="1"

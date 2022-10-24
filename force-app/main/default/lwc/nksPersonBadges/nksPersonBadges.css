@@ -11,8 +11,12 @@ li {
 }
 
 .spaceClass {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: var(--lwc-spacingXSmall);
+    padding-right: var(--lwc-spacingXSmall);
     padding-top: 12px;
     padding-bottom: 12px;
+}
+
+.sto-table thead th {
+    background-color: white !important;
 }
