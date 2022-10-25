@@ -107,7 +107,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(5, pbd.badges.size(), 'Expected five');
+        System.assertEquals(4, pbd.badges.size(), 'Expected four');
         System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
     }
 
