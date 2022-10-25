@@ -453,7 +453,7 @@ public with sharing class NKS_PersonBadgesController {
             if (count <= 0) {
                 return;
             }
-            badges.add(
+            /*badges.add(
                 new Badge(
                     'openSTO',
                     String.valueOf(count) +
@@ -464,7 +464,7 @@ public with sharing class NKS_PersonBadgesController {
                     '',
                     false
                 )
-            );
+            );*/
         }
 
         private void setPersonName() {
