@@ -437,9 +437,7 @@ public with sharing class NKS_PersonBadgesController {
             badges.add(
                 new Badge(
                     'openSTO',
-                    String.valueOf(count) +
-                    (count == 1 ? ' åpen' : ' åpne') +
-                    ' STO-er',
+                    String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
                     'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer',
                     '',
                     '',
