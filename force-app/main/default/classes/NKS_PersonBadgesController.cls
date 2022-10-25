@@ -434,7 +434,7 @@ public with sharing class NKS_PersonBadgesController {
             if (aggRes.isEmpty()) {
                 return;
             }
-            /*badges.add(
+            badges.add(
                 new Badge(
                     'openSTO',
                     String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
@@ -444,7 +444,7 @@ public with sharing class NKS_PersonBadgesController {
                     true,
                     JSON.serialize(aggRes)
                 )
-            );*/
+            );
         }
 
         private void setPersonName() {
