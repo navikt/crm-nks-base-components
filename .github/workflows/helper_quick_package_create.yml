@@ -48,8 +48,8 @@ jobs:
           fi
 
           packageId=$(cat output | jq -r '.result.SubscriberPackageVersionId')
-          echo "name=packageId::$(echo $packageId)" >> $GITHUB_OUTPUT
-          echo "name=alphaVersionNumber::$(cat sfdx-project.json | jq -r '.packageAliases | keys_unsorted[-1]' | sed 's/.*-//')" >> $GITHUB_OUTPUT
+          echo "packageId=$(echo $packageId)" >> $GITHUB_OUTPUT
+          echo "alphaVersionNumber=$(cat sfdx-project.json | jq -r '.packageAliases | keys_unsorted[-1]' | sed 's/.*-//')" >> $GITHUB_OUTPUT
 
           echo
           echo Package ID: $packageId
@@ -74,10 +74,10 @@ jobs:
           versionNumber=$(cat sfdx-project.json | jq '.packageDirectories | map(select(.package != null))[0].versionNumber' -r | sed 's/.\{5\}$//')
           alphaVersionNumber=${{ needs.create-package.outputs.alphaVersionNumber }}
 
-          echo "name=tagName::v$(echo $versionNumber)-alpha$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
-          echo "name=releaseName::$(echo $versionNumber)-alpha$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
-          echo "name=bodyVersion::$(echo $versionNumber).$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
-          echo "name=bodyPackage::${{ needs.create-package.outputs.packageId }}" >> $GITHUB_OUTPUT
+          echo "tagName=v$(echo $versionNumber)-alpha$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
+          echo "releaseName=$(echo $versionNumber)-alpha$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
+          echo "bodyVersion=$(echo $versionNumber).$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
+          echo "bodyPackage=${{ needs.create-package.outputs.packageId }}" >> $GITHUB_OUTPUT
 
           echo "name=packageCreation::✅ Package Creation" >> $GITHUB_OUTPUT
 
