@@ -17,14 +17,16 @@ jobs:
 
       # Install SFDX
       - name: Install SFDX
-        uses: sfdx-actions/setup-sfdx@v1
+        uses: navikt/crm-workflows-base/.github/actions/installSFDX@master
 
       # Authenticate dev hub
       - name: Authenticate Dev Hub
-        run: |
-          echo ${{ secrets.PROD_SFDX_URL}} > ./PROD_SFDX_URL.txt
-          sfdx auth:sfdxurl:store -f ./PROD_SFDX_URL.txt -a devhub -d
-          rm -f ./PROD_SFDX_URL.txt
+        uses: navikt/crm-workflows-base/.github/actions/authenticateOrg@master
+        with:
+          auth-url: ${{ secrets.CRM_PROD_SFDX_URL }}
+          alias: prod
+          setDefaultUsername: true
+          setDefaultDevhubUsername: true
 
       # Create scratch org
       - name: Create scratch org
@@ -54,7 +56,7 @@ jobs:
         run: |
           keys=""
           for p in $(jq '.result | .[].Name' -r <<< "$(sfdx force:package:list --json)"); do
-              keys+=$p":${{ secrets.PACKAGE_KEY }} "
+              keys+=$p":${{ secrets.CRM_PACKAGE_KEY }} "
           done
 
           echo "::set-output name=keys::$(echo $keys)"
@@ -74,7 +76,7 @@ jobs:
 
       # Install SFDX
       - name: Install SFDX
-        uses: sfdx-actions/setup-sfdx@v1
+        uses: navikt/crm-workflows-base/.github/actions/installSFDX@master
 
       # Download SCRATCH_ORG_SFDX_AUTH_URL.txt
       - name: Download SCRATCH_ORG_SFDX_AUTH_URL.txt
@@ -104,6 +106,8 @@ jobs:
     name: Run Apex Tests
     needs: compile
     runs-on: ubuntu-latest
+    outputs:
+      hasTestClasses: ${{ steps.test-classes-in-repo.outputs.hasTestClasses }}
     steps:
       # Checkout source code
       - name: Checkout source code
@@ -111,7 +115,7 @@ jobs:
 
       # Install SFDX
       - name: Install SFDX
-        uses: sfdx-actions/setup-sfdx@v1
+        uses: navikt/crm-workflows-base/.github/actions/installSFDX@master
 
       # Download SCRATCH_ORG_SFDX_AUTH_URL.txt
       - name: Download SCRATCH_ORG_SFDX_AUTH_URL.txt
@@ -139,7 +143,7 @@ jobs:
           for p in $( grep -r -l -i --include="*.cls" "@istest" . | sed 's@.*/@@' ); do
             classes+=$(echo $p | cut -f 1 -d '.')","
           done
-          echo "::set-output name=classes::$( echo $classes | sed 's/\(.*\),/\1 /' )"
+          echo "hasTestClasses=$( echo $classes | sed 's/\(.*\),/\1 /' )" >> $GITHUB_OUTPUT
 
       # Run Apex tests in scratch org
       - name: Run Apex tests
@@ -153,8 +157,6 @@ jobs:
         with:
           name: apex-tests
           path: ./tests/apex
-    outputs:
-      hasTestClasses: ${{ steps.test-classes-in-repo.outputs.classes }}
 
   # ################################################################# #
   # ###################### CHECK CODE COVERAGE ###################### #
@@ -215,7 +217,7 @@ jobs:
           done
 
           let codecoverage=totalCovered*100/totalLines
-          echo "::set-output name=codecoverage::$(echo $codecoverage)"
+          echo "codecoverage=$(echo $codecoverage)" >> $GITHUB_OUTPUT
 
       # Validate at least 85% code coverage
       - name: Validate at least 85% code coverage
@@ -247,14 +249,16 @@ jobs:
 
       # Install SFDX
       - name: Install SFDX
-        uses: sfdx-actions/setup-sfdx@v1
+        uses: navikt/crm-workflows-base/.github/actions/installSFDX@master
 
       # Authenticate dev hub
       - name: Authenticate Dev Hub
-        run: |
-          echo ${{ secrets.PROD_SFDX_URL}} > ./PROD_SFDX_URL.txt
-          sfdx auth:sfdxurl:store -f ./PROD_SFDX_URL.txt -a devhub -d
-          rm -f ./PROD_SFDX_URL.txt
+        uses: navikt/crm-workflows-base/.github/actions/authenticateOrg@master
+        with:
+          auth-url: ${{ secrets.CRM_PROD_SFDX_URL }}
+          alias: prod
+          setDefaultUsername: true
+          setDefaultDevhubUsername: true
 
       # Download SCRATCH_ORG_SFDX_AUTH_URL.txt
       - name: Download SCRATCH_ORG_SFDX_AUTH_URL.txt
