@@ -427,7 +427,7 @@ public with sharing class NKS_PersonBadgesController {
             List<AggregateResult> aggRes = [
                 SELECT COUNT(Id) numHenv, STO_Category__c
                 FROM Case
-                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND RecordType.DeveloperName = :caseRecordType
+                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND STO_Category__c != NULL
                 GROUP BY STO_Category__c
             ];
 
