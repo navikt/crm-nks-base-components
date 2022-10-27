@@ -79,7 +79,7 @@ jobs:
           echo "bodyVersion=$(echo $versionNumber).$(echo $alphaVersionNumber)" >> $GITHUB_OUTPUT
           echo "bodyPackage=${{ needs.create-package.outputs.packageId }}" >> $GITHUB_OUTPUT
 
-          echo "name=packageCreation::✅ Package Creation" >> $GITHUB_OUTPUT
+          echo "packageCreation=✅ Package Creation" >> $GITHUB_OUTPUT
 
       # Generate changelog from commits
       - name: Generate changelog
