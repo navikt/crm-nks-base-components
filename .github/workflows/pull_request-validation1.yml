@@ -59,7 +59,7 @@ jobs:
               keys+=$p":${{ secrets.CRM_PACKAGE_KEY }} "
           done
 
-          echo "::set-output name=keys::$(echo $keys)"
+          echo "keys=$(echo $keys)" >> $GITHUB_OUTPUT
 
       # Install packages this repo is dependant on
       - name: Install dependant packages
@@ -107,7 +107,7 @@ jobs:
     needs: compile
     runs-on: ubuntu-latest
     outputs:
-      hasTestClasses: ${{ steps.test-classes-in-repo.outputs.hasTestClasses }}
+      hasTestClasses: ${{ steps.test-classes-in-repo.outputs.classes }}
     steps:
       # Checkout source code
       - name: Checkout source code
@@ -143,7 +143,7 @@ jobs:
           for p in $( grep -r -l -i --include="*.cls" "@istest" . | sed 's@.*/@@' ); do
             classes+=$(echo $p | cut -f 1 -d '.')","
           done
-          echo "hasTestClasses=$( echo $classes | sed 's/\(.*\),/\1 /' )" >> $GITHUB_OUTPUT
+          echo "classes=$( echo $classes | sed 's/\(.*\),/\1 /' )" >> $GITHUB_OUTPUT
 
       # Run Apex tests in scratch org
       - name: Run Apex tests
