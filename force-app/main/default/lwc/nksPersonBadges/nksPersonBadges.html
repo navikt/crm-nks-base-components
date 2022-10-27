@@ -28,44 +28,46 @@
             <span if:true={uuAlertText} class="slds-assistive-text" role="alert">{uuAlertText}</span>
             <lightning-layout multiple-rows="true">
                 <lightning-layout-item size="12">
-                    <template for:each={personAccessBadges} for:item="badge">
-                        <lightning-badge
-                            key={badge.name}
-                            class="slds-theme_error slds-var-m-left_x-small"
-                            data-id={badge.name}
-                            label={badge.label}
-                        >
-                        </lightning-badge>
-                    </template>
-                    <template for:each={badges} for:item="badge">
-                        <template if:true={badge.clickable}>
+                    <div class="slds-float_right">
+                        <template for:each={personAccessBadges} for:item="badge">
                             <lightning-badge
                                 key={badge.name}
+                                class="slds-theme_error slds-var-m-left_x-small"
                                 data-id={badge.name}
                                 label={badge.label}
-                                icon-name={badge.iconName}
-                                icon-position="start"
-                                class={badge.styling}
-                                tabindex={badge.tabindex}
-                                onkeypress={onKeyPressHandler}
-                                onclick={onClickHandler}
-                                aria-expanded="false"
-                                role="button"
                             >
                             </lightning-badge>
                         </template>
-                        <template if:false={badge.clickable}>
-                            <lightning-badge
-                                key={badge.name}
-                                data-id={badge.name}
-                                label={badge.label}
-                                icon-name={badge.iconName}
-                                icon-position="start"
-                                class={badge.styling}
-                            >
-                            </lightning-badge>
+                        <template for:each={badges} for:item="badge">
+                            <template if:true={badge.clickable}>
+                                <lightning-badge
+                                    key={badge.name}
+                                    data-id={badge.name}
+                                    label={badge.label}
+                                    icon-name={badge.iconName}
+                                    icon-position="start"
+                                    class={badge.styling}
+                                    tabindex={badge.tabindex}
+                                    onkeypress={onKeyPressHandler}
+                                    onclick={onClickHandler}
+                                    aria-expanded="false"
+                                    role="button"
+                                >
+                                </lightning-badge>
+                            </template>
+                            <template if:false={badge.clickable}>
+                                <lightning-badge
+                                    key={badge.name}
+                                    data-id={badge.name}
+                                    label={badge.label}
+                                    icon-name={badge.iconName}
+                                    icon-position="start"
+                                    class={badge.styling}
+                                >
+                                </lightning-badge>
+                            </template>
                         </template>
-                    </template>
+                    </div>
                 </lightning-layout-item>
 
                 <!-- SECURITY MEASURES -->
