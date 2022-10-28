@@ -19,4 +19,21 @@ public class NksRecordInfoController_Test {
 
         System.assertNotEquals(null, trans.LiveChatVisitorId);
     }
+
+    @isTest
+    static void getReverseRelatedRecordTest() {
+        LiveChatVisitor vis = [SELECT Id FROM LiveChatVisitor LIMIT 1];
+        List<LiveChatTranscript> trans;
+        Test.startTest();
+        trans = (List<LiveChatTranscript>) NksRecordInfoController.getReverseRelatedRecord(
+            String.valueOf(vis.Id),
+            'Id',
+            'LiveChatTranscript',
+            'LiveChatVisitorId'
+        );
+        Test.stopTest();
+
+        System.assertNotEquals(0, trans.size());
+        System.assertNotEquals(null, trans[0].Id);
+    }
 }
