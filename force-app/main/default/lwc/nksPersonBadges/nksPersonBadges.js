@@ -4,7 +4,7 @@ import { refreshApex } from '@salesforce/apex';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 
-import {MessageContext, subscribe, unsubscribe} from 'lightning/messageService';
+import { MessageContext, subscribe, unsubscribe } from 'lightning/messageService';
 import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
 
 export default class NksPersonBadges extends LightningElement {
@@ -54,6 +54,27 @@ export default class NksPersonBadges extends LightningElement {
             : false;
     }
 
+    get selectedBadge() {
+        if (this.infoPanelToShow) {
+            for (let index = 0; index < this.badges.length; index++) {
+                const badge = this.badges[index];
+                if (badge.name === this.infoPanelToShow) {
+                    return badge;
+                }
+            }
+        }
+    }
+
+    get badgeInfo() {
+        if (this.selectedBadge) {
+            return JSON.parse(this.selectedBadge.badgeInfo);
+        }
+    }
+
+    get showStoIfnormation() {
+        return 'openSTO' === this.infoPanelToShow;
+    }
+
     get showIntepreterSpokenLanguage() {
         return 'spokenLanguageIntepreter' === this.infoPanelToShow && 0 < this.interpreterSpokenLanguages.length;
     }
@@ -82,7 +103,7 @@ export default class NksPersonBadges extends LightningElement {
         this.wireFields = [this.objectApiName + '.Id'];
         this.subscribeToKrrUpdates();
     }
-    
+
     disconnectedCallback() {
         this.unsubscribeToKrrUpdates();
     }
@@ -128,7 +149,7 @@ export default class NksPersonBadges extends LightningElement {
              * så vi legger den ikke til i layouten. Lar imidlertid koden
              * ligge sånn at vi kan se på performancen.
              */
-            this.badges = data.badges.filter((badge) => badge.name !== 'openSTO');
+            this.badges = data.badges;
             this.securityMeasures = data.securityMeasures;
             this.interpreterSpokenLanguages = data.spokenLanguagesIntepreter;
             this.guardianships = data.guardianships;
@@ -252,12 +273,14 @@ export default class NksPersonBadges extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    subscribeToKrrUpdates(){
-        if(!this.krrSubscription){
+    subscribeToKrrUpdates() {
+        if (!this.krrSubscription) {
             this.krrSubscription = subscribe(
                 this.messageContext,
                 krrUpdateChannel,
-                (message) => {this.handleKrrUpdate(message);},
+                (message) => {
+                    this.handleKrrUpdate(message);
+                },
                 null
             );
         }
@@ -266,14 +289,11 @@ export default class NksPersonBadges extends LightningElement {
         unsubscribe(this.krrSubscription);
         this.krrSubscription = null;
     }
-    handleKrrUpdate(message){
-        if(message.updated === true){
-            refreshApex(this.wiredBadge)
-                .then(() => {
-                    this.setWiredBadge();
-                }
-            );
+    handleKrrUpdate(message) {
+        if (message.updated === true) {
+            refreshApex(this.wiredBadge).then(() => {
+                this.setWiredBadge();
+            });
         }
     }
-
 }

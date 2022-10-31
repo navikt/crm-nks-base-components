@@ -242,7 +242,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                         'spokenLanguageIntepreter',
                         getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-float_right',
+                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
                         '',
                         '',
                         true
@@ -264,15 +264,12 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
-        private void setKrrReservation(){
-            if(true == person.INT_KRR_Reservation__c){
-                badges.add(new Badge(
-                    'krr',
-                    getFieldLabel('INT_KRR_Reservation__c')
-                ));
+        private void setKrrReservation() {
+            if (true == person.INT_KRR_Reservation__c) {
+                badges.add(new Badge('krr', getFieldLabel('INT_KRR_Reservation__c')));
             }
         }
-        
+
         private void setIsDeceased() {
             if (true == person.INT_IsDeceased__c) {
                 badges.add(new Badge('isDeceased', getFieldLabel('INT_IsDeceased__c')));
@@ -335,7 +332,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                         'guardianshipOrFuturePowerOfAttorney',
                         'Vergemål',
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-float_right',
+                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
                         '',
                         '',
                         true
@@ -419,52 +416,35 @@ public with sharing class NKS_PersonBadgesController {
                 return;
             }
 
-            String theme;
             String caseRecordType = 'STO_Case';
-
-            if (c.RecordType.DeveloperName == 'STO_Case') {
-                theme = c.STO_Category__c;
-            }
-            if (c.RecordType.DeveloperName == 'NKS_Phone_Case' || c.RecordType.DeveloperName == null) {
-                theme = c.NKS_Theme_Group__r.Name;
-            }
-
-            if (Test.isRunningTest()) {
-                theme = c.STO_Category__c;
-                caseRecordType = null;
-            }
-
-            if (theme == null) {
-                return;
-            }
 
             Integer count = [
                 SELECT COUNT()
                 FROM Case
-                WHERE
-                    AccountId = :c.AccountId
-                    AND IsClosed = FALSE
-                    AND RecordType.DeveloperName = :caseRecordType
-                    AND STO_Category__c = :theme
+                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND RecordType.DeveloperName = :caseRecordType
             ];
-            if (count == null) {
+
+            List<AggregateResult> aggRes = [
+                SELECT COUNT(Id) numHenv, STO_Category__c
+                FROM Case
+                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND STO_Category__c != NULL
+                GROUP BY STO_Category__c
+            ];
+
+            if (aggRes.isEmpty()) {
                 return;
             }
-            if (count <= 0) {
-                return;
-            }
-            /*badges.add(
+            badges.add(
                 new Badge(
                     'openSTO',
-                    String.valueOf(count) +
-                    (count == 1 ? ' åpen' : ' åpne') +
-                    ' STO på tema',
-                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small',
+                    String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer',
                     '',
                     '',
-                    false
+                    true,
+                    JSON.serialize(aggRes)
                 )
-            );*/
+            );
         }
 
         private void setPersonName() {
@@ -514,6 +494,8 @@ public with sharing class NKS_PersonBadgesController {
         public Boolean clickable;
         @AuraEnabled
         public String tabindex;
+        @AuraEnabled
+        public String badgeInfo; //Optional additional info to be sent to frontend
 
         /**
          * @description Constructor for only showing a badge without any formatting or logic
@@ -549,6 +531,28 @@ public with sharing class NKS_PersonBadgesController {
             this.iconAltText = iconAltText;
             this.clickable = clickable;
             this.tabindex = this.clickable ? '0' : '-1';
+        }
+
+        /**
+         * @description Constructor for showing badge with formatting or icons
+         * @param name  name to use in the LWC to identify the badge
+         * @param label the label for the badge
+         * @param styling styling to use on the component in the LWC
+         * @param iconName icon to use in the LWC, use the icons from SF
+         * @param iconAltText alt text to add to the icon
+         * @param clickable true if the user should be able to click on the badge to show more info
+         */
+        public Badge(
+            String name,
+            String label,
+            String styling,
+            String iconName,
+            String iconAltText,
+            Boolean clickable,
+            String badgeInfo
+        ) {
+            this(name, label, styling, iconName, iconAltText, clickable);
+            this.badgeInfo = badgeInfo;
         }
     }
 
