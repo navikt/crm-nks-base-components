@@ -426,7 +426,6 @@ public with sharing class NKS_PersonBadgesController {
                     AND IsClosed = FALSE
                     AND STO_Category__c != NULL
                     AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
-                    AND RecordType.DeveloperName = :caseRecordType
                 GROUP BY STO_Category__c
             ];
 
