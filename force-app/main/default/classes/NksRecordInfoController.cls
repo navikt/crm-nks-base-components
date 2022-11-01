@@ -9,11 +9,42 @@ public class NksRecordInfoController {
      **/
     @AuraEnabled
     public static sObject getRelatedRecord(String parentId, String relationshipField, String objectApiName) {
-        String query = 'SELECT ' + relationshipField + ' FROM ' + objectApiName;
-        query += ' WHERE Id =\'' + parentId + '\'';
+        return getReverseRelatedRecord(parentId, relationshipField, objectApiName, 'Id', null)[0];
+    }
 
-        sObject returnObject = Database.query(query)[0];
+    @AuraEnabled(cacheable=true)
+    public static List<SObject> getReverseRelatedRecord(
+        String parentId,
+        string queryFields,
+        string objectApiName,
+        string relationshipField
+    ) {
+        return getReverseRelatedRecord(parentId, queryFields, objectApiName, relationshipField, null);
+    }
 
-        return returnObject;
+    @AuraEnabled(cacheable=true)
+    public static List<SObject> getReverseRelatedRecord(
+        String parentId,
+        string queryFields,
+        string objectApiName,
+        string relationshipField,
+        string ordering
+    ) {
+        String query =
+            'SELECT ' +
+            queryFields +
+            ' FROM ' +
+            objectApiName +
+            ' WHERE ' +
+            relationshipField +
+            '=\'' +
+            parentId +
+            '\'';
+        if (ordering != null) {
+            query += ' ORDER BY ' + ordering;
+        } else {
+            query += ' ORDER BY Id';
+        }
+        return Database.query(query);
     }
 }
