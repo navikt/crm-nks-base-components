@@ -432,22 +432,26 @@ public with sharing class NKS_PersonBadgesController {
 
             String caseRecordType = 'STO_Case';
 
-            Integer count = [
-                SELECT COUNT()
-                FROM Case
-                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND RecordType.DeveloperName = :caseRecordType
-            ];
-
             List<AggregateResult> aggRes = [
                 SELECT COUNT(Id) numHenv, STO_Category__c
                 FROM Case
-                WHERE AccountId = :c.AccountId AND IsClosed = FALSE AND STO_Category__c != NULL
+                WHERE
+                    AccountId = :c.AccountId
+                    AND IsClosed = FALSE
+                    AND STO_Category__c != NULL
+                    AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
                 GROUP BY STO_Category__c
             ];
 
             if (aggRes.isEmpty()) {
                 return;
             }
+
+            Integer count = 0;
+            for (AggregateResult agg : aggRes) {
+                count += Integer.valueOf(agg.get('numHenv'));
+            }
+
             badges.add(
                 new Badge(
                     'openSTO',
