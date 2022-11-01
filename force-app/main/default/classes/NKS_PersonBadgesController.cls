@@ -95,6 +95,7 @@ public with sharing class NKS_PersonBadgesController {
         fields.add('Id');
         fields.add('INT_GuardianshipOrFuturePowerOfAttorney__c');
         fields.add('INT_IsDeceased__c');
+        fields.add('INT_DateOfDeath__c');
         fields.add('INT_PowerOfAttorney__c');
         fields.add('INT_SpokenLanguageIntepreter__c');
         fields.add('INT_KRR_Reservation__c');
@@ -152,6 +153,9 @@ public with sharing class NKS_PersonBadgesController {
         public List<String> entitlements;
         @AuraEnabled
         public List<String> errors;
+        @AuraEnabled
+        public Date dateOfDeath;
+
         private Person__c person;
         private Set<String> fieldSet;
 
@@ -168,6 +172,7 @@ public with sharing class NKS_PersonBadgesController {
             entitlements = new List<String>();
             errors = new List<String>();
             personIdentNameMap = new Map<String, String>();
+            dateOfDeath = person.INT_DateOfDeath__c;
 
             if (null != person) {
                 this.person = person;
@@ -272,7 +277,16 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setIsDeceased() {
             if (true == person.INT_IsDeceased__c) {
-                badges.add(new Badge('isDeceased', getFieldLabel('INT_IsDeceased__c')));
+                badges.add(
+                    new Badge(
+                        'isDeceased',
+                        getFieldLabel('INT_IsDeceased__c'),
+                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                        '',
+                        '',
+                        true
+                    )
+                );
             }
         }
 

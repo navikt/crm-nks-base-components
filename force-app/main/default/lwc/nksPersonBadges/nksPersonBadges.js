@@ -33,6 +33,7 @@ export default class NksPersonBadges extends LightningElement {
     isConfidential = false;
     uuAlertText = '';
     wireFields;
+    dateOfDeath;
 
     get isLoaded() {
         return this.wiredBadge &&
@@ -93,6 +94,10 @@ export default class NksPersonBadges extends LightningElement {
 
     get showEntitlements() {
         return 'entitlements' === this.infoPanelToShow && 0 < this.entitlements.length;
+    }
+
+    get showDateOfDeath() {
+        return 'isDeceased' === this.infoPanelToShow && this.dateOfDeath !== null;
     }
 
     get backgroundTheme() {
@@ -156,6 +161,7 @@ export default class NksPersonBadges extends LightningElement {
             this.powerOfAttorneys = data.powerOfAttorneys;
             this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
+            this.dateOfDeath = data.dateOfDeath;
 
             if (this.isLoaded) {
                 this.setUuAlertText();
