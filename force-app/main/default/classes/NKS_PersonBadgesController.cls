@@ -172,9 +172,9 @@ public with sharing class NKS_PersonBadgesController {
             entitlements = new List<String>();
             errors = new List<String>();
             personIdentNameMap = new Map<String, String>();
-            dateOfDeath = person.INT_DateOfDeath__c;
 
             if (null != person) {
+                dateOfDeath = person.INT_DateOfDeath__c;
                 this.person = person;
                 //Get field set for use later in the class
                 fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
