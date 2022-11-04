@@ -9,7 +9,7 @@
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
             <property name="tag" label="Tag (h1 — h6)" default="h2"
-                description="" type="String" />
+                datasource="h1,h2,h3,h4,h5,h6" description="" type="String" />
             <property name="text" label="Header text" description=""
                 type="String" />
         </targetConfig>
