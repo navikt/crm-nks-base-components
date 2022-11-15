@@ -185,7 +185,11 @@ export default class NksPersonBadges extends LightningElement {
     })
     wiredPersonBadgeInfo(value) {
         this.wiredPersonAccessBadge = value;
-        this.setWiredPersonAccessBadge();
+        try {
+            this.setWiredPersonAccessBadge();
+        } catch (error) {
+            console.log('There was problem to fetch data from wire-function: ' + error);
+        }
     }
     setWiredPersonAccessBadge() {
         const { data, error } = this.wiredPersonAccessBadge;
