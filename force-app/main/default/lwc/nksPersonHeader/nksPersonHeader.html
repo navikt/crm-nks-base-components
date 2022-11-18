@@ -25,10 +25,11 @@
                             <template if:true={personIdent}>
                                 <span class="personIdent">&nbsp;{personIdent} </span>
                                 <lightning-button-icon
+                                    value={personIdent}
                                     class="copy-icon"
                                     icon-name="utility:copy"
                                     variant="bare"
-                                    onclick={handleCopyIdent}
+                                    onclick={handleCopy}
                                     alternative-text="Kopier fødselsnummer"
                                     title="Kopier fødselsnummer"
                                 ></lightning-button-icon>
@@ -62,10 +63,11 @@
                             <template if:true={testUnit}>
                                 <div class="personIdent">{testUnit}</div>
                                 <lightning-button-icon
+                                    value={navUnit.navn}
                                     class="copy-icon"
                                     icon-name="utility:copy"
                                     variant="bare"
-                                    onclick={handleCopyUnit}
+                                    onclick={handleCopy}
                                     alternative-text="Kopier enhet"
                                     title="Kopier enhet"
                                 ></lightning-button-icon>

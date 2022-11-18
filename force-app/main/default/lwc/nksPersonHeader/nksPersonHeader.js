@@ -10,6 +10,7 @@ import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
@@ -70,38 +71,30 @@ export default class NksPersonHeader extends LightningElement {
         if (this.citizenship && this.maritalStatus) return true;
     }
 
-    handleCopyIdent() {
-        var hiddenInput = document.createElement('input');
-        hiddenInput.value = this.personIdent;
+    handleCopy(event) {
+        const hiddenInput = document.createElement('input');
+        const eventValue = event.currentTarget.value;
+        hiddenInput.value = eventValue;
         document.body.appendChild(hiddenInput);
         hiddenInput.focus();
         hiddenInput.select();
         try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Copying text command was ' + msg);
+            const successful = document.execCommand('copy');
+            this.showCopyToast(successful ? 'success' : 'error');
         } catch (error) {
-            console.log('Oops, unable to copy');
+            this.showCopyToast('error');
         }
 
         document.body.removeChild(hiddenInput);
     }
 
-    handleCopyUnit() {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.value = this.testUnit;
-        document.body.appendChild(hiddenInput);
-        hiddenInput.focus();
-        hiddenInput.select();
-        try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Copying text command was ' + msg);
-        } catch (error) {
-            console.log('Oops, unable to copy');
-        }
-
-        document.body.removeChild(hiddenInput);
+    showCopyToast(status) {
+        const evt = new ShowToastEvent({
+            message: status === 'success' ? 'kopiert til utklippstavlen.' : 'Kunne ikke kopiere',
+            variant: status,
+            mode: 'pester'
+        });
+        this.dispatchEvent(evt);
     }
 
     getRelatedRecordId(relationshipField, objectApiName) {
