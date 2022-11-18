@@ -9,6 +9,7 @@ import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c'
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
+import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
@@ -29,6 +30,7 @@ export default class NksPersonHeader extends LightningElement {
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
     @track customclass = 'grey-icon';
+    navUnit;
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
@@ -85,6 +87,23 @@ export default class NksPersonHeader extends LightningElement {
         document.body.removeChild(hiddenInput);
     }
 
+    handleCopyUnit() {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.value = this.testUnit;
+        document.body.appendChild(hiddenInput);
+        hiddenInput.focus();
+        hiddenInput.select();
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Copying text command was ' + msg);
+        } catch (error) {
+            console.log('Oops, unable to copy');
+        }
+
+        document.body.removeChild(hiddenInput);
+    }
+
     getRelatedRecordId(relationshipField, objectApiName) {
         getRelatedRecord({
             parentId: this.recordId,
@@ -111,7 +130,10 @@ export default class NksPersonHeader extends LightningElement {
             this.age = getFieldValue(data, AGE_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD).toLowerCase();
             this.citizenship = __citizenship.charAt(0).toUpperCase() + __citizenship.slice(1);
-            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD).toLowerCase().replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
+            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD)
+                .toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(' eller enkemann', '/-mann');
             this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
         }
         if (error) {
@@ -132,6 +154,26 @@ export default class NksPersonHeader extends LightningElement {
         if (error) {
             console.log(error);
         }
+    }
+
+    @wire(getNavUnit, {
+        field: '$relationshipField',
+        parentObject: '$objectApiName',
+        parentRecordId: '$recordId',
+        type: 'PERSON_LOCATION'
+    })
+    wiredData(result) {
+        const { data, error } = result;
+        if (data) {
+            this.navUnit = data.unit;
+        }
+        if (error) {
+            console.log(`error: ${error}`);
+        }
+    }
+
+    get testUnit() {
+        return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
     /*

@@ -50,6 +50,29 @@
                     <template if:true={check2}>&#47;</template>
                     <template if:true={maritalStatus}> {maritalStatus} </template>
                 </lightning-layout-item>
+                <lightning-layout-item
+                    class="slds-var-p-right_small"
+                    size="3"
+                    small-device-size="3"
+                    medium-device-size="3"
+                    large-device-size="3"
+                >
+                    <lightning-layout>
+                        <lightning-layout-item>
+                            <template if:true={testUnit}>
+                                <div class="personIdent">{testUnit}</div>
+                                <lightning-button-icon
+                                    class="copy-icon"
+                                    icon-name="utility:copy"
+                                    variant="bare"
+                                    onclick={handleCopyUnit}
+                                    alternative-text="Kopier enhet"
+                                    title="Kopier enhet"
+                                ></lightning-button-icon>
+                            </template>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-layout-item>
 
                 <lightning-layout-item flexibility="grow" class="slds-var-p-right_small">
                     <template if:true={showPersonBadges}>
