@@ -71,6 +71,10 @@ export default class NksPersonHeader extends LightningElement {
         if (this.citizenship && this.maritalStatus) return true;
     }
 
+    get formattedUnit() {
+        return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
+    }
+
     handleCopy(event) {
         const hiddenInput = document.createElement('input');
         const eventValue = event.currentTarget.value;
@@ -163,10 +167,6 @@ export default class NksPersonHeader extends LightningElement {
         if (error) {
             console.log(`error: ${error}`);
         }
-    }
-
-    get testUnit() {
-        return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
     /*
