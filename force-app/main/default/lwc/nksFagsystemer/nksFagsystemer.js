@@ -35,9 +35,11 @@ export default class NksFagsystemer extends LightningElement {
         { name: 'Speil', field: 'NKS_SpeilURL__c' },
         { name: 'Foreldrepenger', field: 'NKS_ForeldrepengerURL__c' },
         { name: 'K9', field: 'NKS_K9URL__c' },
+        { name: 'Sosial', field: null, eventFunc: this.handleSosialModiaClickOrKey, title: 'Sosial' },
         { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
         { name: 'Enslig', field: 'NKS_EnsligForsorgerURL__c' }
     ];
+    // { name: 'SYFO', field: null, eventFunc: this.handleSYFOClickOrKey, title: 'SYFO' },
 
     connectedCallback() {
         checkFagsoneIpRange().then((res) => {
@@ -113,6 +115,59 @@ export default class NksFagsystemer extends LightningElement {
                     console.log(error);
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
+        }
+    }
+
+    // handleSYFOClickOrKey(e) {
+    //     if (e.type === 'click' || e.key === 'Enter') {
+    //         const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
+    //         fetch('https://modiacontextholder.intern.nav.no/modiacontextholder/api/context', {
+    //             method: 'POST',
+    //             // Æ må se på denna shiten. Ser at crm-sf-saf\force-app\main\default\classes\Saf_CalloutHandler.cls har noe om det muligens
+    //             // apiCtrl.setLogger(logParameters.log)
+    //             //    .setLogCalloutRequest()
+    //             //    .setLogCategory('SAF')
+    //             //    .setLogDomain(logParameters.domain)
+    //             //    .setLogUuid(new Uuid().getValue())
+    //             //    .addHeader('Nav-Consumer-Id', logParameters.domain == null ? 'salesforce' : 'sf-' + logParameters.domain.name())
+    //             //    .addHeader('Nav-Callid', apiCtrl.getLogUuid());
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //                 'Nav-Consumer-Id': 'Idk (Salesforce mby???)',
+    //                 'Nav-Call-Id': `${NAV_CONSUMER_ID}-${generateUUID()}`,
+    //                 'nav-personident': actorId
+    //             },
+    //             credentials: 'include'
+    //         })
+    //             .then((res) => {
+    //                 return res.text();
+    //             })
+    //             .then((a) => window.open(a))
+    //             .catch((error) => {
+    //                 console.log('An error occured while retrieving AA-reg link');
+    //                 console.log(error);
+    //                 window.open('https://arbeid-og-inntekt.nais.adeo.no/');
+    //             });
+    //     }
+    // }
+
+    handleSosialModiaClickOrKey(e) {
+        if (e.type === 'click' || e.key === 'Enter') {
+            console.log('Nice');
+            const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
+            fetch('https://sosialhjelp-modia-api.dev.intern.nav.no/sosialhjelp/modia-api/api/fodselsnummer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fnr: actorId
+                }),
+                credentials: 'include'
+            }).then((res) => {
+                console.log('Big');
+                return res.text();
+            });
         }
     }
 
