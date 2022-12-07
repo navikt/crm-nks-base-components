@@ -75,7 +75,30 @@
                         </lightning-layout-item>
                     </lightning-layout>
                 </lightning-layout-item>
-
+                <lightning-layout-item
+                    class="slds-var-p-right_small"
+                    size="3"
+                    small-device-size="3"
+                    medium-device-size="3"
+                    large-device-size="3"
+                >
+                    <lightning-layout>
+                        <lightning-layout-item>
+                            <template if:true={veilederName}>
+                                <div class="personIdent">Veileder: {veilederName}({veilederIdent})</div>
+                                <lightning-button-icon
+                                    value={test}
+                                    class="copy-icon"
+                                    icon-name="utility:copy"
+                                    variant="bare"
+                                    onclick={handleCopy}
+                                    alternative-text="Kopier veileders navn"
+                                    title="Kopier veileders navn"
+                                ></lightning-button-icon>
+                            </template>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-layout-item>
                 <lightning-layout-item flexibility="grow" class="slds-var-p-right_small">
                     <template if:true={showPersonBadges}>
                         <c-nks-person-badges

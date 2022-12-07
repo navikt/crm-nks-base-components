@@ -11,6 +11,8 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
+import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
@@ -32,9 +34,42 @@ export default class NksPersonHeader extends LightningElement {
     @api fullmaktHistData;
     @track customclass = 'grey-icon';
     navUnit;
+    @track veilederName;
+
+    @wire(MessageContext)
+    messageContext;
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
+        this.subscribeToMessageChannel();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
+    }
+
+    // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
+    subscribeToMessageChannel() {
+        if (!this.subscription) {
+            console.log('subscribing');
+            this.subscription = subscribe(
+                this.messageContext,
+                nksVeilederName,
+                (message) => this.handleVeilderName(message),
+                { scope: APPLICATION_SCOPE }
+            );
+        }
+    }
+
+    unsubscribeToMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    // Handler for message received by component
+    handleVeilderName(message) {
+        this.veilederName = message.displayName;
+        this.veilederIdent = message.ident;
     }
 
     get showNotifications() {
