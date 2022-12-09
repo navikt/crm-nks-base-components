@@ -42,6 +42,7 @@ export default class NksPersonHeader extends LightningElement {
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
         this.subscribeToMessageChannel();
+        this.navUnit = { enhetNr: '0661', navn: 'NAV IT' };
     }
 
     disconnectedCallback() {
@@ -51,12 +52,11 @@ export default class NksPersonHeader extends LightningElement {
     // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
     subscribeToMessageChannel() {
         if (!this.subscription) {
-            console.log('subscribing');
             this.subscription = subscribe(
                 this.messageContext,
                 nksVeilederName,
                 (message) => this.handleVeilderName(message),
-                { scope: APPLICATION_SCOPE }
+                null
             );
         }
     }
@@ -98,16 +98,16 @@ export default class NksPersonHeader extends LightningElement {
         return this.genderIcon;
     }
 
-    get check1() {
-        if (this.age && (this.citizenship || this.maritalStatus)) return true;
-    }
-
-    get check2() {
-        if (this.citizenship && this.maritalStatus) return true;
-    }
-
     get formattedUnit() {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
+    }
+
+    get formattedVeilder() {
+        return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
+    }
+
+    get formattedPersonInfo() {
+        return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
     }
 
     handleCopy(event) {
@@ -197,7 +197,8 @@ export default class NksPersonHeader extends LightningElement {
     wiredData(result) {
         const { data, error } = result;
         if (data) {
-            this.navUnit = data.unit;
+            // this.navUnit = data.unit;
+            console.log('data');
         }
         if (error) {
             console.log(`error: ${error}`);
