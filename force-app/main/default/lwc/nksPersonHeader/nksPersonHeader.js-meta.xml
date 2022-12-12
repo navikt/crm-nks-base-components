@@ -12,6 +12,7 @@
         <targetConfig targets="lightning__RecordPage">
             <property name="relationshipField" label="RelationshipField (API)" description="" type="String" />
             <property name="showPersonBadges" label="Show Person badges" type="Boolean" description="If true, badges are visible" default="false" />
+            <property name="leftAlignBadges" label="Left align badges" type="Boolean" description="If true, badges are aligned to the left" default="false" />
         </targetConfig>
     </targetConfigs>
 

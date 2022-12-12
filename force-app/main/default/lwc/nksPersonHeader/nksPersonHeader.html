@@ -78,12 +78,13 @@
                     </lightning-layout-item>
                 </template>
 
-                <lightning-layout-item flexibility="grow" class="slds-var-p-right_small">
+                <lightning-layout-item class={badgeClass}>
                     <template if:true={showPersonBadges}>
                         <c-nks-person-badges
                             record-id={recordId}
                             object-api-name={objectApiName}
                             person-relation-field={relationshipField}
+                            left-align-badges={leftAlignBadges}
                             class="slds-float_right"
                         ></c-nks-person-badges>
                     </template>

@@ -19,6 +19,7 @@ export default class NksPersonHeader extends LightningElement {
     @api objectApiName;
     @api relationshipField;
     @api showPersonBadges = false;
+    @api leftAlignBadges = false;
     @api condition1; //deprecated
     @api condition2; //deprecated
     personId;
@@ -108,6 +109,10 @@ export default class NksPersonHeader extends LightningElement {
 
     get formattedPersonInfo() {
         return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
+    }
+
+    get badgeClass() {
+        return (this.leftAlignBadges ? '' : 'slds-grow ') + 'slds-var-p-right_small';
     }
 
     handleCopy(event) {
