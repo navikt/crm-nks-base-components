@@ -60,18 +60,13 @@ public with sharing class NKS_FagsystemController {
         try {
             HttpResponse httpResponse = modiaSosialService(ident);
             if (httpResponse.getStatusCode() != 200) {
-                LoggerUtility logger = new LoggerUtility();
-                logger.error(
-                    message + '\n ' + 'Status: ' + httpResponse.getStatus() + '\n' + 'Body: ' + httpResponse.getBody(),
-                    null
+                throw new ModiaSosialException(
+                    'Feil ved henting av Modia Sosial link \n Status: ' +
+                        httpResponse.getStatus() +
+                        '\n' +
+                        'Body: ' +
+                        httpResponse.getBody()
                 );
-                errorRef = logger.peek().UUID__c; //Unique error reference for troubleshooting
-                logger.publish();
-                //             logger.logError(
-                //     response,
-                //     'Error getting Nav Unit Work Allocation: ' + JSON.serialize(allocationInput)
-                // );
-                throw new Exception('Kunne ikke hente arbeidsfordeling. Referanse til feil');
             }
             ModiaSosialResponse resp = (ModiaSosialResponse) JSON.deserialize(
                 httpResponse.getBody(),
@@ -79,6 +74,9 @@ public with sharing class NKS_FagsystemController {
             );
             return resp.modiaSosialhjelpUrl;
         } catch (Exception e) {
+            LoggerUtility logger = new LoggerUtility();
+            logger.error(e.getMessage(), null);
+            logger.publish();
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -99,5 +97,8 @@ public with sharing class NKS_FagsystemController {
 
     private class ModiaSosialResponse {
         public String modiaSosialhjelpUrl;
+    }
+
+    public class ModiaSosialException extends Exception {
     }
 }
