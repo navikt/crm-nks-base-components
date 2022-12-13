@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import getPersonId from '@salesforce/apex/NKS_FagsystemController.getPersonId';
 import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
+import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
@@ -155,19 +156,28 @@ export default class NksFagsystemer extends LightningElement {
         if (e.type === 'click' || e.key === 'Enter') {
             console.log('Nice');
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
-            fetch('https://sosialhjelp-modia-api.dev.intern.nav.no/sosialhjelp/modia-api/api/fodselsnummer', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    fnr: actorId
-                }),
-                credentials: 'include'
-            }).then((res) => {
-                console.log('Big');
-                return res.text();
-            });
+            // fetch('https://sosialhjelp-modia-api.dev.intern.nav.no/sosialhjelp/modia-api/api/fodselsnummer', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({
+            //         fnr: actorId
+            //     }),
+            //     credentials: 'include'
+            // }).then((res) => {
+            //     console.log('Big');
+            //     return res.text();
+            // });
+            getModiaSosialLink({ ident: actorId })
+                .then((x) => {
+                    console.log(`Nice`);
+                    console.log(`xy`);
+                    console.log(x);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
         }
     }
 
