@@ -37,7 +37,7 @@
                 <lightning-layout-item class="slds-var-p-right_small personIdent">
                     <p>{formattedPersonInfo}</p>
                 </lightning-layout-item>
-                <template if:true={formattedUnit}>
+                <template if:true={showNavUnit}>
                     <lightning-layout-item class="slds-var-p-right_small">
                         <lightning-layout>
                             <lightning-layout-item>
@@ -57,7 +57,7 @@
                         </lightning-layout>
                     </lightning-layout-item>
                 </template>
-                <template if:true={veilederName}>
+                <template if:true={showVeilederName}>
                     <lightning-layout-item class="slds-var-p-right_small">
                         <lightning-layout>
                             <lightning-layout-item>

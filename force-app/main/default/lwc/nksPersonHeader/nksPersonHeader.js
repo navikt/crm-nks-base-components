@@ -20,6 +20,7 @@ export default class NksPersonHeader extends LightningElement {
     @api relationshipField;
     @api showPersonBadges = false;
     @api leftAlignBadges = false;
+    @api showExtraInfo = false;
     @api condition1; //deprecated
     @api condition2; //deprecated
     personId;
@@ -107,8 +108,16 @@ export default class NksPersonHeader extends LightningElement {
         return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
+    get showNavUnit() {
+        return this.showExtraInfo && this.formattedUnit;
+    }
+
     get formattedPersonInfo() {
         return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
+    }
+
+    get showVeilederName() {
+        return this.showExtraInfo && this.veilederName;
     }
 
     get badgeClass() {
