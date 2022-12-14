@@ -44,7 +44,6 @@ export default class NksPersonHeader extends LightningElement {
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
         this.subscribeToMessageChannel();
-        this.navUnit = { enhetNr: '0661', navn: 'NAV IT' };
     }
 
     disconnectedCallback() {
@@ -211,8 +210,7 @@ export default class NksPersonHeader extends LightningElement {
     wiredData(result) {
         const { data, error } = result;
         if (data) {
-            // this.navUnit = data.unit;
-            console.log('data');
+            this.navUnit = data.unit;
         }
         if (error) {
             console.log(`error: ${error}`);
