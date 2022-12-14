@@ -9,12 +9,18 @@ import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c'
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
+import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
+import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api relationshipField;
     @api showPersonBadges = false;
+    @api leftAlignBadges = false;
+    @api showExtraInfo = false;
     @api condition1; //deprecated
     @api condition2; //deprecated
     personId;
@@ -29,9 +35,43 @@ export default class NksPersonHeader extends LightningElement {
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
     @track customclass = 'grey-icon';
+    navUnit;
+    @track veilederName;
+
+    @wire(MessageContext)
+    messageContext;
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
+        this.subscribeToMessageChannel();
+        this.navUnit = { enhetNr: '0661', navn: 'NAV IT' };
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
+    }
+
+    // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
+    subscribeToMessageChannel() {
+        if (!this.subscription) {
+            this.subscription = subscribe(
+                this.messageContext,
+                nksVeilederName,
+                (message) => this.handleVeilderName(message),
+                null
+            );
+        }
+    }
+
+    unsubscribeToMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    // Handler for message received by component
+    handleVeilderName(message) {
+        this.veilederName = message.displayName;
+        this.veilederIdent = message.ident;
     }
 
     get showNotifications() {
@@ -60,29 +100,54 @@ export default class NksPersonHeader extends LightningElement {
         return this.genderIcon;
     }
 
-    get check1() {
-        if (this.age && (this.citizenship || this.maritalStatus)) return true;
+    get formattedUnit() {
+        return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
-    get check2() {
-        if (this.citizenship && this.maritalStatus) return true;
+    get formattedVeilder() {
+        return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
-    handleCopyIdent() {
-        var hiddenInput = document.createElement('input');
-        hiddenInput.value = this.personIdent;
+    get showNavUnit() {
+        return this.showExtraInfo && this.formattedUnit;
+    }
+
+    get formattedPersonInfo() {
+        return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
+    }
+
+    get showVeilederName() {
+        return this.showExtraInfo && this.veilederName;
+    }
+
+    get badgeClass() {
+        return (this.leftAlignBadges ? '' : 'slds-grow ') + 'slds-var-p-right_small';
+    }
+
+    handleCopy(event) {
+        const hiddenInput = document.createElement('input');
+        const eventValue = event.currentTarget.value;
+        hiddenInput.value = eventValue;
         document.body.appendChild(hiddenInput);
         hiddenInput.focus();
         hiddenInput.select();
         try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Copying text command was ' + msg);
+            const successful = document.execCommand('copy');
+            this.showCopyToast(successful ? 'success' : 'error');
         } catch (error) {
-            console.log('Oops, unable to copy');
+            this.showCopyToast('error');
         }
 
         document.body.removeChild(hiddenInput);
+    }
+
+    showCopyToast(status) {
+        const evt = new ShowToastEvent({
+            message: status === 'success' ? 'kopiert til utklippstavlen.' : 'Kunne ikke kopiere',
+            variant: status,
+            mode: 'pester'
+        });
+        this.dispatchEvent(evt);
     }
 
     getRelatedRecordId(relationshipField, objectApiName) {
@@ -111,7 +176,10 @@ export default class NksPersonHeader extends LightningElement {
             this.age = getFieldValue(data, AGE_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD).toLowerCase();
             this.citizenship = __citizenship.charAt(0).toUpperCase() + __citizenship.slice(1);
-            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD).toLowerCase().replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
+            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD)
+                .toLowerCase()
+                .replace(/_/g, ' ')
+                .replace(' eller enkemann', '/-mann');
             this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
         }
         if (error) {
@@ -131,6 +199,23 @@ export default class NksPersonHeader extends LightningElement {
         }
         if (error) {
             console.log(error);
+        }
+    }
+
+    @wire(getNavUnit, {
+        field: '$relationshipField',
+        parentObject: '$objectApiName',
+        parentRecordId: '$recordId',
+        type: 'PERSON_LOCATION'
+    })
+    wiredData(result) {
+        const { data, error } = result;
+        if (data) {
+            // this.navUnit = data.unit;
+            console.log('data');
+        }
+        if (error) {
+            console.log(`error: ${error}`);
         }
     }
 

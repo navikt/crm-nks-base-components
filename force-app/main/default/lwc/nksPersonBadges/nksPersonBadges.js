@@ -13,6 +13,7 @@ export default class NksPersonBadges extends LightningElement {
     @api personRelationField;
     @api addBoxLayout = false;
     @api assistiveHeader;
+    @api leftAlignBadges = false;
 
     krrSubscription = null;
 
@@ -103,6 +104,10 @@ export default class NksPersonBadges extends LightningElement {
 
     get backgroundTheme() {
         return this.addBoxLayout === true ? 'slds-box slds-box_x-small slds-theme_default' : '';
+    }
+
+    get floatClass() {
+        return this.leftAlignBadges ? '' : 'slds-float_right';
     }
 
     connectedCallback() {
