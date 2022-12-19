@@ -6,6 +6,9 @@ import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 
+import SosialTilgang from '@salesforce/customPermission/SosialTilgang';
+/* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
+
 const filterFunc = (listToFilterOut, listToFilterIn) => (element) => {
     return (
         (!listToFilterOut || !listToFilterOut.includes(element.name)) &&
@@ -36,7 +39,13 @@ export default class NksFagsystemer extends LightningElement {
         { name: 'Speil', field: 'NKS_SpeilURL__c' },
         { name: 'Foreldrepenger', field: 'NKS_ForeldrepengerURL__c' },
         { name: 'K9', field: 'NKS_K9URL__c' },
-        { name: 'Sosial', field: null, eventFunc: this.handleSosialModiaClickOrKey, title: 'Sosial' },
+        {
+            name: 'Sosial',
+            field: null,
+            eventFunc: this.handleSosialModiaClickOrKey,
+            title: 'Sosial',
+            show: SosialTilgang
+        },
         { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
         { name: 'Enslig', field: 'NKS_EnsligForsorgerURL__c' }
     ];
@@ -55,7 +64,7 @@ export default class NksFagsystemer extends LightningElement {
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
         this.fields = this.possibleLinks
-            .map((link, index) => ({ ...link, id: index, custom: link.field == null }))
+            .map((link, index) => ({ ...link, id: index, custom: link.field == null, show: link.show ?? true }))
             .filter(filterFunc(this.hiddenLinks, listOfFilter));
     }
 
@@ -156,24 +165,9 @@ export default class NksFagsystemer extends LightningElement {
         if (e.type === 'click' || e.key === 'Enter') {
             console.log('Nice');
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
-            // fetch('https://sosialhjelp-modia-api.dev.intern.nav.no/sosialhjelp/modia-api/api/fodselsnummer', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify({
-            //         fnr: actorId
-            //     }),
-            //     credentials: 'include'
-            // }).then((res) => {
-            //     console.log('Big');
-            //     return res.text();
-            // });
             getModiaSosialLink({ ident: actorId })
-                .then((x) => {
-                    console.log(`Nice`);
-                    console.log(`xy`);
-                    console.log(x);
+                .then((urlLink) => {
+                    window.open(urlLink);
                 })
                 .catch((error) => {
                     console.log(error);

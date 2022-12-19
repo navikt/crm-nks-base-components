@@ -19,7 +19,11 @@
         <value xsi:type="xsd:string">{
 &quot;200&quot;: {
 &quot;headers&quot;: null,
-&quot;body&quot;: {&quot;modiaSosialhjelpUrl&quot; : &quot;Insert link here&quot;}
+&quot;body&quot;: {
+    &quot;loginUrl&quot;: &quot;http://localhost:8383/sosialhjelp/modia-api/local/cookie&quot;,
+    &quot;type&quot;: &quot;authentication_error&quot;,
+    &quot;message&quot;: &quot;Autentiseringsfeil&quot;
+}
 },
 &quot;401&quot;: {
 &quot;headers&quot;: null,
