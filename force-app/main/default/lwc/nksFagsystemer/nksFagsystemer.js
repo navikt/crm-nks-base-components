@@ -163,7 +163,6 @@ export default class NksFagsystemer extends LightningElement {
 
     handleSosialModiaClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
-            console.log('Nice');
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
             getModiaSosialLink({ ident: actorId })
                 .then((urlLink) => {
