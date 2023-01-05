@@ -44,7 +44,7 @@ export default class NksFagsystemer extends LightningElement {
             name: 'Sosial',
             field: null,
             eventFunc: this.handleSosialModiaClickOrKey,
-            title: 'Sosial',
+            title: 'Modia Sosialhjelp',
             show: NKS_SosialTilgang
         },
         { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
