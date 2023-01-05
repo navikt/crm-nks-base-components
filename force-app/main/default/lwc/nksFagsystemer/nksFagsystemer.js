@@ -5,6 +5,7 @@ import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModi
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import SosialTilgang from '@salesforce/customPermission/SosialTilgang';
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
@@ -166,6 +167,16 @@ export default class NksFagsystemer extends LightningElement {
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
             getModiaSosialLink({ ident: actorId })
                 .then((urlLink) => {
+                    if (!urlLink) {
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Klarte ikke å åpne Modia Sosialhjelp',
+                                message: 'Vennligst prøv på nytt eller naviger direkte',
+                                variant: 'error'
+                            })
+                        );
+                        return;
+                    }
                     window.open(urlLink);
                 })
                 .catch((error) => {

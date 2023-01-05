@@ -2,7 +2,7 @@
  * @description       :
  * @author            : mamikals
  * @group             :
- * @last modified on  : 19-12-2022
+ * @last modified on  : 05-01-2023
  * @last modified by  : mamikals
  **/
 public with sharing class NKS_FagsystemController {
@@ -72,7 +72,7 @@ public with sharing class NKS_FagsystemController {
                 httpResponse.getBody(),
                 ModiaSosialResponse.class
             );
-            return resp.loginUrl;
+            return resp.modiaSosialhjelpUrl;
         } catch (Exception e) {
             LoggerUtility logger = new LoggerUtility();
             logger.error(e.getMessage(), null);
@@ -96,9 +96,7 @@ public with sharing class NKS_FagsystemController {
     }
 
     private class ModiaSosialResponse {
-        public String loginUrl;
-        public String type;
-        public String message;
+        public string modiaSosialhjelpUrl;
     }
 
     public class ModiaSosialException extends Exception {
