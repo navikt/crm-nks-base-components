@@ -7,7 +7,7 @@ import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import SosialTilgang from '@salesforce/customPermission/SosialTilgang';
+import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
 const filterFunc = (listToFilterOut, listToFilterIn) => (element) => {
@@ -45,7 +45,7 @@ export default class NksFagsystemer extends LightningElement {
             field: null,
             eventFunc: this.handleSosialModiaClickOrKey,
             title: 'Sosial',
-            show: SosialTilgang
+            show: NKS_SosialTilgang
         },
         { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
         { name: 'Enslig', field: 'NKS_EnsligForsorgerURL__c' }
