@@ -20,9 +20,7 @@
 &quot;200&quot;: {
 &quot;headers&quot;: null,
 &quot;body&quot;: {
-    &quot;loginUrl&quot;: &quot;http://localhost:8383/sosialhjelp/modia-api/local/cookie&quot;,
-    &quot;type&quot;: &quot;authentication_error&quot;,
-    &quot;message&quot;: &quot;Autentiseringsfeil&quot;
+    &quot;modiaSosialhjelpUrl&quot;: &quot;http://localhost:8383/sosialhjelp/modia-api/local/cookie&quot;
 }
 },
 &quot;401&quot;: {
