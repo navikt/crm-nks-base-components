@@ -2,8 +2,8 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <customPermissions>
         <enabled>true</enabled>
-        <name>SosialTilgang</name>
+        <name>NKS_SosialTilgang</name>
     </customPermissions>
     <hasActivationRequired>false</hasActivationRequired>
-    <label>Sosial Tilgang</label>
+    <label>NKS - Sosial Tilgang</label>
 </PermissionSet>
