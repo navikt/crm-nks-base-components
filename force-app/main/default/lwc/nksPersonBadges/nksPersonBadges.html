@@ -28,7 +28,7 @@
             <span if:true={uuAlertText} class="slds-assistive-text" role="alert">{uuAlertText}</span>
             <lightning-layout multiple-rows="true">
                 <lightning-layout-item size="12">
-                    <div class="slds-float_right">
+                    <div class={floatClass}>
                         <template for:each={personAccessBadges} for:item="badge">
                             <lightning-badge
                                 key={badge.name}
