@@ -1,3 +1,10 @@
+/**
+ * @description       :
+ * @author            : mamikals
+ * @group             :
+ * @last modified on  : 05-01-2023
+ * @last modified by  : mamikals
+ **/
 public with sharing class NKS_FagsystemController {
     @AuraEnabled(cacheable=true)
     public static string getPersonId(String recordId, String relatedField, String objectApiName) {
@@ -46,5 +53,52 @@ public with sharing class NKS_FagsystemController {
             this.ip = ip;
             this.isInFagsone = isInFagsone;
         }
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static String getModiaSosialLink(String ident) {
+        try {
+            HttpResponse httpResponse = modiaSosialService(ident);
+            if (httpResponse.getStatusCode() != 200) {
+                throw new ModiaSosialException(
+                    'Feil ved henting av Modia Sosial link \n Status: ' +
+                        httpResponse.getStatus() +
+                        '\n' +
+                        'Body: ' +
+                        httpResponse.getBody()
+                );
+            }
+            ModiaSosialResponse resp = (ModiaSosialResponse) JSON.deserialize(
+                httpResponse.getBody(),
+                ModiaSosialResponse.class
+            );
+            return resp.modiaSosialhjelpUrl;
+        } catch (Exception e) {
+            LoggerUtility logger = new LoggerUtility();
+            logger.error(e.getMessage(), null);
+            logger.publish();
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    public static HttpResponse modiaSosialService(String ident) {
+        String API_CONFIG_NAME = 'MODIA_SOSIAL';
+        String SERVICE_AUTH_HEADER = 'Modiasosial';
+        String SERVICE_NAME = 'POST_SOSIAL_LINK';
+        String query = '{"fnr": "' + ident + '"}';
+        ApiController apiCtrl = new ApiController();
+        apiCtrl.initRequest(API_CONFIG_NAME, SERVICE_NAME);
+        apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
+        apiCtrl.addHeader('Content-Type', 'application/json');
+        apiCtrl.setBody(query);
+        apiCtrl.doCallout();
+        return apiCtrl.getResponse();
+    }
+
+    private class ModiaSosialResponse {
+        public string modiaSosialhjelpUrl;
+    }
+
+    public class ModiaSosialException extends Exception {
     }
 }

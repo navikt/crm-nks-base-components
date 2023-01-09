@@ -1,3 +1,10 @@
+/**
+ * @description       :
+ * @author            : mamikals
+ * @group             :
+ * @last modified on  : 19-12-2022
+ * @last modified by  : mamikals
+ **/
 @IsTest
 public with sharing class NKS_FagsystemControllerTest {
     @TestSetup
@@ -43,5 +50,16 @@ public with sharing class NKS_FagsystemControllerTest {
         Test.stopTest();
         System.assertEquals(pers.Id, personIdFromCase);
         System.assertEquals(pers.Id, personIdFromAccount);
+    }
+
+    @IsTest
+    static void testGetModiaSosialLink() {
+        Person__c pers = [SELECT Id, Name FROM Person__c WHERE Name != NULL][0];
+        ApiMock.setTestMock('POST_SOSIAL_LINK', 200, 'OK');
+        String expectedModiaSosialLinkFromMock = 'http://localhost:8383/sosialhjelp/modia-api/local/cookie';
+        Test.startTest();
+        String link = NKS_FagsystemController.getModiaSosialLink(pers.Name);
+        Test.stopTest();
+        System.assertEquals(expectedModiaSosialLinkFromMock, link);
     }
 }
