@@ -179,8 +179,14 @@ export default class NksFagsystemer extends LightningElement {
                     }
                     window.open(urlLink);
                 })
-                .catch((error) => {
-                    console.log(error);
+                .catch(() => {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Klarte ikke å åpne Modia Sosialhjelp',
+                            message: 'Vennligst prøv på nytt eller naviger direkte',
+                            variant: 'error'
+                        })
+                    );
                 });
         }
     }
