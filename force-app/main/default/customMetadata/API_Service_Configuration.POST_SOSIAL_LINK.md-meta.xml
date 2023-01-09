@@ -38,6 +38,6 @@
     </values>
     <values>
         <field>Service_Path__c</field>
-        <value xsi:type="xsd:string">/api/fodselsnummer</value>
+        <value xsi:type="xsd:string">/sosialhjelp-modia/api/fodselsnummer</value>
     </values>
 </CustomMetadata>
