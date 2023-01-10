@@ -65,7 +65,12 @@ export default class NksFagsystemer extends LightningElement {
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
         this.fields = this.possibleLinks
-            .map((link, index) => ({ ...link, id: index, custom: link.field == null, show: link.show ?? true }))
+            .map((link, index) => ({
+                ...link,
+                id: index,
+                custom: link.field == null,
+                show: !('show' in link) || (link.show ?? false)
+            }))
             .filter(filterFunc(this.hiddenLinks, listOfFilter));
     }
 
