@@ -40,16 +40,16 @@ export default class NksFagsystemer extends LightningElement {
         { name: 'Speil', field: 'NKS_SpeilURL__c' },
         { name: 'Foreldrepenger', field: 'NKS_ForeldrepengerURL__c' },
         { name: 'K9', field: 'NKS_K9URL__c' },
-        {
-            name: 'Sosial',
-            field: null,
-            eventFunc: this.handleSosialModiaClickOrKey,
-            title: 'Modia Sosialhjelp',
-            show: NKS_SosialTilgang
-        },
         { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
         { name: 'Enslig', field: 'NKS_EnsligForsorgerURL__c' }
     ];
+    // {
+    //     name: 'Sosial',
+    //     field: null,
+    //     eventFunc: this.handleSosialModiaClickOrKey,
+    //     title: 'Modia Sosialhjelp',
+    //     show: NKS_SosialTilgang
+    // },
     // { name: 'SYFO', field: null, eventFunc: this.handleSYFOClickOrKey, title: 'SYFO' },
 
     connectedCallback() {
