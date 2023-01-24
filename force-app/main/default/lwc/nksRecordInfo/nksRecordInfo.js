@@ -32,26 +32,23 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @wire(MessageContext)
     messageContext;
 
-    renderedCallback(){
-        if(
-            this.hasListeners || 
-            this.copyFieldsNr.length == 0 ||
-            !this.viewedObjectApiName ||
-            !this.wireRecord
-        )
-            return;
+    renderedCallback() {
+        if (this.hasListeners || this.copyFieldsNr.length == 0 || !this.viewedObjectApiName || !this.wireRecord) return;
         //adding eventListeners to copy buttons
         this.fieldList
-            .filter(
-                (e) =>{
-                    return e.copyButton;
-                }
-            ).forEach(
-                (e) => {
-                    let button = this.template.querySelector('div.'+e.buttonName);
-                    button.addEventListener('click', () => { this.handleCopy(e); },this);
-                },this
-            );
+            .filter((e) => {
+                return e.copyButton;
+            })
+            .forEach((e) => {
+                let button = this.template.querySelector('div.' + e.buttonName);
+                button.addEventListener(
+                    'click',
+                    () => {
+                        this.handleCopy(e);
+                    },
+                    this
+                );
+            }, this);
         this.hasListeners = true;
     }
 
@@ -92,12 +89,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
 
         this.wireFields = [this.viewedObjectApiName + '.Id'];
 
-        this.fieldList.forEach(
-            (e) => { 
-                this.wireFields.push(this.viewedObjectApiName + "." + e.fieldName); 
-            },
-            this
-        );
+        this.fieldList.forEach((e) => {
+            this.wireFields.push(this.viewedObjectApiName + '.' + e.fieldName);
+        }, this);
 
         this.parentWireFields = [this.objectApiName + '.Id'];
     }
@@ -134,29 +128,36 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     get fieldList() {
-        let fieldList = (this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : [])
-            .map(
-                (e,i)=>{
-                    return {
-                        fieldName  : e,
-                        copyButton : this.copyFieldsNr.includes(i),
-                        buttonName : this.viewedObjectApiName + '_' + e + '_copyButton',
-                        buttonTip  : this.wireObjectInfo.data && this.wireObjectInfo.data.fields[e] ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label : '',
-                    }
-                }
-            )
-        ;
+        let fieldList = (this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : []).map(
+            (e, i) => {
+                return {
+                    fieldName: e,
+                    copyButton: this.copyFieldsNr.includes(i),
+                    buttonName: this.viewedObjectApiName + '_' + e + '_copyButton',
+                    buttonTip:
+                        this.wireObjectInfo.data && this.wireObjectInfo.data.fields[e]
+                            ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label
+                            : ''
+                };
+            }
+        );
         return fieldList;
     }
 
     get copyFieldsNr() {
-        let copyFieldsNr = this.copyFields != null ? this.copyFields.replace(/\s/g, '').split(',').map( e => parseInt(e)-1) : [];
+        let copyFieldsNr =
+            this.copyFields != null
+                ? this.copyFields
+                      .replace(/\s/g, '')
+                      .split(',')
+                      .map((e) => parseInt(e) - 1)
+                : [];
         return copyFieldsNr;
     }
 
-    handleCopy(field){
-        if(!this.wireRecord.data.fields[field.fieldName].value){
-            this.showCopyToast(field.fieldName,'warning');
+    handleCopy(field) {
+        if (!this.wireRecord.data.fields[field.fieldName].value) {
+            this.showCopyToast(field.fieldName, 'warning');
             return;
         }
         var hiddenInput = document.createElement('input');
@@ -166,26 +167,25 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         hiddenInput.select();
         try {
             var successful = document.execCommand('copy');
-            this.showCopyToast(field.fieldName, successful?'success':'error');
+            if (!successful) this.showCopyToast(field.fieldName, 'error');
         } catch (error) {
             this.showCopyToast(field.fieldName, 'error');
         }
         document.body.removeChild(hiddenInput);
-        this.template.querySelector('div.'+field.buttonName).firstChild.focus();
+        this.template.querySelector('div.' + field.buttonName).firstChild.focus();
     }
 
-    showCopyToast(field,status){
-        const evt = new ShowToastEvent(
-            {
-                message : status === 'success' ?
-                this.wireObjectInfo.data.fields[field].label + ' ble kopiert til utklippstavlen.' : 
-                    status === 'warning' ? 
-                        this.wireObjectInfo.data.fields[field].label + ' er tomt.' : 
-                        'Kunne ikke kopiere ' + this.wireObjectInfo.data.fields[field].label,
-                variant : status,
-                mode: 'pester'
-            }
-        );
+    showCopyToast(field, status) {
+        const evt = new ShowToastEvent({
+            message:
+                status === 'success'
+                    ? this.wireObjectInfo.data.fields[field].label + ' ble kopiert til utklippstavlen.'
+                    : status === 'warning'
+                    ? this.wireObjectInfo.data.fields[field].label + ' er tomt.'
+                    : 'Kunne ikke kopiere ' + this.wireObjectInfo.data.fields[field].label,
+            variant: status,
+            mode: 'pester'
+        });
         this.dispatchEvent(evt);
     }
 
@@ -200,7 +200,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             }
         });
     }
-    
+
     @wire(getObjectInfo, {
         objectApiName: '$viewedObjectApiName'
     })
