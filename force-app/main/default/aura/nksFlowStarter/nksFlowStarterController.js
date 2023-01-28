@@ -33,7 +33,6 @@
         let flowStatus = event.getParam('status');
         if (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') {
             component.set('v.showFlow', false);
-            console.log(component.get('v.showFlow'));
         }
     }
 });

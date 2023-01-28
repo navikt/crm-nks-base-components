@@ -1,7 +1,4 @@
 <aura:component implements="flexipage:availableForAllPageTypes, force:hasRecordId">
-    <aura:html tag="style">
-        flexipage-component2 { margin-bottom: 5px !important; }
-    </aura:html>
     <!-- INPUT ATTRIBUTES -->
     <aura:attribute name="flowName" type="String" default="" access="public" />
     <aura:attribute name="buttonLabel" type="String" default="Label" access="public" />
