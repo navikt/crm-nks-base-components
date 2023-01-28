@@ -132,7 +132,7 @@ export default class NksPersonHeader extends LightningElement {
         hiddenInput.select();
         try {
             const successful = document.execCommand('copy');
-            this.showCopyToast(successful ? 'success' : 'error');
+            if (!successful) this.showCopyToast('error');
         } catch (error) {
             this.showCopyToast('error');
         }
