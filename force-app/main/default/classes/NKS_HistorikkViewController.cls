@@ -156,6 +156,6 @@ public with sharing class NKS_HistorikkViewController {
         if (motpartsPersonident == null) {
             return null;
         }
-        return [SELECT id, CRM_Account__r.Name FROM Person__c WHERE Name = :motpartsPersonident]?.CRM_Account__r.Name;
+        return [SELECT id, NKS_Full_Name__c FROM Person__c WHERE Name = :motpartsPersonident]?.NKS_Full_Name__c;
     }
 }
