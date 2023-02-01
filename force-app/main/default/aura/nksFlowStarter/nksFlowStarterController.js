@@ -5,7 +5,6 @@
         buttonLabel = helper.isLabelReference(component, buttonLabel)
             ? $A.getReference('$Label.c.' + buttonLabel)
             : buttonLabel;
-
         component.set('v.buttonLabel', buttonLabel);
     },
 
@@ -33,7 +32,7 @@
     flowStatusChange: function (component, event, helper) {
         let flowStatus = event.getParam('status');
         if (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') {
-            //Flow finished
+            component.set('v.showFlow', false);
         }
     }
 });

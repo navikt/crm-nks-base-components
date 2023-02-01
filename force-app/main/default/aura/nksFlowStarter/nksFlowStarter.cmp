@@ -3,6 +3,7 @@
     <aura:attribute name="flowName" type="String" default="" access="public" />
     <aura:attribute name="buttonLabel" type="String" default="Label" access="public" />
     <aura:attribute name="buttonIcon" type="String" default="" access="public" />
+    <aura:attribute name="buttonColor" type="String" default="" access="public" />
     <aura:attribute name="fullButtonWidth" type="Boolean" default="true" />
 
     <aura:attribute name="showFlow" type="Boolean" default="false" />
@@ -14,17 +15,18 @@
 
     <div class="slds-clearfix">
         <lightning:button
+            aura:id="cmpButton"
             label="{!v.buttonLabel}"
             variant="brand"
             onclick="{!c.toggleFlow}"
             iconName="{!v.buttonIcon}"
-            class="{!v.fullButtonWidth ? 'slds-button_stretch' : 'slds-float_right'}"
+            class="{! (v.buttonColor) + ' ' + (v.fullButtonWidth ? 'slds-button_stretch' : 'slds-float_right')}"
             ariaExpanded="{! v.ariaExpanded }"
         />
     </div>
 
     <aura:renderIf isTrue="{!v.showFlow}">
-        <div class="slds-p-top_small" tabindex="0">
+        <div class="slds-var-p-top_xx-small" tabindex="0">
             <lightning:card>
                 <lightning:flow aura:id="flowData" onstatuschange="{!c.flowStatusChange}" />
             </lightning:card>
