@@ -30,8 +30,12 @@
     },
 
     flowStatusChange: function (component, event, helper) {
+        const flowName = component.get('v.flowName');
         let flowStatus = event.getParam('status');
-        if (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') {
+        if (
+            (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') &&
+            flowName !== 'NKS_Account_Create_New_Case'
+        ) {
             component.set('v.showFlow', false);
         }
     }
