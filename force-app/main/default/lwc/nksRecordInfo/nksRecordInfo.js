@@ -1,13 +1,17 @@
+/* eslint-disable vars-on-top */
+/* eslint-disable @lwc/lwc/no-api-reassignments */
 import { LightningElement, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
-import { getRecord } from 'lightning/uiRecordApi';
+import updateKrrInfo from '@salesforce/apex/NKS_KrrInformationController.updateKrrInformation';
+import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
+import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
-import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
+import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
+import NAME from '@salesforce/schema/Person__c.Name';
 
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
@@ -28,12 +32,12 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     showSpinner = false;
     subscription;
     hasListeners;
-
-    @wire(MessageContext)
-    messageContext;
+    isLoading = false;
+    updated = false;
 
     renderedCallback() {
-        if (this.hasListeners || this.copyFieldsNr.length == 0 || !this.viewedObjectApiName || !this.wireRecord) return;
+        if (this.hasListeners || this.copyFieldsNr.length === 0 || !this.viewedObjectApiName || !this.wireRecord)
+            return;
         //adding eventListeners to copy buttons
         this.fieldList
             .filter((e) => {
@@ -61,10 +65,10 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         if (!this.subscription) {
             this.subscription = subscribe(this.messageContext, nksRefreshRecord, (message) => {
                 let recordId = message.recordId;
-                if (this.recordId == recordId) {
+                if (this.recordId === recordId) {
                     //If component is showing information in context of the updated record, update the related record id as it might have been changed
                     this.getRelatedRecordId(this.relationshipField, this.objectApiName);
-                } else if (this.viewedRecordId == recordId) {
+                } else if (this.viewedRecordId === recordId) {
                     //If displaying information from the updated record -> refresh Apex
                     this.refreshRecord();
                 }
@@ -80,25 +84,25 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
 
     connectedCallback() {
         this.subscribeToMessageChannel();
-
         this.viewedObjectApiName = this.viewedObjectApiName == null ? this.objectApiName : this.viewedObjectApiName;
-        if (this.relationshipField != null && this.relationshipField != '') {
+        if (this.relationshipField != null && this.relationshipField !== '') {
             this.getRelatedRecordId(this.relationshipField, this.objectApiName);
         }
         this.viewedRecordId = this.viewedRecordId ? this.viewedRecordId : this.recordId;
-
         this.wireFields = [this.viewedObjectApiName + '.Id'];
-
         this.fieldList.forEach((e) => {
             this.wireFields.push(this.viewedObjectApiName + '.' + e.fieldName);
         }, this);
-
         this.parentWireFields = [this.objectApiName + '.Id'];
     }
 
     @api
     set showLink(value) {
-        this._showLink = value === 'TRUE' || value === 'true' || value === true ? true : false;
+        if (value === 'TRUE' || value === 'true' || value === true) {
+            this._showLink = true;
+        } else {
+            this._showLink = false;
+        }
     }
 
     get showLink() {
@@ -201,6 +205,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         });
     }
 
+    @wire(MessageContext)
+    messageContext;
+
     @wire(getObjectInfo, {
         objectApiName: '$viewedObjectApiName'
     })
@@ -223,8 +230,35 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
+    @wire(getRecord, {
+        recordId: '$viewedRecordId',
+        fields: [NAME]
+    })
+    wiredRecord({ error, data }) {
+        if (error) {
+            console.log(error);
+        } else if (data) {
+            let personIdent = getFieldValue(data, NAME);
+            if (this.updated === false && personIdent && personIdent !== '') {
+                this.isLoading = true;
+                updateKrrInfo({ personIdent: personIdent })
+                    .then((result) => {
+                        //Successful update
+                        this.refreshKrrInfo();
+                    })
+                    .catch((error) => {
+                        //Update failed
+                        console.log(JSON.stringify(error, null, 2));
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                        this.updated = true;
+                    });
+            }
+        }
+    }
+
     //Supports refreshing the record
-    @api
     refreshRecord() {
         this.showSpinner = true;
         refreshApex(this.wireRecord)
@@ -236,13 +270,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             });
     }
 
-    recordLoaded(event) {
-        let recordFields = event.detail.records[this.viewedRecordId].fields;
-        //Sending event to tell parent the record is loaded
-        const recordLoadedEvt = new CustomEvent('recordloaded', {
-            detail: recordFields
-        });
-        this.dispatchEvent(recordLoadedEvt);
+    refreshKrrInfo() {
+        this.refreshRecord();
+        publish(this.messageContext, krrUpdateChannel, { updated: true });
     }
 
     /*
