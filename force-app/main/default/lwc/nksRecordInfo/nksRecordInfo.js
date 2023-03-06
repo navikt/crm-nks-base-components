@@ -11,7 +11,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
 import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
-import NAME from '@salesforce/schema/Person__c.Name';
+// import NAME from '@salesforce/schema/Person__c.Name';
 
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
@@ -29,6 +29,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
     @api copyFields;
+    @api showKrrInfo = false;
+
     showSpinner = false;
     subscription;
     hasListeners;
@@ -54,6 +56,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 );
             }, this);
         this.hasListeners = true;
+        if (this.showKrrInfo && this.viewedObjectApiName === 'Person__c') {
+            this.updateKrrInformation(this.viewedRecordId);
+        }
     }
 
     disconnectedCallback() {
@@ -230,6 +235,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
+    /*
     @wire(getRecord, {
         recordId: '$viewedRecordId',
         fields: [NAME]
@@ -238,23 +244,47 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         if (error) {
             console.log(error);
         } else if (data) {
-            let personIdent = getFieldValue(data, NAME);
-            if (this.updated === false && personIdent && personIdent !== '') {
+            if (this.showKrrInfo === true) {
+                 let personIdent = getFieldValue(data, NAME);
+            if (this.updated === false && personIdent && personIdent !== '' ) {
                 this.isLoading = true;
                 updateKrrInfo({ personIdent: personIdent })
                     .then((result) => {
                         //Successful update
                         this.refreshKrrInfo();
+                        console.log('Successfully updated krr information');
                     })
                     .catch((error) => {
                         //Update failed
-                        console.log(JSON.stringify(error, null, 2));
+                        console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
                     })
                     .finally(() => {
                         this.isLoading = false;
                         this.updated = true;
                     });
             }
+            }
+           
+        }
+    } */
+
+    updateKrrInformation(personIdent) {
+        if (this.updated === false && personIdent && personIdent !== '') {
+            this.isLoading = true;
+            updateKrrInfo({ personIdent: personIdent })
+                .then((result) => {
+                    //Successful update
+                    this.refreshKrrInfo();
+                    console.log('Successfully updated krr information');
+                })
+                .catch((error) => {
+                    //Update failed
+                    console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                    this.updated = true;
+                });
         }
     }
 
