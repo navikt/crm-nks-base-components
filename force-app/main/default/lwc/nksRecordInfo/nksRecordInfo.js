@@ -11,7 +11,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
 import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
-// import NAME from '@salesforce/schema/Person__c.Name';
+import NAME from '@salesforce/schema/Person__c.Name';
 
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
@@ -36,6 +36,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     hasListeners;
     isLoading = false;
     updated = false;
+    personId;
 
     renderedCallback() {
         if (this.hasListeners || this.copyFieldsNr.length === 0 || !this.viewedObjectApiName || !this.wireRecord)
@@ -56,9 +57,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 );
             }, this);
         this.hasListeners = true;
-        if (this.showKrrInfo && this.viewedObjectApiName === 'Person__c') {
-            this.updateKrrInformation(this.viewedRecordId);
-        }
     }
 
     disconnectedCallback() {
@@ -122,6 +120,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         })
             .then((record) => {
                 this.viewedRecordId = this.resolve(relationshipField, record);
+                // personId
+                this.personId = this.viewedObjectApiName === 'Person__c' ? this.viewedRecordId : '';
             })
             .catch((error) => {
                 console.log(error);
@@ -235,38 +235,24 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
-    /*
     @wire(getRecord, {
-        recordId: '$viewedRecordId',
+        recordId: '$personId',
         fields: [NAME]
     })
     wiredRecord({ error, data }) {
         if (error) {
             console.log(error);
         } else if (data) {
-            if (this.showKrrInfo === true) {
-                 let personIdent = getFieldValue(data, NAME);
-            if (this.updated === false && personIdent && personIdent !== '' ) {
-                this.isLoading = true;
-                updateKrrInfo({ personIdent: personIdent })
-                    .then((result) => {
-                        //Successful update
-                        this.refreshKrrInfo();
-                        console.log('Successfully updated krr information');
-                    })
-                    .catch((error) => {
-                        //Update failed
-                        console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
-                    })
-                    .finally(() => {
-                        this.isLoading = false;
-                        this.updated = true;
-                    });
+            let personIdent = getFieldValue(data, NAME);
+            if (
+                this.showKrrInfo &&
+                this.viewedObjectApiName === 'Person__c' &&
+                (personIdent !== '' || personIdent !== null)
+            ) {
+                this.updateKrrInformation(personIdent);
             }
-            }
-           
         }
-    } */
+    }
 
     updateKrrInformation(personIdent) {
         if (this.updated === false && personIdent && personIdent !== '') {
