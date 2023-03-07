@@ -247,7 +247,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             if (
                 this.showKrrInfo &&
                 this.viewedObjectApiName === 'Person__c' &&
-                (personIdent !== '' || personIdent !== null)
+                personIdent !== '' &&
+                personIdent !== null
             ) {
                 this.updateKrrInformation(personIdent);
             }
@@ -255,7 +256,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     updateKrrInformation(personIdent) {
-        if (this.updated === false && personIdent && personIdent !== '') {
+        if (this.updated === false) {
             this.isLoading = true;
             updateKrrInfo({ personIdent: personIdent })
                 .then((result) => {
