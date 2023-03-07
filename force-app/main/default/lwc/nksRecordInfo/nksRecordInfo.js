@@ -29,11 +29,14 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
     @api copyFields;
+    @api showKrrInfo = false;
+
     showSpinner = false;
     subscription;
     hasListeners;
     isLoading = false;
     updated = false;
+    personId;
 
     renderedCallback() {
         if (this.hasListeners || this.copyFieldsNr.length === 0 || !this.viewedObjectApiName || !this.wireRecord)
@@ -117,6 +120,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         })
             .then((record) => {
                 this.viewedRecordId = this.resolve(relationshipField, record);
+                // personId
+                this.personId = this.viewedObjectApiName === 'Person__c' ? this.viewedRecordId : '';
             })
             .catch((error) => {
                 console.log(error);
@@ -231,7 +236,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     }
 
     @wire(getRecord, {
-        recordId: '$viewedRecordId',
+        recordId: '$personId',
         fields: [NAME]
     })
     wiredRecord({ error, data }) {
@@ -239,22 +244,34 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             console.log(error);
         } else if (data) {
             let personIdent = getFieldValue(data, NAME);
-            if (this.updated === false && personIdent && personIdent !== '') {
-                this.isLoading = true;
-                updateKrrInfo({ personIdent: personIdent })
-                    .then((result) => {
-                        //Successful update
-                        this.refreshKrrInfo();
-                    })
-                    .catch((error) => {
-                        //Update failed
-                        console.log(JSON.stringify(error, null, 2));
-                    })
-                    .finally(() => {
-                        this.isLoading = false;
-                        this.updated = true;
-                    });
+            if (
+                this.showKrrInfo &&
+                this.viewedObjectApiName === 'Person__c' &&
+                personIdent !== '' &&
+                personIdent !== null
+            ) {
+                this.updateKrrInformation(personIdent);
             }
+        }
+    }
+
+    updateKrrInformation(personIdent) {
+        if (this.updated === false) {
+            this.isLoading = true;
+            updateKrrInfo({ personIdent: personIdent })
+                .then((result) => {
+                    //Successful update
+                    this.refreshKrrInfo();
+                    console.log('Successfully updated krr information');
+                })
+                .catch((error) => {
+                    //Update failed
+                    console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
+                })
+                .finally(() => {
+                    this.isLoading = false;
+                    this.updated = true;
+                });
         }
     }
 
