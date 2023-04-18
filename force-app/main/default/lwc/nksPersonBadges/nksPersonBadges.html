@@ -35,6 +35,7 @@
                                 class="slds-theme_error slds-var-m-left_x-small"
                                 data-id={badge.name}
                                 label={badge.label}
+                                role="heading"
                             >
                             </lightning-badge>
                         </template>
@@ -51,7 +52,7 @@
                                     onkeypress={onKeyPressHandler}
                                     onclick={onClickHandler}
                                     aria-expanded="false"
-                                    role="button"
+                                    role="heading"
                                 >
                                 </lightning-badge>
                             </template>
@@ -63,6 +64,7 @@
                                     icon-name={badge.iconName}
                                     icon-position="start"
                                     class={badge.styling}
+                                    role="heading"
                                 >
                                 </lightning-badge>
                             </template>
