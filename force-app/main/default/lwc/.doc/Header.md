@@ -3,11 +3,11 @@
 Består av 6 "hoveddeler"
 
 1. Fnr (og bilde av kjønn)
-1. Alder / Nasjonalitet / Sivilstand
-1. NAV enhet
-1. Oppfølgende veilder (hvis den finnes)
-1. Badgene våre
-1. Historiske fullmakter (mappe)
+2. Alder / Nasjonalitet / Sivilstand
+3. NAV enhet
+4. Oppfølgende veilder (hvis den finnes)
+5. Badgene våre
+6. Historiske fullmakter (mappe)
 
 ## Badgene
 
@@ -69,7 +69,7 @@ Eks:
 
 ### Guardianship/FuturePowerOfAttorney
 
-Verkgemål: Når en person ikke er i stand til å ivareta sine interesser selv kan en verge oppnevnes. Det er frivillig, og vergen tar for seg gjøremål som for eksempel orden på økonomi, betaling av regninger, søknader osv. Det finnes også noe som heter Tvunget vergemål, og det da er personen fratatt rettslig handleevne. (de er umyndiggjort)
+Vergemål: Når en person ikke er i stand til å ivareta sine interesser selv kan en verge oppnevnes. Det er frivillig, og vergen tar for seg gjøremål som for eksempel orden på økonomi, betaling av regninger, søknader osv. Det finnes også noe som heter Tvunget vergemål, og det da er personen fratatt rettslig handleevne. (de er umyndiggjort)
 Settes av feltet INT_GuardianshipOrFuturePowerOfAttorney\_\_c\_\_c som hentes inn fra PDL automatisk på last
 Eks:
 
