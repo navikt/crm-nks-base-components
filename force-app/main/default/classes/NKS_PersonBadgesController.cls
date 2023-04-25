@@ -39,11 +39,11 @@ public with sharing class NKS_PersonBadgesController {
     public static PersonBadgeData getPersonBadgesAndInfo(String field, String parentObject, String parentRecordId) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
-        PersonBadgeData bages = new PersonBadgeData(person);
+        PersonBadgeData badges = new PersonBadgeData(person);
         if (parentObject == 'Case') {
-            bages.setOpenSTO(parentRecordId);
+            badges.setOpenSTO(parentRecordId);
         }
-        return bages;
+        return badges;
     }
 
     /**
@@ -431,8 +431,6 @@ public with sharing class NKS_PersonBadgesController {
             if (c == null) {
                 return;
             }
-
-            String caseRecordType = 'STO_Case';
 
             List<AggregateResult> aggRes = [
                 SELECT COUNT(Id) numHenv, STO_Category__c
