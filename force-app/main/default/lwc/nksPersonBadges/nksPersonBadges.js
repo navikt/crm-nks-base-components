@@ -79,8 +79,8 @@ export default class NksPersonBadges extends LightningElement {
                 btoList.push(infoItem);
             }
         });
-        stoList.length > 0 ? badgeInfo.push({name: "Åpne Skriv til oss", list: stoList}) : badgeInfo.push({});
-        btoList.length > 0 ? badgeInfo.push({name: "Åpne Beskjed til oss", list: btoList}) : badgeInfo.push({});
+        badgeInfo.push(stoList.length > 0 ? {name: "Åpne Skriv til oss", list: stoList} : {});
+        badgeInfo.push(btoList.length > 0 ? {name: "Åpne Beskjed til oss", list: btoList} : {});
         return badgeInfo;
     }
 
