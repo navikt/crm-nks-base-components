@@ -433,14 +433,14 @@ public with sharing class NKS_PersonBadgesController {
             }
 
             List<AggregateResult> aggRes = [
-                SELECT COUNT(Id) numHenv, STO_Category__c
+                SELECT COUNT(Id) numHenv, STO_Category__c, Origin
                 FROM Case
                 WHERE
                     AccountId = :c.AccountId
                     AND IsClosed = FALSE
                     AND STO_Category__c != NULL
                     AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
-                GROUP BY STO_Category__c
+                GROUP BY STO_Category__c, Origin
             ];
 
             if (aggRes.isEmpty()) {

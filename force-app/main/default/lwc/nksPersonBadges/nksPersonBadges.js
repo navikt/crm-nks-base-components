@@ -68,12 +68,23 @@ export default class NksPersonBadges extends LightningElement {
     }
 
     get badgeInfo() {
-        if (this.selectedBadge) {
-            return JSON.parse(this.selectedBadge.badgeInfo);
-        }
+        const selectedBadgeInfo = JSON.parse(this.selectedBadge.badgeInfo);
+        const badgeInfo = [];
+        const btoList = [];
+        const stoList = [];
+        selectedBadgeInfo.forEach(infoItem => {
+            if (infoItem.Origin === 'STO') {
+                stoList.push(infoItem);
+            } else if (infoItem.Origin === 'BTO') {
+                btoList.push(infoItem);
+            }
+        });
+        stoList.length > 0 ? badgeInfo.push({name: "Åpne Skriv til oss", list: stoList}) : badgeInfo.push({});
+        btoList.length > 0 ? badgeInfo.push({name: "Åpne Beskjed til oss", list: btoList}) : badgeInfo.push({});
+        return badgeInfo;
     }
 
-    get showStoIfnormation() {
+    get showSTOInformation() {
         return 'openSTO' === this.infoPanelToShow;
     }
 
@@ -242,10 +253,10 @@ export default class NksPersonBadges extends LightningElement {
     setExpanded(selectedBadge) {
         let badges = this.template.querySelectorAll('.slds-badge');
         badges.forEach((badge) => {
-            if (badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
-                badge.setAttribute('aria-expanded', true);
+            if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
+                badge.setAttribute('aria-expanded', 'true');
             } else if (badge.role === 'button') {
-                badge.setAttribute('aria-expanded', false);
+                badge.setAttribute('aria-expanded', 'false');
             }
         });
     }
