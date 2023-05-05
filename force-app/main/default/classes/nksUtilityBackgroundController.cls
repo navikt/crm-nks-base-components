@@ -14,7 +14,7 @@ public with sharing class nksUtilityBackgroundController {
                 ];
                 if (c.Origin == 'Phone') {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
-                } else if (c.Origin == 'STO') {
+                } else if (new List<String>{ 'STO', 'BTO' }.contains(c.Origin)) {
                     tabname = c.STO_Category__c;
                 }
             }
@@ -26,8 +26,7 @@ public with sharing class nksUtilityBackgroundController {
     @AuraEnabled
     public static string getOnlineId() {
         String statusId = String.valueOf(
-            [SELECT Id FROM ServicePresenceStatus WHERE DeveloperName = 'Available_for_Chat']
-            ?.Id
+            [SELECT Id FROM ServicePresenceStatus WHERE DeveloperName = 'Available_for_Chat']?.Id
         );
         return statusId?.substring(0, 15);
     }
