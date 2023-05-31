@@ -68,12 +68,23 @@ export default class NksPersonBadges extends LightningElement {
     }
 
     get badgeInfo() {
-        if (this.selectedBadge) {
-            return JSON.parse(this.selectedBadge.badgeInfo);
-        }
+        const selectedBadgeInfo = JSON.parse(this.selectedBadge.badgeInfo);
+        const badgeInfo = [];
+        const btoList = [];
+        const stoList = [];
+        selectedBadgeInfo.forEach(infoItem => {
+            if (infoItem.Origin === 'STO') {
+                stoList.push(infoItem);
+            } else if (infoItem.Origin === 'BTO') {
+                btoList.push(infoItem);
+            }
+        });
+        badgeInfo.push(stoList.length > 0 ? {name: "Åpne Skriv til oss", list: stoList} : {});
+        badgeInfo.push(btoList.length > 0 ? {name: "Åpne Beskjed til oss", list: btoList} : {});
+        return badgeInfo;
     }
 
-    get showStoIfnormation() {
+    get showSTOInformation() {
         return 'openSTO' === this.infoPanelToShow;
     }
 

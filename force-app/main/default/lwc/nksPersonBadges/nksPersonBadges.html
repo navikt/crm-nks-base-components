@@ -118,38 +118,38 @@
                         </div>
                     </lightning-layout-item>
                 </template>
-
+                
                 <!-- OPEN STO LIST -->
-                <template if:true={showStoIfnormation}>
-                    <lightning-layout-item
-                        size="12"
-                        class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular"
-                    >
-                        <div class="slds-box slds-box_xx-small slds-theme_default spaceClass">
-                            <h2 class="slds-var-p-bottom_xx-small" style="font-weight: bold">Åpne Skriv til oss</h2>
-                            <div>
-                                <table
-                                    class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered sto-table"
-                                >
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Kø</th>
-                                            <th scope="col" class="slds-truncate">Antall åpne henvendelser</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <template for:each={badgeInfo} for:item="infoItem">
-                                            <tr key={infoItem.STO_Category__c}>
-                                                <td class="slds-truncate">{infoItem.STO_Category__c}</td>
-                                                <td>{infoItem.numHenv}</td>
+                <template if:true={showSTOInformation}>
+                    <template for:each={badgeInfo} for:item="infoItem">
+                        <lightning-layout-item if:true={infoItem.list} key={infoItem.name}
+                        size="12" class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular">
+                            <div class="slds-box slds-box_xx-small slds-theme_default spaceClass">
+                                <h2 class="slds-var-p-bottom_xx-small" style="font-weight: bold">{infoItem.name}</h2>
+                                <div>
+                                    <table
+                                        class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered sto-table"
+                                    >
+                                        <thead>
+                                            <tr>    
+                                                <th scope="col">Kø</th>
+                                                <th scope="col" class="slds-truncate">Antall åpne henvendelser</th>
                                             </tr>
-                                        </template>
-                                    </tbody>
-                                </table>
+                                        </thead>
+
+                                        <tbody>
+                                            <template for:each={infoItem.list} for:item="item">
+                                                <tr key={item.STO_Category__c}> 
+                                                    <td class="slds-truncate">{item.STO_Category__c}</td>
+                                                    <td>{item.numHenv}</td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
-                    </lightning-layout-item>
+                        </lightning-layout-item>
+                    </template>
                 </template>
 
                 <!-- INTERPRETER SPOKEN LANGUAGES -->
