@@ -69,8 +69,10 @@ export default class NksPersonHeader extends LightningElement {
 
     // Handler for message received by component
     handleVeilderName(message) {
-        this.veilederName = message.displayName;
-        this.veilederIdent = message.ident;
+        if(message.recordId === this.recordId){
+            this.veilederName = message.displayName;
+            this.veilederIdent = message.ident;
+        }
     }
 
     get showNotifications() {
