@@ -57,7 +57,7 @@ export default class NksPersonHeader extends LightningElement {
                 this.messageContext,
                 nksVeilederName,
                 (message) => this.handleVeilderName(message),
-                null
+                {scope:APPLICATION_SCOPE}
             );
         }
     }
