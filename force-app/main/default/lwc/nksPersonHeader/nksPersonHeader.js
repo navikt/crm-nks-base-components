@@ -69,7 +69,6 @@ export default class NksPersonHeader extends LightningElement {
 
     // Handler for message received by component
     handleVeilderName(message) {
-        console.log('message received: ' + JSON.stringify(message));
         if(message.recordId === this.recordId){
             this.veilederName = message.displayName;
             this.veilederIdent = message.ident;
