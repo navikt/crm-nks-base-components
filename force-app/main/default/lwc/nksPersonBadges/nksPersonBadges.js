@@ -72,15 +72,15 @@ export default class NksPersonBadges extends LightningElement {
         const badgeInfo = [];
         const btoList = [];
         const stoList = [];
-        selectedBadgeInfo.forEach(infoItem => {
+        selectedBadgeInfo.forEach((infoItem) => {
             if (infoItem.Origin === 'STO') {
                 stoList.push(infoItem);
             } else if (infoItem.Origin === 'BTO') {
                 btoList.push(infoItem);
             }
         });
-        badgeInfo.push(stoList.length > 0 ? {name: "Åpne Skriv til oss", list: stoList} : {});
-        badgeInfo.push(btoList.length > 0 ? {name: "Åpne Beskjed til oss", list: btoList} : {});
+        badgeInfo.push(stoList.length > 0 ? { name: 'Åpne Skriv til oss', list: stoList } : {});
+        badgeInfo.push(btoList.length > 0 ? { name: 'Åpne Beskjed til oss', list: btoList } : {});
         return badgeInfo;
     }
 
@@ -274,10 +274,24 @@ export default class NksPersonBadges extends LightningElement {
     setUuAlertText() {
         let alertText = '';
 
-        let hasSecurityMeasures = this.securityMeasures.length > 0;
-        let navEmployeeText = ' er egen ansatt';
-        let isConfidentialText = ' skjermet';
-        let securityMeasureText = ' har ' + this.securityMeasures.length + ' sikkerhetstiltak';
+        const hasSecurityMeasures = this.securityMeasures.length > 0;
+        const navEmployeeText = ' er egen ansatt';
+        const isConfidentialText = ' skjermet';
+
+        const securityMeasureText =
+            ' har ' +
+            this.securityMeasures.length +
+            ' sikkerhetstiltak: ' +
+            (this.securityMeasures.length === 1
+                ? this.securityMeasures[0]?.SecurityMeasure
+                : this.securityMeasures.reduce(
+                      (retString, secMeasure, index) =>
+                          retString +
+                          (index !== this.securityMeasures.length - 1
+                              ? secMeasure.SecurityMeasure + ', '
+                              : 'og ' + secMeasure.SecurityMeasure),
+                      ''
+                  ));
 
         alertText += 'Bruker';
         alertText += this.isNavEmployee ? navEmployeeText : '';
