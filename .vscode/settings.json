@@ -28,5 +28,9 @@
         "**/.sfdx": true,
         "**/.vscode": true,
         "**/.idea": true
-    }
+    },
+    "scratch.default.permissionsets": [
+        "Application_Logging",
+        "Scratch_Permissions"
+    ]
 }

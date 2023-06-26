@@ -4,6 +4,5 @@
     <hasActivationRequired>false</hasActivationRequired>
     <label>SCRATCH GROUP</label>
     <permissionSets>Application_Logging</permissionSets>
-    <permissionSets>Scratch_Permissions</permissionSets>
     <status>Updated</status>
 </PermissionSetGroup>
