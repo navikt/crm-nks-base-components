@@ -30,7 +30,13 @@ public with sharing class NKS_NavUnitSingleController {
 
     @AuraEnabled(cacheable=true)
     public static NKS_NorgNavUnitService.NavUnitContactInformationResponse getContactInformation(String unitNumber) {
-        return service.getNavUnitContactInformation(unitNumber);
+        NKS_NorgNavUnitService.NavUnitContactInformationResponse res1 = service.getNavUnitContactInformation(
+            unitNumber
+        );
+        NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 res2 = service.getNavUnitContactInformationV2(
+            unitNumber
+        );
+        return res1;
     }
 
     private static NKS_NorgNavUnitService.NavUnitResponse getNavUnitFromPerson(

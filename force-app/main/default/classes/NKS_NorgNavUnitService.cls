@@ -135,9 +135,51 @@ public with sharing class NKS_NorgNavUnitService {
         } else {
             String errorRef = logError(
                 apiCtrl.getResponse(),
-                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' +
-                unitNumber +
-                '.'
+                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' + unitNumber + '.'
+            );
+            resp.errorMessage = 'Kunne ikke hente enhetens kontaktdetaljer. Referanse til feil: ' + errorRef;
+            resp.success = false;
+
+            if (statusCode == 404) {
+                resp.errorMessage = 'Kunne ikke finne enhets insformasjon. Referanse til feil: ' + errorRef;
+            }
+        }
+
+        return resp;
+    }
+
+    public NavUnitContactInformationResponseV2 getNavUnitContactInformationV2(String unitNumber) {
+        NavUnitContactInformationResponseV2 resp = new NavUnitContactInformationResponseV2();
+
+        Map<String, String> paramMap = new Map<String, String>();
+        paramMap.put('enhetsnummer', unitNumber);
+
+        ApiController apiCtrl = new ApiController();
+        apiCtrl.initRequest(API_CONFIG_NAME, 'GET_KONTAKTINFORMASJON_V2', paramMap);
+        apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
+        apiCtrl.doCallout();
+
+        String bodyString = apiCtrl.getResponse().getBody();
+
+        if (String.isNotBlank(bodyString)) {
+            bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
+        }
+
+        Integer statusCode = apiCtrl.getResponse().getStatusCode();
+
+        if (statusCode == 200) {
+            resp.success = true;
+
+            if (true == String.isNotBlank(bodyString)) {
+                resp.contactInformation = (NKS_NAvUnitContactInformationV2) JSON.deserialize(
+                    bodyString,
+                    NKS_NAvUnitContactInformationV2.class
+                );
+            }
+        } else {
+            String errorRef = logError(
+                apiCtrl.getResponse(),
+                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' + unitNumber + '.'
             );
             resp.errorMessage = 'Kunne ikke hente enhetens kontaktdetaljer. Referanse til feil: ' + errorRef;
             resp.success = false;
@@ -333,6 +375,21 @@ public with sharing class NKS_NorgNavUnitService {
         public String errorMessage;
 
         public NavUnitContactInformationResponse() {
+            this.success = false;
+            this.contactInformation = null;
+            this.errorMessage = null;
+        }
+    }
+
+    public class NavUnitContactInformationResponseV2 {
+        @AuraEnabled
+        public Boolean success;
+        @AuraEnabled
+        public NKS_NAvUnitContactInformationV2 contactInformation;
+        @AuraEnabled
+        public String errorMessage;
+
+        public NavUnitContactInformationResponseV2() {
             this.success = false;
             this.contactInformation = null;
             this.errorMessage = null;
