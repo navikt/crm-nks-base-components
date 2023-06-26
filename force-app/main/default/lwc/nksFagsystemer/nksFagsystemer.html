@@ -34,17 +34,22 @@
                                         </lightning-output-field>
                                     </template>
                                     <template if:true={link.custom}>
-                                        <div
-                                            role="link"
-                                            onclick={link.eventFunc}
-                                            onkeydown={link.eventFunc}
-                                            class="slds-text-link"
-                                            style="cursor: pointer"
-                                            if:true={showLinks}
-                                            tabindex="0"
-                                        >
-                                            {link.title}
-                                        </div>
+                                        <template if:true={link.literalLink}>
+                                            <a href={link.literalLink}>{link.name}</a>
+                                        </template>
+                                        <template if:false={link.literalLink}>
+                                            <div
+                                                role="link"
+                                                onclick={link.eventFunc}
+                                                onkeydown={link.eventFunc}
+                                                class="slds-text-link"
+                                                style="cursor: pointer"
+                                                if:true={showLinks}
+                                                tabindex="0"
+                                            >
+                                                {link.title}
+                                            </div>
+                                        </template>
                                     </template>
                                 </lightning-layout-item>
                             </template>
