@@ -3,6 +3,9 @@ import { getRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getContactInformation from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformation';
+import boxLayoutHTML from './boxLayout.html';
+import cardLayoutHTML from './cardLayout.html';
+import noLayoutHTML from './noLayout.html';
 
 export default class NksNavUnitSingle extends LightningElement {
     @api recordId; // The record id
@@ -26,8 +29,11 @@ export default class NksNavUnitSingle extends LightningElement {
     firstRun = false;
     noLayout = false;
 
+    render() {
+        return this.cardLayout ? cardLayoutHTML : this.boxLayout ? boxLayoutHTML : noLayoutHTML;
+    }
+
     connectedCallback() {
-        this.setAttribute('title', 'NAV Enhet');
         this.wireFields = [this.objectApiName + '.Id'];
 
         if (!this.cardLayout && !this.boxLayout) {
