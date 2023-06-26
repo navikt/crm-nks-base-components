@@ -56,6 +56,10 @@ export default class NksNavUnitSingle extends LightningElement {
         }
     }
 
+    get fancyError() {
+        return JSON.stringify(this.errorMessage);
+    }
+
     @wire(getNavUnit, {
         field: '$relationField',
         parentObject: '$objectApiName',
