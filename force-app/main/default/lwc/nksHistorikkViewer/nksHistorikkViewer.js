@@ -3,4 +3,5 @@ export default class NksHistorikkViewer extends LightningElement {
     @api objectApiName;
     @api recordId;
     @api fullmaktData;
+    @api fullmaktFremtidData;
 }

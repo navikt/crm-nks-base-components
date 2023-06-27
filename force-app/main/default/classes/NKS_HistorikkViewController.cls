@@ -1,6 +1,18 @@
 public with sharing class NKS_HistorikkViewController {
     public class Historikk {
         @AuraEnabled
+        public List<Fullmakt> historiske;
+        @AuraEnabled
+        public List<Fullmakt> fremtidige;
+
+        public Historikk() {
+            historiske = new List<Fullmakt>();
+            fremtidige = new List<Fullmakt>();
+        }
+    }
+
+    public class Fullmakt {
+        @AuraEnabled
         public String personIdent;
         @AuraEnabled
         public String motpartsRolle; //related person role
@@ -11,7 +23,11 @@ public with sharing class NKS_HistorikkViewController {
         @AuraEnabled
         public String gyldigFraOgMed;
         @AuraEnabled
+        public Date gyldigFraOgMedDate;
+        @AuraEnabled
         public String gyldigTilOgMed; //date
+        @AuraEnabled
+        public Date gyldigTilOgMedDate; //date
         @AuraEnabled
         public String periode; //fullmat periode
         @AuraEnabled
@@ -19,14 +35,13 @@ public with sharing class NKS_HistorikkViewController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Historikk> getHistorikk(Id recordId, String objectApiName) {
+    public static Historikk getHistorikk(Id recordId, String objectApiName) {
         Id personId;
         if (objectApiName == 'Case') {
             personId = [SELECT Account.CRM_Person__c FROM Case WHERE Id = :recordId].Account.CRM_Person__c;
         } else if (objectApiName == 'Account') {
             personId = [SELECT CRM_Person__c FROM Account WHERE Id = :recordId].CRM_Person__c;
         }
-        List<Historikk> historikks = new List<Historikk>();
         PDL_API_Response historikkData;
 
         Id userId = UserInfo.getUserId();
@@ -48,8 +63,7 @@ public with sharing class NKS_HistorikkViewController {
                 return null;
             }
             if (historikkData?.data?.hentPerson != null) {
-                historikks.addAll(getFullmakt(historikkData));
-                return historikks;
+                return filterHistorikk(getFullmakt(historikkData));
             } else {
                 return null;
             }
@@ -71,27 +85,39 @@ public with sharing class NKS_HistorikkViewController {
     }
 
     @TestVisible
-    private static List<Historikk> getFullmakt(PDL_API_Response historikkData) {
-        List<Historikk> fmList = new List<Historikk>();
+    private static List<Fullmakt> getFullmakt(PDL_API_Response historikkData) {
+        List<Fullmakt> fmList = new List<Fullmakt>();
         List<PDL_Fullmakt> fullmaktResp = new List<PDL_Fullmakt>();
         if (historikkData?.data?.hentPerson?.fullmakt != null && !historikkData.data.hentPerson.fullmakt.isEmpty()) {
             fullmaktResp = historikkData.data.hentPerson.fullmakt;
             for (PDL_Fullmakt fmResp : fullmaktResp) {
-                Historikk person = new Historikk();
+                Fullmakt person = new Fullmakt();
                 person.motpartsPersonident = getMotpartsPersonident(fmResp);
                 person.motpartsRolle = getMotpartsRolle(fmResp);
                 person.omraader = getOmraader(fmResp);
                 person.gyldigFraOgMed = getGyldigFraOgMed(fmResp);
+                person.gyldigFraOgMedDate = fmResp.gyldigFraOgMed;
                 person.gyldigTilOgMed = getGyldigTilOgMed(fmResp);
+                person.gyldigTilOgMedDate = fmResp.gyldigTilOgMed;
                 person.motpartsPersonNavn = getMotpartsPersonName(person.motpartsPersonident);
                 if (person.gyldigFraOgMed != null && person.gyldigTilOgMed != null)
                     person.periode = person.gyldigFraOgMed + '-' + person.gyldigTilOgMed;
                 fmList.add(person);
-                if (fmList.size() == 3)
-                    break;
             }
         }
         return fmList;
+    }
+
+    private static Historikk filterHistorikk(List<Fullmakt> fullmaktList) {
+        Historikk hist = new Historikk();
+        for (Fullmakt full : fullmaktList) {
+            if (full.gyldigTilOgMedDate < Date.today() && hist.historiske.size() < 3) {
+                hist.historiske.add(full);
+            } else if (full.gyldigFraOgMedDate > Date.today() && hist.fremtidige.size() < 3) {
+                hist.fremtidige.add(full);
+            }
+        }
+        return hist;
     }
 
     private static String getMotpartsPersonident(PDL_Fullmakt fmResp) {

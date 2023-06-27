@@ -111,7 +111,10 @@
         <lightning-layout-item size="12" class="card-color slds-box slds-box_x-small" if:true={btnClick}>
             <lightning-layout class="slds-has-top-magnet">
                 <lightning-layout-item size="12">
-                    <c-nks-historikk-viewer fullmakt-data={fullmaktHistData}></c-nks-historikk-viewer>
+                    <c-nks-historikk-viewer
+                        fullmakt-data={fullmaktHistData}
+                        fullmakt-fremtid-data={fullmaktFremtidData}
+                    ></c-nks-historikk-viewer>
                 </lightning-layout-item>
             </lightning-layout>
             <button class="close" onclick={handleFullmaktData}>Lukk</button>
