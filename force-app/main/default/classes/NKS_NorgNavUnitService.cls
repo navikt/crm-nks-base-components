@@ -171,9 +171,9 @@ public with sharing class NKS_NorgNavUnitService {
             resp.success = true;
 
             if (true == String.isNotBlank(bodyString)) {
-                resp.contactInformation = (NKS_NAvUnitContactInformationV2) JSON.deserialize(
+                resp.contactInformation = (NKS_NavUnitContactInformationV2) JSON.deserialize(
                     bodyString,
-                    NKS_NAvUnitContactInformationV2.class
+                    NKS_NavUnitContactInformationV2.class
                 );
             }
         } else {
@@ -385,7 +385,7 @@ public with sharing class NKS_NorgNavUnitService {
         @AuraEnabled
         public Boolean success;
         @AuraEnabled
-        public NKS_NAvUnitContactInformationV2 contactInformation;
+        public NKS_NavUnitContactInformationV2 contactInformation;
         @AuraEnabled
         public String errorMessage;
 

@@ -3,6 +3,7 @@ import { getRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getContactInformation from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformation';
+import getContactInformationV2 from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformationV2';
 import boxLayoutHTML from './boxLayout.html';
 import cardLayoutHTML from './cardLayout.html';
 import noLayoutHTML from './noLayout.html';
@@ -19,6 +20,7 @@ export default class NksNavUnitSingle extends LightningElement {
 
     @track navUnit; // The nav unit
     @track contactInformation; // The nav unit contact information
+    @track contactInformationV2; // The nav unit contact information
 
     unitNumber;
 
@@ -103,19 +105,26 @@ export default class NksNavUnitSingle extends LightningElement {
     }
 
     setWiredContactInformation() {
-        const { data, error } = this.wiredContactInformation;
-        if (data) {
-            this.isError = !data.success;
-            this.contactInformation = data.contactInformation;
-            this.errorMessage += data.errorMessage ? ' ' + data.errorMessage : '';
-            this.isLoaded = true;
-        }
+        getContactInformationV2({ unitNumber: this.unitNumber }).then((responseV2) => {
+            const { data, error } = this.wiredContactInformation;
+            if (data) {
+                this.isError = !data.success;
+                this.contactInformation = data.contactInformation;
+                this.errorMessage += data.errorMessage ? ' ' + data.errorMessage : '';
+            }
+            if (responseV2) {
+                this.isError = !data.success || this.isError;
 
-        if (error) {
-            this.errorMessage = error;
-            this.isError = true;
+                this.contactInformationV2 = responseV2.contactInformation;
+                this.errorMessage += responseV2.errorMessage ? ' ' + responseV2.errorMessage : '';
+            }
+
+            if (error) {
+                this.errorMessage = error;
+                this.isError = true;
+            }
             this.isLoaded = true;
-        }
+        });
     }
 
     /**
