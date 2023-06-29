@@ -57,7 +57,7 @@ export default class NksPersonHeader extends LightningElement {
                 this.messageContext,
                 nksVeilederName,
                 (message) => this.handleVeilderName(message),
-                {scope:APPLICATION_SCOPE}
+                { scope: APPLICATION_SCOPE }
             );
         }
     }
@@ -69,7 +69,7 @@ export default class NksPersonHeader extends LightningElement {
 
     // Handler for message received by component
     handleVeilderName(message) {
-        if(message.recordId === this.recordId){
+        if (message.recordId === this.recordId) {
             this.veilederName = message.displayName;
             this.veilederIdent = message.ident;
         }
@@ -103,6 +103,16 @@ export default class NksPersonHeader extends LightningElement {
 
     get formattedUnit() {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
+    }
+
+    get formattedUnitLink() {
+        return (
+            'https://www.nav.no/kontor/' +
+            this.navUnit.navn
+                .replace(/[\s/]/g, '-')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+        );
     }
 
     get formattedVeilder() {
