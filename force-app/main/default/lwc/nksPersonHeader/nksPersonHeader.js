@@ -109,6 +109,7 @@ export default class NksPersonHeader extends LightningElement {
         return (
             'https://www.nav.no/kontor/' +
             this.navUnit.navn
+                .replace(/\.\s/g, '.')
                 .replace(/[\s/]/g, '-')
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')
