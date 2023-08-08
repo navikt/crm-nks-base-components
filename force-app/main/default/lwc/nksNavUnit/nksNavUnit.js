@@ -18,28 +18,33 @@ export default class NksNavUnit extends LightningElement {
         return 12 / this.numCols;
     }
 
-    get nice() {
-        return this.contactInformationV2?.brukerkontakt?.brukertjenesteTilbud?.tjenester;
+    get tjenester() {
+        const tjenester = this.contactInformationV2?.brukerkontakt?.brukertjenesteTilbud?.tjenester;
+        if (tjenester == null || tjenester.length === 0) return null;
+        return tjenester;
     }
 
-    get nice2() {
+    get ytterligereInformasjon() {
         return this.contactInformationV2?.brukerkontakt?.brukertjenesteTilbud?.ytterligereInformasjon;
     }
 
-    get nice3() {
-        return this.contactInformationV2?.brukerkontakt?.sosialhjelp?.papirsoeknadInformasjon;
+    get papirsoeknadInformasjon() {
+        const papirsoeknadInformasjon = this.contactInformationV2?.brukerkontakt?.sosialhjelp?.papirsoeknadInformasjon;
+        if (papirsoeknadInformasjon == null) return 'Ingen informasjon';
+        return papirsoeknadInformasjon;
     }
 
-    get nice4() {
-        return this.contactInformationV2?.brukerkontakt?.informasjonUtbetalinger;
+    get informasjonUtbetalinger() {
+        const informasjonUtbetalinger = this.contactInformationV2?.brukerkontakt?.informasjonUtbetalinger;
+        if (informasjonUtbetalinger == null) return 'Ingen informasjon';
+        return informasjonUtbetalinger;
     }
 
-    get nice5() {
-        if (
-            this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader == null ||
-            this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader.length === 0
-        )
-            return null;
-        return this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader;
+    get digitaleSoeknader() {
+        const digitaleSoeknader = this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader;
+        console.log(digitaleSoeknader);
+        console.log(digitaleSoeknader.length);
+        if (digitaleSoeknader == null || digitaleSoeknader.length === 0) return null;
+        return digitaleSoeknader;
     }
 }
