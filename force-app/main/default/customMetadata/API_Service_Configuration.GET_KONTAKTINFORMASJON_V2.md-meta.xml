@@ -140,6 +140,6 @@
     </values>
     <values>
         <field>Service_Path__c</field>
-        <value xsi:type="xsd:string">/norg2/norg2/api/v2/enhet/{enhetsnummer}/kontaktinformasjon</value>
+        <value xsi:type="xsd:string">/norg2v2/api/v2/enhet/{enhetsnummer}/kontaktinformasjon</value>
     </values>
 </CustomMetadata>
