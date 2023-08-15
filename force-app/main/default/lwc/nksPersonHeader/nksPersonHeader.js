@@ -10,6 +10,7 @@ import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
+import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
 import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
@@ -105,15 +106,19 @@ export default class NksPersonHeader extends LightningElement {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
-    get formattedUnitLink() {
-        return (
-            'https://www.nav.no/kontor/' +
-            this.navUnit.navn
-                .replace(/\.\s/g, '.')
-                .replace(/[\s/]/g, '-')
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-        );
+    async testMethod() {
+        getNavLinks().then((list) => {
+            const abnormalSearch = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
+            if (abnormalSearch !== undefined) return 'https://www.nav.no' + abnormalSearch.path;
+            this.formattedUnitLink =
+                'https://www.nav.no/kontor/' +
+                this.navUnit.navn
+                    .replace(/\.\s/g, '.')
+                    .replace(/[\s/]/g, '-')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            return this.formattedUnitLink;
+        });
     }
 
     get formattedVeilder() {
@@ -224,6 +229,7 @@ export default class NksPersonHeader extends LightningElement {
         const { data, error } = result;
         if (data) {
             this.navUnit = data.unit;
+            this.testMethod();
         }
         if (error) {
             console.log(`error: ${error}`);
