@@ -42,8 +42,6 @@ export default class NksNavUnit extends LightningElement {
 
     get digitaleSoeknader() {
         const digitaleSoeknader = this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader;
-        console.log(digitaleSoeknader);
-        console.log(digitaleSoeknader.length);
         if (digitaleSoeknader == null || digitaleSoeknader.length === 0) return null;
         return digitaleSoeknader;
     }

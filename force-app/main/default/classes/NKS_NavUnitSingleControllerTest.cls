@@ -156,4 +156,18 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         System.assertEquals(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
         System.assertEquals('0314', result.contactInformation.enhetNr, 'Expected the same unit number as in the mock');
     }
+
+    @IsTest
+    static void getContactInformationV2_null() {
+        ApiMock.setTestMock('GET_KONTAKTINFORMASJON_V2', 200, 'OK');
+
+        NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
+
+        Test.startTest();
+        result = NKS_NavUnitSingleController.getContactInformationV2(null);
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Expected null');
+    }
+}
 }

@@ -141,7 +141,7 @@ public with sharing class NKS_NorgNavUnitService {
             resp.success = false;
 
             if (statusCode == 404) {
-                resp.errorMessage = 'Kunne ikke finne enhets insformasjon. Referanse til feil: ' + errorRef;
+                resp.errorMessage = 'Kunne ikke finne enhetsinformasjon. Referanse til feil: ' + errorRef;
             }
         }
 
@@ -159,18 +159,15 @@ public with sharing class NKS_NorgNavUnitService {
         apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
         apiCtrl.doCallout();
 
-        String bodyString = apiCtrl.getResponse().getBody();
-
-        if (String.isNotBlank(bodyString)) {
-            bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-        }
-
         Integer statusCode = apiCtrl.getResponse().getStatusCode();
 
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            String bodyString = apiCtrl.getResponse().getBody();
+
+            if (String.isNotBlank(bodyString)) {
+                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
                 resp.contactInformation = (NKS_NavUnitContactInformationV2) JSON.deserialize(
                     bodyString,
                     NKS_NavUnitContactInformationV2.class
@@ -179,13 +176,13 @@ public with sharing class NKS_NorgNavUnitService {
         } else {
             String errorRef = logError(
                 apiCtrl.getResponse(),
-                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' + unitNumber + '.'
+                'Error from NKS_NorgNavUnitService.getNavUnitContactInformationV2 for unit: ' + unitNumber + '.'
             );
             resp.errorMessage = 'Kunne ikke hente enhetens kontaktdetaljer. Referanse til feil: ' + errorRef;
             resp.success = false;
 
             if (statusCode == 404) {
-                resp.errorMessage = 'Kunne ikke finne enhets insformasjon. Referanse til feil: ' + errorRef;
+                resp.errorMessage = 'Kunne ikke finne enhetsinformasjon. Referanse til feil: ' + errorRef;
             }
         }
 
@@ -226,18 +223,15 @@ public with sharing class NKS_NorgNavUnitService {
 
         apiCtrl.doCallout();
 
-        String bodyString = apiCtrl.getResponse().getBody();
-
-        if (String.isNotBlank(bodyString)) {
-            bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-        }
-
         Integer statusCode = apiCtrl.getResponse().getStatusCode();
 
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            String bodyString = apiCtrl.getResponse().getBody();
+
+            if (String.isNotBlank(bodyString)) {
+                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
                 resp.units = (List<NKS_NavUnit>) JSON.deserialize(bodyString, List<NKS_NavUnit>.class);
             }
         } else {
