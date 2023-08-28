@@ -170,4 +170,3 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         System.assertEquals(null, result, 'Expected null');
     }
 }
-}

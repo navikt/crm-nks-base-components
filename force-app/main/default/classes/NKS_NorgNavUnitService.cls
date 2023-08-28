@@ -126,7 +126,7 @@ public with sharing class NKS_NorgNavUnitService {
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            if (String.isNotBlank(bodyString)) {
                 resp.contactInformation = (NKS_NAvUnitContactInformation) JSON.deserialize(
                     bodyString,
                     NKS_NAvUnitContactInformation.class
@@ -273,7 +273,7 @@ public with sharing class NKS_NorgNavUnitService {
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            if (String.isNotBlank(bodyString)) {
                 resp.units = (List<NKS_NavUnitWorkAllocation>) JSON.deserialize(
                     bodyString,
                     List<NKS_NavUnitWorkAllocation>.class
