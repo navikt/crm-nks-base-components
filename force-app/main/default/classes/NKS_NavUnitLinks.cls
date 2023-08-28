@@ -11,7 +11,6 @@ public with sharing class NKS_NavUnitLinks {
         // Send the request, and return a response
         HttpResponse res = h.send(req);
         String navUnitsJson = res.getBody();
-        System.debug('Hehe nice');
         NavResponse retUnits = (NavResponse) JSON.deserialize(navUnitsJson, NavResponse.class);
         return retUnits.offices;
     }

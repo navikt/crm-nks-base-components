@@ -106,10 +106,10 @@ export default class NksPersonHeader extends LightningElement {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
-    async testMethod() {
+    async getFormattedLink() {
         getNavLinks().then((list) => {
-            const abnormalSearch = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
-            if (abnormalSearch !== undefined) return 'https://www.nav.no' + abnormalSearch.path;
+            const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
+            if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
             this.formattedUnitLink =
                 'https://www.nav.no/kontor/' +
                 this.navUnit.navn
@@ -229,7 +229,7 @@ export default class NksPersonHeader extends LightningElement {
         const { data, error } = result;
         if (data) {
             this.navUnit = data.unit;
-            this.testMethod();
+            this.getFormattedLink();
         }
         if (error) {
             console.log(`error: ${error}`);
