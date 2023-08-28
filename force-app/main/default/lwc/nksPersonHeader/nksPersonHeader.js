@@ -38,6 +38,7 @@ export default class NksPersonHeader extends LightningElement {
     @track customclass = 'grey-icon';
     navUnit;
     @track veilederName;
+    formattedUnitLink;
 
     @wire(MessageContext)
     messageContext;
@@ -107,17 +108,17 @@ export default class NksPersonHeader extends LightningElement {
     }
 
     async getFormattedLink() {
-        getNavLinks().then((list) => {
+        return getNavLinks().then((list) => {
             const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
             if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
-            this.formattedUnitLink =
+            return (
                 'https://www.nav.no/kontor/' +
                 this.navUnit.navn
                     .replace(/\.\s/g, '.')
                     .replace(/[\s/]/g, '-')
                     .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '');
-            return this.formattedUnitLink;
+                    .replace(/[\u0300-\u036f]/g, '')
+            );
         });
     }
 
@@ -229,7 +230,7 @@ export default class NksPersonHeader extends LightningElement {
         const { data, error } = result;
         if (data) {
             this.navUnit = data.unit;
-            this.getFormattedLink();
+            this.formattedUnitLink = this.getFormattedLink();
         }
         if (error) {
             console.log(`error: ${error}`);
