@@ -108,7 +108,7 @@ export default class NksPersonHeader extends LightningElement {
     }
 
     async getFormattedLink() {
-        return getNavLinks().then((list) => {
+        const link = await getNavLinks().then((list) => {
             const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
             if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
             return (
@@ -120,6 +120,7 @@ export default class NksPersonHeader extends LightningElement {
                     .replace(/[\u0300-\u036f]/g, '')
             );
         });
+        this.formattedUnitLink = link;
     }
 
     get formattedVeilder() {
@@ -230,7 +231,7 @@ export default class NksPersonHeader extends LightningElement {
         const { data, error } = result;
         if (data) {
             this.navUnit = data.unit;
-            this.formattedUnitLink = this.getFormattedLink();
+            this.getFormattedLink();
         }
         if (error) {
             console.log(`error: ${error}`);
