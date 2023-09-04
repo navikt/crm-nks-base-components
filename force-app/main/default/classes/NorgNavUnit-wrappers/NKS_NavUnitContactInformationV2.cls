@@ -109,7 +109,17 @@ public with sharing class NKS_NavUnitContactInformationV2 {
 
     public class Tjenestetilbud {
         @AuraEnabled
-        public String type;
+        public String typeMapValue;
+        @AuraEnabled
+        public String type {
+            get {
+                return type;
+            }
+            set {
+                typeMapValue = value;
+                type = TjenestetilbudMap.get(value);
+            }
+        }
     }
 
     public class Sosialhjelp {
@@ -125,4 +135,28 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         @AuraEnabled
         public String lenketekst;
     }
+
+    public static Map<String, String> TjenestetilbudMap = new Map<String, String>{
+        'BARNEVERNTJENESTE' => 'Barneverntjeneste',
+        'FLYKTNINGTJENESTE' => 'Flyktningtjeneste',
+        'FENGSEL_OPPFOLGING' => 'Oppfølging av personer i fengsel',
+        'RUS_OPPFOLGING' => 'Oppfølging av personer med rusproblemer',
+        'PSYKISK_HELSE_OPPFOLGING' => 'Oppfølging av personer med psykisk helseproblemer',
+        'STARTLAN' => 'Startlån og tilskudd fra kommunen',
+        'SJOFARTSOPPGAVER' => 'Utstedelse av sjøfartsbok og formidling av sjøfolk',
+        'AKTIVITETSKORTET' => 'Aktivitetskortet for barn og unge',
+        'BOSTOTTE_HUSBANKEN' => 'Bostøtte fra Husbanken',
+        'BOSTOTTE_KOMMUNEN' => 'Bostøtte fra kommunen',
+        'PRIVATOKONOMI_FORVALTNING' => 'Frivillig og tvungen forvaltning av privatøkonomi',
+        'INTROPROGRAMMET' => 'Introduksjonsprogrammet',
+        'KOMMUNAL_BOLIG' => 'Kommunal bolig',
+        'KOMMUNAL_TILLEGGSPENSJON' => 'Kommunal tilleggspensjon',
+        'KOMMUNALT_FRIKORT_HELSETJENESTER' => 'Kommunalt frikort for helsetjenester',
+        'LEDSAGERBEVIS' => 'Ledsagerbevis',
+        'PARKERING_FORFLYTNINGSHEMMEDE' => 'Parkeringstillatelse for forflytningshemmede',
+        'REDUSERT_FORELDREBETALING' => 'Redusert foreldrebetaling i barnehage eller SFO',
+        'SKJENKEBEVILLING' => 'Skjenkebevilling',
+        'STOTTEKONTAKT' => 'Støttekontakt',
+        'TILRETTELAGT_TRANSPORT' => 'Tilrettelagt transport (TT-kort)'
+    };
 }

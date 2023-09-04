@@ -34,7 +34,8 @@
                         <div if:true={tjenester}>
                             <ul class="slds-list_dotted">
                                 <template for:each={tjenester} for:item="tjeneste">
-                                    <li key={tjeneste.type}>{tjeneste.type}</li>
+                                    <li lwc:if={tjeneste.type} key={tjeneste.type}>{tjeneste.type}</li>
+                                    <li lwc:else key={tjeneste.typeMapValue}>{tjeneste.typeMapValue}</li>
                                 </template>
                             </ul>
                         </div>
