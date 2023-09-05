@@ -20,7 +20,7 @@
 
         <lightning-layout-item size="12" class="slds-var-p-right_medium">
             <lightning-accordion active-section-name={activeSections} allow-multiple-sections-open>
-                <lightning-accordion-section name="UNIT_SERVICES" label="Sosiale tjenester">
+                <lightning-accordion-section name="UNIT_SERVICES" label="Kontorinformasjon for NKS">
                     <h2 class="slds-text-heading_medium slds-text-title_bold">Intern informasjon</h2>
                     <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
                     <br />
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                 </lightning-accordion-section>
-                <lightning-accordion-section name="CONTACT_DETAILS" label="Kontaktdetaljer">
+                <lightning-accordion-section name="CONTACT_DETAILS" label="Kontaktdetaljer fra nav.no">
                     <c-nks-nav-unit-contact-information
                         contact-information={contactInformation}
                         contact-information-v2={contactInformationV2}
