@@ -126,7 +126,7 @@ public with sharing class NKS_NorgNavUnitService {
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            if (String.isNotBlank(bodyString)) {
                 resp.contactInformation = (NKS_NAvUnitContactInformation) JSON.deserialize(
                     bodyString,
                     NKS_NAvUnitContactInformation.class
@@ -135,15 +135,54 @@ public with sharing class NKS_NorgNavUnitService {
         } else {
             String errorRef = logError(
                 apiCtrl.getResponse(),
-                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' +
-                unitNumber +
-                '.'
+                'Error from NKS_NorgNavUnitService.getNavUnitContactInformation for unit: ' + unitNumber + '.'
             );
             resp.errorMessage = 'Kunne ikke hente enhetens kontaktdetaljer. Referanse til feil: ' + errorRef;
             resp.success = false;
 
             if (statusCode == 404) {
-                resp.errorMessage = 'Kunne ikke finne enhets insformasjon. Referanse til feil: ' + errorRef;
+                resp.errorMessage = 'Kunne ikke finne enhetsinformasjon. Referanse til feil: ' + errorRef;
+            }
+        }
+
+        return resp;
+    }
+
+    public NavUnitContactInformationResponseV2 getNavUnitContactInformationV2(String unitNumber) {
+        NavUnitContactInformationResponseV2 resp = new NavUnitContactInformationResponseV2();
+
+        Map<String, String> paramMap = new Map<String, String>();
+        paramMap.put('enhetsnummer', unitNumber);
+
+        ApiController apiCtrl = new ApiController();
+        apiCtrl.initRequest(API_CONFIG_NAME, 'GET_KONTAKTINFORMASJON_V2', paramMap);
+        apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
+        apiCtrl.doCallout();
+
+        Integer statusCode = apiCtrl.getResponse().getStatusCode();
+
+        if (statusCode == 200) {
+            resp.success = true;
+
+            String bodyString = apiCtrl.getResponse().getBody();
+
+            if (String.isNotBlank(bodyString)) {
+                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
+                resp.contactInformation = (NKS_NavUnitContactInformationV2) JSON.deserialize(
+                    bodyString,
+                    NKS_NavUnitContactInformationV2.class
+                );
+            }
+        } else {
+            String errorRef = logError(
+                apiCtrl.getResponse(),
+                'Error from NKS_NorgNavUnitService.getNavUnitContactInformationV2 for unit: ' + unitNumber + '.'
+            );
+            resp.errorMessage = 'Kunne ikke hente enhetens kontaktdetaljer. Referanse til feil: ' + errorRef;
+            resp.success = false;
+
+            if (statusCode == 404) {
+                resp.errorMessage = 'Kunne ikke finne enhetsinformasjon. Referanse til feil: ' + errorRef;
             }
         }
 
@@ -184,18 +223,15 @@ public with sharing class NKS_NorgNavUnitService {
 
         apiCtrl.doCallout();
 
-        String bodyString = apiCtrl.getResponse().getBody();
-
-        if (String.isNotBlank(bodyString)) {
-            bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-        }
-
         Integer statusCode = apiCtrl.getResponse().getStatusCode();
 
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            String bodyString = apiCtrl.getResponse().getBody();
+
+            if (String.isNotBlank(bodyString)) {
+                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
                 resp.units = (List<NKS_NavUnit>) JSON.deserialize(bodyString, List<NKS_NavUnit>.class);
             }
         } else {
@@ -237,7 +273,7 @@ public with sharing class NKS_NorgNavUnitService {
         if (statusCode == 200) {
             resp.success = true;
 
-            if (true == String.isNotBlank(bodyString)) {
+            if (String.isNotBlank(bodyString)) {
                 resp.units = (List<NKS_NavUnitWorkAllocation>) JSON.deserialize(
                     bodyString,
                     List<NKS_NavUnitWorkAllocation>.class
@@ -333,6 +369,21 @@ public with sharing class NKS_NorgNavUnitService {
         public String errorMessage;
 
         public NavUnitContactInformationResponse() {
+            this.success = false;
+            this.contactInformation = null;
+            this.errorMessage = null;
+        }
+    }
+
+    public class NavUnitContactInformationResponseV2 {
+        @AuraEnabled
+        public Boolean success;
+        @AuraEnabled
+        public NKS_NavUnitContactInformationV2 contactInformation;
+        @AuraEnabled
+        public String errorMessage;
+
+        public NavUnitContactInformationResponseV2() {
             this.success = false;
             this.contactInformation = null;
             this.errorMessage = null;

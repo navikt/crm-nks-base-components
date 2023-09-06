@@ -20,11 +20,60 @@
 
         <lightning-layout-item size="12" class="slds-var-p-right_medium">
             <lightning-accordion active-section-name={activeSections} allow-multiple-sections-open>
-                <lightning-accordion-section name="UNIT_SERVICES" label="Sosiale tjenester">
+                <lightning-accordion-section name="UNIT_SERVICES" label="Kontorinformasjon for NKS">
+                    <h2 class="slds-text-heading_medium slds-text-title_bold">Intern informasjon</h2>
                     <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
+                    <br />
+                    <h2
+                        class="slds-text-heading_medium slds-text-title_bold slds-form-element_readonly slds-m-bottom_small"
+                    >
+                        Offentlig informasjon
+                    </h2>
+                    <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Tilleggstjenester</h3>
+                        <div if:true={tjenester}>
+                            <ul class="slds-list_dotted">
+                                <template for:each={tjenester} for:item="tjeneste">
+                                    <li lwc:if={tjeneste.type} key={tjeneste.type}>{tjeneste.type}</li>
+                                    <li lwc:else key={tjeneste.typeMapValue}>{tjeneste.typeMapValue}</li>
+                                </template>
+                            </ul>
+                        </div>
+                        <div if:false={tjenester}>
+                            <p>Ingen informasjon</p>
+                        </div>
+                        <div if:true={ytterligereInformasjon}>
+                            <p>{ytterligereInformasjon}</p>
+                        </div>
+                    </div>
+                    <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Papirsøknad</h3>
+                        <p>{papirsoeknadInformasjon}</p>
+                    </div>
+                    <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Utbetaling</h3>
+                        <p>{informasjonUtbetalinger}</p>
+                    </div>
+                    <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Lenker:</h3>
+                        <div if:true={digitaleSoeknader}>
+                            <template for:each={digitaleSoeknader} for:item="link">
+                                <a href={link.lenke} target="_blank" key={link.lenke} style="display: block"
+                                    >{link.lenketekst}</a
+                                >
+                            </template>
+                        </div>
+                        <div if:false={digitaleSoeknader}>
+                            <p>Ingen informasjon</p>
+                        </div>
+                    </div>
                 </lightning-accordion-section>
-                <lightning-accordion-section name="CONTACT_DETAILS" label="Kontaktdetaljer">
-                    <c-nks-nav-unit-contact-information contact-information={contactInformation} num-cols={numCols}>
+                <lightning-accordion-section name="CONTACT_DETAILS" label="Kontaktdetaljer fra nav.no">
+                    <c-nks-nav-unit-contact-information
+                        contact-information={contactInformation}
+                        contact-information-v2={contactInformationV2}
+                        num-cols={numCols}
+                    >
                     </c-nks-nav-unit-contact-information>
                 </lightning-accordion-section>
             </lightning-accordion>

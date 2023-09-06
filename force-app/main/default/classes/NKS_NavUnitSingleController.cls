@@ -33,6 +33,15 @@ public with sharing class NKS_NavUnitSingleController {
         return service.getNavUnitContactInformation(unitNumber);
     }
 
+    @AuraEnabled(cacheable=true)
+    public static NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 getContactInformationV2(
+        String unitNumber
+    ) {
+        if (unitNumber == null)
+            return null;
+        return service.getNavUnitContactInformationV2(unitNumber);
+    }
+
     private static NKS_NorgNavUnitService.NavUnitResponse getNavUnitFromPerson(
         String field,
         String parentObject,

@@ -10,6 +10,7 @@ import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
+import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
 import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
@@ -37,6 +38,7 @@ export default class NksPersonHeader extends LightningElement {
     @track customclass = 'grey-icon';
     navUnit;
     @track veilederName;
+    formattedUnitLink;
 
     @wire(MessageContext)
     messageContext;
@@ -57,7 +59,7 @@ export default class NksPersonHeader extends LightningElement {
                 this.messageContext,
                 nksVeilederName,
                 (message) => this.handleVeilderName(message),
-                {scope:APPLICATION_SCOPE}
+                { scope: APPLICATION_SCOPE }
             );
         }
     }
@@ -69,7 +71,7 @@ export default class NksPersonHeader extends LightningElement {
 
     // Handler for message received by component
     handleVeilderName(message) {
-        if(message.recordId === this.recordId){
+        if (message.recordId === this.recordId) {
             this.veilederName = message.displayName;
             this.veilederIdent = message.ident;
         }
@@ -103,6 +105,22 @@ export default class NksPersonHeader extends LightningElement {
 
     get formattedUnit() {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
+    }
+
+    async getFormattedLink() {
+        const link = await getNavLinks().then((list) => {
+            const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
+            if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
+            return (
+                'https://www.nav.no/kontor/' +
+                this.navUnit.navn
+                    .replace(/\.\s/g, '.')
+                    .replace(/[\s/]/g, '-')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+            );
+        });
+        this.formattedUnitLink = link;
     }
 
     get formattedVeilder() {
@@ -213,6 +231,7 @@ export default class NksPersonHeader extends LightningElement {
         const { data, error } = result;
         if (data) {
             this.navUnit = data.unit;
+            this.getFormattedLink();
         }
         if (error) {
             console.log(`error: ${error}`);

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GET KONTAKTINFORMASJON V2</label>
+    <protected>false</protected>
+    <values>
+        <field>API_Base_Configuration__c</field>
+        <value xsi:type="xsd:string">NORG2_UNIT_API</value>
+    </values>
+    <values>
+        <field>HTTP_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>Has_Path_Parameters__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Mock_Response__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;200&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: {
+      &quot;enhetNr&quot;: &quot;0314&quot;,
+      &quot;navn&quot;: &quot;NAV Sagene&quot;,
+      &quot;telefonnummer&quot;: &quot;55553333&quot;,
+      &quot;telefonnummerKommentar&quot;: null,
+      &quot;postadresse&quot;: {
+        &quot;type&quot;: &quot;postboksadresse&quot;,
+        &quot;postnummer&quot;: &quot;0614&quot;,
+        &quot;poststed&quot;: &quot;OSLO&quot;,
+        &quot;postboksnummer&quot;: &quot;305&quot;,
+        &quot;postboksanlegg&quot;: &quot;Alnabru&quot;
+      },
+      &quot;besoeksadresse&quot;: {
+        &quot;type&quot;: &quot;stedsadresse&quot;,
+        &quot;postnummer&quot;: &quot;0555&quot;,
+        &quot;poststed&quot;: &quot;OSLO&quot;,
+        &quot;gatenavn&quot;: &quot;Thorvald Meyers gate&quot;,
+        &quot;husnummer&quot;: &quot;9&quot;,
+        &quot;husbokstav&quot;: null,
+        &quot;adresseTilleggsnavn&quot;: null
+      },
+      &quot;spesielleOpplysninger&quot;: &quot;Informasjon i forbindelse med korona-situasjonen: Vi oppfordrer alle til å benytte våre skriftlige kanaler på nav.no fremfor å oppsøke NAV-kontorene.  På nav.no kan du søke om økonomisk sosialhjelp, dagpenger og andre ytelser fra NAV. Begrens besøkene dine til NAV–kontoret med mindre det er helt nødvendig for deg\n\nDersom du skal søke om dagpenger fordi du har blitt permittert eller arbeidsledig, må du først registrere deg som arbeidssøker på nav.no. Deretter kan du søke om dagpenger på nav.no: https://www.nav.no/no/person/arbeid/dagpenger-ved-arbeidsloshet-og-permittering&quot;,
+      &quot;brukerkontakt&quot;: {
+        &quot;publikumsmottak&quot;: [
+          {
+            &quot;besoeksadresse&quot;: {
+              &quot;type&quot;: &quot;stedsadresse&quot;,
+              &quot;postnummer&quot;: &quot;0555&quot;,
+              &quot;poststed&quot;: &quot;Oslo&quot;,
+              &quot;gatenavn&quot;: &quot;Thorvald Meyers gate&quot;,
+              &quot;husnummer&quot;: &quot;9&quot;,
+              &quot;husbokstav&quot;: null,
+              &quot;adresseTilleggsnavn&quot;: null
+            },
+            &quot;aapningstider&quot;: [
+              {
+                &quot;dag&quot;: &quot;Tirsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;10:00&quot;,
+                &quot;til&quot;: &quot;14:00&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Onsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;10:00&quot;,
+                &quot;til&quot;: &quot;14:00&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Torsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;10:00&quot;,
+                &quot;til&quot;: &quot;14:00&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Fredag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;10:00&quot;,
+                &quot;til&quot;: &quot;14:00&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Mandag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;10:00&quot;,
+                &quot;til&quot;: &quot;14:00&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: null,
+                &quot;dato&quot;: &quot;2022-10-31&quot;,
+                &quot;fra&quot;: null,
+                &quot;til&quot;: null,
+                &quot;kommentar&quot;: &quot;Halloween stengt&quot;,
+                &quot;stengt&quot;: true,
+                &quot;kunTimeavtale&quot;: false
+              }
+            ],
+            &quot;stedsbeskrivelse&quot;: &quot;Sagene&quot;,
+            &quot;adkomstbeskrivelse&quot;: null
+          }
+        ],
+        &quot;publikumskanaler&quot;: [],
+        &quot;brukertjenesteTilbud&quot;: {
+          &quot;tjenester&quot;: [],
+          &quot;ytterligereInformasjon&quot;: null
+        },
+        &quot;sosialhjelp&quot;: {
+          &quot;digitaleSoeknader&quot;: [],
+          &quot;papirsoeknadInformasjon&quot;: null
+        },
+        &quot;informasjonUtbetalinger&quot;: null,
+        &quot;skriftspraak&quot;: &quot;NB&quot;
+      }
+    }
+  },
+  &quot;401&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: null
+  },
+  &quot;404&quot;: { &quot;headers&quot;: null, &quot;body&quot;: null },
+  &quot;500&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: null
+  }
+}</value>
+    </values>
+    <values>
+        <field>Service_Path__c</field>
+        <value xsi:type="xsd:string">/norg2v2/norg2/api/v2/enhet/{enhetsnummer}/kontaktinformasjon</value>
+    </values>
+</CustomMetadata>
