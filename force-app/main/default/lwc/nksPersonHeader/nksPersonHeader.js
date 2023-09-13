@@ -108,19 +108,21 @@ export default class NksPersonHeader extends LightningElement {
     }
 
     async getFormattedLink() {
-        const link = await getNavLinks().then((list) => {
-            const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
-            if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
-            return (
-                'https://www.nav.no/kontor/' +
-                this.navUnit.navn
-                    .replace(/\.\s/g, '.')
-                    .replace(/[\s/]/g, '-')
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-            );
-        });
-        this.formattedUnitLink = link;
+        if (this.navUnit) {
+            const link = await getNavLinks().then((list) => {
+                const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
+                if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
+                return (
+                    'https://www.nav.no/kontor/' +
+                    this.navUnit.navn
+                        .replace(/\.\s/g, '.')
+                        .replace(/[\s/]/g, '-')
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                );
+            });
+            this.formattedUnitLink = link;
+        }
     }
 
     get formattedVeilder() {
