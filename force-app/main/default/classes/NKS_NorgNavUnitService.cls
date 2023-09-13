@@ -106,6 +106,10 @@ public with sharing class NKS_NorgNavUnitService {
      */
     public NavUnitContactInformationResponse getNavUnitContactInformation(String unitNumber) {
         NavUnitContactInformationResponse resp = new NavUnitContactInformationResponse();
+        if (String.isBlank(unitNumber)) {
+            resp.success = false;
+            return resp;
+        }
 
         Map<String, String> paramMap = new Map<String, String>();
         paramMap.put('enhetsnummer', unitNumber);

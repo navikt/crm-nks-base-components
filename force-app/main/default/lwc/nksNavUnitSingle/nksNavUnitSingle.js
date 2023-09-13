@@ -89,7 +89,7 @@ export default class NksNavUnitSingle extends LightningElement {
             this.isError = !data.success;
             this.navUnit = data.unit;
             this.unitNumber = newUnitNumber;
-            this.errorMessage += data.errorMessage ? ' ' + data.errorMessage : '';
+            this.appendErrorMessage(data.errorMessage);
         }
 
         if (error) {
@@ -110,13 +110,13 @@ export default class NksNavUnitSingle extends LightningElement {
             if (data) {
                 this.isError = !data.success;
                 this.contactInformation = data.contactInformation;
-                this.errorMessage += data.errorMessage ? ' ' + data.errorMessage : '';
+                this.appendErrorMessage(data.errorMessage);
             }
             if (responseV2) {
                 this.isError = !data.success || this.isError;
 
                 this.contactInformationV2 = responseV2.contactInformation;
-                this.errorMessage += responseV2.errorMessage ? ' ' + responseV2.errorMessage : '';
+                this.appendErrorMessage(responseV2.errorMessage);
             }
 
             if (error) {
@@ -125,6 +125,14 @@ export default class NksNavUnitSingle extends LightningElement {
             }
             this.isLoaded = true;
         });
+    }
+
+    appendErrorMessage(errorMessage) {
+        if (this.errorMessage == null) {
+            this.errorMessage = errorMessage;
+        } else {
+            this.errorMessage += errorMessage ? ' ' + errorMessage : '';
+        }
     }
 
     /**
