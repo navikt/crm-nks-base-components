@@ -6,8 +6,9 @@ import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
+import { trackAmplitudeEvent } from 'c/amplitude';
+
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
 const filterFunc = (listToFilterOut, listToFilterIn) => (element) => {
@@ -199,5 +200,9 @@ export default class NksFagsystemer extends LightningElement {
 
     handleLoaded() {
         this.showLinks = true;
+    }
+
+    handleClick(event) {
+        trackAmplitudeEvent('Fagsystem Event', { type: `Click on ${event.target.innerText}` });
     }
 }
