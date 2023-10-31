@@ -3,11 +3,23 @@ import getPersonId from '@salesforce/apex/NKS_FagsystemController.getPersonId';
 import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
-import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
 import { trackAmplitudeEvent } from 'c/amplitude';
+
+import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
+import MODIA_FIELD from '@salesforce/schema/Person__c.NKS_ModiaURL__c';
+import GOSYS_FIELD from '@salesforce/schema/Person__c.NKS_GoSysURL__c';
+import AKTIVITETSPLAN_FIELD from '@salesforce/schema/Person__c.NKS_AktivitetsplanURL__c';
+import DINPENSJON_FIELD from '@salesforce/schema/Person__c.NKS_PSELVPensjonURL__c';
+import DINUFORE_FIELD from '@salesforce/schema/Person__c.NKS_PSELVUfoeretrygdURL__c';
+import PESYS_FIELD from '@salesforce/schema/Person__c.NKS_PESYSURL__c';
+import SPEIL_FIELD from '@salesforce/schema/Person__c.NKS_SpeilURL__c';
+import FORELDREPENGER_FIELD from '@salesforce/schema/Person__c.NKS_ForeldrepengerURL__c';
+import K9_FIELD from '@salesforce/schema/Person__c.NKS_K9URL__c';
+import BARNETRYGD_FIELD from '@salesforce/schema/Person__c.NKS_BarnetrygdURL__c';
+import ENSLIG_FIELD from '@salesforce/schema/Person__c.NKS_EnsligForsorgerURL__c';
 
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
@@ -24,35 +36,40 @@ export default class NksFagsystemer extends LightningElement {
     @api relatedField;
     @api objectApiName;
     @api personId;
-    @track showLinks;
-    @track inFagsone = false;
     @api filterList;
 
-    hiddenLinks = ['Aktivitetsplan', 'Speil'];
+    @track showLinks;
+    @track inFagsone = true;
+    @track person;
 
-    possibleLinks = [
-        { name: 'Modia', field: 'NKS_ModiaURL__c' },
-        { name: 'Gosys', field: 'NKS_GoSysURL__c' },
-        { name: 'Aktivitetsplan', field: 'NKS_AktivitetsplanURL__c' },
-        { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
-        { name: 'DinPensjon', field: 'NKS_PSELVPensjonURL__c' },
-        { name: 'DinUfore', field: 'NKS_PSELVUfoeretrygdURL__c' },
-        { name: 'Pesys', field: 'NKS_PESYSURL__c' },
-        { name: 'Speil', field: 'NKS_SpeilURL__c' },
-        { name: 'Foreldrepenger', field: 'NKS_ForeldrepengerURL__c' },
-        { name: 'K9', field: 'NKS_K9URL__c' },
-        { name: 'Barnetrygd', field: 'NKS_BarnetrygdURL__c' },
-        { name: 'Enslig', field: 'NKS_EnsligForsorgerURL__c' },
-        { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' }
+    wireFields = [
+        PERSON_IDENT_FIELD,
+        MODIA_FIELD,
+        GOSYS_FIELD,
+        AKTIVITETSPLAN_FIELD,
+        DINPENSJON_FIELD,
+        DINUFORE_FIELD,
+        PESYS_FIELD,
+        SPEIL_FIELD,
+        FORELDREPENGER_FIELD,
+        K9_FIELD,
+        BARNETRYGD_FIELD,
+        ENSLIG_FIELD
     ];
-    // {
-    //     name: 'Sosial',
-    //     field: null,
-    //     eventFunc: this.handleSosialModiaClickOrKey,
-    //     title: 'Modia Sosialhjelp',
-    //     show: NKS_SosialTilgang
-    // },
-    // { name: 'SYFO', field: null, eventFunc: this.handleSYFOClickOrKey, title: 'SYFO' },
+
+    hiddenLinks = ['Aktivitetsplan', 'Speil'];
+    personIdent;
+    modia;
+    gosys;
+    aktivitetsplan;
+    dinpensjon;
+    dinufore;
+    pesys;
+    speil;
+    foreldrepenger;
+    k9;
+    barnetrygd;
+    enslig;
 
     connectedCallback() {
         checkFagsoneIpRange().then((res) => {
@@ -63,21 +80,16 @@ export default class NksFagsystemer extends LightningElement {
         });
     }
 
-    renderedCallback() {
-        const listOfFilter =
-            typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-        this.fields = this.possibleLinks
-            .map((link, index) => ({
-                ...link,
-                id: index,
-                custom: link.field == null,
-                show: !('show' in link) || (link.show ?? false)
-            }))
-            .filter(filterFunc(this.hiddenLinks, listOfFilter));
-    }
-
     get size() {
         return 6;
+    }
+
+    get showContent() {
+        return this.personId != null;
+    }
+
+    get showRefreshButton() {
+        return !(!this.objectApiName || !this.recordId || !this.relatedField);
     }
 
     @wire(getPersonId, {
@@ -95,8 +107,78 @@ export default class NksFagsystemer extends LightningElement {
         }
     }
 
-    @wire(getRecord, { recordId: '$personId', fields: PERSON_IDENT_FIELD })
-    person;
+    @wire(getRecord, { recordId: '$personId', fields: '$wireFields' })
+    wiredRecord({ error, data }) {
+        if (error) {
+            console.log(error);
+        } else if (data) {
+            this.person = data;
+            if (this.person) {
+                this.personIdent = getFieldValue(this.person, PERSON_IDENT_FIELD);
+                this.modia = getFieldValue(this.person, MODIA_FIELD);
+                this.gosys = getFieldValue(this.person, GOSYS_FIELD);
+                this.aktivitetsplan = getFieldValue(this.person, AKTIVITETSPLAN_FIELD);
+                this.dinpensjon = getFieldValue(this.person, DINPENSJON_FIELD);
+                this.dinufore = getFieldValue(this.person, DINUFORE_FIELD);
+                this.pesys = getFieldValue(this.person, PESYS_FIELD);
+                this.speil = getFieldValue(this.person, SPEIL_FIELD);
+                this.foreldrepenger = getFieldValue(this.person, FORELDREPENGER_FIELD);
+                this.k9 = getFieldValue(this.person, K9_FIELD);
+                this.barnetrygd = getFieldValue(this.person, BARNETRYGD_FIELD);
+                this.enslig = getFieldValue(this.person, ENSLIG_FIELD);
+            }
+        }
+        this.filterLinks();
+    }
+
+    filterLinks() {
+        const possibleLinks = [
+            { name: 'Modia', field: this.getLink(this.modia) },
+            { name: 'Gosys', field: this.getLink(this.gosys) },
+            { name: 'Aktivitetsplan', field: this.getLink(this.aktivitetsplan) },
+            { name: 'DinPensjon', field: this.getLink(this.dinpensjon) },
+            { name: 'DinUfore', field: this.getLink(this.dinufore) },
+            { name: 'Pesys', field: this.getLink(this.pesys) },
+            { name: 'Speil', field: this.getLink(this.speil) },
+            { name: 'Foreldrepenger', field: this.getLink(this.foreldrepenger) },
+            { name: 'K9', field: this.getLink(this.k9) },
+            { name: 'Barnetrygd', field: this.getLink(this.barnetrygd) },
+            { name: 'Enslig', field: this.getLink(this.enslig) },
+            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
+            { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' }
+        ];
+        // {
+        //     name: 'Sosial',
+        //     field: null,
+        //     eventFunc: this.handleSosialModiaClickOrKey,
+        //     title: 'Modia Sosialhjelp',
+        //     show: NKS_SosialTilgang
+        // },
+        // { name: 'SYFO', field: null, eventFunc: this.handleSYFOClickOrKey, title: 'SYFO' },
+
+        const listOfFilter =
+            typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
+        this.fields = possibleLinks
+            .map((link, index) => ({
+                ...link,
+                id: index,
+                custom: link.field == null,
+                show: !('show' in link) || (link.show ?? false)
+            }))
+            .filter(filterFunc(this.hiddenLinks, listOfFilter));
+    }
+
+    getLink(input) {
+        input = String(input);
+        let startIndex = input.indexOf('href') + 6;
+        let lastIndex = input.indexOf('target') - 2;
+        return input.substring(startIndex, lastIndex);
+    }
+
+    handleClick(event) {
+        console.log('clicked: ', event.target.innerText);
+        trackAmplitudeEvent('Fagsystem Event', { type: `Click on ${event.target.innerText}` });
+    }
 
     refreshRecord() {
         this.showLinks = false;
@@ -106,21 +188,12 @@ export default class NksFagsystemer extends LightningElement {
         });
     }
 
-    get showContent() {
-        return this.personId != null;
-    }
-
-    get showRefreshButton() {
-        return !(!this.objectApiName || !this.recordId || !this.relatedField);
-    }
-
     handleAAClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
-            const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
             fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
                 headers: {
-                    'Nav-Personident': actorId
+                    'Nav-Personident': this.personIdent
                 },
                 credentials: 'include'
             })
@@ -133,12 +206,12 @@ export default class NksFagsystemer extends LightningElement {
                     console.log(error);
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
+            this.handleClick(e);
         }
     }
 
     // handleSYFOClickOrKey(e) {
     //     if (e.type === 'click' || e.key === 'Enter') {
-    //         const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
     //         fetch('https://modiacontextholder.intern.nav.no/modiacontextholder/api/context', {
     //             method: 'POST',
     //             // Æ må se på denna shiten. Ser at crm-sf-saf\force-app\main\default\classes\Saf_CalloutHandler.cls har noe om det muligens
@@ -153,7 +226,7 @@ export default class NksFagsystemer extends LightningElement {
     //                 'Content-Type': 'application/json',
     //                 'Nav-Consumer-Id': 'Idk (Salesforce mby???)',
     //                 'Nav-Call-Id': `${NAV_CONSUMER_ID}-${generateUUID()}`,
-    //                 'nav-personident': actorId
+    //                 'nav-personident':  this.personIdent
     //             },
     //             credentials: 'include'
     //         })
@@ -171,8 +244,7 @@ export default class NksFagsystemer extends LightningElement {
 
     handleSosialModiaClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
-            const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
-            getModiaSosialLink({ ident: actorId })
+            getModiaSosialLink({ ident: this.personIdent })
                 .then((urlLink) => {
                     if (!urlLink) {
                         this.dispatchEvent(
@@ -195,14 +267,11 @@ export default class NksFagsystemer extends LightningElement {
                         })
                     );
                 });
+            this.handleClick(e);
         }
     }
 
     handleLoaded() {
         this.showLinks = true;
-    }
-
-    handleClick(event) {
-        trackAmplitudeEvent('Fagsystem Event', { type: `Click on ${event.target.innerText}` });
     }
 }
