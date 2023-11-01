@@ -18,8 +18,6 @@ import PESYS_FIELD from '@salesforce/schema/Person__c.NKS_PESYSURL__c';
 import SPEIL_FIELD from '@salesforce/schema/Person__c.NKS_SpeilURL__c';
 import FORELDREPENGER_FIELD from '@salesforce/schema/Person__c.NKS_ForeldrepengerURL__c';
 import K9_FIELD from '@salesforce/schema/Person__c.NKS_K9URL__c';
-import BARNETRYGD_FIELD from '@salesforce/schema/Person__c.NKS_BarnetrygdURL__c';
-import ENSLIG_FIELD from '@salesforce/schema/Person__c.NKS_EnsligForsorgerURL__c';
 
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
@@ -35,8 +33,6 @@ export default class NksFagsystemer extends LightningElement {
     @api title;
     @api relatedField;
     @api objectApiName;
-    @api personId;
-    @api filterList;
 
     @track showLinks;
     @track inFagsone = true;
@@ -52,12 +48,12 @@ export default class NksFagsystemer extends LightningElement {
         PESYS_FIELD,
         SPEIL_FIELD,
         FORELDREPENGER_FIELD,
-        K9_FIELD,
-        BARNETRYGD_FIELD,
-        ENSLIG_FIELD
+        K9_FIELD
     ];
 
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
+    filterList;
+    personId;
     personIdent;
     modia;
     gosys;
@@ -68,8 +64,7 @@ export default class NksFagsystemer extends LightningElement {
     speil;
     foreldrepenger;
     k9;
-    barnetrygd;
-    enslig;
+    wiredPerson;
 
     connectedCallback() {
         checkFagsoneIpRange().then((res) => {
@@ -108,7 +103,13 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     @wire(getRecord, { recordId: '$personId', fields: '$wireFields' })
-    wiredRecord({ error, data }) {
+    wiredRecord(result) {
+        this.wiredPerson = result;
+        this.loadData();
+    }
+
+    loadData() {
+        const { data, error } = this.wiredPerson;
         if (error) {
             console.log(error);
         } else if (data) {
@@ -124,26 +125,25 @@ export default class NksFagsystemer extends LightningElement {
                 this.speil = getFieldValue(this.person, SPEIL_FIELD);
                 this.foreldrepenger = getFieldValue(this.person, FORELDREPENGER_FIELD);
                 this.k9 = getFieldValue(this.person, K9_FIELD);
-                this.barnetrygd = getFieldValue(this.person, BARNETRYGD_FIELD);
-                this.enslig = getFieldValue(this.person, ENSLIG_FIELD);
             }
         }
+
         this.filterLinks();
     }
 
     filterLinks() {
         const possibleLinks = [
-            { name: 'Modia', field: this.getLink(this.modia) },
-            { name: 'Gosys', field: this.getLink(this.gosys) },
-            { name: 'Aktivitetsplan', field: this.getLink(this.aktivitetsplan) },
-            { name: 'DinPensjon', field: this.getLink(this.dinpensjon) },
-            { name: 'DinUfore', field: this.getLink(this.dinufore) },
-            { name: 'Pesys', field: this.getLink(this.pesys) },
-            { name: 'Speil', field: this.getLink(this.speil) },
-            { name: 'Foreldrepenger', field: this.getLink(this.foreldrepenger) },
-            { name: 'K9', field: this.getLink(this.k9) },
-            { name: 'Barnetrygd', field: this.getLink(this.barnetrygd) },
-            { name: 'Enslig', field: this.getLink(this.enslig) },
+            { name: 'Modia', field: this.modia },
+            { name: 'Gosys', field: this.gosys },
+            { name: 'Aktivitetsplan', field: this.aktivitetsplan },
+            { name: 'DinPensjon', field: this.dinpensjon },
+            { name: 'DinUfore', field: this.dinufore },
+            { name: 'Pesys', field: this.pesys },
+            { name: 'Speil', field: this.speil },
+            { name: 'Foreldrepenger', field: this.foreldrepenger },
+            { name: 'K9', field: this.k9 },
+            { name: 'Barnetrygd', literalLink: 'https://barnetrygd.intern.nav.no/oppgaver' },
+            { name: 'Enslig', literalLink: 'https://ensligmorellerfar.intern.nav.no/oppgavebenk' },
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
             { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' }
         ];
@@ -168,13 +168,6 @@ export default class NksFagsystemer extends LightningElement {
             .filter(filterFunc(this.hiddenLinks, listOfFilter));
     }
 
-    getLink(input) {
-        input = String(input);
-        let startIndex = input.indexOf('href') + 6;
-        let lastIndex = input.indexOf('target') - 2;
-        return input.substring(startIndex, lastIndex);
-    }
-
     handleClick(event) {
         console.log('clicked: ', event.target.innerText);
         trackAmplitudeEvent('Fagsystem Event', { type: `Click on ${event.target.innerText}` });
@@ -185,6 +178,10 @@ export default class NksFagsystemer extends LightningElement {
         this.personId = null;
         refreshApex(this._refresh).then(() => {
             this.personId = this._refresh.data;
+        });
+
+        refreshApex(this.wiredPerson).then(() => {
+            this.loadData();
         });
     }
 
