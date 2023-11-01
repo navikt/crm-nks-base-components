@@ -160,6 +160,7 @@ export default class NksPersonHeader extends LightningElement {
         }
 
         document.body.removeChild(hiddenInput);
+        event.currentTarget.focus();
     }
 
     showCopyToast(status) {
