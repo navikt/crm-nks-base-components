@@ -3,7 +3,8 @@
     <fullName>NKS_AAregisterURL__c</fullName>
     <deprecated>false</deprecated>
     <externalId>false</externalId>
-    <formula>HYPERLINK(&quot;https://arbeid-og-inntekt.nais.adeo.no/&quot; , &quot;AA-register&quot;, &quot;_self&quot;)</formula>
+    <formula>HYPERLINK(&quot;https://arbeid-og-inntekt.nais.adeo.no/&quot; ,
+        &quot;AA-register&quot;, &quot;_self&quot;)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>AA-register</label>
     <required>false</required>

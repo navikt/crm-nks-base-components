@@ -1,23 +1,16 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import getPersonId from '@salesforce/apex/NKS_FagsystemController.getPersonId';
+import getPerson from '@salesforce/apex/NKS_FagsystemController.getPerson';
 import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
+import checkIfSandboxOrScratch from '@salesforce/apex/NKS_FagsystemController.checkIfSandboxOrScratch';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
-import { trackAmplitudeEvent } from 'c/amplitude';
-
-import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
-import MODIA_FIELD from '@salesforce/schema/Person__c.NKS_ModiaURL__c';
-import GOSYS_FIELD from '@salesforce/schema/Person__c.NKS_GoSysURL__c';
-import AKTIVITETSPLAN_FIELD from '@salesforce/schema/Person__c.NKS_AktivitetsplanURL__c';
-import DINPENSJON_FIELD from '@salesforce/schema/Person__c.NKS_PSELVPensjonURL__c';
-import DINUFORE_FIELD from '@salesforce/schema/Person__c.NKS_PSELVUfoeretrygdURL__c';
-import PESYS_FIELD from '@salesforce/schema/Person__c.NKS_PESYSURL__c';
-import SPEIL_FIELD from '@salesforce/schema/Person__c.NKS_SpeilURL__c';
-import FORELDREPENGER_FIELD from '@salesforce/schema/Person__c.NKS_ForeldrepengerURL__c';
-import K9_FIELD from '@salesforce/schema/Person__c.NKS_K9URL__c';
+import { MessageContext, publish } from 'lightning/messageService';
+import AMPLITUDE_CHANNEL from '@salesforce/messageChannel/amplitude__c';
+import userId from '@salesforce/user/Id';
+import NAV_IDENT_FIELD from '@salesforce/schema/User.CRM_NAV_Ident__c';
 
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
@@ -33,38 +26,20 @@ export default class NksFagsystemer extends LightningElement {
     @api title;
     @api relatedField;
     @api objectApiName;
+    @api filterList;
 
     @track showLinks;
-    @track inFagsone = true;
-    @track person;
+    @track inFagsone = false;
+    @track userId = userId;
 
-    wireFields = [
-        PERSON_IDENT_FIELD,
-        MODIA_FIELD,
-        GOSYS_FIELD,
-        AKTIVITETSPLAN_FIELD,
-        DINPENSJON_FIELD,
-        DINUFORE_FIELD,
-        PESYS_FIELD,
-        SPEIL_FIELD,
-        FORELDREPENGER_FIELD,
-        K9_FIELD
-    ];
+    isSandbox = false;
+    wiredPerson;
+    wiredUser;
+    personIdent;
+    actorId;
+    navIdent;
 
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
-    filterList;
-    personId;
-    personIdent;
-    modia;
-    gosys;
-    aktivitetsplan;
-    dinpensjon;
-    dinufore;
-    pesys;
-    speil;
-    foreldrepenger;
-    k9;
-    wiredPerson;
 
     connectedCallback() {
         checkFagsoneIpRange().then((res) => {
@@ -73,78 +48,109 @@ export default class NksFagsystemer extends LightningElement {
                 console.log('Ip is: ' + res.ip);
             }
         });
+
+        checkIfSandboxOrScratch().then((res) => {
+            this.isSandbox = res;
+        });
     }
 
-    get size() {
-        return 6;
+    @wire(MessageContext)
+    messageContext;
+
+    @wire(getRecord, { recordId: '$userId', fields: [NAV_IDENT_FIELD] })
+    wiredUserData(result) {
+        this.wiredUser = result;
+        this.loadUserData();
     }
 
-    get showContent() {
-        return this.personId != null;
+    loadUserData() {
+        const { error, data } = this.wiredUser;
+        if (data) {
+            this.navIdent = getFieldValue(data, NAV_IDENT_FIELD);
+        } else if (error) {
+            this.error = error;
+        }
     }
 
-    get showRefreshButton() {
-        return !(!this.objectApiName || !this.recordId || !this.relatedField);
-    }
-
-    @wire(getPersonId, {
+    @wire(getPerson, {
         recordId: '$recordId',
         relatedField: '$relatedField',
         objectApiName: '$objectApiName'
     })
-    wirePersonId(res) {
-        this._refresh = res;
-        if (res.error) {
-            console.log(res.error);
-        }
-        if (res.data) {
-            this.personId = res.data;
-        }
-    }
-
-    @wire(getRecord, { recordId: '$personId', fields: '$wireFields' })
-    wiredRecord(result) {
+    wiredPersonData(result) {
         this.wiredPerson = result;
-        this.loadData();
+        this.loadPersonData();
     }
 
-    loadData() {
-        const { data, error } = this.wiredPerson;
-        if (error) {
-            console.log(error);
-        } else if (data) {
-            this.person = data;
-            if (this.person) {
-                this.personIdent = getFieldValue(this.person, PERSON_IDENT_FIELD);
-                this.modia = getFieldValue(this.person, MODIA_FIELD);
-                this.gosys = getFieldValue(this.person, GOSYS_FIELD);
-                this.aktivitetsplan = getFieldValue(this.person, AKTIVITETSPLAN_FIELD);
-                this.dinpensjon = getFieldValue(this.person, DINPENSJON_FIELD);
-                this.dinufore = getFieldValue(this.person, DINUFORE_FIELD);
-                this.pesys = getFieldValue(this.person, PESYS_FIELD);
-                this.speil = getFieldValue(this.person, SPEIL_FIELD);
-                this.foreldrepenger = getFieldValue(this.person, FORELDREPENGER_FIELD);
-                this.k9 = getFieldValue(this.person, K9_FIELD);
-            }
-        }
+    loadPersonData() {
+        const { error, data } = this.wiredPerson;
+        if (data) {
+            this.personIdent = data.Name;
+            this.actorId = data.INT_ActorId__c;
 
-        this.filterLinks();
+            if (this.personIdent && this.actorId && this.navIdent) {
+                this.filterLinks();
+            }
+        } else if (error) {
+            console.log(error);
+        }
     }
 
     filterLinks() {
-        const possibleLinks = [
-            { name: 'Modia', field: this.modia },
-            { name: 'Gosys', field: this.gosys },
-            { name: 'Aktivitetsplan', field: this.aktivitetsplan },
-            { name: 'DinPensjon', field: this.dinpensjon },
-            { name: 'DinUfore', field: this.dinufore },
-            { name: 'Pesys', field: this.pesys },
-            { name: 'Speil', field: this.speil },
-            { name: 'Foreldrepenger', field: this.foreldrepenger },
-            { name: 'K9', field: this.k9 },
-            { name: 'Barnetrygd', literalLink: 'https://barnetrygd.intern.nav.no/oppgaver' },
-            { name: 'Enslig', literalLink: 'https://ensligmorellerfar.intern.nav.no/oppgavebenk' },
+        let possibleLinks = [
+            {
+                name: 'Modia',
+                field: this.isSandbox
+                    ? `http://app-qx.adeo.no/modiapersonoversikt/${this.personIdent}`
+                    : `https://app.adeo.no/modiapersonoversikt/person/${this.personIdent}`
+            },
+            {
+                name: 'Gosys',
+                field: this.isSandbox
+                    ? `https://gosys-q1.dev.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
+                    : `https://gosys.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
+            },
+            {
+                name: 'Aktivitetsplan',
+                field: this.isSandbox
+                    ? `https://veilarbpersonflate.intern.nav.no/${this.personIdent}`
+                    : `https://veilarbpersonflate.dev.intern.nav.no/${this.personIdent}`
+            },
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
+            {
+                name: 'DinPensjon',
+                field: this.isSandbox
+                    ? `https://pensjon-pselv-q1.nais.preprod.local/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`
+                    : `https://pensjon-pselv.nais.adeo.no/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`
+            },
+            {
+                name: 'DinUfore',
+                field: this.isSandbox
+                    ? `https://pensjon-pselv-q1.nais.preprod.local/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
+                    : `https://pensjon-pselv.nais.adeo.no/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
+            },
+            {
+                name: 'Pesys',
+                field: `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`
+            },
+            {
+                name: 'Speil',
+                field: this.isSandbox
+                    ? `https://syfomodiaperson.dev.intern.nav.no/sykefravaer/personsok`
+                    : `https://syfomodiaperson.intern.nav.no/sykefravaer/personsok`
+            },
+            {
+                name: 'Foreldrepenger',
+                field: this.isSandbox
+                    ? `https://fpsak.dev.intern.nav.no/aktoer/${this.actorId}`
+                    : `https://fpsak.intern.nav.no/aktoer/${this.actorId}`
+            },
+            { name: 'K9', field: `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}` },
+
+            { name: 'Barnetrygd', field: `https://barnetrygd.intern.nav.no/oppgaver` },
+
+            { name: 'Enslig', field: `https://ensligmorellerfar.intern.nav.no/oppgavebenk` },
+
             { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' }
         ];
         // {
@@ -168,21 +174,26 @@ export default class NksFagsystemer extends LightningElement {
             .filter(filterFunc(this.hiddenLinks, listOfFilter));
     }
 
-    handleClick(event) {
-        console.log('clicked: ', event.target.innerText);
-        trackAmplitudeEvent('Fagsystem Event', { type: `Click on ${event.target.innerText}` });
-    }
-
     refreshRecord() {
         this.showLinks = false;
-        this.personId = null;
-        refreshApex(this._refresh).then(() => {
-            this.personId = this._refresh.data;
+        refreshApex(this.wiredUser).then(() => {
+            this.loadUserData();
         });
-
         refreshApex(this.wiredPerson).then(() => {
-            this.loadData();
+            this.loadPersonData();
         });
+    }
+
+    get size() {
+        return 6;
+    }
+
+    get showContent() {
+        return this.wiredPerson != null && this.wiredUser != null;
+    }
+
+    get showRefreshButton() {
+        return !(!this.objectApiName || !this.recordId || !this.relatedField);
     }
 
     handleAAClickOrKey(e) {
@@ -203,12 +214,14 @@ export default class NksFagsystemer extends LightningElement {
                     console.log(error);
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
+
             this.handleClick(e);
         }
     }
 
     // handleSYFOClickOrKey(e) {
     //     if (e.type === 'click' || e.key === 'Enter') {
+    //         const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
     //         fetch('https://modiacontextholder.intern.nav.no/modiacontextholder/api/context', {
     //             method: 'POST',
     //             // Æ må se på denna shiten. Ser at crm-sf-saf\force-app\main\default\classes\Saf_CalloutHandler.cls har noe om det muligens
@@ -223,7 +236,7 @@ export default class NksFagsystemer extends LightningElement {
     //                 'Content-Type': 'application/json',
     //                 'Nav-Consumer-Id': 'Idk (Salesforce mby???)',
     //                 'Nav-Call-Id': `${NAV_CONSUMER_ID}-${generateUUID()}`,
-    //                 'nav-personident':  this.personIdent
+    //                 'nav-personident': actorId
     //             },
     //             credentials: 'include'
     //         })
@@ -264,11 +277,20 @@ export default class NksFagsystemer extends LightningElement {
                         })
                     );
                 });
+
             this.handleClick(e);
         }
     }
 
     handleLoaded() {
         this.showLinks = true;
+    }
+
+    handleClick(event) {
+        let message = {
+            eventType: 'Fagsystem',
+            properties: { type: `Click on ${event.target.innerText}` }
+        };
+        publish(this.messageContext, AMPLITUDE_CHANNEL, message);
     }
 }

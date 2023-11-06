@@ -40,16 +40,16 @@ public with sharing class NKS_FagsystemControllerTest {
     }
 
     @IsTest
-    static void testGetPersonId() {
+    static void testGetPerson() {
         Person__c pers = [SELECT Id, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
         Id accountId = pers.CRM_Account__c;
         Case c = [SELECT Id FROM Case WHERE AccountId = :accountId];
         Test.startTest();
-        String personIdFromAccount = NKS_FagsystemController.getPersonId(accountId, 'Id', 'Account');
-        String personIdFromCase = NKS_FagsystemController.getPersonId(c.Id, 'Account', 'Case');
+        Person__c personFromAccount = NKS_FagsystemController.getPerson(accountId, 'Id', 'Account');
+        Person__c personFromCase = NKS_FagsystemController.getPerson(c.Id, 'Account', 'Case');
         Test.stopTest();
-        System.assertEquals(pers.Id, personIdFromCase);
-        System.assertEquals(pers.Id, personIdFromAccount);
+        System.assertEquals(pers.Id, personFromCase.Id);
+        System.assertEquals(pers.Id, personFromAccount.Id);
     }
 
     @IsTest

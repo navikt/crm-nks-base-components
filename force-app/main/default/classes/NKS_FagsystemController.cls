@@ -7,12 +7,13 @@
  **/
 public with sharing class NKS_FagsystemController {
     @AuraEnabled(cacheable=true)
-    public static string getPersonId(String recordId, String relatedField, String objectApiName) {
+    public static Person__c getPerson(String recordId, String relatedField, String objectApiName) {
         try {
             String query = 'SELECT ' + getField(relatedField) + ' FROM ' + objectApiName + ' WHERE Id = :recordId';
             System.debug(query);
             List<SOBject> objs = Database.query(query);
-            return getIdFromRelationshipQuery(objs, relatedField);
+            Id personId = getIdFromRelationshipQuery(objs, relatedField);
+            return [SELECT Id, Name, INT_ActorId__c FROM Person__c WHERE Id =: personId];
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -100,5 +101,16 @@ public with sharing class NKS_FagsystemController {
     }
 
     public class ModiaSosialException extends Exception {
+    }
+
+    @AuraEnabled
+    public static Boolean checkIfSandboxOrScratch(){
+        try {
+            System.Domain dom = System.DomainParser.parse(URL.getOrgDomainUrl());
+            return dom.getSandboxName() != null ||
+                [SELECT TrialExpirationDate FROM Organization LIMIT 1].TrialExpirationDate != null;
+        } catch (Exception e) {
+            throw new AuraHandledException('Problem checking org: ' + e.getMessage());
+        }
     }
 }
