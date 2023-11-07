@@ -37,19 +37,23 @@ public with sharing class NKS_FagsystemControllerTest {
         System.debug(person.CRM_Account__c);
         Case caseWithAccount = new Case(AccountId = person.CRM_Account__c, Status = 'New', Origin = 'Web');
         insert caseWithAccount;
-    }
+        }
 
     @IsTest
-    static void testGetPerson() {
-        Person__c pers = [SELECT Id, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
+    static void getFagsystemData() {
+        Person__c pers = [SELECT Id, Name, INT_ActorId__c, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
         Id accountId = pers.CRM_Account__c;
         Case c = [SELECT Id FROM Case WHERE AccountId = :accountId];
+
         Test.startTest();
-        Person__c personFromAccount = NKS_FagsystemController.getPerson(accountId, 'Id', 'Account');
-        Person__c personFromCase = NKS_FagsystemController.getPerson(c.Id, 'Account', 'Case');
+        NKS_FagsystemController.FagsystemData dataFromAccount = NKS_FagsystemController.getFagsystemData(accountId, 'Id', 'Account');
+        NKS_FagsystemController.FagsystemData dataFromCase = NKS_FagsystemController.getFagsystemData(c.Id, 'Account', 'Case');
         Test.stopTest();
-        System.assertEquals(pers.Id, personFromCase.Id);
-        System.assertEquals(pers.Id, personFromAccount.Id);
+
+        System.assertEquals(pers.Name, dataFromCase.personIdent);
+        System.assertEquals(pers.Name, dataFromAccount.personIdent);
+        System.assertEquals(pers.INT_ActorId__c, dataFromCase.actorId);
+        System.assertEquals(pers.INT_ActorId__c, dataFromAccount.actorId);
     }
 
     @IsTest
@@ -62,4 +66,12 @@ public with sharing class NKS_FagsystemControllerTest {
         Test.stopTest();
         System.assertEquals(expectedModiaSosialLinkFromMock, link);
     }
+
+    @IsTest 
+    static void testCheckIfSandboxOrScratch () {
+        Test.startTest();
+        Boolean isSandbox = NKS_FagsystemController.checkIfSandboxOrScratch();
+        Test.startTest();
+    }
+
 }
