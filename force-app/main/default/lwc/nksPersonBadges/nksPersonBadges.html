@@ -118,12 +118,16 @@
                         </div>
                     </lightning-layout-item>
                 </template>
-                
+
                 <!-- OPEN STO LIST -->
                 <template if:true={showSTOInformation}>
                     <template for:each={badgeInfo} for:item="infoItem">
-                        <lightning-layout-item if:true={infoItem.list} key={infoItem.name}
-                        size="12" class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular">
+                        <lightning-layout-item
+                            if:true={infoItem.list}
+                            key={infoItem.name}
+                            size="12"
+                            class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular"
+                        >
                             <div class="slds-box slds-box_xx-small slds-theme_default spaceClass">
                                 <h2 class="slds-var-p-bottom_xx-small" style="font-weight: bold">{infoItem.name}</h2>
                                 <div>
@@ -131,7 +135,7 @@
                                         class="slds-table slds-table_cell-buffer slds-no-row-hover slds-table_bordered sto-table"
                                     >
                                         <thead>
-                                            <tr>    
+                                            <tr>
                                                 <th scope="col">Kø</th>
                                                 <th scope="col" class="slds-truncate">Antall åpne henvendelser</th>
                                             </tr>
@@ -139,7 +143,7 @@
 
                                         <tbody>
                                             <template for:each={infoItem.list} for:item="item">
-                                                <tr key={item.STO_Category__c}> 
+                                                <tr key={item.STO_Category__c}>
                                                     <td class="slds-truncate">{item.STO_Category__c}</td>
                                                     <td>{item.numHenv}</td>
                                                 </tr>
@@ -223,8 +227,7 @@
                 </template>
 
                 <!-- HOT ENTITLEMENT -->
-                <!--
-                <template if:true={showEntitlements}>
+                <!-- <template if:true={showEntitlements}>
                     <lightning-layout-item
                         size="12"
                         class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular"
@@ -237,8 +240,7 @@
                             </ul>
                         </div>
                     </lightning-layout-item>
-                </template>
-                -->
+                </template> -->
             </lightning-layout>
         </div>
     </template>
