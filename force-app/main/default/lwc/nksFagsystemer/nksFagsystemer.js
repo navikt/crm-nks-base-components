@@ -1,16 +1,13 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import getPerson from '@salesforce/apex/NKS_FagsystemController.getPerson';
+import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
 import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
 import checkIfSandboxOrScratch from '@salesforce/apex/NKS_FagsystemController.checkIfSandboxOrScratch';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
 import { MessageContext, publish } from 'lightning/messageService';
 import AMPLITUDE_CHANNEL from '@salesforce/messageChannel/amplitude__c';
-import userId from '@salesforce/user/Id';
-import NAV_IDENT_FIELD from '@salesforce/schema/User.CRM_NAV_Ident__c';
 
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
@@ -28,13 +25,12 @@ export default class NksFagsystemer extends LightningElement {
     @api objectApiName;
     @api filterList;
 
-    @track showLinks;
-    @track inFagsone = false;
-    @track userId = userId;
+    // @track showLinks;
+    @track inFagsone = true;
 
     isSandbox = false;
-    wiredPerson;
-    wiredUser;
+    showSpinner = false;
+    wiredObject;
     personIdent;
     actorId;
     navIdent;
@@ -42,12 +38,13 @@ export default class NksFagsystemer extends LightningElement {
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
 
     connectedCallback() {
+        /*
         checkFagsoneIpRange().then((res) => {
             this.inFagsone = res.isInFagsone;
             if (this.inFagsone === false) {
                 console.log('Ip is: ' + res.ip);
             }
-        });
+        });*/
 
         checkIfSandboxOrScratch().then((res) => {
             this.isSandbox = res;
@@ -57,38 +54,24 @@ export default class NksFagsystemer extends LightningElement {
     @wire(MessageContext)
     messageContext;
 
-    @wire(getRecord, { recordId: '$userId', fields: [NAV_IDENT_FIELD] })
-    wiredUserData(result) {
-        this.wiredUser = result;
-        this.loadUserData();
-    }
-
-    loadUserData() {
-        const { error, data } = this.wiredUser;
-        if (data) {
-            this.navIdent = getFieldValue(data, NAV_IDENT_FIELD);
-        } else if (error) {
-            this.error = error;
-        }
-    }
-
-    @wire(getPerson, {
+    @wire(getData, {
         recordId: '$recordId',
         relatedField: '$relatedField',
         objectApiName: '$objectApiName'
     })
-    wiredPersonData(result) {
-        this.wiredPerson = result;
-        this.loadPersonData();
+    wiredData(result) {
+        this.wiredObject = result;
+        this.loadData();
     }
 
-    loadPersonData() {
-        const { error, data } = this.wiredPerson;
+    loadData() {
+        const { error, data } = this.wiredObject;
         if (data) {
-            this.personIdent = data.Name;
-            this.actorId = data.INT_ActorId__c;
+            this.navIdent = data.navIdent;
+            this.personIdent = data.personIdent;
+            this.actorId = data.actorId;
 
-            if (this.personIdent && this.actorId && this.navIdent) {
+            if (this.navIdent && this.personIdent && this.actorId) {
                 this.filterLinks();
             }
         } else if (error) {
@@ -98,25 +81,14 @@ export default class NksFagsystemer extends LightningElement {
 
     filterLinks() {
         let possibleLinks = [
-            {
-                name: 'Modia',
-                field: this.isSandbox
-                    ? `http://app-qx.adeo.no/modiapersonoversikt/${this.personIdent}`
-                    : `https://app.adeo.no/modiapersonoversikt/person/${this.personIdent}`
-            },
-            {
-                name: 'Gosys',
-                field: this.isSandbox
-                    ? `https://gosys-q1.dev.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
-                    : `https://gosys.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
-            },
+            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
             {
                 name: 'Aktivitetsplan',
                 field: this.isSandbox
                     ? `https://veilarbpersonflate.intern.nav.no/${this.personIdent}`
                     : `https://veilarbpersonflate.dev.intern.nav.no/${this.personIdent}`
             },
-            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
+            { name: 'Barnetrygd', field: `https://barnetrygd.intern.nav.no/oppgaver` },
             {
                 name: 'DinPensjon',
                 field: this.isSandbox
@@ -129,6 +101,27 @@ export default class NksFagsystemer extends LightningElement {
                     ? `https://pensjon-pselv-q1.nais.preprod.local/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
                     : `https://pensjon-pselv.nais.adeo.no/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
             },
+            { name: 'Enslig', field: `https://ensligmorellerfar.intern.nav.no/oppgavebenk` },
+            {
+                name: 'Foreldrepenger',
+                field: this.isSandbox
+                    ? `https://fpsak.dev.intern.nav.no/aktoer/${this.actorId}`
+                    : `https://fpsak.intern.nav.no/aktoer/${this.actorId}`
+            },
+            {
+                name: 'Gosys',
+                field: this.isSandbox
+                    ? `https://gosys-q1.dev.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
+                    : `https://gosys.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
+            },
+            { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' },
+            { name: 'K9', field: `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}` },
+            {
+                name: 'Modia',
+                field: this.isSandbox
+                    ? `http://app-qx.adeo.no/modiapersonoversikt/${this.personIdent}`
+                    : `https://app.adeo.no/modiapersonoversikt/person/${this.personIdent}`
+            },
             {
                 name: 'Pesys',
                 field: `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`
@@ -138,20 +131,7 @@ export default class NksFagsystemer extends LightningElement {
                 field: this.isSandbox
                     ? `https://syfomodiaperson.dev.intern.nav.no/sykefravaer/personsok`
                     : `https://syfomodiaperson.intern.nav.no/sykefravaer/personsok`
-            },
-            {
-                name: 'Foreldrepenger',
-                field: this.isSandbox
-                    ? `https://fpsak.dev.intern.nav.no/aktoer/${this.actorId}`
-                    : `https://fpsak.intern.nav.no/aktoer/${this.actorId}`
-            },
-            { name: 'K9', field: `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}` },
-
-            { name: 'Barnetrygd', field: `https://barnetrygd.intern.nav.no/oppgaver` },
-
-            { name: 'Enslig', field: `https://ensligmorellerfar.intern.nav.no/oppgavebenk` },
-
-            { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' }
+            }
         ];
         // {
         //     name: 'Sosial',
@@ -175,13 +155,14 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     refreshRecord() {
-        this.showLinks = false;
-        refreshApex(this.wiredUser).then(() => {
-            this.loadUserData();
-        });
-        refreshApex(this.wiredPerson).then(() => {
-            this.loadPersonData();
-        });
+        this.showSpinner = true;
+        refreshApex(this.wiredObject)
+            .then(() => {
+                this.loadData();
+            })
+            .finally(() => {
+                this.showSpinner = false;
+            });
     }
 
     get size() {
@@ -189,7 +170,7 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     get showContent() {
-        return this.wiredPerson != null && this.wiredUser != null;
+        return this.wiredObject != null;
     }
 
     get showRefreshButton() {
@@ -282,9 +263,10 @@ export default class NksFagsystemer extends LightningElement {
         }
     }
 
+    /*
     handleLoaded() {
         this.showLinks = true;
-    }
+    }*/
 
     handleClick(event) {
         let message = {

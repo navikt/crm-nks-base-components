@@ -7,13 +7,19 @@
  **/
 public with sharing class NKS_FagsystemController {
     @AuraEnabled(cacheable=true)
-    public static Person__c getPerson(String recordId, String relatedField, String objectApiName) {
+    public static FagsystemData getFagsystemData (String recordId, String relatedField, String objectApiName) {
         try {
             String query = 'SELECT ' + getField(relatedField) + ' FROM ' + objectApiName + ' WHERE Id = :recordId';
             System.debug(query);
             List<SOBject> objs = Database.query(query);
+
             Id personId = getIdFromRelationshipQuery(objs, relatedField);
-            return [SELECT Id, Name, INT_ActorId__c FROM Person__c WHERE Id =: personId];
+            Id userId = UserInfo.getUserId();
+
+            Person__c person = [SELECT Id, Name, INT_ActorId__c FROM Person__c WHERE Id =: personId];
+            User user = [SELECT Id, CRM_NAV_Ident__c FROM User WHERE Id =: userId];
+            return new FagsystemData(user.CRM_NAV_Ident__c, person.Name, person.INT_ActorId__c);
+
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -42,18 +48,6 @@ public with sharing class NKS_FagsystemController {
         String ip = currentSession.get('SourceIp');
         Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
         return new FagsoneIp(ip, isInFagsone);
-    }
-
-    public class FagsoneIp {
-        @AuraEnabled
-        public String ip;
-        @AuraEnabled
-        public Boolean isInFagsone;
-
-        public FagsoneIp(String ip, Boolean isInFagsone) {
-            this.ip = ip;
-            this.isInFagsone = isInFagsone;
-        }
     }
 
     @AuraEnabled(cacheable=true)
@@ -96,13 +90,6 @@ public with sharing class NKS_FagsystemController {
         return apiCtrl.getResponse();
     }
 
-    private class ModiaSosialResponse {
-        public string modiaSosialhjelpUrl;
-    }
-
-    public class ModiaSosialException extends Exception {
-    }
-
     @AuraEnabled
     public static Boolean checkIfSandboxOrScratch(){
         try {
@@ -111,6 +98,42 @@ public with sharing class NKS_FagsystemController {
                 [SELECT TrialExpirationDate FROM Organization LIMIT 1].TrialExpirationDate != null;
         } catch (Exception e) {
             throw new AuraHandledException('Problem checking org: ' + e.getMessage());
+        }
+    }
+
+    public class FagsoneIp {
+        @AuraEnabled
+        public String ip;
+        @AuraEnabled
+        public Boolean isInFagsone;
+
+        public FagsoneIp(String ip, Boolean isInFagsone) {
+            this.ip = ip;
+            this.isInFagsone = isInFagsone;
+        }
+    }
+
+    private class ModiaSosialResponse {
+        public string modiaSosialhjelpUrl;
+    }
+
+    public class ModiaSosialException extends Exception {
+    }
+
+    public class FagsystemData {
+        @AuraEnabled 
+        public String navIdent;
+
+        @AuraEnabled 
+        public String personIdent;
+
+        @AuraEnabled 
+        public String actorId;
+
+        public FagsystemData (String navIdent, String personIdent, String actorId) {
+            this.navIdent = navIdent;
+            this.personIdent = personIdent;
+            this.actorId = actorId;
         }
     }
 }
