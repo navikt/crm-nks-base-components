@@ -26,7 +26,7 @@ export default class NksFagsystemer extends LightningElement {
     @api filterList;
 
     // @track showLinks;
-    @track inFagsone = true;
+    @track inFagsone = false;
 
     isSandbox = false;
     showSpinner = false;
@@ -38,13 +38,12 @@ export default class NksFagsystemer extends LightningElement {
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
 
     connectedCallback() {
-        /*
         checkFagsoneIpRange().then((res) => {
             this.inFagsone = res.isInFagsone;
             if (this.inFagsone === false) {
                 console.log('Ip is: ' + res.ip);
             }
-        });*/
+        });
 
         checkIfSandboxOrScratch().then((res) => {
             this.isSandbox = res;
