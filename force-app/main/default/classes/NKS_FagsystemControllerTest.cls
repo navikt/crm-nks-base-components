@@ -40,7 +40,7 @@ public with sharing class NKS_FagsystemControllerTest {
         }
 
     @IsTest
-    static void getFagsystemData() {
+    static void testGetFagsystemData() {
         Person__c pers = [SELECT Id, Name, INT_ActorId__c, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
         Id accountId = pers.CRM_Account__c;
         Case c = [SELECT Id FROM Case WHERE AccountId = :accountId];
