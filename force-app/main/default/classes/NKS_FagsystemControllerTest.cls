@@ -71,7 +71,7 @@ public with sharing class NKS_FagsystemControllerTest {
     static void testCheckIfSandboxOrScratch () {
         Test.startTest();
         Boolean isSandbox = NKS_FagsystemController.checkIfSandboxOrScratch();
-        Test.startTest();
+        Test.stopTest();
     }
 
 }
