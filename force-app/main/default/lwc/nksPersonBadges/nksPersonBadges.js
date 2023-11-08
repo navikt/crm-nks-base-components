@@ -25,7 +25,7 @@ export default class NksPersonBadges extends LightningElement {
     @track interpreterSpokenLanguages = [];
     @track guardianships = [];
     @track powerOfAttorneys = [];
-    //@track entitlements = [];
+    // @track entitlements = [];
     @track errorMessages = [];
 
     infoPanelToShow = '';
@@ -103,11 +103,10 @@ export default class NksPersonBadges extends LightningElement {
     get showPowerOfAttorney() {
         return 'powerOfAttorney' === this.infoPanelToShow && 0 < this.powerOfAttorneys.length;
     }
-    /*
-    get showEntitlements() {
-        return 'entitlements' === this.infoPanelToShow && 0 < this.entitlements.length;
-    } 
-    */
+
+    // get showEntitlements() {
+    //     return 'entitlements' === this.infoPanelToShow && 0 < this.entitlements.length;
+    // }
 
     get showDateOfDeath() {
         return 'isDeceased' === this.infoPanelToShow && this.dateOfDeath !== null;
@@ -176,7 +175,7 @@ export default class NksPersonBadges extends LightningElement {
             this.interpreterSpokenLanguages = data.spokenLanguagesIntepreter;
             this.guardianships = data.guardianships;
             this.powerOfAttorneys = data.powerOfAttorneys;
-            //this.entitlements = data.entitlements;
+            // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
             this.dateOfDeath = data.dateOfDeath;
 
