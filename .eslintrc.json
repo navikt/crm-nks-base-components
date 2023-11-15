@@ -6,7 +6,10 @@
     "extends": [
         "eslint:recommended",
         "@salesforce/eslint-config-lwc/recommended",
-        "@salesforce/eslint-config-lwc/i18n"
+        "@salesforce/eslint-config-lwc/i18n",
+        "@locker/eslint-config-locker/recommended",
+        "plugin:@salesforce/eslint-plugin-aura/recommended",
+        "plugin:@salesforce/eslint-plugin-aura/locker"
     ],
     "parser": "@babel/eslint-parser",
     "parserOptions": {
@@ -19,5 +22,5 @@
             }
         }
     },
-    "plugins": ["@lwc/eslint-plugin-lwc"]
+    "plugins": ["@lwc/eslint-plugin-lwc", "@salesforce/eslint-plugin-aura"]
 }
