@@ -5,9 +5,17 @@
     <masterLabel>NKS Help Text</masterLabel>
     <targets>
         <target>lightning__RecordPage</target>
+        <target>lightning__FlowScreen</target>
     </targets>
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
+            <property name="label" type="String" label="Label" default="label" />
+            <property name="helpText" type="String" label="Help Text" default="help text" />
+            <property name="backgroundColor" type="String" label="Background Color"
+                default="#ccf1d6" />
+            <property name="iconColor" type="String" label="Icon Color" default="#06893a" />
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
             <property name="label" type="String" label="Label" default="label" />
             <property name="helpText" type="String" label="Help Text" default="help text" />
             <property name="backgroundColor" type="String" label="Background Color"
