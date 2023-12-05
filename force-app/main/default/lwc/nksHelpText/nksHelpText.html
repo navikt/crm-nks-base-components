@@ -1,0 +1,39 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <div class="slds-accordion parent" style={backgroundStyle}>
+        <div class={sectionClass}>
+            <div class="slds-accordion__summary">
+                <h2 class="slds-accordion__summary-heading">
+                    <button
+                        class="slds-button slds-button_reset slds-accordion__summary-action"
+                        aria-controls="knowledgeHelp"
+                        aria-expanded={ariaExpanded}
+                        title="knowledge hjelp"
+                        onclick={handleOpen}
+                    >
+                        <lightning-icon
+                            icon-name={sectionIconName}
+                            size="xx-small"
+                            alternative-text="switch"
+                            aria-hidden="true"
+                        ></lightning-icon>
+                        <span class="slds-accordion__summary-content slds-var-p-left_x-small">{label}</span>
+                    </button>
+                    <lightning-icon
+                        class="slds-var-p-right_small"
+                        style={iconStyle}
+                        icon-name="utility:info"
+                        size="x-small"
+                        alternative-text="information"
+                        aria-hidden="true"
+                    ></lightning-icon>
+                </h2>
+            </div>
+            <div class="slds-accordion__content child" id="knowledgeHelp" aria-hidden={isHidden}>
+                <div class="slds-var-p-around_small">
+                    <lightning-formatted-rich-text value={helpText}></lightning-formatted-rich-text>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
