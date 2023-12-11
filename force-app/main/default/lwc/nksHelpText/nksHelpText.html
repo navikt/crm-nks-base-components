@@ -17,7 +17,9 @@
                             alternative-text="switch"
                             aria-hidden="true"
                         ></lightning-icon>
-                        <span class="slds-accordion__summary-content slds-var-p-left_x-small">{label}</span>
+                        <span class="slds-accordion__summary-content slds-var-p-left_x-small"
+                            >{objMetadataValues.label}</span
+                        >
                     </button>
                     <lightning-icon
                         class="slds-var-p-right_small"
@@ -31,7 +33,7 @@
             </div>
             <div class="slds-accordion__content child" id="knowledgeHelp" aria-hidden={isHidden}>
                 <div class="slds-var-p-around_small">
-                    <lightning-formatted-rich-text value={helpText}></lightning-formatted-rich-text>
+                    <lightning-formatted-rich-text value={objMetadataValues.content}></lightning-formatted-rich-text>
                 </div>
             </div>
         </div>

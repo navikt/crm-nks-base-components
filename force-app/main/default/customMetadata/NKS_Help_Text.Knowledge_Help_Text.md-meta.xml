@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Knowledge Help Text</label>
+    <protected>false</protected>
+    <values>
+        <field>Help_Text_Content__c</field>
+        <value xsi:type="xsd:string">&lt;h3&gt;&lt;strong&gt;Kun søkeord&lt;/strong&gt;&lt;/h3&gt;   
+&lt;p&gt;La oss si du leter etter informasjon om dagpenger og ventedager. Du skriver dagpenger ventedager i søkefeltet i kunnskapsbasen og får opp over 100 treff.&lt;/p&gt;                     
+&lt;br /&gt;                     
+&lt;h3&gt;&lt;strong&gt; Søk ved hjelp av OR (ELLER)&lt;/strong&gt;&lt;/h3&gt;                     
+&lt;p&gt;Dersom du bruker OR (det engelske ELLER), altså skriver &quot;dagpenger or ventedager&quot; i søkefeltet får du 163 treff.&lt;/p&gt;                     
+&lt;br /&gt;
+&lt;h3&gt;&lt;strong&gt;Søk ved hjelp av AND (OG)&lt;/strong&gt;&lt;/h3&gt;                     
+&lt;p&gt;Dersom du bruker AND (det engelske OG), altså skriver &quot;dagpenger and ventedager&quot; i søkefeltet får du 4 treff.&lt;/p&gt;                     
+&lt;br /&gt;                     
+&lt;h3&gt;&lt;strong&gt;Søk innad i en kunnskapsartikkel&lt;/strong&gt;&lt;/h3&gt;                     
+&lt;p&gt;Du kan søke innad i en kunnskapsartikkel ved hjelp av F3-tasten. Merk at du kun får treff i de fanene/trekkspillene som vises/er åpne.&lt;/p&gt;                     
+&lt;br /&gt;                     
+&lt;a href=&quot;https://navno.sharepoint.com/sites/enhet-kontaktsenter/SitePages/Kunnskapsbase.aspx&quot; target=&quot;_blank&quot;&gt;Les mer&lt;/a&gt;</value>
+    </values>
+    <values>
+        <field>Help_Text_Label__c</field>
+        <value xsi:type="xsd:string">Hvordan bruke knowledge effektivt og smart</value>
+    </values>
+</CustomMetadata>

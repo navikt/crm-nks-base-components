@@ -1,15 +1,33 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire, track } from 'lwc';
+import { getRecord } from 'lightning/uiRecordApi';
 
 export default class NksKnowledgeHelpText extends LightningElement {
-    @api label;
-    @api helpText;
+    @api helpTextId;
     @api backgroundColor = '#ccf1d6';
     @api iconColor = '#06893a';
+
+    @track objMetadataValues = {};
 
     sectionClass = 'slds-accordion__section';
     sectionIconName = 'utility:chevronright';
     isExpanded = true;
     isHidden = false;
+
+    @wire(getRecord, {
+        recordId: '$helpTextId',
+        fields: ['NKS_Help_Text__mdt.Help_Text_Label__c', 'NKS_Help_Text__mdt.Help_Text_Content__c']
+    })
+    wiredData({ error, data }) {
+        if (data) {
+            let currentData = data.fields;
+            this.objMetadataValues = {
+                label: currentData.Help_Text_Label__c.value,
+                content: currentData.Help_Text_Content__c.value
+            };
+        } else if (error) {
+            window.console.log('error ====> ' + JSON.stringify(error));
+        }
+    }
 
     handleOpen() {
         if (this.sectionClass === 'slds-accordion__section slds-is-open') {
