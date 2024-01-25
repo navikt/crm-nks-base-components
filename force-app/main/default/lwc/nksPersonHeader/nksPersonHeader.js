@@ -35,6 +35,7 @@ export default class NksPersonHeader extends LightningElement {
     @api btnClick = false;
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
+    fullmaktFremtidData;
     @track customclass = 'grey-icon';
     navUnit;
     @track veilederName;
@@ -260,7 +261,8 @@ export default class NksPersonHeader extends LightningElement {
     })
     wiredHistorikk({ error, data }) {
         if (data) {
-            this.fullmaktHistData = data;
+            this.fullmaktHistData = data.historiske;
+            this.fullmaktFremtidData = data.fremtidige;
             this.btnShowFullmakt = this.fullmaktHistData.length > 0;
         }
         if (error) {
