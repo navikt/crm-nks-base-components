@@ -316,7 +316,6 @@ public with sharing class NKS_PersonBadgesController {
                                     }
                                 }
                             }
-
                             powerOfAttorneys.add(poa);
                             i++;
                         }
@@ -466,12 +465,13 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setPersonName() {
             for (Account acc : [
-                SELECT Name, CRM_Person__r.Name
+                SELECT Name, CRM_Person__r.Name, CRM_Person__r.NKS_Full_Name__c
                 FROM Account
                 WHERE CRM_Person__c != NULL AND CRM_Person__r.Name IN :personIdentNameMap.keySet()
                 WITH SYSTEM_MODE
             ]) {
-                personIdentNameMap.put(acc.CRM_Person__r.Name, acc.Name);
+                String name = String.isNotBlank(acc.CRM_Person__r.NKS_Full_Name__c) ? acc.CRM_Person__r.NKS_Full_Name__c : acc.Name;
+                personIdentNameMap.put(acc.CRM_Person__r.Name, name);
             }
 
             for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {
