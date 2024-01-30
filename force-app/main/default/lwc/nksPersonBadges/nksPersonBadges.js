@@ -37,34 +37,33 @@ export default class NksPersonBadges extends LightningElement {
     dateOfDeath;
 
     get isLoaded() {
-        return this.wiredBadge &&
+        return (
+            this.wiredBadge &&
             (this.wiredBadge.data || this.wiredBadge.error) &&
             this.wiredPersonAccessBadge &&
             (this.wiredPersonAccessBadge.data || this.wiredPersonAccessBadge.error)
-            ? true
-            : false;
+        );
     }
 
     get hasErrors() {
-        return this.errorMessages && 0 < this.errorMessages.length ? true : false;
+        return this.errorMessages && 0 < this.errorMessages.length;
     }
 
     get hasBadges() {
-        return (this.badges && 0 < this.badges.length) ||
-            (this.personAccessBadges && 0 < this.personAccessBadges.length)
-            ? true
-            : false;
+        return (
+            (this.badges && 0 < this.badges.length) || (this.personAccessBadges && 0 < this.personAccessBadges.length)
+        );
     }
 
     get selectedBadge() {
         if (this.infoPanelToShow) {
-            for (let index = 0; index < this.badges.length; index++) {
-                const badge = this.badges[index];
+            for (const badge of this.badges) {
                 if (badge.name === this.infoPanelToShow) {
                     return badge;
                 }
             }
         }
+        return null;
     }
 
     get badgeInfo() {
@@ -271,40 +270,25 @@ export default class NksPersonBadges extends LightningElement {
     }
 
     setUuAlertText() {
-        let alertText = '';
-
         const hasSecurityMeasures = this.securityMeasures.length > 0;
         const navEmployeeText = ' er egen ansatt';
         const isConfidentialText = ' skjermet';
 
-        const securityMeasureText =
-            ' har ' +
-            this.securityMeasures.length +
-            ' sikkerhetstiltak: ' +
-            (this.securityMeasures.length === 1
-                ? this.securityMeasures[0]?.SecurityMeasure
-                : this.securityMeasures.reduce(
-                      (retString, secMeasure, index) =>
-                          retString +
-                          (index !== this.securityMeasures.length - 1
-                              ? secMeasure.SecurityMeasure + ', '
-                              : 'og ' + secMeasure.SecurityMeasure),
-                      ''
-                  ));
+        let alertText = `Bruker${this.isNavEmployee ? navEmployeeText : ''}`;
 
-        alertText += 'Bruker';
-        alertText += this.isNavEmployee ? navEmployeeText : '';
-        alertText +=
-            this.isNavEmployee && this.isConfidential && hasSecurityMeasures
-                ? ', '
-                : this.isNavEmployee && this.isConfidential
-                ? ' og'
-                : this.isConfidential
-                ? ' er'
-                : '';
+        const securityMeasureText = hasSecurityMeasures
+            ? ` har ${this.securityMeasures.length} sikkerhetstiltak: ${this.securityMeasures
+                  .map((secMeasure) => secMeasure.SecurityMeasure)
+                  .join(', ')}`
+            : '';
+
+        const confidentialityText =
+            this.isNavEmployee && this.isConfidential ? ', og' : this.isConfidential ? ' er' : '';
+
+        alertText += confidentialityText;
         alertText += this.isConfidential ? isConfidentialText : '';
         alertText += (this.isNavEmployee || this.isConfidential) && hasSecurityMeasures ? ' og' : '';
-        alertText += hasSecurityMeasures ? securityMeasureText : '';
+        alertText += securityMeasureText || '';
         alertText += '.';
 
         this.uuAlertText = alertText;

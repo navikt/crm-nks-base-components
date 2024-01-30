@@ -22,8 +22,6 @@ export default class NksPersonHeader extends LightningElement {
     @api showPersonBadges = false;
     @api leftAlignBadges = false;
     @api showExtraInfo = false;
-    @api condition1; //deprecated
-    @api condition2; //deprecated
     personId;
     fullName;
     personIdent;
@@ -32,13 +30,14 @@ export default class NksPersonHeader extends LightningElement {
     citizenship;
     maritalStatus;
     wireFields;
-    @api btnClick = false;
-    @api btnShowFullmakt = false;
-    @api fullmaktHistData;
-    @track customclass = 'grey-icon';
     navUnit;
-    @track veilederName;
     formattedUnitLink;
+    btnClick = false;
+    btnShowFullmakt = false;
+    fullmaktHistData;
+
+    @track customclass = 'grey-icon';
+    @track veilederName;
 
     @wire(MessageContext)
     messageContext;
@@ -77,20 +76,13 @@ export default class NksPersonHeader extends LightningElement {
         }
     }
 
-    get showNotifications() {
-        return this.notifications.length > 0;
-    }
-
-    get showErrors() {
-        return this.errorMessages.length > 0;
-    }
-
     get genderIcon() {
         switch (this.gender) {
             case 'Mann':
                 return 'MaleFilled';
             case 'Kvinne':
                 return 'FemaleFilled';
+            default:
         }
         return 'NeutralFilled';
     }
@@ -180,6 +172,7 @@ export default class NksPersonHeader extends LightningElement {
         })
             .then((record) => {
                 this.personId = this.resolve(relationshipField, record);
+                console.log('personId: ', this.personId);
             })
             .catch((error) => {
                 console.log(error);
@@ -196,10 +189,10 @@ export default class NksPersonHeader extends LightningElement {
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
-            let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD).toLowerCase();
+            let __citizenship = String(getFieldValue(data, CITIZENSHIP_FIELD))?.toLowerCase();
             this.citizenship = __citizenship.charAt(0).toUpperCase() + __citizenship.slice(1);
-            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD)
-                .toLowerCase()
+            let __maritalStatus = String(getFieldValue(data, MARITAL_STATUS_FIELD))
+                ?.toLowerCase()
                 .replace(/_/g, ' ')
                 .replace(' eller enkemann', '/-mann');
             this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
@@ -268,14 +261,16 @@ export default class NksPersonHeader extends LightningElement {
         }
     }
 
-    /**
-     * Retrieves the value from the given object's data path
-     * @param {data path} path
-     * @param {JS object} obj
-     */
     resolve(path, obj) {
-        return path.split('.').reduce(function (prev, curr) {
-            return prev ? prev[curr] : null;
-        }, obj || self);
+        if (typeof path !== 'string') {
+            throw new Error('Path must be a string');
+        }
+
+        const parts = path.split('.');
+        const result = parts.reduce(function (prev, curr) {
+            return prev ? prev[curr] : undefined;
+        }, obj || {});
+
+        return result !== undefined ? result : null;
     }
 }

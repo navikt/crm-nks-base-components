@@ -42,7 +42,7 @@ export default class NksPersonAccessBadges extends LightningElement {
     }
 
     get hasBadges() {
-        return this.badges && 0 < this.badges.length ? true : false;
+        return this.badges && 0 < this.badges.length;
     }
 
     get showBadges() {

@@ -1,15 +1,15 @@
-import { LightningElement, api, track, wire } from 'lwc';
-import getContactInformation from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformation';
+import { LightningElement, api, track } from 'lwc';
 export default class NksNavUnit extends LightningElement {
     @api navUnit; // The nav unit
     @api contactInformation; // The contact information of the NAV Unit
     @api contactInformationV2; // Contact information from V2 of the api (more organized)
     @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
     @api numCols = 2; // Number of columns for the displayed fields
+
     @track activeSections = []; // The active sections on component load
 
     connectedCallback() {
-        if ('true' === this.allSectionsOpenOnLoad || true === this.allSectionsOpenOnLoad) {
+        if (this.allSectionsOpenOnLoad === 'true' || this.allSectionsOpenOnLoad === true) {
             this.activeSections = ['UNIT_SERVICES', 'CONTACT_DETAILS'];
         }
     }

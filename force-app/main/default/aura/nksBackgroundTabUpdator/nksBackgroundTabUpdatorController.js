@@ -1,5 +1,5 @@
 ({
-    onTabCreated: function (component, event, helper) {
+    onTabCreated: function (component, event) {
         var newTabId = event.getParam('tabId');
         var workspace = component.find('workspace');
 
@@ -9,7 +9,7 @@
                     .isSubtab({
                         tabId: newTabId
                     })
-                    .then(function (response) {
+                    .then(function () {
                         if (!response) {
                             workspace.focusTab({
                                 tabId: newTabId
@@ -43,15 +43,16 @@
             });
     },
 
-    doInit: function (component, event, helper) {
+    doInit: function (component) {
         var omniAPI = component.find('omniToolkit');
         var action = component.get('c.getOnlineId');
         action.setCallback(this, function (data) {
             if (data.getReturnValue() != null && data.getReturnValue().length > 0) {
+                // eslint-disable-next-line @lwc/lwc/no-async-operation
                 var poll = setInterval(function () {
                     omniAPI
                         .login({ statusId: data.getReturnValue() })
-                        .then(function (result) {
+                        .then(function () {
                             clearInterval(poll);
                         })
                         .catch(function (error) {
