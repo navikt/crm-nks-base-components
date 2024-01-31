@@ -44,12 +44,12 @@
     },
 
     doInit: function (component) {
-        var omniAPI = component.find('omniToolkit');
-        var action = component.get('c.getOnlineId');
+        let omniAPI = component.find('omniToolkit');
+        let action = component.get('c.getOnlineId');
         action.setCallback(this, function (data) {
             if (data.getReturnValue() != null && data.getReturnValue().length > 0) {
-                // eslint-disable-next-line @lwc/lwc/no-async-operation
-                var poll = setInterval(function () {
+                // eslint-disable-next-line @lwc/lwc/no-async-operation, @locker/locker/distorted-window-set-interval
+                let poll = setInterval(function () {
                     omniAPI
                         .login({ statusId: data.getReturnValue() })
                         .then(function () {

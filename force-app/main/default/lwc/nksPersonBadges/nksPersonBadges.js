@@ -252,8 +252,10 @@ export default class NksPersonBadges extends LightningElement {
         let badges = this.template.querySelectorAll('.slds-badge');
         badges.forEach((badge) => {
             if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
+                // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
                 badge.setAttribute('aria-expanded', 'true');
             } else if (badge.role === 'button') {
+                // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
                 badge.setAttribute('aria-expanded', 'false');
             }
         });

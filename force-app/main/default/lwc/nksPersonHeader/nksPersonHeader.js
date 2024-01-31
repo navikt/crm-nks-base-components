@@ -145,6 +145,7 @@ export default class NksPersonHeader extends LightningElement {
         hiddenInput.focus();
         hiddenInput.select();
         try {
+            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
             const successful = document.execCommand('copy');
             if (!successful) this.showCopyToast('error');
         } catch (error) {
@@ -189,13 +190,23 @@ export default class NksPersonHeader extends LightningElement {
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
-            let __citizenship = String(getFieldValue(data, CITIZENSHIP_FIELD))?.toLowerCase();
-            this.citizenship = __citizenship.charAt(0).toUpperCase() + __citizenship.slice(1);
-            let __maritalStatus = String(getFieldValue(data, MARITAL_STATUS_FIELD))
-                ?.toLowerCase()
-                .replace(/_/g, ' ')
-                .replace(' eller enkemann', '/-mann');
-            this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
+            let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
+            if (__citizenship != null && typeof __citizenship == 'string') {
+                this.citizenship = __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
+            } else {
+                this.citizenship = '';
+            }
+
+            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD);
+            if (__maritalStatus != null && typeof __maritalStatus == 'string') {
+                this.maritalStatus = __maritalStatus
+                    .toLowerCase()
+                    .replace(/_/g, ' ')
+                    .replace(' eller enkemann', '/-mann');
+                this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
+            } else {
+                this.maritalStatus = '';
+            }
         }
         if (error) {
             console.log(error);
