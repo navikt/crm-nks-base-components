@@ -190,14 +190,14 @@ export default class NksPersonHeader extends LightningElement {
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
-            if (__citizenship != null && typeof __citizenship == 'string') {
+            if (__citizenship != null && typeof __citizenship === 'string') {
                 this.citizenship = __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
             } else {
                 this.citizenship = '';
             }
 
             let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD);
-            if (__maritalStatus != null && typeof __maritalStatus == 'string') {
+            if (__maritalStatus != null && typeof __maritalStatus === 'string') {
                 this.maritalStatus = __maritalStatus
                     .toLowerCase()
                     .replace(/_/g, ' ')
