@@ -173,7 +173,6 @@ export default class NksPersonHeader extends LightningElement {
         })
             .then((record) => {
                 this.personId = this.resolve(relationshipField, record);
-                console.log('personId: ', this.personId);
             })
             .catch((error) => {
                 console.log(error);
