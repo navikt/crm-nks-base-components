@@ -22,8 +22,8 @@ export default class NksFagsystemer extends LightningElement {
     @track showLinks;
     @track inFagsone = false;
     @api filterList;
+    @api personId;
 
-    personId;
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
 
     possibleLinks = [
