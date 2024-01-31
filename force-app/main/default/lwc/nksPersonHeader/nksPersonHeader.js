@@ -145,6 +145,7 @@ export default class NksPersonHeader extends LightningElement {
         hiddenInput.focus();
         hiddenInput.select();
         try {
+            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
             const successful = document.execCommand('copy');
             if (!successful) this.showCopyToast('error');
         } catch (error) {

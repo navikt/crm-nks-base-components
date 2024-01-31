@@ -48,7 +48,7 @@
         var action = component.get('c.getOnlineId');
         action.setCallback(this, function (data) {
             if (data.getReturnValue() != null && data.getReturnValue().length > 0) {
-                // eslint-disable-next-line @lwc/lwc/no-async-operation
+                // eslint-disable-next-line @lwc/lwc/no-async-operation, @locker/locker/distorted-window-set-interval
                 var poll = setInterval(function () {
                     omniAPI
                         .login({ statusId: data.getReturnValue() })

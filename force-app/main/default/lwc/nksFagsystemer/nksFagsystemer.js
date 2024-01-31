@@ -123,10 +123,12 @@ export default class NksFagsystemer extends LightningElement {
                 .then((res) => {
                     return res.text();
                 })
+                // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                 .then((a) => window.open(a))
                 .catch((error) => {
                     console.log('An error occured while retrieving AA-reg link');
                     console.log(error);
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
         }
@@ -180,6 +182,7 @@ export default class NksFagsystemer extends LightningElement {
                         );
                         return;
                     }
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open(urlLink);
                 })
                 .catch(() => {

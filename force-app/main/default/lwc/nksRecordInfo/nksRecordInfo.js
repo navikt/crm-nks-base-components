@@ -175,6 +175,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         hiddenInput.focus();
         hiddenInput.select();
         try {
+            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
             var successful = document.execCommand('copy');
             if (!successful) this.showCopyToast(field.fieldName, 'error');
         } catch (error) {
