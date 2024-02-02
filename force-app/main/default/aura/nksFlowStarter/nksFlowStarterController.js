@@ -1,5 +1,5 @@
 ({
-    doInit: function (component, event, helper) {
+    doInit: function (component, _event, helper) {
         let buttonLabel = component.get('v.buttonLabel');
         //If the button label is a reference to a custom label, use the custom label reference, else fallback to the input value
         buttonLabel = helper.isLabelReference(component, buttonLabel)
@@ -8,7 +8,7 @@
         component.set('v.buttonLabel', buttonLabel);
     },
 
-    toggleFlow: function (component, event, helper) {
+    toggleFlow: function (component) {
         let showFlow = !component.get('v.showFlow');
         component.set('v.showFlow', showFlow);
         component.set('v.ariaExpanded', showFlow.toString()); //Aria attribute requires string
@@ -29,7 +29,7 @@
         }
     },
 
-    flowStatusChange: function (component, event, helper) {
+    flowStatusChange: function (component, event) {
         const flowName = component.get('v.flowName');
         let flowStatus = event.getParam('status');
         if (

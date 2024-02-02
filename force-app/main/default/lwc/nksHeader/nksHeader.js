@@ -38,11 +38,11 @@ export default class NksHeader extends LightningElement {
     }
 
     connectedCallback() {
-        if (this.headertag == 'h1') this.h1 = true;
-        if (this.headertag == 'h2') this.h2 = true;
-        if (this.headertag == 'h3') this.h3 = true;
-        if (this.headertag == 'h4') this.h4 = true;
-        if (this.headertag == 'h5') this.h5 = true;
-        if (this.headertag == 'h6') this.h6 = true;
+        if (this.headertag === 'h1') this.h1 = true;
+        if (this.headertag === 'h2') this.h2 = true;
+        if (this.headertag === 'h3') this.h3 = true;
+        if (this.headertag === 'h4') this.h4 = true;
+        if (this.headertag === 'h5') this.h5 = true;
+        if (this.headertag === 'h6') this.h6 = true;
     }
 }

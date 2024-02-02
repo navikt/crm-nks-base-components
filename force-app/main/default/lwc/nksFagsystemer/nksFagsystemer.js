@@ -7,9 +7,6 @@ import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
-/* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
-
 const filterFunc = (listToFilterOut, listToFilterIn) => (element) => {
     return (
         (!listToFilterOut || !listToFilterOut.includes(element.name)) &&
@@ -22,10 +19,10 @@ export default class NksFagsystemer extends LightningElement {
     @api title;
     @api relatedField;
     @api objectApiName;
-    @api personId;
     @track showLinks;
     @track inFagsone = false;
     @api filterList;
+    @api personId;
 
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
 
@@ -116,6 +113,7 @@ export default class NksFagsystemer extends LightningElement {
     handleAAClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
             const actorId = getFieldValue(this.person.data, PERSON_IDENT_FIELD);
+            // eslint-disable-next-line @locker/locker/distorted-window-fetch
             fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
                 headers: {
@@ -126,10 +124,12 @@ export default class NksFagsystemer extends LightningElement {
                 .then((res) => {
                     return res.text();
                 })
+                // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                 .then((a) => window.open(a))
                 .catch((error) => {
                     console.log('An error occured while retrieving AA-reg link');
                     console.log(error);
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
         }
@@ -183,6 +183,7 @@ export default class NksFagsystemer extends LightningElement {
                         );
                         return;
                     }
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open(urlLink);
                 })
                 .catch(() => {
