@@ -32,12 +32,15 @@ export default class NksPersonHeader extends LightningElement {
     wireFields;
     navUnit;
     formattedUnitLink;
-    btnClick = false;
-    btnShowFullmakt = false;
-    fullmaktHistData;
 
-    @track customclass = 'grey-icon';
-    @track veilederName;
+    @api btnClick = false;
+    @api btnShowFullmakt = false;
+    @api fullmaktHistData;
+    @api condition1; //deprecated
+    @api condition2; //deprecated
+
+    customclass = 'grey-icon';
+    veilederName;
 
     @wire(MessageContext)
     messageContext;
