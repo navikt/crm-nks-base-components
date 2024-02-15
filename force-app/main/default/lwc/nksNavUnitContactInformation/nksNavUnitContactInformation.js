@@ -3,7 +3,6 @@ import { LightningElement, api, track } from 'lwc';
 export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
     @track _contactInformation;
-    @track _contactInformationV2;
     @track _visitorLocations = [];
     @track _visitorChannels;
     _visitorLocationsLength = 0;
@@ -25,17 +24,6 @@ export default class NksNavUnitContactInformation extends LightningElement {
         }
     }
 
-    @api
-    set contactInformationV2(value) {
-        if (value) {
-            this._contactInformation = value;
-            if (value.brukerkontakt.publikumskanaler && value.brukerkontakt.publikumskanaler.length) {
-                this.hasVisitorChannels = true;
-                this._visitorChannels = value.brukerkontakt.publikumskanaler;
-            }
-        }
-    }
-
     get columnWidth() {
         return 12 / this.numCols;
     }
@@ -43,10 +31,6 @@ export default class NksNavUnitContactInformation extends LightningElement {
     //get hasContactInformation() { return this._contactInformation ? true : false; }
     get contactInformation() {
         return this._contactInformation;
-    }
-
-    get contactInformationV2() {
-        return this._contactInformationV2;
     }
 
     //get hasVisitorLocations() { return 0 < this._visitorLocationsLength; }
