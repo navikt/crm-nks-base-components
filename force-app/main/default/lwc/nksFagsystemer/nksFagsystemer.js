@@ -1,8 +1,7 @@
-import { LightningElement, api, track, wire } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
-import checkFagsoneIpRange from '@salesforce/apex/NKS_FagsystemController.checkFagsoneIpRange';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
-import checkIfSandboxOrScratch from '@salesforce/apex/NKS_FagsystemController.checkIfSandboxOrScratch';
+import getFagsoneIpAndOrgType from '@salesforce/apex/ApexController.getFagsoneIpAndOrgType';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
@@ -25,9 +24,7 @@ export default class NksFagsystemer extends LightningElement {
     @api filterList;
     @api personId; // deprecated
 
-    // @track showLinks;
-    @track inFagsone = false;
-
+    inFagsone = false;
     isSandbox = false;
     showSpinner = false;
     wiredObject;
@@ -45,17 +42,29 @@ export default class NksFagsystemer extends LightningElement {
         this._personIdent = value;
     }
 
-    connectedCallback() {
-        checkFagsoneIpRange().then((res) => {
-            this.inFagsone = res.isInFagsone;
-            if (this.inFagsone === false) {
-                console.log('Ip is: ' + res.ip);
-            }
-        });
+    get layoutItemSize() {
+        return 6;
+    }
 
-        checkIfSandboxOrScratch().then((res) => {
-            this.isSandbox = res;
-        });
+    get showContent() {
+        return this.wiredObject != null;
+    }
+
+    get showRefreshButton() {
+        return !(!this.objectApiName || !this.recordId || !this.relatedField);
+    }
+
+    @wire(getFagsoneIpAndOrgType)
+    wiredGetFagsoneIpAndOrgType({ error, data }) {
+        if (data) {
+            this.isSandbox = data.isSandboxOrScratch;
+            this.inFagsone = data.isInFagsone;
+            if (!this.inFagsone) {
+                console.log('Ip is: ' + data.ip);
+            }
+        } else if (error) {
+            console.error(error);
+        }
     }
 
     @wire(getData, {
@@ -63,88 +72,40 @@ export default class NksFagsystemer extends LightningElement {
         relatedField: '$relatedField',
         objectApiName: '$objectApiName'
     })
-    wiredData(result) {
-        this.wiredObject = result;
-        this.loadData();
+    wiredData({ error, data }) {
+        if (data) {
+            this.wiredObject = data;
+            this.loadData();
+        } else if (error) {
+            console.error(error);
+        }
     }
 
     loadData() {
-        const { error, data } = this.wiredObject;
-        if (data) {
-            this.navIdent = data.navIdent;
-            this._personIdent = data.personIdent;
-            this.actorId = data.actorId;
+        if (this.wiredObject) {
+            this.navIdent = this.wiredObject.navIdent;
+            this._personIdent = this.wiredObject.personIdent;
+            this.actorId = this.wiredObject.actorId;
 
             if (this.navIdent && this.personIdent && this.actorId) {
                 this.filterLinks();
             }
-        } else if (error) {
-            console.log(error);
         }
     }
 
     filterLinks() {
         let possibleLinks = [
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
-            {
-                name: 'Aktivitetsplan',
-                field: this.isSandbox
-                    ? `https://veilarbpersonflate.intern.nav.no/${this.personIdent}`
-                    : `https://veilarbpersonflate.dev.intern.nav.no/${this.personIdent}`
-            },
-            { name: 'Barnetrygd', field: `https://barnetrygd.intern.nav.no/oppgaver` },
-            {
-                name: 'DinPensjon',
-                field: this.isSandbox
-                    ? `https://pensjon-pselv-q1.nais.preprod.local/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`
-                    : `https://pensjon-pselv.nais.adeo.no/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`
-            },
-            {
-                name: 'DinUfore',
-                field: this.isSandbox
-                    ? `https://pensjon-pselv-q1.nais.preprod.local/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
-                    : `https://pensjon-pselv.nais.adeo.no/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`
-            },
-            { name: 'Enslig', field: `https://ensligmorellerfar.intern.nav.no/oppgavebenk` },
-            {
-                name: 'Foreldrepenger',
-                field: this.isSandbox
-                    ? `https://fpsak.dev.intern.nav.no/aktoer/${this.actorId}`
-                    : `https://fpsak.intern.nav.no/aktoer/${this.actorId}`
-            },
-            {
-                name: 'Gosys',
-                field: this.isSandbox
-                    ? `https://gosys-q1.dev.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
-                    : `https://gosys.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`
-            },
-            { name: 'Kontantstøtte', literalLink: 'https://kontantstotte.intern.nav.no/' },
-            { name: 'K9', field: `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}` },
-            {
-                name: 'Modia',
-                field: this.isSandbox
-                    ? `http://app-qx.adeo.no/modiapersonoversikt/${this.personIdent}`
-                    : `https://app.adeo.no/modiapersonoversikt/person/${this.personIdent}`
-            },
-            {
-                name: 'Pesys',
-                field: `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`
-            },
-            {
-                name: 'Speil',
-                field: this.isSandbox
-                    ? `https://syfomodiaperson.dev.intern.nav.no/sykefravaer/personsok`
-                    : `https://syfomodiaperson.intern.nav.no/sykefravaer/personsok`
-            }
+            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan') },
+            { name: 'DinPensjon', field: this.generateUrl('DinPensjon') },
+            { name: 'DinUfore', field: this.generateUrl('DinUfore') },
+            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger') },
+            { name: 'Gosys', field: this.generateUrl('Gosys') },
+            { name: 'K9', field: this.generateUrl('K9') },
+            { name: 'Modia', field: this.generateUrl('Modia') },
+            { name: 'Pesys', field: this.generateUrl('Pesys') },
+            { name: 'Speil', field: this.generateUrl('Speil') }
         ];
-        // {
-        //     name: 'Sosial',
-        //     field: null,
-        //     eventFunc: this.handleSosialModiaClickOrKey,
-        //     title: 'Modia Sosialhjelp',
-        //     show: NKS_SosialTilgang
-        // },
-        // { name: 'SYFO', field: null, eventFunc: this.handleSYFOClickOrKey, title: 'SYFO' },
 
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
@@ -158,6 +119,37 @@ export default class NksFagsystemer extends LightningElement {
             .filter(filterFunc(this.hiddenLinks, listOfFilter));
     }
 
+    generateUrl(fagsystem) {
+        switch (fagsystem) {
+            case 'Aktivitetsplan':
+                return `https://veilarbpersonflate${this.isSandbox ? '.dev' : ''}.intern.nav.no/${this.personIdent}`;
+            case 'Barnetrygd':
+                return `https://barnetrygd.intern.nav.no/oppgaver`;
+            case 'DinPensjon':
+                return `https://pensjon-pselv${this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'}/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`;
+            case 'DinUfore':
+                return `https://pensjon-pselv${this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'}/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`;
+            case 'Enslig':
+                return `https://ensligmorellerfar.intern.nav.no/oppgavebenk`;
+            case 'Foreldrepenger':
+                return `https://fpsak${this.isSandbox ? '.dev' : ''}.intern.nav.no/aktoer/${this.actorId}`;
+            case 'Gosys':
+                return `https://gosys${this.isSandbox ? '-q1.dev' : ''}.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`;
+            case 'Kontantstøtte':
+                return 'https://kontantstotte.intern.nav.no/';
+            case 'K9':
+                return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
+            case 'Modia':
+                return `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${this.isSandbox ? '' : 'person/'}${this.personIdent}`;
+            case 'Pesys':
+                return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
+            case 'Speil':
+                return `https://syfomodiaperson${this.isSandbox ? '.dev' : ''}.intern.nav.no/sykefravaer/personsok`;
+            default:
+                return null;
+        }
+    }
+
     refreshRecord() {
         this.showSpinner = true;
         refreshApex(this.wiredObject)
@@ -167,18 +159,6 @@ export default class NksFagsystemer extends LightningElement {
             .finally(() => {
                 this.showSpinner = false;
             });
-    }
-
-    get size() {
-        return 6;
-    }
-
-    get showContent() {
-        return this.wiredObject != null;
-    }
-
-    get showRefreshButton() {
-        return !(!this.objectApiName || !this.recordId || !this.relatedField);
     }
 
     handleAAClickOrKey(e) {
@@ -205,6 +185,41 @@ export default class NksFagsystemer extends LightningElement {
 
             this.handleClick(e);
         }
+    }
+
+    handleSosialModiaClickOrKey(e) {
+        if (e.type === 'click' || e.key === 'Enter') {
+            getModiaSosialLink({ ident: this.personIdent })
+                .then((urlLink) => {
+                    if (!urlLink) {
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Klarte ikke å åpne Modia Sosialhjelp',
+                                message: 'Vennligst prøv på nytt eller naviger direkte',
+                                variant: 'error'
+                            })
+                        );
+                        return;
+                    }
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
+                    window.open(urlLink);
+                })
+                .catch(() => {
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Klarte ikke å åpne Modia Sosialhjelp',
+                            message: 'Vennligst prøv på nytt eller naviger direkte',
+                            variant: 'error'
+                        })
+                    );
+                });
+
+            this.handleClick(e);
+        }
+    }
+
+    handleClick(event) {
+        publishToAmplitude('Fagsystemer', { type: `Click on ${event.target.innerText}` });
     }
 
     // handleSYFOClickOrKey(e) {
@@ -239,44 +254,4 @@ export default class NksFagsystemer extends LightningElement {
     //             });
     //     }
     // }
-
-    handleSosialModiaClickOrKey(e) {
-        if (e.type === 'click' || e.key === 'Enter') {
-            getModiaSosialLink({ ident: this.personIdent })
-                .then((urlLink) => {
-                    if (!urlLink) {
-                        this.dispatchEvent(
-                            new ShowToastEvent({
-                                title: 'Klarte ikke å åpne Modia Sosialhjelp',
-                                message: 'Vennligst prøv på nytt eller naviger direkte',
-                                variant: 'error'
-                            })
-                        );
-                        return;
-                    }
-                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
-                    window.open(urlLink);
-                })
-                .catch(() => {
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Klarte ikke å åpne Modia Sosialhjelp',
-                            message: 'Vennligst prøv på nytt eller naviger direkte',
-                            variant: 'error'
-                        })
-                    );
-                });
-
-            this.handleClick(e);
-        }
-    }
-
-    /*
-    handleLoaded() {
-        this.showLinks = true;
-    }*/
-
-    handleClick(event) {
-        publishToAmplitude('Fagsystemer', { type: `Click on ${event.target.innerText}` });
-    }
 }

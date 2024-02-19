@@ -10,16 +10,13 @@ public with sharing class NKS_FagsystemController {
     public static FagsystemData getFagsystemData (String recordId, String relatedField, String objectApiName) {
         try {
             String query = 'SELECT ' + getField(relatedField) + ' FROM ' + objectApiName + ' WHERE Id = :recordId';
-            System.debug(query);
             List<SOBject> objs = Database.query(query);
-
             Id personId = getIdFromRelationshipQuery(objs, relatedField);
-            Id userId = UserInfo.getUserId();
 
-            Person__c person = [SELECT Id, Name, INT_ActorId__c FROM Person__c WHERE Id =: personId];
-            User user = [SELECT Id, CRM_NAV_Ident__c FROM User WHERE Id =: userId];
-            return new FagsystemData(user.CRM_NAV_Ident__c, person.Name, person.INT_ActorId__c);
+            Person__c person = [SELECT Name, INT_ActorId__c FROM Person__c WHERE Id = :personId];
+            String navIdent = [SELECT CRM_NAV_Ident__c FROM User WHERE Id = :UserInfo.getUserId()].CRM_NAV_Ident__c;
 
+            return new FagsystemData(navIdent, person.Name, person.INT_ActorId__c);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
         }
@@ -29,6 +26,7 @@ public with sharing class NKS_FagsystemController {
         if (relatedField == 'Id') {
             return 'CRM_Person__c';
         }
+
         return relatedField.replace('__c', '__r') + '.CRM_Person__c';
     }
 
@@ -39,6 +37,7 @@ public with sharing class NKS_FagsystemController {
         for (Integer i = 0; i < splitQuery.size() - 1; i++) {
             currentObj = currentObj.getSObject(splitQuery[i]);
         }
+
         return (String) currentObj.get(splitQuery[splitQuery.size() - 1]);
     }
 
@@ -63,10 +62,12 @@ public with sharing class NKS_FagsystemController {
                         httpResponse.getBody()
                 );
             }
+
             ModiaSosialResponse resp = (ModiaSosialResponse) JSON.deserialize(
                 httpResponse.getBody(),
                 ModiaSosialResponse.class
             );
+
             return resp.modiaSosialhjelpUrl;
         } catch (Exception e) {
             LoggerUtility logger = new LoggerUtility();
@@ -90,15 +91,24 @@ public with sharing class NKS_FagsystemController {
         return apiCtrl.getResponse();
     }
 
-    @AuraEnabled
-    public static Boolean checkIfSandboxOrScratch(){
+    @AuraEnabled(cacheable=true)
+    public static FagsoneIpAndOrgType getFagsoneIpAndOrgType() {
+        FagsoneIpAndOrgType result = new FagsoneIpAndOrgType();
         try {
-            System.Domain dom = System.DomainParser.parse(URL.getOrgDomainUrl());
-            return dom.getSandboxName() != null ||
-                [SELECT TrialExpirationDate FROM Organization LIMIT 1].TrialExpirationDate != null;
+            // Fagsone IP check
+            Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
+            String ip = currentSession.get('SourceIp');
+            Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
+            result.ipResult = new FagsoneIp(ip, isInFagsone);
+            
+            // Org type check
+            Organization orgInfo = [SELECT IsSandbox, IsScratch FROM Organization LIMIT 1];
+            result.isSandboxOrScratch = orgInfo.IsSandbox || orgInfo.isScratch;
         } catch (Exception e) {
-            throw new AuraHandledException('Problem checking org: ' + e.getMessage());
+            throw new AuraHandledException('getFagsoneIpAndOrgType failed: ' + e.getMessage());
         }
+        
+        return result;
     }
 
     public class FagsoneIp {
@@ -135,5 +145,12 @@ public with sharing class NKS_FagsystemController {
             this.personIdent = personIdent;
             this.actorId = actorId;
         }
+    }
+
+    public class FagsoneIpAndOrgType {
+        @AuraEnabled
+        public FagsoneIp ipResult;
+        @AuraEnabled
+        public Boolean isSandboxOrScratch;
     }
 }
