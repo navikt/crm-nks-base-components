@@ -68,10 +68,9 @@ public with sharing class NKS_FagsystemControllerTest {
     }
 
     @IsTest 
-    static void testCheckIfSandboxOrScratch () {
+    static void testGetFagsoneIpAndOrgType () {
         Test.startTest();
-        Boolean isSandbox = NKS_FagsystemController.checkIfSandboxOrScratch();
+        FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
         Test.stopTest();
     }
-
 }
