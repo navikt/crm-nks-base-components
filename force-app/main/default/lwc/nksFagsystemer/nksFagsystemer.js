@@ -58,10 +58,10 @@ export default class NksFagsystemer extends LightningElement {
     @wire(getFagsoneIpAndOrgType)
     wiredGetFagsoneIpAndOrgType({ error, data }) {
         if (data) {
-            this.isSandbox = data.isSandboxOrScratch;
-            this.inFagsone = data.isInFagsone;
+            this.isSandbox = data?.isSandboxOrScratch;
+            this.inFagsone = data?.isInFagsone;
             if (!this.inFagsone) {
-                console.log('Ip is: ' + data.ip);
+                console.log('Ip is: ' + data?.ip);
             }
         } else if (error) {
             console.error(error);
