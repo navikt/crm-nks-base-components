@@ -51,7 +51,7 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     get showRefreshButton() {
-        return !(!this.objectApiName || !this.recordId || !this.relatedField);
+        return this.objectApiName && this.recordId && this.relatedField;
     }
 
     @wire(getFagsoneIpAndOrgType)
