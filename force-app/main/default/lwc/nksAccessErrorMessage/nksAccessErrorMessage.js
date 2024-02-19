@@ -5,6 +5,7 @@ export default class NksAccessErrorMessage extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api personRelationField;
+
     @api text;
 
     connectedCallback() {

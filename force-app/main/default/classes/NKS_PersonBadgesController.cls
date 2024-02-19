@@ -102,9 +102,9 @@ public with sharing class NKS_PersonBadgesController {
         fields.add('NKS_NumberOfSecurityMeasures__c');
 
         //HOT Fields
-        //fields.add('HOT_HasEntitlement__c');
-        //fields.addAll(HOT_ENTITLEMENT_FIELDS);
-        //fieldsToLabel.add('HOT_DegreeOfHearingAndVisualImpairment__c');
+        // fields.add('HOT_HasEntitlement__c');
+        // fields.addAll(HOT_ENTITLEMENT_FIELDS);
+        fieldsToLabel.add('HOT_DegreeOfHearingAndVisualImpairment__c');
 
         for (String str : fields) {
             if (objectFields.contains(str.toLowerCase())) {
@@ -149,8 +149,8 @@ public with sharing class NKS_PersonBadgesController {
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
         public List<PowerOfAttorney> powerOfAttorneys;
-        //@AuraEnabled
-        //public List<String> entitlements;
+        // @AuraEnabled
+        // public List<String> entitlements;
         @AuraEnabled
         public List<String> errors;
         @AuraEnabled
@@ -169,7 +169,7 @@ public with sharing class NKS_PersonBadgesController {
             spokenLanguagesIntepreter = new List<String>();
             guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
             powerOfAttorneys = new List<PowerOfAttorney>();
-            //entitlements = new List<String>();
+            // entitlements = new List<String>();
             errors = new List<String>();
             personIdentNameMap = new Map<String, String>();
 
@@ -202,8 +202,8 @@ public with sharing class NKS_PersonBadgesController {
             setPowerOfAttorney();
             setGuardianshipOrFuturePowerOfAttorney();
             setSpokenLanguagesIntepreter();
-            //setDegreeOfHearingAndVisualImpairment();
-            //setEntitlements();
+            setDegreeOfHearingAndVisualImpairment();
+            // setEntitlements();
             setPersonName();
             setKrrReservation();
         }
@@ -316,7 +316,6 @@ public with sharing class NKS_PersonBadgesController {
                                     }
                                 }
                             }
-
                             powerOfAttorneys.add(poa);
                             i++;
                         }
@@ -377,7 +376,6 @@ public with sharing class NKS_PersonBadgesController {
         /**
          * @description We don't have the HOT fields in all sanboxes or scratch orgs, therefore we need to check if they exist before trying to add any badges;
          */
-        /*
         private void setDegreeOfHearingAndVisualImpairment() {
             if (fieldSet.contains('hot_degreeofhearingandvisualimpairment__c')) {
                 String degreeOfHearingAndVisualImpairment = (String) person.get(
@@ -388,34 +386,34 @@ public with sharing class NKS_PersonBadgesController {
                     badges.add(new Badge('degreeOfHearingAndVisualImpairment', degreeOfHearingAndVisualImpairment));
                 }
             }
-        } */
+        }
 
         /**
          * @description We don't have the HOT fields in all sanboxes or scratch orgs, therefore we need to check if they exist before trying to add any badges;
          */
-        /*
-        private void setEntitlements() {
-            if (fieldSet.contains('hot_hasentitlement__c')) {
-                if (true == (Boolean) person.get('HOT_HasEntitlement__c')) {
-                    badges.add(
-                        new Badge(
-                            'entitlements',
-                            getFieldLabel('HOT_HasEntitlement__c'),
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                            '',
-                            '',
-                            true
-                        )
-                    );
 
-                    for (String entitlementField : NKS_PersonBadgesController.HOT_ENTITLEMENT_FIELDS) {
-                        if (true == (Boolean) person.get(entitlementField)) {
-                            entitlements.add(getFieldLabel(entitlementField));
-                        }
-                    }
-                }
-            }
-        } */
+        // private void setEntitlements() {
+        //     if (fieldSet.contains('hot_hasentitlement__c')) {
+        //         if (true == (Boolean) person.get('HOT_HasEntitlement__c')) {
+        //             badges.add(
+        //                 new Badge(
+        //                     'entitlements',
+        //                     getFieldLabel('HOT_HasEntitlement__c'),
+        //                     'slds-theme_warsning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+        //                     '',
+        //                     '',
+        //                     true
+        //                 )
+        //             );
+
+        //             for (String entitlementField : NKS_PersonBadgesController.HOT_ENTITLEMENT_FIELDS) {
+        //                 if (true == (Boolean) person.get(entitlementField)) {
+        //                     entitlements.add(getFieldLabel(entitlementField));
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         /**
          * @description Setting badge for open STOs
@@ -467,12 +465,13 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setPersonName() {
             for (Account acc : [
-                SELECT Name, CRM_Person__r.Name
+                SELECT Name, CRM_Person__r.Name, CRM_Person__r.NKS_Full_Name__c
                 FROM Account
                 WHERE CRM_Person__c != NULL AND CRM_Person__r.Name IN :personIdentNameMap.keySet()
                 WITH SYSTEM_MODE
             ]) {
-                personIdentNameMap.put(acc.CRM_Person__r.Name, acc.Name);
+                String name = String.isNotBlank(acc.CRM_Person__r.NKS_Full_Name__c) ? acc.CRM_Person__r.NKS_Full_Name__c : acc.Name;
+                personIdentNameMap.put(acc.CRM_Person__r.Name, name);
             }
 
             for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {

@@ -159,7 +159,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
                 ? this.copyFields
                       .replace(/\s/g, '')
                       .split(',')
-                      .map((e) => parseInt(e) - 1)
+                      .map((e) => parseInt(e, 10) - 1)
                 : [];
         return copyFieldsNr;
     }
@@ -175,7 +175,8 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         hiddenInput.focus();
         hiddenInput.select();
         try {
-            var successful = document.execCommand('copy');
+            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
+            let successful = document.execCommand('copy');
             if (!successful) this.showCopyToast(field.fieldName, 'error');
         } catch (error) {
             this.showCopyToast(field.fieldName, 'error');
@@ -228,7 +229,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         recordId: '$recordId',
         fields: '$parentWireFields'
     })
-    dewireParent(data, error) {
+    dewireParent() {
         //If the parent is updated, the relation might have changed and component is reinitialized
         if (this.relationshipField) {
             this.getRelatedRecordId(this.relationshipField, this.objectApiName);
@@ -259,8 +260,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         if (this.updated === false) {
             this.isLoading = true;
             updateKrrInfo({ personIdent: personIdent })
-                .then((result) => {
-                    //Successful update
+                .then(() => {
                     this.refreshKrrInfo();
                     console.log('Successfully updated krr information');
                 })
@@ -292,18 +292,13 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         publish(this.messageContext, krrUpdateChannel, { updated: true });
     }
 
-    /*
-     * HELPER FUNCTIONS
-     */
-
-    /**
-     * Retrieves the value from the given object's data path
-     * @param {data path} path
-     * @param {JS object} obj
-     */
     resolve(path, obj) {
+        if (typeof path !== 'string') {
+            throw new Error('Path must be a string');
+        }
+        
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
-        }, obj || self);
+        }, obj || {});
     }
 }

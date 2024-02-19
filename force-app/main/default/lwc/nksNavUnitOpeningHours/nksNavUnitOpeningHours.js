@@ -14,7 +14,7 @@ export default class NksNavUnitOpeningHours extends LightningElement {
 
     @api
     set viewWeekDays(value) {
-        this._viewWeekDays = 'true' == value;
+        this._viewWeekDays = 'true' === value;
     }
 
     get viewWeekDays() {

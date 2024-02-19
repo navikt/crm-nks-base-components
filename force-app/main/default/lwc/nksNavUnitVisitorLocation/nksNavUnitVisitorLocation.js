@@ -16,7 +16,6 @@ export default class NksNavUnitVisitorLocation extends LightningElement {
     }
 
     get hasOpeningHours() {
-        let a = this.location.aapningstider && 0 < this.location.aapningstider.length;
         return this.location.aapningstider && 0 < this.location.aapningstider.length;
     }
 

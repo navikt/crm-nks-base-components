@@ -5,30 +5,30 @@
             "default": true,
             "package": "crm-nks-base-components",
             "versionName": "ver 0.1",
-            "versionNumber": "0.39.0.NEXT",
+            "versionNumber": "0.43.0.NEXT",
             "dependencies": [
                 {
                     "package": "crm-platform-base",
-                    "versionNumber": "0.198.0.LATEST"
+                    "versionNumber": "0.216.0.LATEST"
                 },
                 {
                     "package": "crm-henvendelse-base",
-                    "versionNumber": "0.16.0.LATEST"
+                    "versionNumber": "0.18.0.LATEST"
                 },
                 {
                     "package": "crm-platform-integration",
-                    "versionNumber": "0.102.0.LATEST"
+                    "versionNumber": "0.109.0.LATEST"
                 },
                 {
                     "package": "crm-platform-reporting",
-                    "versionNumber": "0.35.0.LATEST"
+                    "versionNumber": "0.37.0.LATEST"
                 }
             ]
         }
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "54.0",
+    "sourceApiVersion": "59.0",
     "packageAliases": {
         "crm-nks-base-components": "0Ho7U000000000LSAQ",
         "crm-platform-base": "0Ho2o0000008ORmCAM",

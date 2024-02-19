@@ -6,8 +6,7 @@ import checkIfSandboxOrScratch from '@salesforce/apex/NKS_FagsystemController.ch
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
-import { MessageContext, publish } from 'lightning/messageService';
-import AMPLITUDE_CHANNEL from '@salesforce/messageChannel/amplitude__c';
+import { publishToAmplitude } from 'c/amplitude';
 
 /* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
 
@@ -24,6 +23,7 @@ export default class NksFagsystemer extends LightningElement {
     @api relatedField;
     @api objectApiName;
     @api filterList;
+    @api personId; // deprecated
 
     // @track showLinks;
     @track inFagsone = false;
@@ -31,11 +31,19 @@ export default class NksFagsystemer extends LightningElement {
     isSandbox = false;
     showSpinner = false;
     wiredObject;
-    personIdent;
     actorId;
     navIdent;
-
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
+    _personIdent;
+
+    @api
+    get personIdent() {
+        return this._personIdent;
+    }
+
+    set personIdent(value) {
+        this._personIdent = value;
+    }
 
     connectedCallback() {
         checkFagsoneIpRange().then((res) => {
@@ -49,9 +57,6 @@ export default class NksFagsystemer extends LightningElement {
             this.isSandbox = res;
         });
     }
-
-    @wire(MessageContext)
-    messageContext;
 
     @wire(getData, {
         recordId: '$recordId',
@@ -67,7 +72,7 @@ export default class NksFagsystemer extends LightningElement {
         const { error, data } = this.wiredObject;
         if (data) {
             this.navIdent = data.navIdent;
-            this.personIdent = data.personIdent;
+            this._personIdent = data.personIdent;
             this.actorId = data.actorId;
 
             if (this.navIdent && this.personIdent && this.actorId) {
@@ -178,6 +183,7 @@ export default class NksFagsystemer extends LightningElement {
 
     handleAAClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
+            // eslint-disable-next-line @locker/locker/distorted-window-fetch
             fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
                 headers: {
@@ -188,10 +194,12 @@ export default class NksFagsystemer extends LightningElement {
                 .then((res) => {
                     return res.text();
                 })
+                // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                 .then((a) => window.open(a))
                 .catch((error) => {
                     console.log('An error occured while retrieving AA-reg link');
                     console.log(error);
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
 
@@ -246,6 +254,7 @@ export default class NksFagsystemer extends LightningElement {
                         );
                         return;
                     }
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open(urlLink);
                 })
                 .catch(() => {
@@ -268,10 +277,6 @@ export default class NksFagsystemer extends LightningElement {
     }*/
 
     handleClick(event) {
-        let message = {
-            eventType: 'Fagsystem',
-            properties: { type: `Click on ${event.target.innerText}` }
-        };
-        publish(this.messageContext, AMPLITUDE_CHANNEL, message);
+        publishToAmplitude('Fagsystemer', { type: `Click on ${event.target.innerText}` });
     }
 }
