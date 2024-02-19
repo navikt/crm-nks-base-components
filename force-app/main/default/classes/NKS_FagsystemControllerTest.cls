@@ -70,7 +70,7 @@ public with sharing class NKS_FagsystemControllerTest {
     @IsTest 
     static void testGetFagsoneIpAndOrgType () {
         Test.startTest();
-        FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
+        NKS_FagsystemController.FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
         Test.stopTest();
     }
 }

@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
-import getFagsoneIpAndOrgType from '@salesforce/apex/ApexController.getFagsoneIpAndOrgType';
+import getFagsoneIpAndOrgType from '@salesforce/apex/NKS_FagsystemController.getFagsoneIpAndOrgType';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
@@ -159,7 +159,7 @@ export default class NksFagsystemer extends LightningElement {
         this.showSpinner = true;
         refreshApex(this.wiredRecordDataResult)
             .then(() => {
-                this.loadData();
+                this.loadData(); // TODO: I think this is redundant
             })
             .finally(() => {
                 this.showSpinner = false;
