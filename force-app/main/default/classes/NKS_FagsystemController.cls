@@ -42,14 +42,6 @@ public with sharing class NKS_FagsystemController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static FagsoneIp checkFagsoneIpRange() {
-        Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
-        String ip = currentSession.get('SourceIp');
-        Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
-        return new FagsoneIp(ip, isInFagsone);
-    }
-
-    @AuraEnabled(cacheable=true)
     public static String getModiaSosialLink(String ident) {
         try {
             HttpResponse httpResponse = modiaSosialService(ident);

@@ -66,11 +66,4 @@ public with sharing class NKS_FagsystemControllerTest {
         Test.stopTest();
         System.assertEquals(expectedModiaSosialLinkFromMock, link);
     }
-
-    @IsTest 
-    static void testGetFagsoneIpAndOrgType () {
-        Test.startTest();
-        NKS_FagsystemController.FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
-        Test.stopTest();
-    }
 }
