@@ -24,6 +24,7 @@ export default class NksFagsystemer extends LightningElement {
     @api filterList;
     @api personId; // deprecated
 
+    fields = [];
     inFagsone = false;
     isSandbox = false;
     showSpinner = false;
@@ -58,10 +59,10 @@ export default class NksFagsystemer extends LightningElement {
     @wire(getFagsoneIpAndOrgType)
     wiredGetFagsoneIpAndOrgType({ error, data }) {
         if (data) {
-            this.isSandbox = data?.isSandboxOrScratch;
-            this.inFagsone = data?.isInFagsone;
+            this.isSandbox = data.isSandboxOrScratch;
+            this.inFagsone = data.ipResult.isInFagsone;
             if (!this.inFagsone) {
-                console.log('Ip is: ' + data?.ip);
+                console.log('Ip is: ' + data.ipResult.ip);
             }
         } else if (error) {
             console.error(error);
@@ -73,13 +74,14 @@ export default class NksFagsystemer extends LightningElement {
         relatedField: '$relatedField',
         objectApiName: '$objectApiName'
     })
-    wiredData({ result }) {
+    wiredData(result) {
         this.wiredRecordDataResult = result;
-        if (result.data) {
-            this.wiredRecordData = result.data;
+        const { data, error } = result;
+        if (data) {
+            this.wiredRecordData = data;
             this.loadData();
-        } else if (result.error) {
-            console.error(result.error);
+        } else if (error) {
+            console.error(error);
         }
     }
 
@@ -159,7 +161,7 @@ export default class NksFagsystemer extends LightningElement {
         this.showSpinner = true;
         refreshApex(this.wiredRecordDataResult)
             .then(() => {
-                this.loadData(); // TODO: I think this is redundant
+                this.loadData();
             })
             .finally(() => {
                 this.showSpinner = false;
@@ -182,8 +184,7 @@ export default class NksFagsystemer extends LightningElement {
                 // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                 .then((a) => window.open(a))
                 .catch((error) => {
-                    console.log('An error occured while retrieving AA-reg link');
-                    console.log(error);
+                    console.error('An error occured while retrieving AA-reg link: ', error);
                     // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
