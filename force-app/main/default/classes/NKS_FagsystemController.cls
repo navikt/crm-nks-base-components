@@ -102,8 +102,8 @@ public with sharing class NKS_FagsystemController {
             result.ipResult = new FagsoneIp(ip, isInFagsone);
             
             // Org type check
-            Organization orgInfo = [SELECT IsSandbox, IsScratch FROM Organization LIMIT 1];
-            result.isSandboxOrScratch = orgInfo.IsSandbox || orgInfo.isScratch;
+            Organization orgInfo = [SELECT IsSandbox, TrialExpirationDate FROM Organization LIMIT 1];
+            result.isSandboxOrScratch = orgInfo.IsSandbox || orgInfo.TrialExpirationDate != null;
         } catch (Exception e) {
             throw new AuraHandledException('getFagsoneIpAndOrgType failed: ' + e.getMessage());
         }
