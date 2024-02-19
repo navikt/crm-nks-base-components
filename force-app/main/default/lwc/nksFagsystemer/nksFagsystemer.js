@@ -27,7 +27,8 @@ export default class NksFagsystemer extends LightningElement {
     inFagsone = false;
     isSandbox = false;
     showSpinner = false;
-    wiredObject;
+    wiredRecordData;
+    wiredRecordDataResult;
     actorId;
     navIdent;
     hiddenLinks = ['Aktivitetsplan', 'Speil'];
@@ -47,7 +48,7 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     get showContent() {
-        return this.wiredObject != null;
+        return this.wiredRecordData != null;
     }
 
     get showRefreshButton() {
@@ -72,20 +73,21 @@ export default class NksFagsystemer extends LightningElement {
         relatedField: '$relatedField',
         objectApiName: '$objectApiName'
     })
-    wiredData({ error, data }) {
-        if (data) {
-            this.wiredObject = data;
+    wiredData({ result }) {
+        this.wiredRecordDataResult = result;
+        if (result.data) {
+            this.wiredRecordData = result.data;
             this.loadData();
-        } else if (error) {
-            console.error(error);
+        } else if (result.error) {
+            console.error(result.error);
         }
     }
 
     loadData() {
-        if (this.wiredObject) {
-            this.navIdent = this.wiredObject.navIdent;
-            this._personIdent = this.wiredObject.personIdent;
-            this.actorId = this.wiredObject.actorId;
+        if (this.wiredRecordData) {
+            this.navIdent = this.wiredRecordData.navIdent;
+            this._personIdent = this.wiredRecordData.personIdent;
+            this.actorId = this.wiredRecordData.actorId;
 
             if (this.navIdent && this.personIdent && this.actorId) {
                 this.filterLinks();
@@ -155,7 +157,7 @@ export default class NksFagsystemer extends LightningElement {
 
     refreshRecord() {
         this.showSpinner = true;
-        refreshApex(this.wiredObject)
+        refreshApex(this.wiredRecordDataResult)
             .then(() => {
                 this.loadData();
             })
