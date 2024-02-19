@@ -97,10 +97,13 @@ export default class NksFagsystemer extends LightningElement {
         let possibleLinks = [
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
             { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan') },
+            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd') },
             { name: 'DinPensjon', field: this.generateUrl('DinPensjon') },
             { name: 'DinUfore', field: this.generateUrl('DinUfore') },
+            { name: 'Enslig', field: this.generateUrl('Enslig') },
             { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger') },
             { name: 'Gosys', field: this.generateUrl('Gosys') },
+            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte') },
             { name: 'K9', field: this.generateUrl('K9') },
             { name: 'Modia', field: this.generateUrl('Modia') },
             { name: 'Pesys', field: this.generateUrl('Pesys') },
