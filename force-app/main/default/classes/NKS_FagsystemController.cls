@@ -88,10 +88,12 @@ public with sharing class NKS_FagsystemController {
         FagsoneIpAndOrgType result = new FagsoneIpAndOrgType();
         try {
             // Fagsone IP check
-            Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
-            String ip = currentSession.get('SourceIp');
-            Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
-            result.ipResult = new FagsoneIp(ip, isInFagsone);
+            if (!Test.isRunningTest()) {
+                Map<String, String> currentSession = Auth.SessionManagement.getCurrentSession();
+                String ip = currentSession.get('SourceIp');
+                Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
+                result.ipResult = new FagsoneIp(ip, isInFagsone);
+            }
             
             // Org type check
             Organization orgInfo = [SELECT IsSandbox, TrialExpirationDate FROM Organization LIMIT 1];

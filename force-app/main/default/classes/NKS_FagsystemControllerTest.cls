@@ -66,4 +66,33 @@ public with sharing class NKS_FagsystemControllerTest {
         Test.stopTest();
         System.assertEquals(expectedModiaSosialLinkFromMock, link);
     }
+
+    @IsTest
+    static void testGetModiaSosialLinkErr() {
+        Person__c pers = [SELECT Id, Name FROM Person__c WHERE Name != NULL LIMIT 1];
+        ApiMock.setTestMock('POST_SOSIAL_LINK', 500, 'Internal Server Error');
+
+        Exception ex;
+        Test.startTest();
+        try {
+            NKS_FagsystemController.getModiaSosialLink(pers.Name);
+        } catch (Exception e) {
+            ex = e;
+        }
+        Test.stopTest();
+
+        System.assertNotEquals(null, ex, 'Exception should be thrown');
+        System.assertEquals('Script-thrown exception', ex.getMessage());
+    }
+
+    @IsTest
+    static void testGetFagsoneIpAndOrgType() {
+        Test.startTest();
+        NKS_FagsystemController.FagsoneIp ipInfo = new NKS_FagsystemController.FagsoneIp('192.168.0.1', false);
+        NKS_FagsystemController.FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
+        result.ipResult = ipInfo;
+        Test.stopTest();
+
+        System.assertNotEquals(null, result.isSandboxOrScratch);
+    }
 }
