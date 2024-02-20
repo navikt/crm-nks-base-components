@@ -37,19 +37,23 @@ public with sharing class NKS_FagsystemControllerTest {
         System.debug(person.CRM_Account__c);
         Case caseWithAccount = new Case(AccountId = person.CRM_Account__c, Status = 'New', Origin = 'Web');
         insert caseWithAccount;
-    }
+        }
 
     @IsTest
-    static void testGetPersonId() {
-        Person__c pers = [SELECT Id, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
+    static void testGetFagsystemData() {
+        Person__c pers = [SELECT Id, Name, INT_ActorId__c, CRM_Account__c FROM Person__c WHERE INT_ActorId__c = '12345678905'][0];
         Id accountId = pers.CRM_Account__c;
         Case c = [SELECT Id FROM Case WHERE AccountId = :accountId];
+
         Test.startTest();
-        String personIdFromAccount = NKS_FagsystemController.getPersonId(accountId, 'Id', 'Account');
-        String personIdFromCase = NKS_FagsystemController.getPersonId(c.Id, 'Account', 'Case');
+        NKS_FagsystemController.FagsystemData dataFromAccount = NKS_FagsystemController.getFagsystemData(accountId, 'Id', 'Account');
+        NKS_FagsystemController.FagsystemData dataFromCase = NKS_FagsystemController.getFagsystemData(c.Id, 'Account', 'Case');
         Test.stopTest();
-        System.assertEquals(pers.Id, personIdFromCase);
-        System.assertEquals(pers.Id, personIdFromAccount);
+
+        System.assertEquals(pers.Name, dataFromCase.personIdent);
+        System.assertEquals(pers.Name, dataFromAccount.personIdent);
+        System.assertEquals(pers.INT_ActorId__c, dataFromCase.actorId);
+        System.assertEquals(pers.INT_ActorId__c, dataFromAccount.actorId);
     }
 
     @IsTest
@@ -61,5 +65,34 @@ public with sharing class NKS_FagsystemControllerTest {
         String link = NKS_FagsystemController.getModiaSosialLink(pers.Name);
         Test.stopTest();
         System.assertEquals(expectedModiaSosialLinkFromMock, link);
+    }
+
+    @IsTest
+    static void testGetModiaSosialLinkErr() {
+        Person__c pers = [SELECT Id, Name FROM Person__c WHERE Name != NULL LIMIT 1];
+        ApiMock.setTestMock('POST_SOSIAL_LINK', 500, 'Internal Server Error');
+
+        Exception ex;
+        Test.startTest();
+        try {
+            NKS_FagsystemController.getModiaSosialLink(pers.Name);
+        } catch (Exception e) {
+            ex = e;
+        }
+        Test.stopTest();
+
+        System.assertNotEquals(null, ex, 'Exception should be thrown');
+        System.assertEquals('Script-thrown exception', ex.getMessage());
+    }
+
+    @IsTest
+    static void testGetFagsoneIpAndOrgType() {
+        Test.startTest();
+        NKS_FagsystemController.FagsoneIp ipInfo = new NKS_FagsystemController.FagsoneIp('192.168.0.1', false);
+        NKS_FagsystemController.FagsoneIpAndOrgType result = NKS_FagsystemController.getFagsoneIpAndOrgType();
+        result.ipResult = ipInfo;
+        Test.stopTest();
+
+        System.assertNotEquals(null, result.isSandboxOrScratch);
     }
 }

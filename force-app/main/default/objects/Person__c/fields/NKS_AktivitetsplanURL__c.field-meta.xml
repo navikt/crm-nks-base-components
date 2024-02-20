@@ -3,8 +3,12 @@
     <fullName>NKS_AktivitetsplanURL__c</fullName>
     <deprecated>false</deprecated>
     <externalId>false</externalId>
-    <formula>IF( $Organization.Id = &quot;00D2o000000aANV&quot;, HYPERLINK(&quot;https://veilarbpersonflate.intern.nav.no/&quot;&amp;Name , &quot;Aktivitetsplan&quot;, &quot;_self&quot;), HYPERLINK(&quot;https://veilarbpersonflate.dev.intern.nav.no/&quot;&amp;Name, &quot;Aktivitetsplan&quot;, &quot;_self&quot;)
-)</formula>
+    <formula>IF( $Organization.Id = &quot;00D2o000000aANV&quot;,
+        HYPERLINK(&quot;https://veilarbpersonflate.intern.nav.no/&quot;&amp;Name ,
+        &quot;Aktivitetsplan&quot;, &quot;_self&quot;),
+        HYPERLINK(&quot;https://veilarbpersonflate.dev.intern.nav.no/&quot;&amp;Name,
+        &quot;Aktivitetsplan&quot;, &quot;_self&quot;)
+        )</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Aktivitetsplan</label>
     <required>false</required>
