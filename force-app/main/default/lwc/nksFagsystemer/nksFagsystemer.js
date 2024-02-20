@@ -17,7 +17,7 @@ export default class NksFagsystemer extends LightningElement {
     fields = [];
     inFagsone = false;
     isSandbox = false;
-    showSpinner = false;
+    showSpinner = true;
     wiredRecordData;
     wiredRecordDataResult;
     actorId;
@@ -64,14 +64,15 @@ export default class NksFagsystemer extends LightningElement {
         objectApiName: '$objectApiName'
     })
     wiredData(result) {
-        this.showSpinner = true;
         this.wiredRecordDataResult = result;
         const { data, error } = result;
         if (data) {
             this.wiredRecordData = data;
             this.loadData();
+            this.showSpinner = false;
         } else if (error) {
             console.error(error);
+            this.showSpinner = false;
         }
     }
 
@@ -112,7 +113,6 @@ export default class NksFagsystemer extends LightningElement {
             })).filter(link => (
                 listOfFilter.length === 0 || listOfFilter.includes(link.name)
             ));
-        this.showSpinner = false;
     }
 
     generateUrl(fagsystem) {
