@@ -4,24 +4,14 @@ import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModi
 import getFagsoneIpAndOrgType from '@salesforce/apex/NKS_FagsystemController.getFagsoneIpAndOrgType';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import NKS_SosialTilgang from '@salesforce/customPermission/NKS_SosialTilgang';
 import { publishToAmplitude } from 'c/amplitude';
-
-/* https://developer.salesforce.com/docs/component-library/documentation/en/lwc/lwc.reference_salesforce_modules */
-
-const filterFunc = (listToFilterOut, listToFilterIn) => (element) => {
-    return (
-        (!listToFilterOut || !listToFilterOut.includes(element.name)) &&
-        (!listToFilterIn || listToFilterIn.includes(element.name))
-    );
-};
 
 export default class NksFagsystemer extends LightningElement {
     @api recordId;
     @api title;
     @api relatedField;
     @api objectApiName;
-    @api filterList;
+    @api filterList = [];
     @api personId; // deprecated
 
     fields = [];
@@ -32,7 +22,6 @@ export default class NksFagsystemer extends LightningElement {
     wiredRecordDataResult;
     actorId;
     navIdent;
-    hiddenLinks = ['Aktivitetsplan', 'Speil'];
     _personIdent;
 
     @api
@@ -90,30 +79,27 @@ export default class NksFagsystemer extends LightningElement {
             this.navIdent = this.wiredRecordData.navIdent;
             this._personIdent = this.wiredRecordData.personIdent;
             this.actorId = this.wiredRecordData.actorId;
-
-            if (this.navIdent && this.personIdent && this.actorId) {
-                this.filterLinks();
-            }
+            this.filterLinks();
         }
     }
 
     filterLinks() {
         let possibleLinks = [
-            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register' },
-            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan') },
-            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd') },
-            { name: 'DinPensjon', field: this.generateUrl('DinPensjon') },
-            { name: 'DinUfore', field: this.generateUrl('DinUfore') },
-            { name: 'Enslig', field: this.generateUrl('Enslig') },
-            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger') },
-            { name: 'Gosys', field: this.generateUrl('Gosys') },
-            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte') },
-            { name: 'K9', field: this.generateUrl('K9') },
-            { name: 'Modia', field: this.generateUrl('Modia') },
-            { name: 'Pesys', field: this.generateUrl('Pesys') },
-            { name: 'Speil', field: this.generateUrl('Speil') }
+            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register', show: this.personIdent },
+            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
+            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
+            { name: 'DinPensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
+            { name: 'DinUfore', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
+            { name: 'Enslig', field: this.generateUrl('Enslig'), show: true },
+            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
+            { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
+            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
+            { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
+            { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
+            { name: 'Pesys', field: this.generateUrl('Pesys'), show: this.personIdent },
+            { name: 'Speil', field: this.generateUrl('Speil'), show: false }
         ];
-
+        
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
         this.fields = possibleLinks
@@ -121,9 +107,10 @@ export default class NksFagsystemer extends LightningElement {
                 ...link,
                 id: index,
                 custom: link.field == null,
-                show: !('show' in link) || (link.show ?? false)
-            }))
-            .filter(filterFunc(this.hiddenLinks, listOfFilter));
+                show: link.show
+            })).filter(link => (
+                listOfFilter.length === 0 || listOfFilter.includes(link.name)
+            ));
     }
 
     generateUrl(fagsystem) {
