@@ -64,6 +64,7 @@ export default class NksFagsystemer extends LightningElement {
         objectApiName: '$objectApiName'
     })
     wiredData(result) {
+        this.showSpinner = true;
         this.wiredRecordDataResult = result;
         const { data, error } = result;
         if (data) {
@@ -111,6 +112,7 @@ export default class NksFagsystemer extends LightningElement {
             })).filter(link => (
                 listOfFilter.length === 0 || listOfFilter.includes(link.name)
             ));
+        this.showSpinner = false;
     }
 
     generateUrl(fagsystem) {
@@ -212,7 +214,7 @@ export default class NksFagsystemer extends LightningElement {
     }
 
     handleClick(event) {
-        publishToAmplitude('Fagsystemer', { type: `Click on ${event.target.innerText}` });
+        publishToAmplitude('Fagsystemer', { type: `${event.target.innerText}` });
     }
 
     // handleSYFOClickOrKey(e) {
