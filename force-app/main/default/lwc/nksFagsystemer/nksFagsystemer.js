@@ -90,9 +90,9 @@ export default class NksFagsystemer extends LightningElement {
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register', show: this.personIdent },
             { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
-            { name: 'DinPensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
-            { name: 'DinUfore', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
-            { name: 'Enslig', field: this.generateUrl('Enslig'), show: true },
+            { name: 'DinPensjon', label: 'Din Pensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
+            { name: 'DinUfore', label: 'Din Uføretrygd', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
+            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
             { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
             { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
             { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
@@ -109,7 +109,8 @@ export default class NksFagsystemer extends LightningElement {
                 ...link,
                 id: index,
                 custom: link.field == null,
-                show: link.show
+                show: link.show,
+                name: link.label ?? link.name
             })).filter(link => (
                 listOfFilter.length === 0 || listOfFilter.includes(link.name)
             ));
