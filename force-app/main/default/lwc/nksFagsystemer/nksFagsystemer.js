@@ -104,16 +104,15 @@ export default class NksFagsystemer extends LightningElement {
         
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-        this.fields = possibleLinks
-            .map((link, index) => ({
+        this.fields = possibleLinks.filter(link => (
+            listOfFilter.length === 0 || listOfFilter.includes(link.name)
+        )).map((link, index) => ({
                 ...link,
                 id: index,
                 custom: link.field == null,
                 show: link.show,
                 name: link.label ?? link.name
-            })).filter(link => (
-                listOfFilter.length === 0 || listOfFilter.includes(link.name)
-            ));
+            }));
     }
 
     generateUrl(fagsystem) {
