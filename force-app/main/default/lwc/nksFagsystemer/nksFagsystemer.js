@@ -90,9 +90,9 @@ export default class NksFagsystemer extends LightningElement {
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register', show: this.personIdent },
             { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
-            { name: 'DinPensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
-            { name: 'DinUfore', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
-            { name: 'Enslig', field: this.generateUrl('Enslig'), show: true },
+            { name: 'DinPensjon', label: 'Din Pensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
+            { name: 'DinUfore', label: 'Din Uføretrygd', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
+            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
             { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
             { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
             { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
@@ -104,15 +104,15 @@ export default class NksFagsystemer extends LightningElement {
         
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-        this.fields = possibleLinks
-            .map((link, index) => ({
+        this.fields = possibleLinks.filter(link => (
+            listOfFilter.length === 0 || listOfFilter.includes(link.name)
+        )).map((link, index) => ({
                 ...link,
                 id: index,
                 custom: link.field == null,
-                show: link.show
-            })).filter(link => (
-                listOfFilter.length === 0 || listOfFilter.includes(link.name)
-            ));
+                show: link.show,
+                name: link.label ?? link.name
+            }));
     }
 
     generateUrl(fagsystem) {
