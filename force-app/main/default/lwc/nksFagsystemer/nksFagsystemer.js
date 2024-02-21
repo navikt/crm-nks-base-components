@@ -87,18 +87,18 @@ export default class NksFagsystemer extends LightningElement {
 
     filterLinks() {
         let possibleLinks = [
+            { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
+            { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
             { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register', show: this.personIdent },
-            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
-            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
             { name: 'DinPensjon', label: 'Din Pensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
             { name: 'DinUfore', label: 'Din Uføretrygd', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
-            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
-            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
-            { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
-            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
-            { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
-            { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
             { name: 'Pesys', field: this.generateUrl('Pesys'), show: this.personIdent },
+            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
+            { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
+            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
+            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },            
+            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
+            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
             { name: 'Speil', field: this.generateUrl('Speil'), show: false }
         ];
         
