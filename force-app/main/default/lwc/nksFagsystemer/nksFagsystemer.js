@@ -22,7 +22,16 @@ export default class NksFagsystemer extends LightningElement {
     wiredRecordDataResult;
     actorId;
     navIdent;
-    personIdent;
+    _personIdent;
+
+    @api
+    get personIdent() {
+        return this._personIdent;
+    }
+
+    set personIdent(value) {
+        this._personIdent = value;
+    }
 
     get layoutItemSize() {
         return 6;
@@ -71,7 +80,7 @@ export default class NksFagsystemer extends LightningElement {
     loadData() {
         if (this.wiredRecordData) {
             this.navIdent = this.wiredRecordData.navIdent;
-            this.personIdent = this.wiredRecordData.personIdent;
+            this._personIdent = this.wiredRecordData.personIdent;
             this.actorId = this.wiredRecordData.actorId;
             this.filterLinks();
         }
