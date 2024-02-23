@@ -7,12 +7,21 @@
  **/
 public with sharing class NKS_FagsystemController {
     @AuraEnabled(cacheable=true)
-    public static FagsystemData getFagsystemData (String recordId, String relatedField, String objectApiName) {
+    public static FagsystemData getFagsystemData(
+        String recordId,
+        String relatedField,
+        String objectApiName,
+        Boolean hasPersonId
+    ) {
+        Id personId;
         try {
-            String query = 'SELECT ' + getField(relatedField) + ' FROM ' + objectApiName + ' WHERE Id = :recordId';
-            List<SOBject> objs = Database.query(query);
-            Id personId = getIdFromRelationshipQuery(objs, relatedField);
-
+            if (!hasPersonId) {
+                String query = 'SELECT ' + getField(relatedField) + ' FROM ' + objectApiName + ' WHERE Id = :recordId';
+                List<SOBject> objs = Database.query(query);
+                personId = getIdFromRelationshipQuery(objs, relatedField);
+            } else {
+                personId = recordId;
+            }
             Person__c person = [SELECT Name, INT_ActorId__c FROM Person__c WHERE Id = :personId];
             String navIdent = [SELECT CRM_NAV_Ident__c FROM User WHERE Id = :UserInfo.getUserId()].CRM_NAV_Ident__c;
 
@@ -94,14 +103,14 @@ public with sharing class NKS_FagsystemController {
                 Boolean isInFagsone = Auth.SessionManagement.inOrgNetworkRange(ip);
                 result.ipResult = new FagsoneIp(ip, isInFagsone);
             }
-            
+
             // Org type check
             Organization orgInfo = [SELECT IsSandbox, TrialExpirationDate FROM Organization LIMIT 1];
             result.isSandboxOrScratch = orgInfo.IsSandbox || orgInfo.TrialExpirationDate != null;
         } catch (Exception e) {
             throw new AuraHandledException('getFagsoneIpAndOrgType failed: ' + e.getMessage());
         }
-        
+
         return result;
     }
 
@@ -125,16 +134,16 @@ public with sharing class NKS_FagsystemController {
     }
 
     public class FagsystemData {
-        @AuraEnabled 
+        @AuraEnabled
         public String navIdent;
 
-        @AuraEnabled 
+        @AuraEnabled
         public String personIdent;
 
-        @AuraEnabled 
+        @AuraEnabled
         public String actorId;
 
-        public FagsystemData (String navIdent, String personIdent, String actorId) {
+        public FagsystemData(String navIdent, String personIdent, String actorId) {
             this.navIdent = navIdent;
             this.personIdent = personIdent;
             this.actorId = actorId;

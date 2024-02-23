@@ -12,7 +12,7 @@ export default class NksFagsystemer extends LightningElement {
     @api relatedField;
     @api objectApiName;
     @api filterList = [];
-    @api personId; // deprecated
+    @api personId = false; // Deprecated 'personId'; now using it to check if the parent component has 'personId'.
 
     fields = [];
     inFagsone = false;
@@ -61,7 +61,8 @@ export default class NksFagsystemer extends LightningElement {
     @wire(getData, {
         recordId: '$recordId',
         relatedField: '$relatedField',
-        objectApiName: '$objectApiName'
+        objectApiName: '$objectApiName',
+        hasPersonId: '$personId'
     })
     wiredData(result) {
         this.wiredRecordDataResult = result;
@@ -89,24 +90,40 @@ export default class NksFagsystemer extends LightningElement {
         let possibleLinks = [
             { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
             { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
-            { name: 'AA-reg', field: null, eventFunc: this.handleAAClickOrKey, title: 'AA-register', show: this.personIdent },
-            { name: 'DinPensjon', label: 'Din Pensjon', field: this.generateUrl('DinPensjon'), show: this.personIdent && this.navIdent },
-            { name: 'DinUfore', label: 'Din Uføretrygd', field: this.generateUrl('DinUfore'), show: this.personIdent && this.navIdent },
+            {
+                name: 'AA-reg',
+                field: null,
+                eventFunc: this.handleAAClickOrKey,
+                title: 'AA-register',
+                show: this.personIdent
+            },
+            {
+                name: 'DinPensjon',
+                label: 'Din Pensjon',
+                field: this.generateUrl('DinPensjon'),
+                show: this.personIdent && this.navIdent
+            },
+            {
+                name: 'DinUfore',
+                label: 'Din Uføretrygd',
+                field: this.generateUrl('DinUfore'),
+                show: this.personIdent && this.navIdent
+            },
             { name: 'Pesys', field: this.generateUrl('Pesys'), show: this.personIdent },
             { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
             { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
-            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },            
+            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
             { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
             { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
             { name: 'Speil', field: this.generateUrl('Speil'), show: false }
         ];
-        
+
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-        this.fields = possibleLinks.filter(link => (
-            listOfFilter.length === 0 || listOfFilter.includes(link.name)
-        )).map((link, index) => ({
+        this.fields = possibleLinks
+            .filter((link) => listOfFilter.length === 0 || listOfFilter.includes(link.name))
+            .map((link, index) => ({
                 ...link,
                 id: index,
                 custom: link.field == null,
@@ -122,21 +139,33 @@ export default class NksFagsystemer extends LightningElement {
             case 'Barnetrygd':
                 return `https://barnetrygd.intern.nav.no/oppgaver`;
             case 'DinPensjon':
-                return `https://pensjon-pselv${this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'}/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${this.navIdent}`;
+                return `https://pensjon-pselv${
+                    this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'
+                }/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${
+                    this.navIdent
+                }`;
             case 'DinUfore':
-                return `https://pensjon-pselv${this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'}/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${this.navIdent}`;
+                return `https://pensjon-pselv${
+                    this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'
+                }/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${
+                    this.navIdent
+                }`;
             case 'Enslig':
                 return `https://ensligmorellerfar.intern.nav.no/oppgavebenk`;
             case 'Foreldrepenger':
                 return `https://fpsak${this.isSandbox ? '.dev' : ''}.intern.nav.no/aktoer/${this.actorId}`;
             case 'Gosys':
-                return `https://gosys${this.isSandbox ? '-q1.dev' : ''}.intern.nav.no/gosys/personoversikt/fnr=${this.personIdent}`;
+                return `https://gosys${this.isSandbox ? '-q1.dev' : ''}.intern.nav.no/gosys/personoversikt/fnr=${
+                    this.personIdent
+                }`;
             case 'Kontantstøtte':
                 return 'https://kontantstotte.intern.nav.no/';
             case 'K9':
                 return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
             case 'Modia':
-                return `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${this.isSandbox ? '' : 'person/'}${this.personIdent}`;
+                return `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${
+                    this.isSandbox ? '' : 'person/'
+                }${this.personIdent}`;
             case 'Pesys':
                 return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
             case 'Speil':
