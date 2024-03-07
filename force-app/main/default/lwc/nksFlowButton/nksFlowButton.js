@@ -9,7 +9,7 @@ export default class NksFlowButton extends LightningElement {
     @api isDisabled = false;
 
     showFlow = false;
-    _buttonVariant = 'brand-outline';
+    _buttonVariant = 'brand';
 
     get ariaExpanded() {
         return this.showFlow.toString();
@@ -31,7 +31,6 @@ export default class NksFlowButton extends LightningElement {
     toggleFlow() {
         publishToAmplitude('Action', { type: this.buttonLabel + ' pressed' });
         this.showFlow = !this.showFlow;
-        this._buttonVariant = 'brand';
     }
 
     handleStatusChange(event) {
