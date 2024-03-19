@@ -92,7 +92,7 @@ info() {
     echo "  --start-step=<step-nummer>  Start from a specific step"
     echo "  --step=<step-nummer>        Run a specific step"
     #echo "                              <steps: clean=1|create=2|dependencies=3|deploy=4|permissions=5|test data=6|run scripts=7|publishing site=8|open=9>"
-    echo "                              <steps: clean=1|create=2|dependencies=3|deploy=4|open=5>"
+    echo "                              <steps: clean=1|create=2|dependencies=3|deploy=4|permissions=5|testdata=6|open=7>"
     echo "  --info                      Show this help"
     echo ""
     exit 0
