@@ -60,7 +60,7 @@ deployingMetadata() {
 
 assignPermission() {
     sf project deploy start --source-dir force-app/scratch-org/permissionsetgroups
-    sf project deploy start --source-dir force-app/scratch-org/permissionsets/Scratch_permissions
+    sf project deploy start --source-dir force-app/scratch-org/permissionsets
 }
 
 #!Change this depending on your repo.
