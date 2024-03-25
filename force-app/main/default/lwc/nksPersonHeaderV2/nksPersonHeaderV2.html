@@ -1,46 +1,60 @@
 <template>
     <div class="slds-page-header nks-person-header">
         <div class="slds-page-header__row">
-          <div class="slds-page-header__col-title">
-            <div class="slds-media">
-              <div class="slds-media__figure">
-                    <c-nks-custom-svg
-                        class={genderIcon}
-                        src={genderIconSrc}
-                        alt-text={gender}
-                        classes={genderIconClass}
-                        >
-                    </c-nks-custom-svg>
-              </div>
-              <div class="slds-media__body">
-                <div class="slds-page-header__name">
-                  <div class="slds-page-header__name-title">
+            <div class="slds-media__figure">
+                <c-nks-custom-svg class={genderIcon} src={genderIconSrc} alt-text={gender} classes={genderIconClass}>
+                </c-nks-custom-svg>
+            </div>
+
+            <div class="slds-page-header__name">
+                <div class="slds-page-header__name-title">
                     <h1>
-                      <span class="slds-page-header__title" if:true={fullName} title={fullName}>{fullName}</span>
+                        <span class="slds-page-header__title" if:true={fullName} title={fullName}>{fullName}</span>
                     </h1>
-                    <!-- <h1 class="sr-only"><template if:true={fullName}> {fullName} potet </template></h1> -->
-                  </div>
-                  <div class="slds-page-header__col-details"><h2 if:true={personIdent} title={personIdent}>{personIdent}</h2></div>
-                  <div class="slds-page-header__col-details"><h2 if:true={formattedPersonInfo} title={formattedPersonInfo}>{formattedPersonInfo}</h2></div>
-                  <div class="slds-page-header__col-details"><h2 if:true={formattedUnit} title={formattedUnit}>{formattedUnit}</h2></div>
-                  <div class="slds-page-header__col-details"><h2 if:true={formattedVeilder} title={formattedVeilder}>{formattedVeilder}</h2></div>
-                  <div class="slds-page-header__col-details">
+                </div>
+
+                <template if:true={personIdent}>
+                    <div class="slds-page-header__col-details">
+                        <lightning-layout-item>
+                            <h2 class="personIdent">&nbsp;{personIdent} </h2>
+                        </lightning-layout-item>
+
+                        <lightning-layout-item>
+                            <!-- sldsValidatorIgnoreNextLine -->
+                            <lightning-button-icon value={personIdent} class="copy-icon" icon-name="utility:copy"
+                                variant="bare" onclick={handleCopy} alternative-text="Kopier fødselsnummer"
+                                title="Kopier fødselsnummer"></lightning-button-icon>
+                        </lightning-layout-item>
+                    </div>
+                </template>
+
+                <lightning-layout-item>
+                    <h2 if:true={formattedPersonInfo} title={formattedPersonInfo}>{formattedPersonInfo}</h2>
+                </lightning-layout-item>
+
+                <!-- <div class="slds-page-header__col-details">
+                            <h2 if:true={formattedPersonInfo} title={formattedPersonInfo}>{formattedPersonInfo}</h2>
+                        </div> -->
+
+                <div class="slds-page-header__col-details">
+                    <h2 if:true={formattedUnit} title={formattedUnit}>{formattedUnit}</h2>
+                </div>
+
+                <div class="slds-page-header__col-details">
+                    <h2 if:true={formattedVeilder} title={formattedVeilder}>{formattedVeilder}</h2>
+                </div>
+
+                <div class="slds-page-header__col-details">
                     <lightning-layout-item class={badgeClass}>
                         <template if:true={showPersonBadges}>
-                            <c-nks-person-badges
-                                record-id={recordId}
-                                object-api-name={objectApiName}
-                                person-relation-field={relationshipField}
-                                left-align-badges={leftAlignBadges}
-                                class="slds-float_right"
-                            ></c-nks-person-badges>
+                            <c-nks-person-badges record-id={recordId} object-api-name={objectApiName}
+                                person-relation-field={relationshipField} left-align-badges={leftAlignBadges}
+                                class="slds-float_right"></c-nks-person-badges>
                         </template>
                     </lightning-layout-item>
-                  </div>
                 </div>
-              </div>
             </div>
-          </div>
+
         </div>
-      </div>
+    </div>
 </template>

@@ -6,12 +6,14 @@
     background-color: #0056B4;
 }
 
+
 h1, h2 {
     color: white;
+    padding-top: 0.5rem;
 }
 
-template {
-    background-color: #3386e0;
+.copy-icon {
+    color: white;
 }
 
 .gender {
@@ -29,6 +31,7 @@ template {
 .copy-icon {
     float: right;
     padding-top: 8px;
+    color: white;
 }
 
 .MaleFilled {
