@@ -33,6 +33,7 @@ export default class NksPersonHeaderV2 extends LightningElement {
     navUnit;
     formattedUnitLink;
 
+
     @api btnClick = false;
     @api btnShowFullmakt = false;
     @api fullmaktHistData;
@@ -41,6 +42,7 @@ export default class NksPersonHeaderV2 extends LightningElement {
 
     customclass = 'grey-icon';
     veilederName;
+    @track headerClass = 'slds-page-header nks-person-header ';
 
     @wire(MessageContext)
     messageContext;
@@ -79,6 +81,17 @@ export default class NksPersonHeaderV2 extends LightningElement {
             this.veilederIdent = message.ident;
         }
     }
+
+    get headerClasses(){
+        switch(this.gender) {
+            case 'Mann':
+                return this.headerClass += 'gender-blue';
+            case 'Kvinne':
+                return this.headerClass += 'gender-pink'
+            default: 
+        }
+    }
+
 
     get genderIcon() {
         switch (this.gender) {

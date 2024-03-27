@@ -2,18 +2,17 @@
     padding: 6px;
 }
 
-.nks-person-header {
+.gender-blue {
     background-color: #0056B4;
 }
 
+.gender-pink {
+    background-color: pink;
+}
 
 h1, h2 {
     color: white;
     padding-top: 0.5rem;
-}
-
-.copy-icon {
-    color: white;
 }
 
 .gender {
