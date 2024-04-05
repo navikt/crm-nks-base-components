@@ -10,6 +10,10 @@
     background-color: #751E8B;
 }
 
+.nks-header-class {
+    border-top: 0px;
+}
+
 h1, h2 {
     color: white;
     padding-top: 0.5rem;
@@ -22,7 +26,7 @@ h1, h2 {
     float: left;
 }
 
-.personIdent {
+.record-header-info {
     float: left;
     padding-top: 8px;
 }

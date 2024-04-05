@@ -63,7 +63,7 @@ export default class NksPersonHeaderV2 extends LightningElement {
             this.subscription = subscribe(
                 this.messageContext,
                 nksVeilederName,
-                (message) => this.handleVeilderName(message),
+                (message) => this.handleveilederName(message),
                 { scope: APPLICATION_SCOPE }
             );
         }
@@ -75,7 +75,7 @@ export default class NksPersonHeaderV2 extends LightningElement {
     }
 
     // Handler for message received by component
-    handleVeilderName(message) {
+    handleveilederName(message) {
         if (message.recordId === this.recordId) {
             this.veilederName = message.displayName;
             this.veilederIdent = message.ident;
@@ -134,7 +134,7 @@ export default class NksPersonHeaderV2 extends LightningElement {
         }
     }
 
-    get formattedVeilder() {
+    get formattedveileder() {
         return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
