@@ -1,5 +1,15 @@
 <template>
-    <template for:each={geirs} for:item="geir">
+    <!-- <template for:each={geirs} for:item="geir">
         <p key={geir.anre}>Geri Arne</p>
-    </template>
+    </template> -->
+    <lightning-layout>
+        <lightning-layout-item class="serviceLinks" size="6">
+            <div style="margin-top: 1rem; margin-left: 50px; margin-bottom: 2rem">
+                <p>Aktivitetsplan</p>
+                <p>Meldekort</p>
+                <p>Sykmeldt enkeltperson</p>
+            </div>
+        </lightning-layout-item>
+        <lightning-layout-item class="badgeContent" size="6"> </lightning-layout-item>
+    </lightning-layout>
 </template>
