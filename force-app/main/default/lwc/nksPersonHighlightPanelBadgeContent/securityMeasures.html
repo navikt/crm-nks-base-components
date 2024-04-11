@@ -1,26 +1,34 @@
 <template>
-    <template for:each={badgeData} for:item="securityMeasures">
-        <div key={securityMeasures}>
-            <h4 class="slds-text-color_destructive">{securityMeasures.SecurityMeasure}</h4>
-
-            <p>
-                Gyldig:
-                <lightning-formatted-date-time
-                    value={securityMeasures.FromDate}
-                    year="numeric"
-                    month="numeric"
-                    day="numeric"
-                >
-                </lightning-formatted-date-time>
-                -
-                <lightning-formatted-date-time
-                    value={securityMeasures.ToDate}
-                    year="numeric"
-                    month="numeric"
-                    day="numeric"
-                >
-                </lightning-formatted-date-time>
-            </p>
+    <div style="display: flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
+            <use href={infoIcon}></use>
+        </svg>
+        <div>
+            <p>Sikkerhetstiltak</p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="securityMeasures">
+                    <div key={securityMeasures}>
+                        <h4>{securityMeasures.SecurityMeasure} - Gyldig</h4>
+                        <p>
+                            <lightning-formatted-date-time
+                                value={securityMeasures.FromDate}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            >
+                            </lightning-formatted-date-time>
+                            -
+                            <lightning-formatted-date-time
+                                value={securityMeasures.ToDate}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            >
+                            </lightning-formatted-date-time>
+                        </p>
+                    </div>
+                </template>
+            </div>
         </div>
-    </template>
+    </div>
 </template>

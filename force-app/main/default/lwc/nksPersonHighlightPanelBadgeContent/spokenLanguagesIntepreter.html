@@ -1,11 +1,15 @@
 <template>
-    <lightning-layout-item size="12" class="slds-var-p-left_x-small slds-var-m-top_xxx-small slds-text-body_regular">
-        <div class="slds-box slds-box_xx-small slds-theme_default spaceClass">
+    <div style="display: flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
+            <use href={infoIcon}></use>
+        </svg>
+        <div>
+            <p><Strong>Talespråk</Strong></p>
             <ul class="" aria-label="Talespråktolk">
                 <template for:each={badgeData} for:item="language">
-                    <li class="slds-item" key={language}><strong>{language}</strong></li>
+                    <li class="slds-item" key={language}>{language}</li>
                 </template>
             </ul>
         </div>
-    </lightning-layout-item>
+    </div>
 </template>

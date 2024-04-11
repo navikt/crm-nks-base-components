@@ -1,0 +1,10 @@
+.flexWithGap {
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+}
+
+.infoIcon {
+    color: #ffb249;
+    margin-right: 0.75rem;
+}

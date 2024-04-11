@@ -32,7 +32,16 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.badges = data.badges;
             const badgeRemapping = [];
             for (const [key, value] of Object.entries(data)) {
-                if (!['errors', 'badges'].includes(key) && value?.length > 0) {
+                if (
+                    [
+                        'securityMeasures',
+                        'spokenLanguagesIntepreter',
+                        'guardianships',
+                        'powerOfAttorneys',
+                        'dateOfDeath'
+                    ].includes(key) &&
+                    value?.length > 0
+                ) {
                     badgeRemapping.push({ type: key, data: value });
                 }
             }

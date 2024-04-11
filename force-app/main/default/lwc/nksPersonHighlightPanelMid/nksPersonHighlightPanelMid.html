@@ -1,20 +1,23 @@
 <template>
-    <lightning-layout>
-        <lightning-layout-item class="serviceLinks" size="6">
-            <div style="margin-top: 2.25rem; margin-left: 5.625rem; margin-bottom: 2rem">
+    <lightning-layout style="margin-top: 2rem; margin-bottom: 2rem">
+        <lightning-layout-item class="serviceLinks" size="4">
+            <div style="margin-left: 6rem">
                 <p>Aktivitetsplan</p>
                 <p>Meldekort</p>
                 <p>Sykmeldt enkeltperson</p>
             </div>
         </lightning-layout-item>
-        <lightning-layout-item class="badgeContent" size="6">
-            <template for:each={badgeContent} for:item="badge">
-                <c-nks-person-highlight-panel-badge-content
-                    type={badge.type}
-                    badge-data={badge.data}
-                    key={badge.type}
-                ></c-nks-person-highlight-panel-badge-content>
-            </template>
+        <lightning-layout-item class="badgeContent" size="8">
+            <lightning-layout multiple-rows="true" style="flex-direction: column; gap: 2rem">
+                <template for:each={badgeContent} for:item="badge">
+                    <lightning-layout-item key={badge.type}>
+                        <c-nks-person-highlight-panel-badge-content
+                            type={badge.type}
+                            badge-data={badge.data}
+                        ></c-nks-person-highlight-panel-badge-content>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
         </lightning-layout-item>
     </lightning-layout>
 </template>
