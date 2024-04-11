@@ -14,6 +14,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     dateOfDeath;
     badgeContent;
+    highlightPanelOpen = false;
 
     @wire(getPersonBadgesAndInfo, {
         field: '$relationshipField',
@@ -106,5 +107,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     addError(a) {
         console.log('Error Arne', a);
+    }
+
+    toggleOpen() {
+        this.highlightPanelOpen = !this.highlightPanelOpen;
     }
 }
