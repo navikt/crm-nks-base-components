@@ -24,7 +24,6 @@ public with sharing class NKS_FagsystemController {
             }
             Person__c person = [SELECT Name, INT_ActorId__c FROM Person__c WHERE Id = :personId];
             String navIdent = [SELECT CRM_NAV_Ident__c FROM User WHERE Id = :UserInfo.getUserId()].CRM_NAV_Ident__c;
-
             return new FagsystemData(navIdent, person.Name, person.INT_ActorId__c);
         } catch (Exception e) {
             throw new AuraHandledException(e.getMessage());
@@ -42,7 +41,6 @@ public with sharing class NKS_FagsystemController {
     public static string getIdFromRelationshipQuery(List<SObject> objs, String relatedField) {
         SOBject currentObj = objs[0];
         List<String> splitQuery = getField(relatedField).split('\\.');
-        System.debug(splitQuery);
         for (Integer i = 0; i < splitQuery.size() - 1; i++) {
             currentObj = currentObj.getSObject(splitQuery[i]);
         }

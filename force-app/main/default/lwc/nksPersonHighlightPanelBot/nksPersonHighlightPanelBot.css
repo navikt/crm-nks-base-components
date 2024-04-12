@@ -1,0 +1,56 @@
+.bot-panel {
+    padding-right: 0.625rem;
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    min-height: 3.5rem;
+    display: flex;
+    align-content: center;
+}
+
+.bot-panel-blue {
+    background-color: #2272CA;
+}
+
+.bot-panel-purple {
+    background-color: #9345AE;
+}
+
+.fagsystem-padding {
+    padding-right: 2.5rem;
+}
+
+.font-styling {
+    color: white;
+    font-family: Source Sans Pro, sans-serif; 
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1.876rem;
+}
+
+.fagsystem-element a, div {
+    padding-right: 2.5rem;
+    color: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+.margin-area {
+    min-width: 6rem;
+    max-width: 6rem;
+}
+
+.content-area {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.slds-text-link {
+    cursor: pointer;
+}
+
+.slds-text-link:hover {
+    color: inherit;
+}
