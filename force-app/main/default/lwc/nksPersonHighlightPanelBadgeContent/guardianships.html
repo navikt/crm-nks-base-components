@@ -1,0 +1,22 @@
+<template>
+    <div style="display: flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
+            <use href={infoIcon}></use>
+        </svg>
+
+        <div style="flex: 1">
+            <p><strong>Vergemål</strong></p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="guardianship">
+                    <div key={guardianship}>
+                        <p>Type: {guardianship.typeLabel}</p>
+                        <p>Motpart: {guardianship.motpartLabel}</p>
+                        <p>Omfang: {guardianship.omfangLabel}</p>
+                        <p>Innen personlig område: {guardianship.omfangetErInnenPersonligOmraadeTxt}</p>
+                        <p>Embete: {guardianship.embete}</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

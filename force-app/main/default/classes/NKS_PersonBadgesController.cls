@@ -668,6 +668,20 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String omfang;
         @AuraEnabled
+        public String motpartLabel {
+            get{
+                List<String> retString = new List<String>();
+                if(String.isNotEmpty(this.navn.fullName)) {
+                    retString.add(this.navn.fullName);
+                }
+                if(String.isNotEmpty(this.motpartsPersonIdent)) {
+                    retString.add(this.motpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
+        @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
         @AuraEnabled
         public String omfangetErInnenPersonligOmraadeTxt {

@@ -1,5 +1,12 @@
 <template>
-    <c-nks-person-highlight-panel-top></c-nks-person-highlight-panel-top>
-    <c-nks-person-highlight-panel-mid></c-nks-person-highlight-panel-mid>
-    <c-nks-person-highlight-panel-bot record-id={recordId} object-api-name={objectApiName}></c-nks-person-highlight-panel-bot>
+    <div class="highlightPanel">
+        <p>Her skal det mye Geir Arne</p>
+        <c-nks-person-highlight-panel-top></c-nks-person-highlight-panel-top>
+        <c-nks-person-highlight-panel-mid
+            lwc:if={highlightPanelOpen}
+            badges={badges}
+            badge-content={badgeContent}
+        ></c-nks-person-highlight-panel-mid>
+        <c-nks-person-highlight-panel-bot record-id={recordId} object-api-name={objectApiName}></c-nks-person-highlight-panel-bot>
+    </div>
 </template>

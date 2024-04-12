@@ -1,0 +1,43 @@
+<template>
+    <div style="display: flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
+            <use href={infoIcon}></use>
+        </svg>
+
+        <div>
+            <p>Fullmakt</p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="powerOfAttorney">
+                    <div key={powerOfAttorney}>
+                        <p>
+                            {powerOfAttorney.motpartsRolle}: {powerOfAttorney.motpartsNavn}
+                            {powerOfAttorney.motpartsPersonident}
+                        </p>
+                        <p>
+                            Gyldig:&nbsp;
+                            <lightning-formatted-date-time
+                                value={powerOfAttorney.gyldigFraOgMed}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            >
+                            </lightning-formatted-date-time>
+                            &nbsp;-&nbsp;
+                            <lightning-formatted-date-time
+                                value={powerOfAttorney.gyldigTilOgMed}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            ></lightning-formatted-date-time>
+                        </p>
+                        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
+                            <template iterator:it={powerOfAttorney.omraader}>
+                                <li class="slds-item" key={it.value}>{it.value}</li>
+                            </template>
+                        </ul>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
