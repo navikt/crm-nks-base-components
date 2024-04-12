@@ -1,0 +1,21 @@
+<template>
+    <div style="display: flex">
+        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="greyInfoIcon">
+            <use href={infoIcon}></use>
+        </svg>
+        <div style="flex: 1">
+            <p><Strong>Historiske fullmakter</Strong></p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="fullmakt">
+                    <div key={fullmakt}>
+                        <p><Strong>Periode:</Strong> {fullmakt.periode}</p>
+                        <p><Strong>Område:</Strong> {fullmakt.omraader}</p>
+                        <p><Strong>Rolle:</Strong> {fullmakt.motpartsRolle}</p>
+                        <p><Strong>Navn:</Strong> {fullmakt.motpartsPersonNavn}</p>
+                        <p><Strong>Nummer:</Strong> {fullmakt.motpartsPersonident}</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

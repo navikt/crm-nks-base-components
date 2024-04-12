@@ -6,6 +6,7 @@ import guardianships from './guardianships.html';
 import powerOfAttorneys from './powerOfAttorneys.html';
 import nksPersonHighlightPanelBadgeContent from './nksPersonHighlightPanelBadgeContent.html';
 import dateOfDeath from './dateOfDeath.html';
+import historicalPowerOfAttorney from './historicalPowerOfAttorney.html';
 import InfoCircle from '@salesforce/resourceUrl/InfoCircle';
 import sharedStyling from './sharedStyling.css';
 
@@ -14,7 +15,8 @@ const templates = {
     spokenLanguagesIntepreter: spokenLanguagesIntepreter,
     guardianships: guardianships,
     powerOfAttorneys: powerOfAttorneys,
-    dateOfDeath: dateOfDeath
+    dateOfDeath: dateOfDeath,
+    historicalPowerOfAttorney: historicalPowerOfAttorney
 };
 
 export default class NksPersonHighlightPanelBadgeContent extends LightningElement {

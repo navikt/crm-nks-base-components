@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
+import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
@@ -8,6 +9,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api relationshipField;
 
     wiredBadge;
+    historikkWiredData;
     isLoaded;
 
     badges;
@@ -27,7 +29,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     setWiredBadge() {
+        if (this.wiredBadge == null || this.historikkWiredData == null) return;
         const { data, error } = this.wiredBadge;
+        const { data: historikkData, error: historikkError } = this.historikkWiredData;
 
         if (data) {
             this.badges = data.badges;
@@ -45,6 +49,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 ) {
                     badgeRemapping.push({ type: key, data: value });
                 }
+            }
+            if (historikkData) {
+                badgeRemapping.push({ type: 'historicalPowerOfAttorney', data: historikkData });
             }
             this.badgeContent = badgeRemapping;
 
@@ -78,6 +85,23 @@ export default class NksPersonHighlightPanel extends LightningElement {
             console.log('There was problem to fetch data from wire-function: ' + error);
         }
     }
+
+    @wire(getHistorikk, {
+        recordId: '$recordId',
+        objectApiName: '$objectApiName'
+    })
+    wiredHistorikk(value) {
+        this.historikkWiredData = value;
+        const { data, error } = this.historikkWiredData;
+        if (data) {
+            this.setWiredBadge();
+        }
+        if (error) {
+            console.log(error);
+        }
+    }
+
+    updateBadgeContent() {}
 
     setWiredPersonAccessBadge() {
         const { data, error } = this.wiredPersonAccessBadge;
