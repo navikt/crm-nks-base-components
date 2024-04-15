@@ -1,3 +1,50 @@
 <template>
-    <div style="border-bottom: solid 1px white"></div>
+    <div style="border-bottom: solid 1px white">
+        <div class={headerClasses}>
+            <lightning-layout>
+                <div class="slds-page-header__row slds-clearfix">
+                    <div class="slds-media__figure">
+                        <c-nks-custom-svg
+                            class={genderIcon}
+                            src={genderIconSrc}
+                            alt-text={gender}
+                            classes={genderIconClass}
+                        >
+                        </c-nks-custom-svg>
+                    </div>
+
+                    <div class="slds-page-header__name">
+                        <div class="slds-page-header__name-title">
+                            <h1>
+                                <span class="slds-page-header__title" if:true={fullName} title={fullName}
+                                    >{fullName}</span
+                                >
+                            </h1>
+                        </div>
+
+                        <template if:true={personIdent}>
+                            <div>
+                                <lightning-layout-item>
+                                    <h2 class="record-header-info">&nbsp;{personIdent}</h2>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item>
+                                    <!-- sldsValidatorIgnoreNextLine -->
+                                    <lightning-button-icon
+                                        value={personIdent}
+                                        class="copy-icon"
+                                        icon-name="utility:copy"
+                                        variant="bare"
+                                        onclick={handleCopy}
+                                        alternative-text="Kopier fødselsnummer"
+                                        title="Kopier fødselsnummer"
+                                    ></lightning-button-icon>
+                                </lightning-layout-item>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </lightning-layout>
+        </div>
+    </div>
 </template>
