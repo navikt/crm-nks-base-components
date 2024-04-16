@@ -1,4 +1,5 @@
-import { LightningElement, api, wire, track } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
@@ -15,13 +16,14 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
 import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
 
-export default class NksPersonHeader extends LightningElement {
+export default class NksPersonHeader extends NavigationMixin(LightningElement) {
     @api recordId;
     @api objectApiName;
     @api relationshipField;
     @api showPersonBadges = false;
     @api leftAlignBadges = false;
     @api showExtraInfo = false;
+    @api showSwitchApplicationButton = false;
     personId;
     fullName;
     personIdent;
@@ -271,6 +273,33 @@ export default class NksPersonHeader extends LightningElement {
         }
         if (error) {
             console.log(error);
+        }
+    }
+
+    // Alternative navigation is through window.open
+    /* 
+        let baseUrl = window.location.origin + '/lightning/';
+        let url = baseUrl + 'app/c__' + 'NAV_Kontaktsenter_v_2' + '/r/' + this.objectApiName + '/' + this.recordId + '/view';
+        window.open(url, '_self');
+    */
+    switchApplication() {
+        try {
+            this[NavigationMixin.Navigate]({
+                type: 'standard__app',
+                attributes: {
+                    appTarget: 'c__NAV_Kontaktsenter_v_2',
+                    pageRef: {
+                        type: 'standard__recordPage',
+                        attributes: {
+                            recordId: this.recordId,
+                            objectApiName: this.objectApiName,
+                            actionName: 'view'
+                        }
+                    }
+                }
+            });
+        } catch (err) {
+            console.error(err);
         }
     }
 
