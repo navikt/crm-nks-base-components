@@ -22,6 +22,7 @@ export default class NksNavUnitSingle extends LightningElement {
     @track contactInformation;
     @track contactInformationV2;
 
+    unitNumber;
     wiredNavUnit;
     wiredContactInformation;
     wireFields;
