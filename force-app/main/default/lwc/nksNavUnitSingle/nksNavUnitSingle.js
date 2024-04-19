@@ -60,9 +60,7 @@ export default class NksNavUnitSingle extends LightningElement {
             }
         }
         if (error) {
-            this.errorMessage = error.message || 'Unknown error';
-            this.isError = true;
-            this.isLoaded = true;
+            this.handleError(error);
         }
     }
 
@@ -92,9 +90,7 @@ export default class NksNavUnitSingle extends LightningElement {
             this.appendErrorMessage(data.errorMessage);
         }
         if (error) {
-            this.errorMessage = error.message || 'Unknown error';
-            this.isError = true;
-            this.isLoaded = true;
+            this.handleError(error);
         }
     }
 
@@ -110,8 +106,7 @@ export default class NksNavUnitSingle extends LightningElement {
             this.contactInformation = data.contactInformation;
             this.appendErrorMessage(data.errorMessage);
         } else if (error) {
-            this.errorMessage = error.message || 'Unknown error';
-            this.isError = true;
+            this.handleError(error);
         }
 
         getContactInformationV2({ unitNumber: this.unitNumber })
@@ -124,9 +119,7 @@ export default class NksNavUnitSingle extends LightningElement {
                 this.isLoaded = true;
             })
             .catch((err) => {
-                this.errorMessage = err.message || 'Unknown error';
-                this.isError = true;
-                this.isLoaded = true;
+                this.handleError(err);
             });
     }
 
@@ -134,6 +127,17 @@ export default class NksNavUnitSingle extends LightningElement {
         if (errorMessage) {
             this.errorMessage = this.errorMessage ? `${this.errorMessage} ${errorMessage}` : errorMessage;
         }
+    }
+
+    handleError(error) {
+        this.errorMessage = 'Unknown error';
+        if (Array.isArray(error.body)) {
+            this.errorMessage = error.body.map((e) => e.message).join(', ');
+        } else if (typeof error.body.message === 'string') {
+            this.errorMessage = error.body.message;
+        }
+        this.isError = true;
+        this.isLoaded = true;
     }
 
     /**
