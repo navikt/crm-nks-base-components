@@ -12,10 +12,10 @@ export default class NksNavUnitSingle extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api relationField;
-    @api type;
-    @api allSectionsOpenOnLoad = false;
-    @api numCols = 2;
-    @api cardLayout = false;
+    @api type; // If based on person location or unit
+    @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
+    @api numCols = 2; // Number of columns for the displayed fields
+    @api cardLayout = false; // If true, use the card layout, if not use box layout
     @api boxLayout = false;
 
     @track navUnit;
@@ -70,9 +70,6 @@ export default class NksNavUnitSingle extends LightningElement {
         return JSON.stringify(this.errorMessage);
     }
 
-    /**
-     * @param {any} value
-     */
     @wire(getNavUnit, {
         field: '$relationField',
         parentObject: '$objectApiName',
@@ -101,9 +98,6 @@ export default class NksNavUnitSingle extends LightningElement {
         }
     }
 
-    /**
-     * @param {any} res
-     */
     @wire(getContactInformation, { unitNumber: '$unitNumber' }) wiredGetContactInformation(res) {
         this.wiredContactInformation = res;
         this.setWiredContactInformation();
