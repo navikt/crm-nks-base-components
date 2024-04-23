@@ -22,44 +22,46 @@
             >
             </lightning-badge>
         </template>
-        <template for:each={badges} for:item="badge">
-            <div key={badge.name} data-id={badge.name}>
-                <template if:true={badge.clickable}>
-                    <lightning-badge
-                        data-id={badge.name}
-                        label={badge.label}
-                        icon-name={badge.iconName}
-                        icon-position="start"
-                        class={badge.styling}
-                        tabindex={badge.tabindex}
-                        onkeypress={onKeyPressHandler}
-                        onclick={onClickHandler}
-                        aria-expanded="false"
-                        role="heading"
-                    >
-                    </lightning-badge>
-                </template>
-                <template if:false={badge.clickable}>
-                    <lightning-badge
-                        data-id={badge.name}
-                        label={badge.label}
-                        icon-name={badge.iconName}
-                        icon-position="start"
-                        class={badge.styling}
-                        role="heading"
-                    >
-                    </lightning-badge>
-                </template>
-                <div lwc:if={badge.badgeContent}>
-                    <c-nks-person-highlight-panel-badge-content
-                        data-id={badge.badgeContentType}
-                        shown-badge={shownBadge}
-                        type={badge.badgeContentType}
-                        badge-data={badge.badgeContent}
-                    ></c-nks-person-highlight-panel-badge-content>
+        <div style="display: flex; justify-content: flex-end" class="slds-var-m-right_medium">
+            <template for:each={badges} for:item="badge">
+                <div key={badge.name} data-id={badge.name}>
+                    <template if:true={badge.clickable}>
+                        <lightning-badge
+                            data-id={badge.name}
+                            label={badge.label}
+                            icon-name={badge.iconName}
+                            icon-position="start"
+                            class={badge.styling}
+                            tabindex={badge.tabindex}
+                            onkeypress={onKeyPressHandler}
+                            onclick={onClickHandler}
+                            aria-expanded="false"
+                            role="heading"
+                        >
+                        </lightning-badge>
+                    </template>
+                    <template if:false={badge.clickable}>
+                        <lightning-badge
+                            data-id={badge.name}
+                            label={badge.label}
+                            icon-name={badge.iconName}
+                            icon-position="start"
+                            class={badge.styling}
+                            role="heading"
+                        >
+                        </lightning-badge>
+                    </template>
+                    <div lwc:if={badge.badgeContent}>
+                        <c-nks-person-highlight-panel-badge-content
+                            data-id={badge.badgeContentType}
+                            shown-badge={shownBadge}
+                            type={badge.badgeContentType}
+                            badge-data={badge.badgeContent}
+                        ></c-nks-person-highlight-panel-badge-content>
+                    </div>
                 </div>
-            </div>
-        </template>
+            </template>
+        </div>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}
