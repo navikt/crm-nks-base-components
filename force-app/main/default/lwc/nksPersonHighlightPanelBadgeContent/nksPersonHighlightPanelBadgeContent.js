@@ -38,6 +38,16 @@ export default class NksPersonHighlightPanelBadgeContent extends LightningElemen
         return this.type === this.shownBadge;
     }
 
+    renderedCallback() {
+        const renderedBadgeContent = this.template.querySelector('.backgroundStyling');
+        if (!renderedBadgeContent) return;
+        if (renderedBadgeContent.offsetWidth + renderedBadgeContent.getBoundingClientRect().left >= window.innerWidth) {
+            renderedBadgeContent.style.right = 0;
+        } else {
+            renderedBadgeContent.style.right = 'auto';
+        }
+    }
+
     // Open STO List
 
     selectedBadge;

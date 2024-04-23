@@ -1,9 +1,7 @@
 <template>
-    <div style="display: flex" lwc:if={showBadge}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="greyInfoIcon">
-            <use href={infoIcon}></use>
-        </svg>
-        <div style="flex: 1">
+    <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
+        <div class="headerLine"></div>
+        <div class="slds-m-around_medium">
             <p><Strong>Historiske fullmakter</Strong></p>
             <div class="flexWithGap">
                 <template for:each={badgeData} for:item="fullmakt">
