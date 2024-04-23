@@ -1,5 +1,5 @@
 <template>
-    <div style="display: flex">
+    <div style="display: flex" lwc:if={showBadge}>
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
             <use href={infoIcon}></use>
         </svg>
@@ -7,7 +7,7 @@
             <p><Strong>Talespråk</Strong></p>
             <ul class="" aria-label="Talespråktolk">
                 <template for:each={badgeData} for:item="language">
-                    <li class="slds-item" key={language}>{language}</li>
+                    <li class="slds-item" key={language.language}>{language.language}</li>
                 </template>
             </ul>
         </div>

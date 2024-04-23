@@ -12,6 +12,54 @@
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
         ></c-nks-person-highlight-panel-mid>
+        <template for:each={personAccessBadges} for:item="badge">
+            <lightning-badge
+                key={badge.name}
+                class="slds-theme_error slds-var-m-left_x-small"
+                data-id={badge.name}
+                label={badge.label}
+                role="heading"
+            >
+            </lightning-badge>
+        </template>
+        <template for:each={badges} for:item="badge">
+            <div key={badge.name} data-id={badge.name}>
+                <template if:true={badge.clickable}>
+                    <lightning-badge
+                        data-id={badge.name}
+                        label={badge.label}
+                        icon-name={badge.iconName}
+                        icon-position="start"
+                        class={badge.styling}
+                        tabindex={badge.tabindex}
+                        onkeypress={onKeyPressHandler}
+                        onclick={onClickHandler}
+                        aria-expanded="false"
+                        role="heading"
+                    >
+                    </lightning-badge>
+                </template>
+                <template if:false={badge.clickable}>
+                    <lightning-badge
+                        data-id={badge.name}
+                        label={badge.label}
+                        icon-name={badge.iconName}
+                        icon-position="start"
+                        class={badge.styling}
+                        role="heading"
+                    >
+                    </lightning-badge>
+                </template>
+                <div lwc:if={badge.badgeContent}>
+                    <c-nks-person-highlight-panel-badge-content
+                        data-id={badge.badgeContentType}
+                        shown-badge={shownBadge}
+                        type={badge.badgeContentType}
+                        badge-data={badge.badgeContent}
+                    ></c-nks-person-highlight-panel-badge-content>
+                </div>
+            </div>
+        </template>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}

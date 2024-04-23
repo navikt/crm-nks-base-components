@@ -11,9 +11,9 @@ import InfoCircle from '@salesforce/resourceUrl/InfoCircle';
 import sharedStyling from './sharedStyling.css';
 
 const templates = {
-    securityMeasures: securityMeasures,
-    spokenLanguagesIntepreter: spokenLanguagesIntepreter,
-    guardianships: guardianships,
+    SecurityMeasure: securityMeasures,
+    SpokenLanguagesIntepreter: spokenLanguagesIntepreter,
+    GuardianshipOrFuturePowerOfAttorney: guardianships,
     powerOfAttorneys: powerOfAttorneys,
     dateOfDeath: dateOfDeath,
     historicalPowerOfAttorney: historicalPowerOfAttorney
@@ -22,6 +22,7 @@ const templates = {
 export default class NksPersonHighlightPanelBadgeContent extends LightningElement {
     @api type;
     @api badgeData;
+    @api shownBadge;
     // In LWC you can import stylesheets to apply to all templates
     // https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css.html#assign-css-stylesheets-to-a-component
     static stylesheets = [sharedStyling];
@@ -31,6 +32,10 @@ export default class NksPersonHighlightPanelBadgeContent extends LightningElemen
     render() {
         //code
         return templates[this.type] != null ? templates[this.type] : nksPersonHighlightPanelBadgeContent;
+    }
+
+    get showBadge() {
+        return this.type === this.shownBadge;
     }
 
     // Open STO List

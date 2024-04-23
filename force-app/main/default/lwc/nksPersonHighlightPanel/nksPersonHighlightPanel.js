@@ -21,6 +21,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api objectApiName;
     @api relationshipField;
     personInfo = {};
+    shownBadge;
 
     wireFields;
     wiredBadge;
@@ -82,26 +83,22 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const { data: historikkData, error: historikkError } = this.historikkWiredData;
 
         if (data) {
-            this.badges = data.badges;
-            const badgeRemapping = [];
-            for (const [key, value] of Object.entries(data)) {
-                if (
-                    [
-                        'securityMeasures',
-                        'spokenLanguagesIntepreter',
-                        'guardianships',
-                        'powerOfAttorneys',
-                        'dateOfDeath'
-                    ].includes(key) &&
-                    value?.length > 0
-                ) {
-                    badgeRemapping.push({ type: key, data: value });
-                }
-            }
+            const badges = [];
             if (historikkData) {
-                badgeRemapping.push({ type: 'historicalPowerOfAttorney', data: historikkData });
+                badges.push({
+                    name: 'historicalGuardianship',
+                    label: 'Historisk fullmakter',
+                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                    iconName: '',
+                    iconAltText: 'geir',
+                    clickable: true,
+                    tabindex: '0',
+                    badgeContent: historikkData,
+                    badgeContentType: 'historicalPowerOfAttorney'
+                });
             }
-            this.badgeContent = badgeRemapping;
+            badges.push(...data.badges);
+            this.badges = badges;
 
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
@@ -183,6 +180,42 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     toggleOpen() {
         this.highlightPanelOpen = !this.highlightPanelOpen;
+    }
+
+    onKeyPressHandler(event) {
+        if (event.which === 13 || event.which === 32) {
+            this.onClickHandler(event);
+        }
+    }
+
+    onClickHandler(event) {
+        let selectedBadge = event.target.dataset.id;
+        const cmp = this.template.querySelector(
+            `div[data-id="${selectedBadge}"] c-nks-person-highlight-panel-badge-content`
+        );
+        this.handleSelectedBadge(cmp.dataset.id, selectedBadge);
+    }
+
+    handleSelectedBadge(selectedBadge, badge) {
+        if (this.shownBadge === selectedBadge) {
+            this.shownBadge = '';
+        } else {
+            this.shownBadge = selectedBadge;
+        }
+        this.setExpanded(badge);
+    }
+
+    setExpanded(selectedBadge) {
+        let badges = this.template.querySelectorAll('.slds-badge');
+        badges.forEach((badge) => {
+            if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
+                // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
+                badge.setAttribute('aria-expanded', 'true');
+            } else if (badge.role === 'button') {
+                // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
+                badge.setAttribute('aria-expanded', 'false');
+            }
+        });
     }
 
     // Header Info get data

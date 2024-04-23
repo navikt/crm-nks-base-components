@@ -5,3 +5,7 @@
     color: white;
     width: 100%;
 }
+
+.pointer {
+    cursor: pointer;
+}

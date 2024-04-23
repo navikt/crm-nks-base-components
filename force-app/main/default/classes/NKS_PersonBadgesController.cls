@@ -226,13 +226,14 @@ public with sharing class NKS_PersonBadgesController {
                     if (securityMeasures.size() > 0) {
                         badges.add(
                             new Badge(
-                                'securityMeasures',
-                                person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                                '',
-                                '',
-                                true
-                            )
+                                    'securityMeasures',
+                                    person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
+                                    'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                    '',
+                                    '',
+                                    true
+                                )
+                                .setBadgeContent(securityMeasures)
                         );
                     }
                 }
@@ -243,29 +244,33 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setSpokenLanguagesIntepreter() {
             if (true == String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
-                badges.add(
-                    new Badge(
-                        'spokenLanguageIntepreter',
-                        getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
+                List<SpokenLanguagesIntepreter> languages = new List<spokenLanguagesIntepreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
                         if (languageMap.containsKey(language)) {
                             String capCase = languageMap.get(language).toLowerCase().capitalize();
                             spokenLanguagesIntepreter.add(capCase + ' (' + language + ')');
+                            languages.add(new SpokenLanguagesIntepreter(capCase + ' (' + language + ')'));
                         } else {
                             spokenLanguagesIntepreter.add(language);
+                            languages.add(new SpokenLanguagesIntepreter(language));
                         }
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av språk for talespråktolk');
                 }
+
+                badges.add(
+                    new Badge(
+                            'spokenLanguageIntepreter',
+                            getFieldLabel('INT_SpokenLanguageIntepreter__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(languages)
+                );
             }
         }
 
@@ -324,13 +329,14 @@ public with sharing class NKS_PersonBadgesController {
                     if (powerOfAttorneys.size() > 0) {
                         badges.add(
                             new Badge(
-                                'powerOfAttorney',
-                                'Fullmakt',
-                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                                '',
-                                '',
-                                true
-                            )
+                                    'powerOfAttorney',
+                                    'Fullmakt',
+                                    'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                    '',
+                                    '',
+                                    true
+                                )
+                                .setBadgeContent(powerOfAttorneys)
                         );
                     }
                 } catch (Exception e) {
@@ -341,17 +347,6 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setGuardianshipOrFuturePowerOfAttorney() {
             if (String.isNotBlank(person.INT_GuardianshipOrFuturePowerOfAttorney__c)) {
-                badges.add(
-                    new Badge(
-                        'guardianshipOrFuturePowerOfAttorney',
-                        'Vergemål',
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
                 try {
                     Integer i = 0;
                     for (
@@ -370,6 +365,18 @@ public with sharing class NKS_PersonBadgesController {
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av vergemål detaljer');
                 }
+
+                badges.add(
+                    new Badge(
+                            'guardianshipOrFuturePowerOfAttorney',
+                            'Vergemål',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(guardianships)
+                );
             }
         }
 
@@ -470,7 +477,9 @@ public with sharing class NKS_PersonBadgesController {
                 WHERE CRM_Person__c != NULL AND CRM_Person__r.Name IN :personIdentNameMap.keySet()
                 WITH SYSTEM_MODE
             ]) {
-                String name = String.isNotBlank(acc.CRM_Person__r.NKS_Full_Name__c) ? acc.CRM_Person__r.NKS_Full_Name__c : acc.Name;
+                String name = String.isNotBlank(acc.CRM_Person__r.NKS_Full_Name__c)
+                    ? acc.CRM_Person__r.NKS_Full_Name__c
+                    : acc.Name;
                 personIdentNameMap.put(acc.CRM_Person__r.Name, name);
             }
 
@@ -513,6 +522,16 @@ public with sharing class NKS_PersonBadgesController {
         public String tabindex;
         @AuraEnabled
         public String badgeInfo; //Optional additional info to be sent to frontend
+        @AuraEnabled
+        public List<BadgeContent> badgeContent;
+        @AuraEnabled
+        public String badgeContentType {
+            get {
+                if (this.badgeContent == null || this.badgeContent?.size() == 0)
+                    return null;
+                return String.valueOf(this.badgeContent[0]).split(':')[0]; // Returns the name of the class instance
+            }
+        }
 
         /**
          * @description Constructor for only showing a badge without any formatting or logic
@@ -571,9 +590,31 @@ public with sharing class NKS_PersonBadgesController {
             this(name, label, styling, iconName, iconAltText, clickable);
             this.badgeInfo = badgeInfo;
         }
+
+        public Badge setBadgeContent(List<BadgeContent> content) {
+            this.badgeContent = content;
+            return this;
+        }
+
+        public Badge setBadgeContent(BadgeContent content) {
+            this.badgeContent = new List<BadgeContent>{ content };
+            return this;
+        }
     }
 
-    public class PowerOfAttorney {
+    public interface BadgeContent {
+    }
+
+    public class SpokenLanguagesIntepreter implements BadgeContent {
+        @AuraEnabled
+        public String language;
+
+        public SpokenLanguagesIntepreter(String language) {
+            this.language = language;
+        }
+    }
+
+    public class PowerOfAttorney implements BadgeContent {
         @AuraEnabled
         public String motpartsRolle {
             get {
@@ -630,7 +671,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class GuardianshipOrFuturePowerOfAttorney {
+    public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -669,12 +710,12 @@ public with sharing class NKS_PersonBadgesController {
         public String omfang;
         @AuraEnabled
         public String motpartLabel {
-            get{
+            get {
                 List<String> retString = new List<String>();
-                if(String.isNotEmpty(this.navn.fullName)) {
+                if (String.isNotEmpty(this.navn.fullName)) {
                     retString.add(this.navn.fullName);
                 }
-                if(String.isNotEmpty(this.motpartsPersonIdent)) {
+                if (String.isNotEmpty(this.motpartsPersonIdent)) {
                     retString.add(this.motpartsPersonident);
                 }
 
@@ -709,7 +750,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class SecurityMeasure {
+    public class SecurityMeasure implements BadgeContent {
         @AuraEnabled
         public Id RecordId;
         @AuraEnabled
