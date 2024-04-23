@@ -83,7 +83,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const { data: historikkData, error: historikkError } = this.historikkWiredData;
 
         if (data) {
-            const badges = [];
+            const badges = [...data.badges];
             if (historikkData) {
                 badges.push({
                     name: 'historicalGuardianship',
@@ -97,7 +97,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     badgeContentType: 'historicalPowerOfAttorney'
                 });
             }
-            badges.push(...data.badges);
             this.badges = badges;
 
             // this.entitlements = data.entitlements;

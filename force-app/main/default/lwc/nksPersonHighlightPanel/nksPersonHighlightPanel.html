@@ -12,20 +12,21 @@
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
         ></c-nks-person-highlight-panel-mid>
-        <template for:each={personAccessBadges} for:item="badge">
-            <lightning-badge
-                key={badge.name}
-                class="slds-theme_error slds-var-m-left_x-small"
-                data-id={badge.name}
-                label={badge.label}
-                role="heading"
-            >
-            </lightning-badge>
-        </template>
         <div style="display: flex; justify-content: flex-end" class="slds-var-m-right_medium">
+            <template for:each={personAccessBadges} for:item="badge">
+                <div key={badge.name}>
+                    <lightning-badge
+                        class="slds-theme_error slds-var-m-left_x-small"
+                        data-id={badge.name}
+                        label={badge.label}
+                        role="heading"
+                    >
+                    </lightning-badge>
+                </div>
+            </template>
             <template for:each={badges} for:item="badge">
                 <div key={badge.name} data-id={badge.name}>
-                    <template if:true={badge.clickable}>
+                    <template lwc:if={badge.clickable}>
                         <lightning-badge
                             data-id={badge.name}
                             label={badge.label}
@@ -40,7 +41,7 @@
                         >
                         </lightning-badge>
                     </template>
-                    <template if:false={badge.clickable}>
+                    <template lwc:else>
                         <lightning-badge
                             data-id={badge.name}
                             label={badge.label}
