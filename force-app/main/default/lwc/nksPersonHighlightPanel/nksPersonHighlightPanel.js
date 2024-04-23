@@ -88,7 +88,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historisk fullmakter',
-                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer greyBadge',
                     iconName: '',
                     iconAltText: 'geir',
                     clickable: true,

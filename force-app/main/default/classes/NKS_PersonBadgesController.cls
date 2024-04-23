@@ -228,7 +228,7 @@ public with sharing class NKS_PersonBadgesController {
                             new Badge(
                                     'securityMeasures',
                                     person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                                    'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                    'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
                                     '',
                                     '',
                                     true
@@ -264,7 +264,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                             'spokenLanguageIntepreter',
                             getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                             '',
                             '',
                             true
@@ -286,7 +286,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                         'isDeceased',
                         getFieldLabel('INT_IsDeceased__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                         '',
                         '',
                         true
@@ -331,7 +331,7 @@ public with sharing class NKS_PersonBadgesController {
                             new Badge(
                                     'powerOfAttorney',
                                     'Fullmakt',
-                                    'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                    'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                                     '',
                                     '',
                                     true
@@ -370,7 +370,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                             'guardianshipOrFuturePowerOfAttorney',
                             'Vergemål',
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                             '',
                             '',
                             true
@@ -461,7 +461,7 @@ public with sharing class NKS_PersonBadgesController {
                 new Badge(
                     'openSTO',
                     String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
-                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
                     '',
                     '',
                     true,
@@ -540,7 +540,14 @@ public with sharing class NKS_PersonBadgesController {
          *
          */
         public Badge(String name, String label) {
-            this(name, label, 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small', '', '', false);
+            this(
+                name,
+                label,
+                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small yellowBadge',
+                '',
+                '',
+                false
+            );
         }
 
         /**

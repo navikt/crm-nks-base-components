@@ -9,3 +9,36 @@
 .pointer {
     cursor: pointer;
 }
+
+.greenBadge,
+.yellowBadge,
+.redBadge,
+.greyBadge {
+    border: 2px white solid;
+}
+
+.greenBadge {
+    background-color: #66c786 !important;
+}
+.yellowBadge {
+    background-color: #ffaa33 !important;
+}
+.redBadge {
+    background-color: #ad0000 !important;
+}
+.greyBadge {
+    background-color: #c6c6c6 !important;
+}
+
+.greenBadge + div c-nks-person-highlight-panel-badge-content {
+    --badge-line: #66c786;
+}
+.yellowBadge + div c-nks-person-highlight-panel-badge-content {
+    --badge-line: #ffaa33;
+}
+.redBadge + div c-nks-person-highlight-panel-badge-content {
+    --badge-line: #ad0000;
+}
+.greyBadge + div c-nks-person-highlight-panel-badge-content {
+    --badge-line: #c6c6c6;
+}
