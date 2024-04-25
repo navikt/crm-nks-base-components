@@ -284,13 +284,14 @@ public with sharing class NKS_PersonBadgesController {
             if (true == person.INT_IsDeceased__c) {
                 badges.add(
                     new Badge(
-                        'isDeceased',
-                        getFieldLabel('INT_IsDeceased__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
-                        '',
-                        '',
-                        true
-                    )
+                            'isDeceased',
+                            getFieldLabel('INT_IsDeceased__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(new IsDeceased(person.INT_DateOfDeath__c))
                 );
             }
         }
@@ -425,6 +426,21 @@ public with sharing class NKS_PersonBadgesController {
         /**
          * @description Setting badge for open STOs
          */
+
+        //  returns
+        // [
+        //     {
+        //         "badgeInfo": "[{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":1,\"STO_Category__c\":\"Arbeid\",\"Origin\":\"BTO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Familie\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":1,\"STO_Category__c\":\"Familie\",\"Origin\":\"BTO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Internasjonal\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Pensjon\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Ufør\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Pleiepenger\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Hjelpemidler\",\"Origin\":\"STO\"}]",
+        //         "clickable": true,
+        //         "iconAltText": "",
+        //         "iconName": "",
+        //         "label": "20 åpne STO-er",
+        //         "name": "openSTO",
+        //         "styling": "slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer",
+        //         "tabindex": "0"
+        //     }
+        // ]
+
         public void setOpenSTO(String caseId) {
             Case c = [
                 SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
@@ -610,6 +626,15 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public interface BadgeContent {
+    }
+
+    public class IsDeceased implements BadgeContent {
+        @AuraEnabled
+        public Date dateOfDeath;
+
+        public IsDeceased(Date dateOfDeath) {
+            this.dateOfDeath = dateOfDeath;
+        }
     }
 
     public class SpokenLanguagesIntepreter implements BadgeContent {
