@@ -1,16 +1,17 @@
 <template>
-    <div style="display: flex" lwc:if={showBadge}>
-        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" class="infoIcon">
-            <use href={infoIcon}></use>
-        </svg>
-        <div>
+    <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
+        <div class="headerLine"></div>
+        <div class="slds-m-around_medium">
             <p><Strong>Dødsdato</Strong></p>
-            <lightning-formatted-date-time
-                value={badgeData}
-                year="numeric"
-                month="2-digit"
-                day="2-digit"
-            ></lightning-formatted-date-time>
+            <template for:each={badgeData} for:item="data">
+                <lightning-formatted-date-time
+                    key={data.dateOfDeath}
+                    value={data.dateOfDeath}
+                    year="numeric"
+                    month="2-digit"
+                    day="2-digit"
+                ></lightning-formatted-date-time>
+            </template>
         </div>
     </div>
 </template>
