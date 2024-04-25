@@ -22,7 +22,11 @@
                 {
                     "package": "crm-platform-reporting",
                     "versionNumber": "0.37.0.LATEST"
-                }
+                },
+                {
+                    "package": "crm-nks-integration",
+                    "versionNumber": "0.62.0.LATEST"
+                },
             ]
         }
     ],
@@ -34,6 +38,7 @@
         "crm-platform-base": "0Ho2o0000008ORmCAM",
         "crm-henvendelse-base": "0Ho7U000000000kSAA",
         "crm-platform-integration": "0Ho2o0000008ORrCAM",
-        "crm-platform-reporting": "0Ho2o0000008OSfCAM"
+        "crm-platform-reporting": "0Ho2o0000008OSfCAM",
+        "crm-nks-integration": "0Ho2o000000fxX6CAI"
     }
 }
