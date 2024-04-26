@@ -1,8 +1,9 @@
-import { LightningElement, api, wire, track } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
+import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
@@ -11,9 +12,9 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
+import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
+import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
-import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
@@ -25,6 +26,8 @@ export default class NksPersonHeader extends LightningElement {
     personId;
     fullName;
     personIdent;
+    veilederIdent;
+    actorId;
     gender;
     age;
     citizenship;
@@ -42,40 +45,25 @@ export default class NksPersonHeader extends LightningElement {
     customclass = 'grey-icon';
     veilederName;
 
-    @wire(MessageContext)
-    messageContext;
-
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
-        this.subscribeToMessageChannel();
     }
 
-    disconnectedCallback() {
-        this.unsubscribeToMessageChannel();
-    }
-
-    // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
-    subscribeToMessageChannel() {
-        if (!this.subscription) {
-            this.subscription = subscribe(
-                this.messageContext,
-                nksVeilederName,
-                (message) => this.handleVeilderName(message),
-                { scope: APPLICATION_SCOPE }
-            );
+    @wire(getVeilederIdent, { actorId: '$actorId' })
+    wireVeilIdentInfo({ data, error }) {
+        if (data) {
+            this.veilederIdent = data.primaerVeileder;
+        } else if (error) {
+            console.error(error);
         }
     }
 
-    unsubscribeToMessageChannel() {
-        unsubscribe(this.subscription);
-        this.subscription = null;
-    }
-
-    // Handler for message received by component
-    handleVeilderName(message) {
-        if (message.recordId === this.recordId) {
-            this.veilederName = message.displayName;
-            this.veilederIdent = message.ident;
+    @wire(getVeilederName, { navIdent: '$veilederIdent' })
+    wiredName({ data, error }) {
+        if (data) {
+            this.veilederName = data;
+        } else if (error) {
+            console.log('Error occurred: ', JSON.stringify(error, null, 2));
         }
     }
 
@@ -184,12 +172,13 @@ export default class NksPersonHeader extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$personId',
-        fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
+        fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
     })
     wiredPersonInfo({ error, data }) {
         if (data) {
             this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
+            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
