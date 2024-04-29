@@ -1,6 +1,6 @@
 .highlightPanel {
     font-size: 16px;
-    line-height: 30px;
+    line-height: 1.5rem;
     background-color: #0056b4;
     color: white;
     width: 100%;
@@ -15,6 +15,10 @@
 .redBadge,
 .greyBadge {
     border: 2px white solid;
+    padding-right: 2rem;
+    padding-left: 2rem;
+    font-size: 0.875rem;
+    font-weight: normal;
 }
 
 .greenBadge {
@@ -22,6 +26,7 @@
 }
 .yellowBadge {
     background-color: #ffaa33 !important;
+    color: black !important;
 }
 .redBadge {
     background-color: #ad0000 !important;
