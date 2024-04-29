@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Translations xmlns="http://soap.sforce.com/2006/04/metadata">
     <customLabels>
-        <label>Kan ikke finne brukers enhet basert på geografisk tilhørighet. Finner ikke kommunenummer eller bydelsnummer på bruker.</label>
+        <label>Kan ikke finne brukers enhet basert på geografisk tilhørighet. Finner ikke
+            kommunenummer eller bydelsnummer på bruker.</label>
         <name>NAV_Unit_Error_person_location_missing</name>
     </customLabels>
     <customLabels>
@@ -11,5 +12,9 @@
     <customLabels>
         <label>Flere handlinger</label>
         <name>NAV_Unit_Subheader_more_actions</name>
+    </customLabels>
+    <customLabels>
+        <label>Åpne sikkerhetsrutiner</label>
+        <name>NKS_Open_Security_Rutines</name>
     </customLabels>
 </Translations>
