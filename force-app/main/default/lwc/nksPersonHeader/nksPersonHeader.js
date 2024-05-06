@@ -194,7 +194,7 @@ export default class NksPersonHeader extends LightningElement {
             this.age = getFieldValue(data, AGE_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
             if (__citizenship != null && typeof __citizenship === 'string') {
-                this.citizenship = __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
+                this.citizenship = this.capitalizeFirstLetter(__citizenship.toLowerCase());
             } else {
                 this.citizenship = '';
             }
@@ -283,4 +283,9 @@ export default class NksPersonHeader extends LightningElement {
             return prev ? prev[curr] : null;
         }, obj || {});
     }
+
+    capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
 }
