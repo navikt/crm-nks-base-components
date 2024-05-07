@@ -41,4 +41,20 @@
         <shortDescription>Journal</shortDescription>
         <value>Journal</value>
     </labels>
+    <labels>
+        <fullName>NKS_Set_To_Redaction</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Set To Redaction</shortDescription>
+        <value>Set to redaction</value>
+    </labels>
+    <labels>
+        <fullName>NKS_Share_With_User</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Share With User</shortDescription>
+        <value>Share with user</value>
+    </labels>
 </CustomLabels>

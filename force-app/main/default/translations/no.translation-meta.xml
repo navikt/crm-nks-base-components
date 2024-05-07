@@ -21,4 +21,12 @@
         <label>Journalfør</label>
         <name>NKS_Journal</name>
     </customLabels>
+    <customLabels>
+        <label>Send til sladding</label>
+        <name>NKS_Set_To_Redaction</name>
+    </customLabels>
+    <customLabels>
+        <label>Del med brukeren</label>
+        <name>NKS_Share_With_User</name>
+    </customLabels>
 </Translations>
