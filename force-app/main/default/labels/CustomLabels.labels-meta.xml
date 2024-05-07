@@ -57,4 +57,12 @@
         <shortDescription>Share With User</shortDescription>
         <value>Share with user</value>
     </labels>
+    <labels>
+        <fullName>NKS_Open_Security_Rutines</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>NKS_Open_Security_Rutines</shortDescription>
+        <value>Open security rutines</value>
+    </labels>
 </CustomLabels>

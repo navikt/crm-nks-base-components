@@ -29,4 +29,8 @@
         <label>Del med brukeren</label>
         <name>NKS_Share_With_User</name>
     </customLabels>
+    <customLabels>
+        <label>Åpne sikkerhetsrutiner</label>
+        <name>NKS_Open_Security_Rutines</name>
+    </customLabels>
 </Translations>
