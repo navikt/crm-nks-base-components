@@ -1,0 +1,34 @@
+<template>
+    <lightning-layout class="slds-var-p-horizontal_medium slds-var-p-top_medium" multiple-rows="true" size="12">
+        <lightning-layout-item class="slds-size_12-of-12">
+            <lightning-layout>
+                <lightning-layout-item class="slds-size_6-of-12 slds-var-p-right_small">
+                    <lightning-button
+                        class="button"
+                        label={flowButtonLabel}
+                        variant="brand"
+                        onclick={toggleFlow}
+                        aria-expanded={buttonExpanded}
+                    ></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item class="slds-size_6-of-12">
+                    <c-nks-security-routines></c-nks-security-routines>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-layout-item>
+        <lightning-layout-item class="slds-size_12-of-12">
+            <template if:true={showFlow}>
+                <div class="slds-var-m-top_xx-small">
+                    <lightning-card>
+                        <lightning-flow
+                            flow-api-name={flowApiName}
+                            flow-input-variables={inputVariables}
+                            onstatuschange={handleStatusChange}
+                        >
+                        </lightning-flow>
+                    </lightning-card>
+                </div>
+            </template>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>
