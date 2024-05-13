@@ -11,7 +11,7 @@ const CONSTANTS = {
     CONVERSATION_NOTE: 'Conversation note'
 };
 
-export default class NksFlowButtonContainer extends LightningElement {
+export default class NksButtonContainerBottom extends LightningElement {
     @api recordId;
     @api channelName;
     @api createNavTaskFlowName;
