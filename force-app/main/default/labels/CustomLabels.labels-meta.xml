@@ -50,14 +50,6 @@
         <value>Set to redaction</value>
     </labels>
     <labels>
-        <fullName>NKS_Share_With_User</fullName>
-        <categories>NKS, Buttons</categories>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Share With User</shortDescription>
-        <value>Share with user</value>
-    </labels>
-    <labels>
         <fullName>NKS_Open_Security_Rutines</fullName>
         <categories>NKS, Buttons</categories>
         <language>en_US</language>
