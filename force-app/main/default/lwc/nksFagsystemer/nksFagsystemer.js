@@ -163,9 +163,10 @@ export default class NksFagsystemer extends LightningElement {
             case 'K9':
                 return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
             case 'Modia':
-                return `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${
+                return 'https://sosialhjelp-modia.intern.nav.no/sosialhjelp/modia/'; // temporary Modia link
+            /* `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${
                     this.isSandbox ? '' : 'person/'
-                }${this.personIdent}`;
+                }${this.personIdent}`; */
             case 'Pesys':
                 return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
             case 'Speil':
