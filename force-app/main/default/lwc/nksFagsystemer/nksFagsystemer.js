@@ -115,6 +115,12 @@ export default class NksFagsystemer extends LightningElement {
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
             { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
             { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
+            {
+                name: 'ModiaSosialhjelp',
+                label: 'Modia sosialhjelp',
+                field: this.generateUrl('ModiaSosialhjelp'),
+                show: true
+            },
             { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
             { name: 'Speil', field: this.generateUrl('Speil'), show: false }
         ];
@@ -163,10 +169,11 @@ export default class NksFagsystemer extends LightningElement {
             case 'K9':
                 return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
             case 'Modia':
-                return 'https://sosialhjelp-modia.intern.nav.no/sosialhjelp/modia/'; // temporary Modia link
-            /* `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${
+                return `http://app${this.isSandbox ? '-qx' : ''}.adeo.no/modiapersonoversikt/${
                     this.isSandbox ? '' : 'person/'
-                }${this.personIdent}`; */
+                }${this.personIdent}`;
+            case 'ModiaSosialhjelp':
+                return 'https://sosialhjelp-modia.intern.nav.no/sosialhjelp/modia/';
             case 'Pesys':
                 return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
             case 'Speil':
