@@ -540,10 +540,10 @@ public with sharing class NKS_PersonBadgesController {
                 return;
             }
 
-            Map<String, Map<String, List<Thread__c>>> threadsGroupedByQueueAndThreadType = new Map<String, Map<String, List<Thread__c>>>();
+            Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
 
             List<Thread__c> aggRes = [
-                SELECT Id, STO_Category__c, CRM_Thread_type__c, CRM_Latest_Message_Datetime__c
+                SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
                 FROM Thread__c
                 WHERE
                     CRM_Case__c IN (
@@ -556,6 +556,7 @@ public with sharing class NKS_PersonBadgesController {
                             AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
                             AND Id IN :geir
                     )
+                ORDER BY CRM_Latest_Message_Datetime__c DESC
             ];
 
             if (aggRes.isEmpty()) {
@@ -564,36 +565,18 @@ public with sharing class NKS_PersonBadgesController {
 
             Integer count = 0;
             for (Thread__c th : aggRes) {
-                if (!threadsGroupedByQueueAndThreadType.containsKey(th.STO_Category__c)) {
-                    threadsGroupedByQueueAndThreadType.put(th.STO_Category__c, new Map<String, List<Thread__c>>());
+                if (!threadsGroupedByQueue.containsKey(th.STO_Category__c)) {
+                    threadsGroupedByQueue.put(th.STO_Category__c, new List<Thread__c>());
                 }
-                Map<String, List<Thread__c>> queueGroup = threadsGroupedByQueueAndThreadType.get(th.STO_Category__c);
-                if (!queueGroup.containsKey(th.CRM_Thread_type__c)) {
-                    queueGroup.put(th.CRM_Thread_type__C, new List<Thread__c>());
-                }
-                queueGroup.get(th.CRM_Thread_type__c).add(th);
+                threadsGroupedByQueue.get(th.STO_Category__c).add(th);
                 count += 1;
             }
 
             List<OpenSTO> openSTO = new List<OpenSTO>();
 
-            String jsonString = '[';
-            for (String category : threadsGroupedByQueueAndThreadType.keySet()) {
-                Map<String, List<Thread__c>> queuedGroup = threadsGroupedByQueueAndThreadType.get(category);
-                for (String queue : queuedGroup.keySet()) {
-                    List<Thread__c> threadList = queuedGroup.get(queue);
-                    jsonString +=
-                        '{\"numHenv\":' +
-                        threadList.size() +
-                        ',\"STO_Category__c\":\"' +
-                        category +
-                        '\",\"Origin\":\"' +
-                        queue +
-                        '\"},';
-                    openSTO.add(new OpenSTO(category, queue, threadList));
-                }
+            for (String queue : threadsGroupedByQueue.keySet()) {
+                openSTO.add(new openSTO(queue, threadsGroupedByQueue.get(queue)));
             }
-            jsonString = jsonString.removeEnd(',') + ']';
 
             badges.add(
                 new Badge(
@@ -971,15 +954,12 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String queue;
         @AuraEnabled
-        public String threadType;
-        @AuraEnabled
         public List<Thread__c> threadList;
         @AuraEnabled
         public Integer threadSize;
 
-        public OpenSTO(String queue, String threadType, List<Thread__c> threadList) {
+        public OpenSTO(String queue, List<Thread__c> threadList) {
             this.queue = queue;
-            this.threadType = threadType;
             this.threadList = threadList;
             this.threadSize = threadList.size();
         }

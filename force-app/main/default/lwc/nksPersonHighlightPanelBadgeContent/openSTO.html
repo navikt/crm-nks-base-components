@@ -12,19 +12,20 @@
                     >
                         <div>
                             <h2 class="slds-var-p-bottom_xx-small" style="font-weight: bold">
-                                {openSTO.queue} - {openSTO.threadType} ({openSTO.threadSize})
+                                {openSTO.queue} ({openSTO.threadSize})
                             </h2>
                             <div>
                                 <template for:each={openSTO.threadList} for:item="thread">
                                     <div key={thread.Id}>
                                         <a onclick={openRecord} style="color: white; text-decoration: underline">
-                                            <!-- <c-yt-formatted-date
+                                            {thread.CRM_Thread_Type__c} -&nbsp;
+                                            <c-yt-formatted-date
                                                 data-id={thread.Id}
                                                 date={thread.CRM_Latest_Message_Datetime__c}
                                                 use-month-name
                                                 include-time
                                             >
-                                            </c-yt-formatted-date> -->
+                                            </c-yt-formatted-date>
                                         </a>
                                     </div>
                                 </template>

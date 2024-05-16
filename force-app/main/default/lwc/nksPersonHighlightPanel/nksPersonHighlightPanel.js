@@ -209,8 +209,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     setExpanded(selectedBadge) {
         let badges = this.template.querySelectorAll('.slds-badge');
-        console.log('badges');
-        console.log(badges);
         badges.forEach((badge) => {
             if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
                 console.log('Geir');
