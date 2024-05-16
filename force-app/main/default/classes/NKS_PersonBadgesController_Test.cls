@@ -71,7 +71,8 @@ private with sharing class NKS_PersonBadgesController_Test {
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'CRM_Person__c',
             'Account',
-            p.CRM_Account__c
+            p.CRM_Account__c,
+            false
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
@@ -103,7 +104,8 @@ private with sharing class NKS_PersonBadgesController_Test {
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'Account.CRM_Person__c',
             'Case',
-            c.Id
+            c.Id,
+            false
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
@@ -121,7 +123,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(1, result.guardianships.size(), 'Expected one guardianship');
@@ -154,7 +156,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(0, result.guardianships.size(), 'Expected one guardianship');
@@ -184,7 +186,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(2, result.powerOfAttorneys.size(), 'Expected one guardianship');
@@ -214,7 +216,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one guardianship');
@@ -235,7 +237,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(0, result.powerOfAttorneys.size(), 'Expected no guardianships');

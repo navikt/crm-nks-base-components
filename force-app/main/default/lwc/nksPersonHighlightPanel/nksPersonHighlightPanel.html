@@ -1,18 +1,9 @@
 <template>
     <div class="highlightPanel">
-        <p>hei</p>
-        <p>Hade</p>
-        <p>Baba</p>
-        <c-nks-person-highlight-panel-top
-            badges={badges}
-            nav-unit={navUnit}
-            person-info={personInfo}
-        ></c-nks-person-highlight-panel-top>
-        <c-nks-person-highlight-panel-mid
-            lwc:if={highlightPanelOpen}
-            badge-content={badgeContent}
-        ></c-nks-person-highlight-panel-mid>
-        <div style="display: flex; justify-content: flex-end" class="slds-var-m-right_medium">
+        <div
+            style="display: flex; justify-content: flex-end; height: 5.5rem; align-items: center"
+            class="slds-var-m-right_medium"
+        >
             <template for:each={personAccessBadges} for:item="badge">
                 <div key={badge.name}>
                     <lightning-badge

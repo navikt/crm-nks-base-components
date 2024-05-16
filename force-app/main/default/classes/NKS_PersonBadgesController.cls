@@ -36,12 +36,19 @@ public with sharing class NKS_PersonBadgesController {
      * @description Get an apex type holding all the data we need for showing badges.
      */
     @AuraEnabled(cacheable=true)
-    public static PersonBadgeData getPersonBadgesAndInfo(String field, String parentObject, String parentRecordId) {
+    public static PersonBadgeData getPersonBadgesAndInfo(
+        String field,
+        String parentObject,
+        String parentRecordId,
+        Boolean filterOpenSTO
+    ) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
         PersonBadgeData badges = new PersonBadgeData(person);
         if (parentObject == 'Case') {
-            badges.setOpenSTO(parentRecordId);
+            if (filterOpenSTO == null)
+                filterOpenSTO = false;
+            badges.setOpenSTO(parentRecordId, filterOpenSTO);
         }
         return badges;
     }
@@ -441,6 +448,166 @@ public with sharing class NKS_PersonBadgesController {
         //     }
         // ]
 
+        public void setOpenSTO(String caseId, Boolean filterSTO) {
+            if (!filterSTO) {
+                setOpenSTO(caseId);
+                return;
+            }
+
+            List<String> confidentialitySkills = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
+            List<String> originSkills = new List<String>{ 'BTO', 'STO' };
+
+            Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
+
+            // Since Omni channel skills are org based, we want to only include skills that are used in STO
+            Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
+            List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+            List<String> retList = new List<String>();
+            for (Schema.PicklistEntry pl : ple) {
+                if (stoThemeRenames.containsKey(pl.getLabel())) {
+                    retList.add(stoThemeRenames.get(pl.getLabel()));
+                } else {
+                    retList.add(pl.getLabel());
+                }
+            }
+            retList.addAll(confidentialitySkills);
+            retList.addAll((originSkills));
+            List<String> allRelevantSkills = retList;
+
+            Id userId = UserInfo.getUserId();
+            GroupedSkills retSkills = new GroupedSkills();
+
+            for (ServiceResourceSkill srs : [
+                SELECT SkillId, Skill.DeveloperName, Skill.MasterLabel
+                FROM ServiceResourceSkill
+                WHERE
+                    ServiceResource.RelatedRecordId = :userId
+                    AND Skill.DeveloperName IN :allRelevantSkills
+                    AND EffectiveStartDate <= TODAY
+                    AND (EffectiveEndDate >= TODAY
+                    OR EffectiveEndDate = NULL)
+                    AND ServiceResource.IsActive = TRUE
+            ]) {
+                //Separating domain skills and person access skills
+                if (confidentialitySkills.contains(srs.Skill.DeveloperName)) {
+                    retSkills.userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else if (originSkills.contains(srs.Skill.DeveloperName)) {
+                    retSkills.userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else {
+                    retSkills.skillMap.put(srs.SkillId, srs.Skill.MasterLabel);
+                }
+            }
+            GroupedSkills allUserSkills = retSkills;
+
+            String userIdLike = '%' + UserInfo.getUserID() + '%';
+            List<PendingServiceRouting> stupidGeir = [
+                SELECT WorkItemId
+                FROM PendingServiceRouting
+                WHERE
+                    Id IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE SkillId IN :allUserSkills.skillMap.keySet()
+                    )
+                    AND ID NOT IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE
+                            (Skill.DeveloperName NOT IN :allUserSkills.userConfidentialMap.values()
+                            AND Skill.DeveloperName IN :confidentialitySkills)
+                            OR (Skill.DeveloperName NOT IN :allUserSkills.userOriginMap.values()
+                            AND Skill.DeveloperName IN :originSkills)
+                    )
+                    AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
+                    AND IsReadyForRouting = TRUE
+                    AND isPushed = FALSE
+                    AND (NOT WorkItem.NKS_Incompetent_IDs__c LIKE :userIdLike)
+                ORDER BY RoutingPriority, SecondaryRoutingPriority DESC NULLS LAST, CreatedDate
+            ];
+            List<Id> geir = new List<Id>();
+            for (PendingServiceRouting psr : stupidGeir) {
+                geir.add(psr.WorkItemId);
+            }
+
+            Case c = [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+
+            if (c == null) {
+                return;
+            }
+
+            Map<String, Map<String, List<Thread__c>>> threadsGroupedByQueueAndThreadType = new Map<String, Map<String, List<Thread__c>>>();
+
+            List<Thread__c> aggRes = [
+                SELECT Id, STO_Category__c, CRM_Thread_type__c, CRM_Latest_Message_Datetime__c
+                FROM Thread__c
+                WHERE
+                    CRM_Case__c IN (
+                        SELECT Id
+                        FROM Case
+                        WHERE
+                            AccountId = :c.AccountId
+                            AND IsClosed = FALSE
+                            AND STO_Category__c != NULL
+                            AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
+                            AND Id IN :geir
+                    )
+            ];
+
+            if (aggRes.isEmpty()) {
+                return;
+            }
+
+            Integer count = 0;
+            for (Thread__c th : aggRes) {
+                if (!threadsGroupedByQueueAndThreadType.containsKey(th.STO_Category__c)) {
+                    threadsGroupedByQueueAndThreadType.put(th.STO_Category__c, new Map<String, List<Thread__c>>());
+                }
+                Map<String, List<Thread__c>> queueGroup = threadsGroupedByQueueAndThreadType.get(th.STO_Category__c);
+                if (!queueGroup.containsKey(th.CRM_Thread_type__c)) {
+                    queueGroup.put(th.CRM_Thread_type__C, new List<Thread__c>());
+                }
+                queueGroup.get(th.CRM_Thread_type__c).add(th);
+                count += 1;
+            }
+
+            List<OpenSTO> openSTO = new List<OpenSTO>();
+
+            String jsonString = '[';
+            for (String category : threadsGroupedByQueueAndThreadType.keySet()) {
+                Map<String, List<Thread__c>> queuedGroup = threadsGroupedByQueueAndThreadType.get(category);
+                for (String queue : queuedGroup.keySet()) {
+                    List<Thread__c> threadList = queuedGroup.get(queue);
+                    jsonString +=
+                        '{\"numHenv\":' +
+                        threadList.size() +
+                        ',\"STO_Category__c\":\"' +
+                        category +
+                        '\",\"Origin\":\"' +
+                        queue +
+                        '\"},';
+                    openSTO.add(new OpenSTO(category, queue, threadList));
+                }
+            }
+            jsonString = jsonString.removeEnd(',') + ']';
+
+            badges.add(
+                new Badge(
+                        'openSTO',
+                        String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
+                        'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
+                        '',
+                        '',
+                        true
+                    )
+                    .setBadgeContent(openSTO)
+            );
+        }
+
         public void setOpenSTO(String caseId) {
             Case c = [
                 SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
@@ -798,5 +965,32 @@ public with sharing class NKS_PersonBadgesController {
             this.FromDate = fromDate;
             this.SecurityMeasure = securityMeasure;
         }
+    }
+
+    public class OpenSTO implements BadgeContent {
+        @AuraEnabled
+        public String queue;
+        @AuraEnabled
+        public String threadType;
+        @AuraEnabled
+        public List<Thread__c> threadList;
+        @AuraEnabled
+        public Integer threadSize;
+
+        public OpenSTO(String queue, String threadType, List<Thread__c> threadList) {
+            this.queue = queue;
+            this.threadType = threadType;
+            this.threadList = threadList;
+            this.threadSize = threadList.size();
+        }
+    }
+
+    public class GroupedSkills {
+        @AuraEnabled
+        public Map<Id, String> skillMap = new Map<Id, String>();
+        @AuraEnabled
+        public Map<Id, String> userConfidentialMap = new Map<Id, String>();
+        @AuraEnabled
+        public Map<Id, String> userOriginMap = new Map<Id, String>();
     }
 }

@@ -70,7 +70,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @wire(getPersonBadgesAndInfo, {
         field: '$relationshipField',
         parentObject: '$objectApiName',
-        parentRecordId: '$recordId'
+        parentRecordId: '$recordId',
+        filterOpenSTO: true
     })
     wiredBadgeInfo(value) {
         this.wiredBadge = value;
@@ -98,6 +99,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 });
             }
             this.badges = badges;
+            console.log('Baggy');
+            console.log(JSON.stringify(badges));
 
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
@@ -206,11 +209,15 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     setExpanded(selectedBadge) {
         let badges = this.template.querySelectorAll('.slds-badge');
+        console.log('badges');
+        console.log(badges);
         badges.forEach((badge) => {
             if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
+                console.log('Geir');
                 // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
                 badge.setAttribute('aria-expanded', 'true');
             } else if (badge.role === 'button') {
+                console.log('æCowln');
                 // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
                 badge.setAttribute('aria-expanded', 'false');
             }
