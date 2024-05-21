@@ -434,25 +434,24 @@ public with sharing class NKS_PersonBadgesController {
          * @description Setting badge for open STOs
          */
 
-        //  returns
-        // [
-        //     {
-        //         "badgeInfo": "[{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":1,\"STO_Category__c\":\"Arbeid\",\"Origin\":\"BTO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Familie\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":1,\"STO_Category__c\":\"Familie\",\"Origin\":\"BTO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Internasjonal\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Pensjon\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Ufør\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Pleiepenger\",\"Origin\":\"STO\"},{\"attributes\":{\"type\":\"AggregateResult\"},\"numHenv\":3,\"STO_Category__c\":\"Hjelpemidler\",\"Origin\":\"STO\"}]",
-        //         "clickable": true,
-        //         "iconAltText": "",
-        //         "iconName": "",
-        //         "label": "20 åpne STO-er",
-        //         "name": "openSTO",
-        //         "styling": "slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer",
-        //         "tabindex": "0"
-        //     }
-        // ]
-
         public void setOpenSTO(String caseId, Boolean filterSTO) {
             if (!filterSTO) {
                 setOpenSTO(caseId);
                 return;
             }
+
+            Case currentCase = [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+
+            if (currentCase == null) {
+                return;
+            }
+
+            // The code below is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
 
             List<String> confidentialitySkills = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
             List<String> originSkills = new List<String>{ 'BTO', 'STO' };
@@ -462,20 +461,22 @@ public with sharing class NKS_PersonBadgesController {
             // Since Omni channel skills are org based, we want to only include skills that are used in STO
             Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
             List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
-            List<String> retList = new List<String>();
+            List<String> allRelevantSkills = new List<String>();
             for (Schema.PicklistEntry pl : ple) {
                 if (stoThemeRenames.containsKey(pl.getLabel())) {
-                    retList.add(stoThemeRenames.get(pl.getLabel()));
+                    allRelevantSkills.add(stoThemeRenames.get(pl.getLabel()));
                 } else {
-                    retList.add(pl.getLabel());
+                    allRelevantSkills.add(pl.getLabel());
                 }
             }
-            retList.addAll(confidentialitySkills);
-            retList.addAll((originSkills));
-            List<String> allRelevantSkills = retList;
+            allRelevantSkills.addAll(confidentialitySkills);
+            allRelevantSkills.addAll((originSkills));
 
             Id userId = UserInfo.getUserId();
-            GroupedSkills retSkills = new GroupedSkills();
+
+            Map<Id, String> skillMap = new Map<Id, String>();
+            Map<Id, String> userConfidentialMap = new Map<Id, String>();
+            Map<Id, String> userOriginMap = new Map<Id, String>();
 
             for (ServiceResourceSkill srs : [
                 SELECT SkillId, Skill.DeveloperName, Skill.MasterLabel
@@ -490,59 +491,41 @@ public with sharing class NKS_PersonBadgesController {
             ]) {
                 //Separating domain skills and person access skills
                 if (confidentialitySkills.contains(srs.Skill.DeveloperName)) {
-                    retSkills.userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                    userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
                 } else if (originSkills.contains(srs.Skill.DeveloperName)) {
-                    retSkills.userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                    userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
                 } else {
-                    retSkills.skillMap.put(srs.SkillId, srs.Skill.MasterLabel);
+                    skillMap.put(srs.SkillId, srs.Skill.MasterLabel);
                 }
             }
-            GroupedSkills allUserSkills = retSkills;
 
-            String userIdLike = '%' + UserInfo.getUserID() + '%';
-            List<PendingServiceRouting> stupidGeir = [
+            List<Id> casesInQueueList = new List<Id>();
+            for (PendingServiceRouting psr : [
                 SELECT WorkItemId
                 FROM PendingServiceRouting
                 WHERE
                     Id IN (
                         SELECT RelatedRecordId
                         FROM SkillRequirement
-                        WHERE SkillId IN :allUserSkills.skillMap.keySet()
+                        WHERE SkillId IN :skillMap.keySet()
                     )
                     AND ID NOT IN (
                         SELECT RelatedRecordId
                         FROM SkillRequirement
                         WHERE
-                            (Skill.DeveloperName NOT IN :allUserSkills.userConfidentialMap.values()
+                            (Skill.DeveloperName NOT IN :userConfidentialMap.values()
                             AND Skill.DeveloperName IN :confidentialitySkills)
-                            OR (Skill.DeveloperName NOT IN :allUserSkills.userOriginMap.values()
+                            OR (Skill.DeveloperName NOT IN :userOriginMap.values()
                             AND Skill.DeveloperName IN :originSkills)
                     )
                     AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
                     AND IsReadyForRouting = TRUE
                     AND isPushed = FALSE
-                    AND (NOT WorkItem.NKS_Incompetent_IDs__c LIKE :userIdLike)
-                ORDER BY RoutingPriority, SecondaryRoutingPriority DESC NULLS LAST, CreatedDate
-            ];
-            List<Id> geir = new List<Id>();
-            for (PendingServiceRouting psr : stupidGeir) {
-                geir.add(psr.WorkItemId);
+            ]) {
+                casesInQueueList.add(psr.WorkItemId);
             }
 
-            Case c = [
-                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
-                FROM Case
-                WHERE Id = :caseId
-                LIMIT 1
-            ];
-
-            if (c == null) {
-                return;
-            }
-
-            Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
-
-            List<Thread__c> aggRes = [
+            List<Thread__c> threadList = [
                 SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
                 FROM Thread__c
                 WHERE
@@ -550,21 +533,22 @@ public with sharing class NKS_PersonBadgesController {
                         SELECT Id
                         FROM Case
                         WHERE
-                            AccountId = :c.AccountId
+                            AccountId = :currentCase.AccountId
                             AND IsClosed = FALSE
                             AND STO_Category__c != NULL
                             AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
-                            AND Id IN :geir
+                            AND Id IN :casesInQueueList
                     )
-                ORDER BY CRM_Latest_Message_Datetime__c DESC
+                ORDER BY STO_Category__c ASC, CRM_Latest_Message_Datetime__c DESC
             ];
 
-            if (aggRes.isEmpty()) {
+            if (threadList.isEmpty()) {
                 return;
             }
 
             Integer count = 0;
-            for (Thread__c th : aggRes) {
+            Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
+            for (Thread__c th : threadList) {
                 if (!threadsGroupedByQueue.containsKey(th.STO_Category__c)) {
                     threadsGroupedByQueue.put(th.STO_Category__c, new List<Thread__c>());
                 }
@@ -963,14 +947,5 @@ public with sharing class NKS_PersonBadgesController {
             this.threadList = threadList;
             this.threadSize = threadList.size();
         }
-    }
-
-    public class GroupedSkills {
-        @AuraEnabled
-        public Map<Id, String> skillMap = new Map<Id, String>();
-        @AuraEnabled
-        public Map<Id, String> userConfidentialMap = new Map<Id, String>();
-        @AuraEnabled
-        public Map<Id, String> userOriginMap = new Map<Id, String>();
     }
 }
