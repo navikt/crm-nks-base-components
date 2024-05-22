@@ -23,17 +23,15 @@ export default class NksChatButtonContainerTop extends LightningElement {
         return this.showFlow.toString();
     }
 
-    toggleFlow(event) {
+    toggleFlow() {
         this.showFlow = !this.showFlow;
-        if (event.target?.label) {
-            publishToAmplitude(this.channelName, { type: event.target.label + ' pressed' });
-        }
     }
 
     handleStatusChange(event) {
         let flowStatus = event.detail.status;
         if (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') {
             this.showFlow = false;
+            publishToAmplitude(this.channelName, { type: this.flowButtonLabel + ' finished' });
         }
     }
 }
