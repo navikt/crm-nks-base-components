@@ -504,7 +504,8 @@ public with sharing class NKS_PersonBadgesController {
                 SELECT WorkItemId
                 FROM PendingServiceRouting
                 WHERE
-                    Id IN (
+                    WorkItem.AccountId = :currentCase.AccountId
+                    AND Id IN (
                         SELECT RelatedRecordId
                         FROM SkillRequirement
                         WHERE SkillId IN :skillMap.keySet()
@@ -533,8 +534,7 @@ public with sharing class NKS_PersonBadgesController {
                         SELECT Id
                         FROM Case
                         WHERE
-                            AccountId = :currentCase.AccountId
-                            AND IsClosed = FALSE
+                            IsClosed = FALSE
                             AND STO_Category__c != NULL
                             AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
                             AND Id IN :casesInQueueList
