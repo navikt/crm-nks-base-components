@@ -4,7 +4,7 @@
             <lightning-layout>
                 <lightning-layout-item class="slds-size_6-of-12 slds-var-p-right_small">
                     <lightning-button
-                        class="button"
+                        class="full-width-grid-btn"
                         label={flowButtonLabel}
                         variant="brand"
                         onclick={toggleFlow}
@@ -19,7 +19,7 @@
             </lightning-layout>
         </lightning-layout-item>
         <lightning-layout-item class="slds-size_12-of-12">
-            <template if:true={showFlow}>
+            <template lwc:if={showFlow}>
                 <div class="slds-var-m-top_xx-small">
                     <lightning-card>
                         <lightning-flow
