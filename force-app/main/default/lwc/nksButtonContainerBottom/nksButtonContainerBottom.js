@@ -1,11 +1,8 @@
-import { LightningElement, api } from 'lwc';
-import JOURNAL_LABEL from '@salesforce/label/c.NKS_Journal';
-import CREATE_NAV_TASK_LABEL from '@salesforce/label/c.NKS_Create_NAV_Task';
+import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
+import getLabels from '@salesforce/apex/NKS_LabelGetter.getLabels';
 
 const CONSTANTS = {
-    CREATE_NAV_TASK: 'createNavTask',
-    JOURNAL: 'journal',
     FINISHED: 'FINISHED',
     FINISHED_SCREEN: 'FINISHED_SCREEN',
     CONVERSATION_NOTE: 'Conversation note'
@@ -14,16 +11,25 @@ const CONSTANTS = {
 export default class NksButtonContainerBottom extends LightningElement {
     @api recordId;
     @api channelName;
-    @api createNavTaskFlowName;
-    @api journalFlowName;
+    @api flowNames;
+    @api flowLabels;
     @api setBorders = false;
 
-    showFlow = false;
-    labels = {
-        createNavTask: CREATE_NAV_TASK_LABEL,
-        journal: JOURNAL_LABEL
-    };
-    dataId = '';
+    flowLoop;
+    timer;
+    _activeFlow;
+
+    @wire(getLabels, { labels: '$flowLabelList' })
+    labelWire({ data, error }) {
+        if (data) {
+            this.labelList = data;
+            this.updateFlowLoop();
+        }
+        if (error) {
+            console.log('Could not fetch labels for buttonContainerBottom');
+            console.log(error);
+        }
+    }
 
     get inputVariables() {
         return [
@@ -35,56 +41,73 @@ export default class NksButtonContainerBottom extends LightningElement {
         ];
     }
 
-    @api
-    get showCreateNavTaskFlow() {
-        return this.showFlow && this.dataId === CONSTANTS.CREATE_NAV_TASK;
+    get flowLabelList() {
+        return this.flowLabels.replace(/ /g, '').split(',');
     }
 
-    get showJournalFlow() {
-        return this.showFlow && this.dataId === CONSTANTS.JOURNAL;
+    get flowNameList() {
+        return this.flowNames.replace(/ /g, '').split(',');
     }
 
-    get createNavTaskExpanded() {
-        return this.showCreateNavTaskFlow.toString();
-    }
-
-    get journalExpanded() {
-        return this.showJournalFlow.toString();
+    get showFlow() {
+        return this.activeFlow !== '' && this.activeFlow != null;
     }
 
     get layoutClassName() {
-        return this.setBorders
-            ? 'slds-border_top slds-border_bottom slds-var-p-vertical_medium'
-            : 'slds-var-p-vertical_medium';
+        return 'slds-var-p-vertical_medium' + (this.setBorders ? 'slds-border_top slds-border_bottom ' : '');
+    }
+
+    get activeFlow() {
+        return this._activeFlow;
+    }
+
+    set activeFlow(flowName) {
+        this._activeFlow = flowName;
+        this.updateFlowLoop();
+        if (this.channelName === CONSTANTS.CONVERSATION_NOTE) {
+            this.dispatchEvent(new CustomEvent('flowClicked', { detail: this.activeFlow }));
+        }
+    }
+
+    updateFlowLoop() {
+        this.flowLoop = this.flowNameList?.map((flowName, index) => ({
+            developerName: flowName,
+            label: this.labelList ? this.labelList[index] : flowName,
+            expanded: (this.activeFlow === flowName).toString()
+        }));
     }
 
     toggleFlow(event) {
-        this.showFlow = !this.showFlow;
         if (event.target?.dataset.id) {
-            this.dataId = event.target.dataset.id;
-            this.changeColor(this.dataId);
-            if (this.dataId === CONSTANTS.JOURNAL && this.channelName === CONSTANTS.CONVERSATION_NOTE) {
-                this.dispatchEvent(new CustomEvent('journalbuttonclicked'));
+            const dataId = event.target.dataset.id;
+            if (this.activeFlow === dataId) {
+                this.activeFlow = '';
+                this.updateFlowLoop();
+                return;
             }
+            if (this.showFlow) {
+                this.swapActiveFlow(dataId);
+                return;
+            }
+            this.activeFlow = dataId;
         }
-        publishToAmplitude(this.channelName, { type: `${event.target.label} pressed` });
     }
 
     handleStatusChange(event) {
         let flowStatus = event.detail.status;
         if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
-            this.showFlow = false;
+            this.activeFlow = '';
+            this.updateFlowLoop();
+            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
         }
     }
 
-    changeColor(dataId) {
-        const buttons = this.template.querySelectorAll('lightning-button');
-        buttons.forEach((button) => {
-            button.classList.remove('active');
-        });
-        let currentButton = this.template.querySelector(`lightning-button[data-id="${dataId}"]`);
-        if (currentButton && this.showFlow) {
-            currentButton.classList.add('active');
-        }
+    swapActiveFlow(flowName) {
+        clearTimeout(this.timer);
+        this.activeFlow = '';
+        // eslint-disable-next-line @lwc/lwc/no-async-operation, @locker/locker/distorted-window-set-timeout
+        this.timer = setTimeout(() => {
+            this.activeFlow = flowName;
+        }, 10);
     }
 }

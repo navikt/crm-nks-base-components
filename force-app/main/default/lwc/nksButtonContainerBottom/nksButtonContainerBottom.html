@@ -2,41 +2,28 @@
     <lightning-layout class={layoutClassName} multiple-rows="true" size="12">
         <lightning-layout-item class="slds-size_12-of-12">
             <lightning-layout class="slds-float_right">
-                <lightning-layout-item class="slds-var-p-right_small">
-                    <lightning-button
-                        label={labels.journal}
-                        data-id="journal"
-                        variant="brand-outline"
-                        onclick={toggleFlow}
-                        aria-expanded={journalExpanded}
-                    ></lightning-button>
-                </lightning-layout-item>
-                <lightning-layout-item class="slds-var-p-right_small">
-                    <lightning-button
-                        label={labels.createNavTask}
-                        data-id="createNavTask"
-                        variant="brand-outline"
-                        onclick={toggleFlow}
-                        aria-expanded={createNavTaskExpanded}
-                    ></lightning-button>
-                </lightning-layout-item>
+                <template for:each={flowLoop} for:item="flow">
+                    <lightning-layout-item
+                        class="slds-var-p-right_small"
+                        key={flow.developerName}
+                        data-expanded={flow.expanded}
+                    >
+                        <lightning-button
+                            label={flow.label}
+                            data-id={flow.developerName}
+                            variant="brand-outline"
+                            onclick={toggleFlow}
+                            aria-expanded={flow.expanded}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </template>
             </lightning-layout>
         </lightning-layout-item>
         <lightning-layout-item class="slds-size_12-of-12 slds-var-m-top_xx-small">
-            <template lwc:if={showCreateNavTaskFlow}>
+            <template lwc:if={showFlow}>
                 <lightning-card>
                     <lightning-flow
-                        flow-api-name={createNavTaskFlowName}
-                        flow-input-variables={inputVariables}
-                        onstatuschange={handleStatusChange}
-                    >
-                    </lightning-flow>
-                </lightning-card>
-            </template>
-            <template lwc:elseif={showJournalFlow}>
-                <lightning-card>
-                    <lightning-flow
-                        flow-api-name={journalFlowName}
+                        flow-api-name={activeFlow}
                         flow-input-variables={inputVariables}
                         onstatuschange={handleStatusChange}
                     >

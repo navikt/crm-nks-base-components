@@ -11,8 +11,8 @@
             <property name="channelName"
                 description="The variable is used to differentiate between channels. Select between Chat, Conversation note or STO."
                 label="Channel name" type="String" default="Chat" />
-            <property name="createNavTaskFlowName" label="Create NAV Task Flow Name" type="String" />
-            <property name="journalFlowName" label="Journal Flow Name" type="String" />
+            <property name="flowNames" label="Flow developernames, seperated by commas" type="String" />
+            <property name="flowLabels" label="Label names for buttons, also seperated by commans" type="String" />
             <property name="setBorders" label="Set top and bottom borders" type="Boolean"
                 default="false" />
         </targetConfig>
