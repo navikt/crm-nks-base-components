@@ -65,7 +65,7 @@ export default class NksButtonContainerBottom extends LightningElement {
         this._activeFlow = flowName;
         this.updateFlowLoop();
         if (this.channelName === CONSTANTS.CONVERSATION_NOTE) {
-            this.dispatchEvent(new CustomEvent('flowClicked', { detail: this.activeFlow }));
+            this.dispatchEvent(new CustomEvent('flowclicked', { detail: this.activeFlow }));
         }
     }
 
