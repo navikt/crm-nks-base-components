@@ -54,7 +54,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get layoutClassName() {
-        return 'slds-var-p-vertical_medium' + (this.setBorders ? 'slds-border_top slds-border_bottom ' : '');
+        return 'slds-var-p-vertical_medium' + (this.setBorders ? ' slds-border_top slds-border_bottom' : '');
     }
 
     get activeFlow() {
