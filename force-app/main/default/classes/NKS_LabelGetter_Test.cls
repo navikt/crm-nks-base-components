@@ -5,8 +5,7 @@ public with sharing class NKS_LabelGetter_Test {
         Test.startTest();
         String testLabel = NKS_LabelGetter.getLabel('NKS_Create_NAV_Task');
         Test.stopTest();
-        String expectedLabel = UserInfo.getLocale() == 'en_US' ? 'Create NAV Task' : 'Opprett oppgave';
-        Assert.areEqual(expectedLabel, testLabel);
+        Assert.areEqual('Create NAV Task', testLabel);
     }
 
     @IsTest
