@@ -14,6 +14,18 @@
         <name>NAV_Unit_Subheader_more_actions</name>
     </customLabels>
     <customLabels>
+        <label>Opprett oppgave</label>
+        <name>NKS_Create_NAV_Task</name>
+    </customLabels>
+    <customLabels>
+        <label>Journalfør</label>
+        <name>NKS_Journal</name>
+    </customLabels>
+    <customLabels>
+        <label>Send til sladding</label>
+        <name>NKS_Set_To_Redaction</name>
+    </customLabels>
+    <customLabels>
         <label>Åpne sikkerhetsrutiner</label>
         <name>NKS_Open_Security_Rutines</name>
     </customLabels>
