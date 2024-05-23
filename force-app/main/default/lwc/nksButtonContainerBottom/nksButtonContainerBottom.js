@@ -42,11 +42,11 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get flowLabelList() {
-        return this.flowLabels.replace(/ /g, '').split(',');
+        return this.flowLabels?.replace(/ /g, '').split(',');
     }
 
     get flowNameList() {
-        return this.flowNames.replace(/ /g, '').split(',');
+        return this.flowNames?.replace(/ /g, '').split(',');
     }
 
     get showFlow() {
