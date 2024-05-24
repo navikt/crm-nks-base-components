@@ -30,6 +30,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     fullName;
     citizenship;
     navUnit;
+    veilederName;
 
     badges;
     errorMessages;
@@ -305,10 +306,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     })
     wiredData(result) {
         const { data, error } = result;
+        console.log('Yoyo navUnit');
         if (data) {
-            this.navUnit = data.unit;
-            //this.updatePersonInfo('navUnit', data.unit);
-            this.updatePersonInfo('navUnitName', data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '');
+            console.log('Yoyo navUnit hadde data');
+            this.navUnit = data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '';
+            //this.updatePersonInfo('navUnitName', data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '');
             this.getFormattedLink();
         }
         if (error) {
@@ -333,6 +335,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
             });
             this.updatePersonInfo('formattedUnitLink', link);
         }
+    }
+
+    get formattedveileder() {
+        console.log(this.veilederName);
+        return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
     updatePersonInfo(field, value) {
