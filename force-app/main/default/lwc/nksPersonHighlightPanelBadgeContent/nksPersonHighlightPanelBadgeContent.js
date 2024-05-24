@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { LightningElement, api } from 'lwc';
+import { NavigationMixin } from 'lightning/navigation';
 import securityMeasures from './securityMeasures.html';
 import spokenLanguagesIntepreter from './spokenLanguagesIntepreter.html';
 import guardianships from './guardianships.html';
@@ -7,6 +8,7 @@ import powerOfAttorneys from './powerOfAttorneys.html';
 import nksPersonHighlightPanelBadgeContent from './nksPersonHighlightPanelBadgeContent.html';
 import dateOfDeath from './dateOfDeath.html';
 import historicalPowerOfAttorney from './historicalPowerOfAttorney.html';
+import openSTO from './openSTO.html';
 import sharedStyling from './sharedStyling.css';
 
 const templates = {
@@ -15,10 +17,11 @@ const templates = {
     GuardianshipOrFuturePowerOfAttorney: guardianships,
     PowerOfAttorney: powerOfAttorneys,
     IsDeceased: dateOfDeath,
-    historicalPowerOfAttorney: historicalPowerOfAttorney
+    historicalPowerOfAttorney: historicalPowerOfAttorney,
+    OpenSTO: openSTO
 };
 
-export default class NksPersonHighlightPanelBadgeContent extends LightningElement {
+export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin(LightningElement) {
     @api type;
     @api badgeData;
     @api shownBadge;
@@ -32,6 +35,7 @@ export default class NksPersonHighlightPanelBadgeContent extends LightningElemen
     }
 
     get showBadge() {
+        if (this.type === this.shownBadge) console.log(JSON.stringify(this.badgeData));
         return this.type === this.shownBadge;
     }
 
@@ -45,23 +49,16 @@ export default class NksPersonHighlightPanelBadgeContent extends LightningElemen
         }
     }
 
-    // Open STO List
-
-    selectedBadge;
-    get badgeInfo() {
-        const selectedBadgeInfo = JSON.parse(this.selectedBadge.badgeInfo);
-        const badgeInfo = [];
-        const btoList = [];
-        const stoList = [];
-        selectedBadgeInfo.forEach((infoItem) => {
-            if (infoItem.Origin === 'STO') {
-                stoList.push(infoItem);
-            } else if (infoItem.Origin === 'BTO') {
-                btoList.push(infoItem);
+    openRecord(event) {
+        event.stopPropagation(); //Prevent this click from propagating into
+        const recordId = event.target.dataset.id;
+        this[NavigationMixin.Navigate]({
+            type: 'standard__recordPage',
+            attributes: {
+                recordId: recordId,
+                objectApiName: 'Thread__c',
+                actionName: 'view'
             }
         });
-        badgeInfo.push(stoList.length > 0 ? { name: 'Åpne Skriv til oss', list: stoList } : {});
-        badgeInfo.push(btoList.length > 0 ? { name: 'Åpne Beskjed til oss', list: btoList } : {});
-        return badgeInfo;
     }
 }
