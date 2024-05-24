@@ -1,4 +1,4 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api, wire, track } from 'lwc';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
@@ -20,13 +20,16 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api relationshipField;
-    personInfo = {};
     shownBadge;
-
+    personId;
     wireFields;
     wiredBadge;
     historikkWiredData;
     isLoaded;
+
+    fullName;
+    citizenship;
+    navUnit;
 
     badges;
     errorMessages;
@@ -217,9 +220,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
         });
     }
 
-    // Header Info get data
-
     getRelatedRecordId(relationshipField, objectApiName) {
+        console.log('related Yo?');
         getRelatedRecord({
             parentId: this.recordId,
             relationshipField: relationshipField,
@@ -227,6 +229,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         })
             .then((record) => {
                 this.personId = this.resolve(relationshipField, record);
+                console.log('personId under');
                 console.log(this.personId);
             })
             .catch((error) => {
@@ -239,35 +242,37 @@ export default class NksPersonHighlightPanel extends LightningElement {
         fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
     })
     wiredPersonInfo({ error, data }) {
+        console.log('Fimsk Yoyo');
+        console.log(this.personId);
+        console.log(data);
         if (data) {
-            this.updatePersonInfo('fullName', getFieldValue(data, FULL_NAME_FIELD));
-            this.updatePersonInfo('personIdent', getFieldValue(data, PERSON_IDENT_FIELD));
-            this.updatePersonInfo('gender', getFieldValue(data, GENDER_FIELD));
-            this.updatePersonInfo('age', getFieldValue(data, AGE_FIELD));
+            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
+            this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
+            this.gender = getFieldValue(data, GENDER_FIELD);
+            this.age = getFieldValue(data, AGE_FIELD);
+
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
             if (__citizenship != null && typeof __citizenship === 'string') {
-                this.personInfo.citizenship =
-                    __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
+                this.citizenship = __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
             } else {
-                this.updatePersonInfo('citizenship', '');
+                this.citizenship = '';
             }
 
             let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD);
             if (__maritalStatus != null && typeof __maritalStatus === 'string') {
-                this.personInfo.maritalStatus = __maritalStatus
+                this.maritalStatus = __maritalStatus
                     .toLowerCase()
                     .replace(/_/g, ' ')
                     .replace(' eller enkemann', '/-mann');
-                this.updatePersonInfo(
-                    'maritalStatus',
-                    __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1)
-                );
+                this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
             } else {
-                this.updatePersonInfo('maritalStatus', '');
+                this.maritalStatus = '';
             }
+        } else {
+            console.log('there is no data noob');
         }
         if (error) {
-            console.log(error);
+            console.log('yoyono data');
         }
     }
 
@@ -278,6 +283,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredRecordInfo({ error, data }) {
         if (data) {
             if (this.relationshipField && this.objectApiName) {
+                console.log('toto recordInfo');
                 this.getRelatedRecordId(this.relationshipField, this.objectApiName);
             }
         }
@@ -295,7 +301,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredData(result) {
         const { data, error } = result;
         if (data) {
-            this.updatePersonInfo('navUnit', data.unit);
+            this.navUnit = data.unit;
+            //this.updatePersonInfo('navUnit', data.unit);
             this.updatePersonInfo('navUnitName', data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '');
             this.getFormattedLink();
         }
@@ -324,8 +331,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     updatePersonInfo(field, value) {
+        console.log('update personInfo Triggered');
         if (value == null && Object.keys(this.personInfo).includes(field)) return;
         this.personInfo = { ...this.personInfo, [field]: value };
+        console.log('person from higlightpanel: ');
+        console.log(this.personInfo);
     }
 
     resolve(path, obj) {
@@ -336,5 +346,10 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
+    }
+
+    renderedCallback() {
+        console.log('rendered person info below');
+        console.log(`this.personInfo: ${JSON.stringify(this.personInfo)}`);
     }
 }

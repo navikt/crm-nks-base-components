@@ -1,13 +1,14 @@
 <template>
     <div class="highlightPanel">
-        <p>hei</p>
-        <p>Hade</p>
-        <p>Baba</p>
-        <c-nks-person-highlight-panel-top
-            badges={badges}
-            nav-unit={navUnit}
-            person-info={personInfo}
-        ></c-nks-person-highlight-panel-top>
+        <lightning-layout>
+            <lightning-layout-item class="slds-grid slds-wrap content-area">
+                <h1>{fullName}</h1>
+                <p>{personIdent}</p>
+                <p>{age}/{citizenship}/{maritalStatus}</p>
+                <p>{navUnit}</p>
+                <p>Veileder: Fullt Navn #9999</p>
+            </lightning-layout-item>
+        </lightning-layout>
         <c-nks-person-highlight-panel-mid
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
