@@ -194,7 +194,7 @@ export default class NksPersonHeader extends LightningElement {
                     .toLowerCase()
                     .replace(/_/g, ' ')
                     .replace(' eller enkemann', '/-mann');
-                this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
+                this.maritalStatus = this.capitalizeFirstLetter(__maritalStatus.toLowerCase());
             } else {
                 this.maritalStatus = '';
             }
