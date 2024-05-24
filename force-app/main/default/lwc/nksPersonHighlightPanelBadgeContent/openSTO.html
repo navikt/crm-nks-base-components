@@ -17,7 +17,10 @@
                             <div>
                                 <template for:each={openSTO.threadList} for:item="thread">
                                     <div key={thread.Id}>
-                                        <a onclick={openRecord} style="color: white; text-decoration: underline">
+                                        <a
+                                            onclick={openRecordAndCloseList}
+                                            style="color: white; text-decoration: underline"
+                                        >
                                             {thread.CRM_Thread_Type__c} -&nbsp;
                                             <c-yt-formatted-date
                                                 data-id={thread.Id}

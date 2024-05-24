@@ -49,14 +49,19 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
         }
     }
 
-    openRecord(event) {
+    openRecordAndCloseList(event) {
         event.stopPropagation(); //Prevent this click from propagating into
-        const recordId = event.target.dataset.id;
+        this.openRecord(event.target.dataset.id, 'Thread__c');
+        const closeEvent = new CustomEvent('badgeclosed');
+        this.dispatchEvent(closeEvent);
+    }
+
+    openRecord(recordId, objectApiName) {
         this[NavigationMixin.Navigate]({
             type: 'standard__recordPage',
             attributes: {
                 recordId: recordId,
-                objectApiName: 'Thread__c',
+                objectApiName: objectApiName,
                 actionName: 'view'
             }
         });
