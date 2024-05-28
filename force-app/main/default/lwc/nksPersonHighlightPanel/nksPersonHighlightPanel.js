@@ -346,8 +346,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
-    get panelStyling() { // TODO: Test this - Need .toLowerCase()?
-        return 'highlightPanel ' + this.gender === 'female' ? 'panel-purple' : 'panel-blue';
+    get panelStyling() { // TODO: Add color for deceased?
+        return 'highlightPanel ' + this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue';
     }
 
     updatePersonInfo(field, value) {

@@ -7,8 +7,9 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
     @api oppfolgingData;
     @api meldekortData;
 
-    get midPanelStyling() { // TODO: Test this - Need .toLowerCase()?
-        return this.gender === 'female' ? 'panel-dark-purple' : 'panel-dark-blue';
+    // TODO: Add color for deceased?
+    get midPanelStyling() {
+        return this.gender === 'Kvinne' ? 'panel-dark-purple' : 'panel-dark-blue';
     }
 
 
