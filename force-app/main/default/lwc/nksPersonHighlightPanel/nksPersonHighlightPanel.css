@@ -8,19 +8,13 @@
 .panel-blue {
     background-color: #0056B4;
 }
-
 .panel-purple {
-    background-color: #523874;
-}
-
-.mid-panel-color {
-    background-color: #00459C;
+    background-color: #634689;
 }
 
 .pointer {
     cursor: pointer;
 }
-
 
 .greenBadge,
 .yellowBadge,
@@ -59,18 +53,3 @@
 .greyBadge + div c-nks-person-highlight-panel-badge-content {
     --badge-line: #c6c6c6;
 }
-
-.custom-copy-button {
-    --slds-c-button-color-background: transparent; 
-    --slds-c-button--text-color: white; 
-    color:white !important;
-    /* --sds-c-icon-color-foreground-default: white;
-    --sds-c-icon-color-background-default: transparent; */
-}
-
-
-
-
-
-
-

@@ -89,14 +89,9 @@
                 </div>
             </template>
         </div>
-        <lightning-layout class={midPanelStyling}>
-            <lightning-layout-item class="slds-grid slds-wrap content-area">
-                <a href="test" target="_blank" onclick={handleClick}>Aktivitetsplan</a>
-            </lightning-layout-item>
-            <lightning-layout-item class="slds-grid slds-wrap content-area">
-                <a href="test2" target="_blank" onclick={handleClick}>Meldekort</a>
-            </lightning-layout-item>
-        </lightning-layout>
+        <nks-person-highlight-panel-mid
+            gender={gender}
+        ></nks-person-highlight-panel-mid>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}

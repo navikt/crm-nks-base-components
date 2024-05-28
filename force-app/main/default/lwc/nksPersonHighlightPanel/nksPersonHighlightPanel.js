@@ -13,8 +13,8 @@ import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
-import { MessageContext, APPLICATION_SCOPE, subscribe, unsubscribe } from 'lightning/messageService';
-import nksVeilederName from '@salesforce/messageChannel/nksVeilderName__c';
+import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
+import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
@@ -41,36 +41,23 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
-        this.subscribeToMessageChannel();
     }
 
-    //potet
-
-    @wire(MessageContext)
-    messageContext;
-
-    // Encapsulate logic for Lightning message service subscribe and unsubsubscribe
-    subscribeToMessageChannel() {
-        if (!this.subscription) {
-            this.subscription = subscribe(
-                this.messageContext,
-                nksVeilederName,
-                (message) => this.handleVeilderName(message),
-                { scope: APPLICATION_SCOPE }
-            );
+    @wire(getVeilederIdent, { actorId: '$actorId' })
+    wireVeilIdentInfo({ data, error }) {
+        if (data) {
+            this.veilederIdent = data.primaerVeileder;
+        } else if (error) {
+            console.error(error);
         }
     }
 
-    unsubscribeToMessageChannel() {
-        unsubscribe(this.subscription);
-        this.subscription = null;
-    }
-
-    // Handler for message received by component
-    handleVeilderName(message) {
-        if (message.recordId === this.recordId) {
-            this.veilederName = message.displayName;
-            this.veilederIdent = message.ident;
+    @wire(getVeilederName, { navIdent: '$veilederIdent' })
+    wiredName({ data, error }) {
+        if (data) {
+            this.veilederName = data;
+        } else if (error) {
+            console.log('Error occurred: ', JSON.stringify(error, null, 2));
         }
     }
 
@@ -346,10 +333,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get panelStyling() { // TODO: Test this - Need .toLowerCase()?
         return 'highlightPanel ' + this.gender === 'female' ? 'panel-purple' : 'panel-blue';
-    }
-
-    get midPanelStyling() { // TODO: Test this - Need .toLowerCase()?
-        return this.gender === 'female' ? 'panel-dark-purple' : 'panel-dark-blue';
     }
 
     updatePersonInfo(field, value) {
