@@ -1,0 +1,35 @@
+<template>
+    <lightning-layout class={layoutClassName} multiple-rows="true" size="12">
+        <lightning-layout-item class="slds-size_12-of-12">
+            <lightning-layout class="slds-float_right">
+                <template for:each={flowLoop} for:item="flow">
+                    <lightning-layout-item
+                        class="slds-var-p-right_small"
+                        key={flow.developerName}
+                        data-expanded={flow.expanded}
+                    >
+                        <lightning-button
+                            label={flow.label}
+                            data-id={flow.developerName}
+                            variant="brand-outline"
+                            onclick={toggleFlow}
+                            aria-expanded={flow.expanded}
+                        ></lightning-button>
+                    </lightning-layout-item>
+                </template>
+            </lightning-layout>
+        </lightning-layout-item>
+        <lightning-layout-item class="slds-size_12-of-12 slds-var-m-top_xx-small">
+            <template lwc:if={showFlow}>
+                <lightning-card>
+                    <lightning-flow
+                        flow-api-name={activeFlow}
+                        flow-input-variables={inputVariables}
+                        onstatuschange={handleStatusChange}
+                    >
+                    </lightning-flow>
+                </lightning-card>
+            </template>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

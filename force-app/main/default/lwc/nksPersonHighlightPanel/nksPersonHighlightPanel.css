@@ -21,6 +21,7 @@
     cursor: pointer;
 }
 
+
 .greenBadge,
 .yellowBadge,
 .redBadge,
@@ -58,3 +59,18 @@
 .greyBadge + div c-nks-person-highlight-panel-badge-content {
     --badge-line: #c6c6c6;
 }
+
+.custom-copy-button {
+    --slds-c-button-color-background: transparent; 
+    --slds-c-button--text-color: white; 
+    color:white !important;
+    /* --sds-c-icon-color-foreground-default: white;
+    --sds-c-icon-color-background-default: transparent; */
+}
+
+
+
+
+
+
+

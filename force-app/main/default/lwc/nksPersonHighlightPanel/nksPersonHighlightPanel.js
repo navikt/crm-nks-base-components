@@ -32,6 +32,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     citizenship;
     navUnit;
     veilederName;
+    gender;
 
     badges;
     errorMessages;
@@ -42,6 +43,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
         this.wireFields = [this.objectApiName + '.Id'];
         this.subscribeToMessageChannel();
     }
+
+    //potet
 
     @wire(MessageContext)
     messageContext;
@@ -365,5 +368,40 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
+    }
+
+    renderedCallback() {
+        console.log('rendered person info below');
+        console.log(`this.personInfo: ${JSON.stringify(this.personInfo)}`);
+    }
+
+    handleCopy(event) {
+        const hiddenInput = document.createElement('input');
+        const eventValue = event.currentTarget.value;
+        hiddenInput.value = eventValue;
+        document.body.appendChild(hiddenInput);
+        hiddenInput.focus();
+        hiddenInput.select();
+        try {
+            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
+            const successful = document.execCommand('copy');
+            if (!successful) this.showCopyToast('error');
+        } catch (error) {
+            this.showCopyToast('error');
+        }
+
+        document.body.removeChild(hiddenInput);
+        event.currentTarget.focus();
+    }
+
+    get genderIcon() {
+        switch (this.gender) {
+            case 'Mann':
+                return 'MaleFilled';
+            case 'Kvinne':
+                return 'FemaleFilled';
+            default:
+        }
+        return 'NeutralFilled';
     }
 }
