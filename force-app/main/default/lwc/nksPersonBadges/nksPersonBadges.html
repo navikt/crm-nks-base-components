@@ -210,12 +210,7 @@
                         <div class="slds-box slds-theme_default spaceClass">
                             <ul class="slds-has-dividers_bottom-space" aria-label="Vergemål">
                                 <template iterator:it={guardianships}>
-                                    <li if:false={it.last} class="slds-item" key={it.value.id}>
-                                        <c-nks-person-badge-guardianship-item
-                                            guardianship={it.value}
-                                        ></c-nks-person-badge-guardianship-item>
-                                    </li>
-                                    <li if:true={it.last} class="slds-item" key={it.value.id}>
+                                    <li class="slds-item" key={it.value.id}>
                                         <c-nks-person-badge-guardianship-item
                                             guardianship={it.value}
                                         ></c-nks-person-badge-guardianship-item>

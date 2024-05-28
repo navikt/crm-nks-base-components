@@ -837,6 +837,13 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
+    public class Tjenesteomraade {
+        @AuraEnabled
+        public String tjenesteoppgave;
+        @AuraEnabled
+        public String tjenestevirksomhet;
+    }
+
     public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
         private Map<String, String> omfangMap {
             get {
@@ -888,6 +895,7 @@ public with sharing class NKS_PersonBadgesController {
                 return String.join(retString, ' - ');
             }
         }
+        public List<Tjenesteomraade> tjenesteomraade;
         @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
         @AuraEnabled
@@ -898,6 +906,22 @@ public with sharing class NKS_PersonBadgesController {
         }
         @AuraEnabled
         public String id;
+
+        @AuraEnabled
+        public String tjenesteomraadeLabel {
+            get {
+                String label = '';
+                if (this.tjenesteomraade != null) {
+                    for (Tjenesteomraade omraade : this.tjenesteomraade) {
+                        if (omraade.tjenestevirksomhet == 'nav') {
+                            label +=
+                                omraade.tjenesteoppgave.replaceAll('([A-Z])', ' $1').toLowerCase().capitalize() + ', ';
+                        }
+                    }
+                }
+                return label.removeEnd(', ');
+            }
+        }
 
         @AuraEnabled
         public String omfangLabel {
