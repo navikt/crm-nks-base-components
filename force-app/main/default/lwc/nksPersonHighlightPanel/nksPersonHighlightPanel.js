@@ -2,8 +2,9 @@ import { LightningElement, api, wire, track } from 'lwc';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
-
+import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
+import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
@@ -27,7 +28,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredBadge;
     historikkWiredData;
     isLoaded;
-
+    actorId;
     fullName;
     citizenship;
     navUnit;
@@ -39,6 +40,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
     dateOfDeath;
     badgeContent;
 
+
+    oppfolgingAndMeldekortData;
+
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
     }
@@ -47,6 +51,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wireVeilIdentInfo({ data, error }) {
         if (data) {
             this.veilederIdent = data.primaerVeileder;
+            this.underOppfolging = data.underOppfolging;
+            this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
+            this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
         } else if (error) {
             console.error(error);
         }
@@ -56,6 +63,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredName({ data, error }) {
         if (data) {
             this.veilederName = data;
+            this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
         } else if (error) {
             console.log('Error occurred: ', JSON.stringify(error, null, 2));
         }
@@ -224,6 +232,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         })
             .then((record) => {
                 this.personId = this.resolve(relationshipField, record);
+                this.oppfolgingAndMeldekortData.personId = this.personId;
                 console.log('personId under');
                 console.log(this.personId);
             })
@@ -234,7 +243,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$personId',
-        fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
+        fields: [FULL_NAME_FIELD, PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
     })
     wiredPersonInfo({ error, data }) {
         console.log('Fimsk Yoyo');
@@ -242,9 +251,15 @@ export default class NksPersonHighlightPanel extends LightningElement {
         console.log(data);
         if (data) {
             this.fullName = getFieldValue(data, FULL_NAME_FIELD);
+            this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
+            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
+            
+            this.oppfolgingAndMeldekortData.actorId = this.actorId;
+            this.oppfolgingAndMeldekortData.firstName = this.firstName;
+            this.oppfolgingAndMeldekortData.name = this.personIdent;
 
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
             if (__citizenship != null && typeof __citizenship === 'string') {
