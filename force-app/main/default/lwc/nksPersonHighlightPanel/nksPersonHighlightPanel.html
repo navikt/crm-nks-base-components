@@ -1,5 +1,5 @@
 <template>
-    <div class="highlightPanel">
+    <div class={panelStyling}>
         <lightning-layout>
             <lightning-layout-item class="slds-grid slds-wrap content-area">
                 <h1>{fullName}</h1>
@@ -9,10 +9,6 @@
                 <p>{formattedveileder}</p>
             </lightning-layout-item>
         </lightning-layout>
-        <c-nks-person-highlight-panel-mid
-            lwc:if={highlightPanelOpen}
-            badge-content={badgeContent}
-        ></c-nks-person-highlight-panel-mid>
         <div style="display: flex; justify-content: flex-end" class="slds-var-m-right_medium"></div>
         <div
             style="display: flex; justify-content: flex-end; height: 5.5rem; align-items: center"
@@ -69,9 +65,18 @@
                 </div>
             </template>
         </div>
+        <lightning-layout class={midPanelStyling}>
+            <lightning-layout-item class="slds-grid slds-wrap content-area">
+                <a href="test" target="_blank" onclick={handleClick}>Aktivitetsplan</a>
+            </lightning-layout-item>
+            <lightning-layout-item class="slds-grid slds-wrap content-area">
+                <a href="test2" target="_blank" onclick={handleClick}>Meldekort</a>
+            </lightning-layout-item>
+        </lightning-layout>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}
+            gender={gender}
         ></c-nks-person-highlight-panel-bot>
     </div>
 </template>

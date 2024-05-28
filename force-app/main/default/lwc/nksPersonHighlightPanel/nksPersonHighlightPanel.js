@@ -20,6 +20,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api relationshipField;
+
     shownBadge;
     personId;
     wireFields;
@@ -36,7 +37,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     dateOfDeath;
     badgeContent;
-    highlightPanelOpen = false;
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
@@ -182,10 +182,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     addError(a) {
         console.log('Error Arne', a);
-    }
-
-    toggleOpen() {
-        this.highlightPanelOpen = !this.highlightPanelOpen;
     }
 
     onKeyPressHandler(event) {
@@ -345,6 +341,14 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
+    get panelStyling() { // TODO: Test this - Need .toLowerCase()?
+        return 'highlightPanel ' + this.gender === 'female' ? 'panel-purple' : 'panel-blue';
+    }
+
+    get midPanelStyling() { // TODO: Test this - Need .toLowerCase()?
+        return this.gender === 'female' ? 'panel-dark-purple' : 'panel-dark-blue';
+    }
+
     updatePersonInfo(field, value) {
         console.log('update personInfo Triggered');
         if (value == null && Object.keys(this.personInfo).includes(field)) return;
@@ -361,10 +365,5 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
-    }
-
-    renderedCallback() {
-        console.log('rendered person info below');
-        console.log(`this.personInfo: ${JSON.stringify(this.personInfo)}`);
     }
 }

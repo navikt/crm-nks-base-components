@@ -1,9 +1,20 @@
 .highlightPanel {
     font-size: 16px;
     line-height: 1.5rem;
-    background-color: #0056b4;
     color: white;
     width: 100%;
+}
+
+.panel-blue {
+    background-color: #0056B4;
+}
+
+.panel-purple {
+    background-color: #523874;
+}
+
+.mid-panel-color {
+    background-color: #00459C;
 }
 
 .pointer {

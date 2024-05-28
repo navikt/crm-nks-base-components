@@ -33,10 +33,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     }
 
     // TODO: Add color for deceased?
-    // TODO: Or just set color based on highlightPanel parent?
-    get botStyling() {
-        const backgroundColor = this.gender.toLowerCase() === 'male' ? 'bot-panel-blue' : 'bot-panel-purple';
-        return 'bot-panel ' + backgroundColor;
+    // TODO: Test this - Need .toLowerCase()?
+    get panelColor() {
+        return 'bot-panel ' + this.gender === 'female' ? 'bot-panel-purple' : 'bot-panel-blue';
     }
 
     @wire(getFagsoneIpAndOrgType)
