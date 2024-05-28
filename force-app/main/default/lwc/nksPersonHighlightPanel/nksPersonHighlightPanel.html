@@ -2,13 +2,38 @@
     <div class="highlightPanel">
         <lightning-layout>
             <lightning-layout-item class="slds-grid slds-wrap content-area">
-                <h1>{fullName}</h1>
-                <p>{personIdent}</p>
-                <p>{age}/{citizenship}/{maritalStatus}</p>
-                <p>{navUnit}</p>
-                <p>{formattedveileder}</p>
+                <!--Gender Icon tag-->
+                <h1 class="slds-page-header__title slds-var-p-around_medium">{fullName}</h1>
+
+                <p class="slds-var-p-around_medium">{personIdent}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon value={personIdent} style="color: white;" icon-name="utility:copy"
+                    variant="bare" onclick={handleCopy} alternative-text="Kopier fødselsnummer"
+                    title="Kopier fødselsnummer"></lightning-button-icon> 
+                </p>
+
+                <p class="slds-var-p-around_medium">{age}/{citizenship}/{maritalStatus}</p>
+
+                <p class="slds-var-p-around_medium">{navUnit}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon value={navUnit} style="color: white;" icon-name="utility:copy"
+                    variant="bare" onclick={handleCopy} alternative-text="Kopier nav enhet"
+                    title="Kopier nav enhet"></lightning-button-icon> 
+                </p>
+
+                <p class="slds-var-p-around_medium">{formattedveileder}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon value={formattedveileder} style="color: white;" icon-name="utility:copy"
+                    variant="bare" onclick={handleCopy} alternative-text="Kopier veileders navn"
+                    title="Kopier veileders navn"></lightning-button-icon> 
+                </p>
             </lightning-layout-item>
         </lightning-layout>
+
+
+
+
+
         <c-nks-person-highlight-panel-mid
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
