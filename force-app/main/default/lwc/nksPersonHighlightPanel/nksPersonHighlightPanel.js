@@ -10,6 +10,7 @@ import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
@@ -393,11 +394,22 @@ export default class NksPersonHighlightPanel extends LightningElement {
     get genderIcon() {
         switch (this.gender) {
             case 'Mann':
-                return 'MaleFilled';
+                return 'MaleCircleFilled';
             case 'Kvinne':
-                return 'FemaleFilled';
+                return 'FemaleCircleFilled';
             default:
         }
         return 'NeutralFilled';
+    }
+
+    get genderIconSrc() {
+        let returnvalue = NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
+        console.log(returnvalue);
+        return returnvalue;
+
+    }
+
+    get genderIconClass() {
+        return this.genderIcon;
     }
 }
