@@ -117,7 +117,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 show: link.show,
                 name: link.label ?? link.name
             }));
-            console.log('this.fagsystemLinks: ', JSON.stringify(this.fagsystemLinks));
     }
 
     generateUrl(fagsystem) {
