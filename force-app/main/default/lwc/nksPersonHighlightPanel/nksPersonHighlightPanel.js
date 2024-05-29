@@ -18,6 +18,8 @@ import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
+export const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
+
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
     @api objectApiName;
@@ -40,9 +42,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     dateOfDeath;
     badgeContent;
+    formattedUnitLink;
 
-
-    oppfolgingAndMeldekortData;
+    oppfolgingAndMeldekortData = {};
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
@@ -244,41 +246,18 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$personId',
-        fields: [FULL_NAME_FIELD, PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
+        fields: PERSON_FIELDS
     })
     wiredPersonInfo({ error, data }) {
-        console.log('Fimsk Yoyo');
-        console.log(this.personId);
-        console.log(data);
         if (data) {
-            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
-            this.age = getFieldValue(data, AGE_FIELD);
             
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
-
-            let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
-            if (__citizenship != null && typeof __citizenship === 'string') {
-                this.citizenship = __citizenship.toLowerCase().charAt(0).toUpperCase() + __citizenship.slice(1);
-            } else {
-                this.citizenship = '';
-            }
-
-            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD);
-            if (__maritalStatus != null && typeof __maritalStatus === 'string') {
-                this.maritalStatus = __maritalStatus
-                    .toLowerCase()
-                    .replace(/_/g, ' ')
-                    .replace(' eller enkemann', '/-mann');
-                this.maritalStatus = __maritalStatus.charAt(0).toUpperCase() + __maritalStatus.slice(1);
-            } else {
-                this.maritalStatus = '';
-            }
         } else {
             console.log('there is no data noob');
         }
@@ -303,61 +282,10 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
-    @wire(getNavUnit, {
-        field: '$relationshipField',
-        parentObject: '$objectApiName',
-        parentRecordId: '$recordId',
-        type: 'PERSON_LOCATION'
-    })
-    wiredData(result) {
-        const { data, error } = result;
-        console.log('Yoyo navUnit');
-        if (data) {
-            console.log('Yoyo navUnit hadde data');
-            this.navUnit = data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '';
-            //this.updatePersonInfo('navUnitName', data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '');
-            this.getFormattedLink();
-        }
-        if (error) {
-            console.log(`error: ${error}`);
-        }
-    }
-
-    async getFormattedLink() {
-        if (this.personInfo.navUnit) {
-            // TODO: See if works.
-            const link = await getNavLinks().then((list) => {
-                const onlineCheck = list.find((unit) => unit.enhetNr === this.personInfo.navUnit.unitNr);
-                if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
-                return (
-                    'https://www.nav.no/kontor/' +
-                    this.personInfo.navUnit.navn
-                        .replace(/\.\s/g, '.')
-                        .replace(/[\s/]/g, '-')
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                );
-            });
-            this.updatePersonInfo('formattedUnitLink', link);
-        }
-    }
-
-    get formattedveileder() {
-        console.log(this.veilederName);
-        return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
-    }
-
     get panelStyling() { // TODO: Add color for deceased?
         return 'highlightPanel ' + this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue';
     }
 
-    updatePersonInfo(field, value) {
-        console.log('update personInfo Triggered');
-        if (value == null && Object.keys(this.personInfo).includes(field)) return;
-        this.personInfo = { ...this.personInfo, [field]: value };
-        console.log('person from higlightpanel: ');
-        console.log(this.personInfo);
-    }
 
     resolve(path, obj) {
         if (typeof path !== 'string') {
@@ -367,51 +295,5 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
-    }
-
-    renderedCallback() {
-        console.log('rendered person info below');
-        console.log(`this.personInfo: ${JSON.stringify(this.personInfo)}`);
-    }
-
-    handleCopy(event) {
-        const hiddenInput = document.createElement('input');
-        const eventValue = event.currentTarget.value;
-        hiddenInput.value = eventValue;
-        document.body.appendChild(hiddenInput);
-        hiddenInput.focus();
-        hiddenInput.select();
-        try {
-            // eslint-disable-next-line @locker/locker/distorted-document-exec-command
-            const successful = document.execCommand('copy');
-            if (!successful) this.showCopyToast('error');
-        } catch (error) {
-            this.showCopyToast('error');
-        }
-
-        document.body.removeChild(hiddenInput);
-        event.currentTarget.focus();
-    }
-
-    get genderIcon() {
-        switch (this.gender) {
-            case 'Mann':
-                return 'MaleCircleFilled';
-            case 'Kvinne':
-                return 'FemaleCircleFilled';
-            default:
-        }
-        return 'NeutralFilled';
-    }
-
-    get genderIconSrc() {
-        let returnvalue = NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
-        console.log(returnvalue);
-        return returnvalue;
-
-    }
-
-    get genderIconClass() {
-        return this.genderIcon;
     }
 }

@@ -1,50 +1,55 @@
 <template>
-    <div style="border-bottom: solid 1px white">
-        <div class={headerClasses}>
-            <lightning-layout>
-                <div class="slds-page-header__row slds-clearfix">
-                    <div class="slds-media__figure">
-                        <c-nks-custom-svg
-                            class={genderIcon}
-                            src={genderIconSrc}
-                            alt-text={gender}
-                            classes={genderIconClass}
-                        >
-                        </c-nks-custom-svg>
-                    </div>
+    <lightning-layout>
+        <lightning-layout-item class="slds-grid slds-wrap content-area">
+         <c-nks-custom-svg
+            size="large"
+            class={genderIcon}
+            src={genderIconSrc}
+            alt-text={gender}
+            classes={genderIconClass}
+        ></c-nks-custom-svg> 
 
-                    <div class="slds-page-header__name">
-                        <div class="slds-page-header__name-title">
-                            <h1>
-                                <span class="slds-page-header__title" if:true={fullName} title={fullName}
-                                    >{fullName}</span
-                                >
-                            </h1>
-                        </div>
+            <h1 class="slds-page-header__title slds-var-p-around_medium">{fullName}</h1>
 
-                        <template if:true={personIdent}>
-                            <div>
-                                <lightning-layout-item>
-                                    <h2 class="record-header-info">&nbsp;{personIdent}</h2>
-                                </lightning-layout-item>
+            <p class="slds-var-p-around_medium">{personIdent}
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon 
+                value={personIdent}
+                style="color: white;" 
+                icon-name="utility:copy"
+                variant="bare" onclick={handleCopy} 
+                alternative-text="Kopier fødselsnummer"
+                title="Kopier fødselsnummer">
+            </lightning-button-icon> 
+            </p>
 
-                                <lightning-layout-item>
-                                    <!-- sldsValidatorIgnoreNextLine -->
-                                    <lightning-button-icon
-                                        value={personIdent}
-                                        class="copy-icon"
-                                        icon-name="utility:copy"
-                                        variant="bare"
-                                        onclick={handleCopy}
-                                        alternative-text="Kopier fødselsnummer"
-                                        title="Kopier fødselsnummer"
-                                    ></lightning-button-icon>
-                                </lightning-layout-item>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </lightning-layout>
-        </div>
-    </div>
+            <p class="slds-var-p-around_medium">{age}/{citizenship}/{maritalStatus}</p>
+
+            <p class="slds-var-p-around_medium">{navUnit}
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon
+                value={navUnit} 
+                style="color: white;" 
+                icon-name="utility:copy"
+                variant="bare" 
+                onclick={handleCopy} 
+                alternative-text="Kopier nav enhet"
+                title="Kopier nav enhet">
+            </lightning-button-icon> 
+            </p>
+
+            <p class="slds-var-p-around_medium">{formattedVeileder}
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon 
+                value={formattedVeileder} 
+                style="color: white;" 
+                icon-name="utility:copy"
+                variant="bare" 
+                onclick={handleCopy} 
+                alternative-text="Kopier veileders navn"
+                title="Kopier veileders navn">
+            </lightning-button-icon> 
+            </p>
+        </lightning-layout-item>
+    </lightning-layout>
 </template>
