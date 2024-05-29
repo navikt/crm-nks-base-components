@@ -9,7 +9,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
 
     // TODO: Add color for deceased?
     get midPanelStyling() {
-        return this.gender === 'Kvinne' ? 'panel-dark-purple' : 'panel-dark-blue';
+        return 'mid-panel ' + (this.gender === 'Kvinne' ? 'panel-dark-purple' : 'panel-dark-blue');
     }
 
 
