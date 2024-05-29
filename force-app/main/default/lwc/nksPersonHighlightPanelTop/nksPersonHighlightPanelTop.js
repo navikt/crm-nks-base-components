@@ -11,6 +11,7 @@ import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
 
@@ -20,6 +21,8 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api veilederIdent;
     @api personId;
     @api objectApiName;
+    @api recordId;
+    @api relationshipField;
 
     personIdent;
     fullName;
@@ -30,6 +33,8 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     maritalStatus;
     wireFields;
 
+    getNavUnit;
+    getNavLinks;
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
@@ -85,7 +90,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         if (data) {
             console.log('Yoyo navUnit hadde data');
             this.navUnit = data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '';
-            //this.updatePersonInfo('navUnitName', data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '');
+            console.log('flemsk unit: ' + this.navUnit);
             this.getFormattedLink();
         } else {
             console.log('no navUnit data noob');
@@ -96,8 +101,31 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         }
     }
 
+    @wire(getNavLinks, {
+        field: '$relationshipfield',
+        parentObject: '$objectApiName',
+        parentRecordId: '$recordId',
+    })
+    wiredLinkData(result) {
+        console.log('wiredLinkData');
+        const {data, error} = result;
+        if(data) {
+            console.log('received flemsk link data:');
+            console.log(data);
+        } else {
+            console.log('no link data noob');
+        }
+
+        if(error){
+            console.log(error);
+        }
+
+    }
+
     async getFormattedLink() {
+        console.log('formatted flemsk reporting');
         if (this.navUnit) {
+            console.log('NavUnit tilstede i formatted');
             const link = await getNavLinks().then((list) => {
                 const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
                 if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
@@ -146,9 +174,22 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
+    showCopyToast(status) {
+        const evt = new ShowToastEvent({
+            message: status === 'success' ? 'kopiert til utklippstavlen.' : 'Kunne ikke kopiere',
+            variant: status,
+            mode: 'pester'
+        });
+        this.dispatchEvent(evt);
+    }
+
+    get formattedPersonInfo() {
+        let personInfo = [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
+        return personInfo;
+    }
+
     get formattedVeileder() {
-        console.log('Veileder navn: ' + this.veilederName)
-        return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
+        return this.veilederName ? 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '') : undefined;
     }
     get formattedUnit() {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
