@@ -16,7 +16,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
     fagsystemLinks = [];
     inFagsone;
-    fagsoneText = '';
+    fagsoneText = 'Laster fagsystemer...';
     isSandbox = false;
     wiredRecordData;
     actorId;
