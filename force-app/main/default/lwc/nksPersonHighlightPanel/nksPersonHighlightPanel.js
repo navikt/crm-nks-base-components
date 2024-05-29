@@ -348,7 +348,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get panelStyling() { // TODO: Add color for deceased?
-        return 'highlightPanel ' + this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue';
+        return 'highlightPanel ' + (this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue');
     }
 
     updatePersonInfo(field, value) {
