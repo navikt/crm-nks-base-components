@@ -4,50 +4,65 @@ import { trackAmplitudeEvent } from 'c/amplitude';
 
 export default class NksPersonHighlightPanelMid extends NavigationMixin(LightningElement) {
     @api gender;
-    @api oppfolgingData;
-    @api meldekortData;
+    @api personData;
+    links = [];
+
+    connectedCallback() {
+        this.links = [
+            { id: 'aktivitetsplan', name: 'Aktivitetsplan', onclick: this.viewOppfolging.bind(this) },
+            { id: 'meldekort', name: 'Meldekort', onclick: this.viewMeldekort.bind(this) }
+        ];
+        console.log('this.personData: ', this.personData);
+    }
 
     // TODO: Add color for deceased?
     get midPanelStyling() {
         return 'mid-panel ' + (this.gender === 'Kvinne' ? 'panel-dark-purple' : 'panel-dark-blue');
     }
 
-
-    viewOppfolging(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
+    viewOppfolging() {
         trackAmplitudeEvent('Opened Aktivitetsplanen');
+        const {
+            actorId,
+            firstName,
+            name,
+            veilederName,
+            underOppfolging,
+            veilederIdent
+        } = this.personData || {};
+
         this.aktivitetsPageRef = {
             type: 'standard__navItemPage',
             attributes: {
                 apiName: 'Aktivitetsplan'
             },
             state: {
-                c__ActorId: this.oppfolgingData.actorId,
-                c__firstName: this.oppfolgingData.firstName,
-                c__pName: this.oppfolgingData.name,
-                c__veilederName: this.oppfolgingData.veilederName,
-                c__underOppfolging: this.oppfolgingData.underOppfolging,
-                c__veilederIdent: this.oppfolgingData.veilederIdent
+                c__ActorId: actorId,
+                c__firstName: firstName,
+                c__pName: name,
+                c__veilederName: veilederName,
+                c__underOppfolging: underOppfolging,
+                c__veilederIdent: veilederIdent
             }
         };
-        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef).then((url) => (this.url = url));
+        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef);
         this[NavigationMixin.Navigate](this.aktivitetsPageRef);
     }
 
-    viewMeldekort(evt) {
-        evt.preventDefault();
-        evt.stopPropagation();
+    viewMeldekort() {
+        trackAmplitudeEvent('Opened Meldekort');
+        const { personId } = this.personData || {};
+
         this.aktivitetsPageRef = {
             type: 'standard__navItemPage',
             attributes: {
                 apiName: 'NKS_Arenaytelser'
             },
             state: {
-                c__personId: this.meldekortData.personId
+                c__personId: personId
             }
         };
-        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef).then((url) => (this.url = url));
+        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef);
         this[NavigationMixin.Navigate](this.aktivitetsPageRef);
     }
 }

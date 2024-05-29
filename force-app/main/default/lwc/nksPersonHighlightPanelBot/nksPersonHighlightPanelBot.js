@@ -17,7 +17,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     personInfo;
     fagsystemLinks = [];
     inFagsone;
-    fagsoneText = '';
+    fagsoneText = 'Laster fagsystemer...';
     isSandbox = false;
     wiredRecordData;
     actorId;
@@ -118,7 +118,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 show: link.show,
                 name: link.label ?? link.name
             }));
-            console.log('this.fagsystemLinks: ', JSON.stringify(this.fagsystemLinks));
     }
 
     generateUrl(fagsystem) {
