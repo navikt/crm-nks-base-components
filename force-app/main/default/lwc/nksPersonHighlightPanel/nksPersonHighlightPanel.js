@@ -41,8 +41,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     dateOfDeath;
     badgeContent;
 
-
-    oppfolgingAndMeldekortData;
+    oppfolgingAndMeldekortData = {};
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
