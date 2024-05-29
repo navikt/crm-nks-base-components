@@ -45,7 +45,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
                 c__veilederIdent: veilederIdent
             }
         };
-        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef).then((url) => (this.url = url));
+        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef);
         this[NavigationMixin.Navigate](this.aktivitetsPageRef);
     }
 
@@ -62,7 +62,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
                 c__personId: personId
             }
         };
-        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef).then((url) => (this.url = url));
+        this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef);
         this[NavigationMixin.Navigate](this.aktivitetsPageRef);
     }
 }
