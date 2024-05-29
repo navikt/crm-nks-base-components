@@ -1,5 +1,5 @@
 <template>
-    <div class="highlightPanel">
+    <div class={panelStyling}>
         <lightning-layout>
             <lightning-layout-item class="slds-grid slds-wrap content-area">
              <c-nks-custom-svg
@@ -54,11 +54,6 @@
                 </p>
             </lightning-layout-item>
         </lightning-layout>
-
-
-
-
-
         <c-nks-person-highlight-panel-mid
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
@@ -119,9 +114,13 @@
                 </div>
             </template>
         </div>
+        <c-nks-person-highlight-panel-mid
+            gender={gender}
+        ></c-nks-person-highlight-panel-mid>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}
+            gender={gender}
         ></c-nks-person-highlight-panel-bot>
     </div>
 </template>
