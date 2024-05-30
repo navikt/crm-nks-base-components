@@ -14,15 +14,13 @@ import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEm
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
 const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
-
-
 export default class NksPersonHighlightPanelTop extends LightningElement {
-
     @api personId;
     @api objectApiName;
     @api recordId;
     @api relationshipField;
     @api gender;
+    @api isDeceased;
 
     personIdent;
     fullName;
@@ -53,7 +51,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         }
     }
 
-
     @wire(getRecord, {
         recordId: '$personId',
         fields: PERSON_FIELDS
@@ -82,10 +79,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             } else {
                 this.maritalStatus = '';
             }
-        } else {
-            console.log('there is no data noob');
-        }
-        if (error) {
+        } else if (error) {
             console.error(error);
         }
     }
@@ -110,7 +104,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         if (this.navUnit) {
             const link = await getNavLinks().then((list) => {
                 const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
-                console.log('ONLINECHECK: ' + onlineCheck);
                 if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
                 return (
                     'https://www.nav.no/kontor/' +
@@ -124,15 +117,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             this.formattedUnitLink = link;
         }
     }
-
-    updatePersonInfo(field, value) {
-        console.log('update personInfo Triggered');
-        if (value == null && Object.keys(this.personInfo).includes(field)) return;
-        this.personInfo = { ...this.personInfo, [field]: value };
-        console.log('person from higlightpanel: ');
-        console.log(this.personInfo);
-    }
-
 
     handleCopy(event) {
         const hiddenInput = document.createElement('input');
@@ -178,6 +162,10 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
     }
 
+    get formattedFullName() {
+        return this.isDeceased ? this.fullName + ' (død)' : this.fullName;
+    }
+
     get genderIcon() {
         switch (this.gender) {
             case 'Mann':
@@ -192,7 +180,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     get genderIconSrc() {
         let returnvalue = NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
         return returnvalue;
-
     }
 
     get genderIconClass() {

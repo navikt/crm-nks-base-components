@@ -109,7 +109,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-        this.fagsystemLinks = possibleLinks
+            this.fagsystemLinks = possibleLinks
             .filter((link) => listOfFilter.length === 0 || listOfFilter.includes(link.name))
             .map((link, index) => ({
                 ...link,
