@@ -32,6 +32,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     age;
     maritalStatus;
     wireFields;
+    formattedUnitLink;
 
     getNavUnit;
     getNavLinks;
@@ -125,11 +126,12 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     async getFormattedLink() {
         console.log('formatted flemsk reporting');
         if (this.navUnit) {
-            console.log('NavUnit tilstede i formatted');
+            console.log('NavUnit tilstede i formatted: navUnit: ' + this.navUnit);
             const link = await getNavLinks().then((list) => {
                 const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
+                console.log('onlinecheck: ' + onlineCheck);
                 if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
-                return (
+                let returnLink = (
                     'https://www.nav.no/kontor/' +
                     this.navUnit.navn
                         .replace(/\.\s/g, '.')
@@ -137,8 +139,11 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
                         .normalize('NFD')
                         .replace(/[\u0300-\u036f]/g, '')
                 );
+                console.log('returnLink: ' + returnLink);
+                return returnLink;
             });
             this.formattedUnitLink = link;
+            console.log('this.formattedUnitLink: ' + this.formattedUnitLink);
         }
     }
 

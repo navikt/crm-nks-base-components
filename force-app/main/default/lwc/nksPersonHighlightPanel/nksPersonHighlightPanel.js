@@ -52,7 +52,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
+        console.log('HER ER IDENT: ' + this.veilederIdent);
         if (data) {
+            console.log('HER ER IDENT: 2' + data.primaerVeileder);
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
@@ -64,12 +66,19 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
+        this.veilederIdent = 'test123';
+        console.log('HAR IKKE DATA: ' + this.veilederIdent);
         if (data) {
+            console.log('Veilderder navn: ' + data);
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
-        } else if (error) {
-            console.log('Error occurred: ', JSON.stringify(error, null, 2));
+        } else {
+            console.log('no data veileder no');
         }
+        
+            // } else if (error) {
+        //     console.log('Error occurred: ', JSON.stringify(error, null, 2));
+        // }
     }
 
     @wire(getPersonBadgesAndInfo, {

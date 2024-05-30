@@ -13,7 +13,7 @@
         </template>
 
         <template lwc:if={personIdent}>
-            <lightning-layout-item class="slds-var-p-around_medium">
+            <lightning-layout-item class="slds-var-p-top_medium slds-var-p-left_medium slds-var-p-bottom_medium">
                 <span>{personIdent}</span> 
             </lightning-layout-item>
             <lightning-layout-item>
@@ -35,23 +35,6 @@
                 <h1>{fullName}</h1>
             </lightning-layout-item>
         </template>
-
-        <template lwc:if={personIdent}>
-            <lightning-layout-item class="slds-var-p-around_medium">
-                <p>{personIdent}
-                    <!-- sldsValidatorIgnoreNextLine -->
-                    <lightning-button-icon 
-                    value={personIdent}
-                    icon-name="utility:copy"
-                    variant="bare-inverse" 
-                    onclick={handleCopy} 
-                    alternative-text="Kopier fødselsnummer"
-                    title="Kopier fødselsnummer"
-                    class="copy-icon">
-                </lightning-button-icon> 
-                </p>
-            </lightning-layout-item>
-        </template>
             
         <template lwc:if={formattedPersonInfo}>
             <lightning-layout-item class="slds-var-p-around_medium">
@@ -60,8 +43,10 @@
         </template>
 
         <template lwc:if={navUnit}>
-            <lightning-layout-item class="slds-var-p-around_medium">
-                <p>{navUnit}
+            <lightning-layout-item class="slds-var-p-top_medium slds-var-p-left_medium slds-var-p-bottom_medium">
+                <span>{navUnit}</span> 
+            </lightning-layout-item>
+            <lightning-layout-item>
                     <!-- sldsValidatorIgnoreNextLine -->
                     <lightning-button-icon
                     value={formattedUnitLink} 
@@ -72,13 +57,14 @@
                     title="Kopier nav enhet"
                     class="copy-icon">
                 </lightning-button-icon> 
-                </p>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedVeileder}>
-            <lightning-layout-item class="slds-var-p-around_medium">
-                <p>{formattedVeileder}
+            <lightning-layout-item class="slds-var-p-top_medium slds-var-p-left_medium slds-var-p-bottom_medium">
+                <span>{formattedVeileder}</span> 
+            </lightning-layout-item>
+            <lightning-layout-item>
                     <!-- sldsValidatorIgnoreNextLine -->
                     <lightning-button-icon 
                     value={formattedVeileder} 
@@ -89,7 +75,6 @@
                     title="Kopier veileders navn"
                     class="copy-icon">
                 </lightning-button-icon> 
-                </p>
             </lightning-layout-item>
         </template>
     </lightning-layout>
