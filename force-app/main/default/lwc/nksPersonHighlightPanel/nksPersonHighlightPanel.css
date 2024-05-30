@@ -7,6 +7,14 @@
 
 .highlightPanelTop {
     height: 5.5rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.border-light-blue {
+    height: 0.125rem;
+    background-color: #66A5F4;
 }
 
 .panel-blue {

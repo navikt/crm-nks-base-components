@@ -16,11 +16,11 @@
             lwc:if={highlightPanelOpen}
             badge-content={badgeContent}
         ></c-nks-person-highlight-panel-mid>
-        <div style="display: flex; justify-content: flex-end" class="slds-var-m-right_medium"></div>
-        <div
-            style="display: flex; justify-content: flex-end; height: 5.5rem; align-items: center"
-            class="slds-var-m-right_medium"
-        ></div>
+
+
+        <div class="border-light-blue"></div>
+
+
             <template for:each={personAccessBadges} for:item="badge">
                 <div key={badge.name}>
                     <lightning-badge
@@ -31,6 +31,7 @@
                     </lightning-badge>
                 </div>
             </template>
+
             <template for:each={badges} for:item="badge">
                 <div key={badge.name} data-id={badge.name}>
                     <template lwc:if={badge.clickable}>
