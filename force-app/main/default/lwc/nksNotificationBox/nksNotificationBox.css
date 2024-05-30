@@ -9,6 +9,8 @@
     --a-spacing-1: 0.25rem;
     --a-green-500: #06893a;
     --a-green-100: #ccf1d6;
+    --a-red-500: #c30000;
+    --a-red-100: #ffc2c2;
     --a-blue-800: #00347d;
     --a-blue-200: #99c3ff;
     --a-gray-900: #23262a;
@@ -16,12 +18,15 @@
     --a-border-radius-medium: 4px;
     --a-font-line-height-xlarge: 1.75rem;
     --a-text-default: var(--a-gray-900);
+    --a-surface-danger-subtle: var(--a-red-100);
     --a-surface-success-subtle: var(--a-green-100);
     --a-surface-default: var(--a-white);
+    --a-icon-danger: var(--a-red-500);
     --a-icon-success: var(--a-green-500);
     --a-border-focus: var(--a-blue-800);
     --a-border-focus-on-inverted: var(--a-blue-200);
     --a-border-success: var(--a-green-500);
+    --a-border-danger: var(--a-red-500);
 }
 
 .navds-alert--success {
@@ -121,6 +126,15 @@
     margin: 0;
     padding: var(--ac-button-padding, var(--__ac-button-padding));
     text-decoration: none;
+}
+
+.navds-alert--error {
+    background-color: var(--ac-alert-error-bg, var(--a-surface-danger-subtle));
+    border-color: var(--ac-alert-error-border, var(--a-border-danger));
+}
+
+.navds-alert--error > .navds-alert__icon {
+    color: var(--ac-alert-icon-error-color, var(--a-icon-danger));
 }
 
 .boldFont {

@@ -7,9 +7,25 @@ export default class NksNotificationBox extends LightningElement {
     @api
     addNotification(mainText, optionalText = null) {
         this.count++;
-        const nowTime = new Date();
-        const time = `${nowTime.getHours()}:${nowTime.getMinutes()}`;
-        this.notificationList.push({ id: String(this.count), text: mainText, time: time, optionalText: optionalText });
+        this.notificationList.push({
+            id: String(this.count),
+            text: mainText,
+            time: this.getCurrentTime(),
+            optionalText: optionalText,
+            success: true
+        });
+    }
+
+    @api
+    addErrorMessage(mainText, optionalText = null) {
+        this.count++;
+        this.notificationList.push({
+            id: String(this.count),
+            text: mainText,
+            time: this.getCurrentTime(),
+            optionalText: optionalText,
+            success: false
+        });
     }
 
     removeNotification(event) {
@@ -18,5 +34,10 @@ export default class NksNotificationBox extends LightningElement {
         if (notificationIndex >= 0) {
             this.notificationList.splice(notificationIndex, 1);
         }
+    }
+
+    getCurrentTime() {
+        const nowTime = new Date();
+        return `${('0' + nowTime.getHours()).slice(-2)}:${('0' + nowTime.getMinutes()).slice(-2)}`;
     }
 }
