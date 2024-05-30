@@ -1,66 +1,96 @@
 <template>
-    <lightning-layout>
-        <lightning-layout-item class="slds-grid slds-wrap content-area">
-         <c-nks-custom-svg
-            size="large"
-            class={genderIcon}
-            src={genderIconSrc}
-            alt-text={gender}
-            classes={genderIconClass}
-        ></c-nks-custom-svg> 
+    <lightning-layout class="slds-var-p-around_medium slds-grid slds-wrap content-area">
+        <template lwc:if={gender}>
+            <lightning-layout-item>
+                <c-nks-custom-svg
+                   size="large"
+                   class={genderIcon}
+                   src={genderIconSrc}
+                   alt-text={gender}
+                   classes={genderIconClass}
+               ></c-nks-custom-svg> 
+               </lightning-layout-item>
+        </template>
 
-        <div lwc:if={fullName}>
-            <h1 class="slds-page-header__title slds-var-p-around_medium">{fullName}</h1>
-        </div>
+        <template lwc:if={personIdent}>
+            <lightning-layout-item class="slds-var-p-around_medium">
+                <span>{personIdent}</span> 
+            </lightning-layout-item>
+            <lightning-layout-item>
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon 
+                    value={personIdent}
+                    icon-name="utility:copy"
+                    variant="bare-inverse" 
+                    onclick={handleCopy} 
+                    alternative-text="Kopier fødselsnummer"
+                    title="Kopier fødselsnummer"
+                    class="copy-icon">
+                </lightning-button-icon> 
+            </lightning-layout-item>
+        </template>
 
-        <div lwc:if={personIdent}>
-            <p class="slds-var-p-around_medium">{personIdent}
-                <!-- sldsValidatorIgnoreNextLine -->
-                <lightning-button-icon 
-                value={personIdent}
-                icon-name="utility:copy"
-                variant="bare-inverse" 
-                onclick={handleCopy} 
-                alternative-text="Kopier fødselsnummer"
-                title="Kopier fødselsnummer"
-                class="copy-icon">
-            </lightning-button-icon> 
-            </p>
-        </div>
+        <template lwc:if={fullName}>
+            <lightning-layout-item class="slds-page-header__title slds-var-p-around_medium">
+                <h1>{fullName}</h1>
+            </lightning-layout-item>
+        </template>
 
-        <div lwc:if={formattedPersonInfo}>
-            <p class="slds-var-p-around_medium">{formattedPersonInfo}</p> 
-        </div>
+        <template lwc:if={personIdent}>
+            <lightning-layout-item class="slds-var-p-around_medium">
+                <p>{personIdent}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon 
+                    value={personIdent}
+                    icon-name="utility:copy"
+                    variant="bare-inverse" 
+                    onclick={handleCopy} 
+                    alternative-text="Kopier fødselsnummer"
+                    title="Kopier fødselsnummer"
+                    class="copy-icon">
+                </lightning-button-icon> 
+                </p>
+            </lightning-layout-item>
+        </template>
+            
+        <template lwc:if={formattedPersonInfo}>
+            <lightning-layout-item class="slds-var-p-around_medium">
+                <p>{formattedPersonInfo}</p> 
+            </lightning-layout-item>
+        </template>
 
-        <div lwc:if={navUnit}>
-            <p class="slds-var-p-around_medium">{navUnit}
-                <!-- sldsValidatorIgnoreNextLine -->
-                <lightning-button-icon
-                value={formattedUnitLink} 
-                icon-name="utility:copy"
-                variant="bare-inverse" 
-                onclick={handleCopy} 
-                alternative-text="Kopier nav enhet"
-                title="Kopier nav enhet"
-                class="copy-icon">
-            </lightning-button-icon> 
-            </p>
-        </div>
+        <template lwc:if={navUnit}>
+            <lightning-layout-item class="slds-var-p-around_medium">
+                <p>{navUnit}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon
+                    value={formattedUnitLink} 
+                    icon-name="utility:copy"
+                    variant="bare-inverse" 
+                    onclick={handleCopy} 
+                    alternative-text="Kopier nav enhet"
+                    title="Kopier nav enhet"
+                    class="copy-icon">
+                </lightning-button-icon> 
+                </p>
+            </lightning-layout-item>
+        </template>
 
-            <div lwc:if={formattedVeileder}>
-            <p class="slds-var-p-around_medium">{formattedVeileder}
-                <!-- sldsValidatorIgnoreNextLine -->
-                <lightning-button-icon 
-                value={formattedVeileder} 
-                icon-name="utility:copy"
-                variant="bare-inverse"  
-                onclick={handleCopy} 
-                alternative-text="Kopier veileders navn"
-                title="Kopier veileders navn"
-                class="copy-icon">
-            </lightning-button-icon> 
-            </p>
-        </div>
-        </lightning-layout-item>
+        <template lwc:if={formattedVeileder}>
+            <lightning-layout-item class="slds-var-p-around_medium">
+                <p>{formattedVeileder}
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <lightning-button-icon 
+                    value={formattedVeileder} 
+                    icon-name="utility:copy"
+                    variant="bare-inverse"  
+                    onclick={handleCopy} 
+                    alternative-text="Kopier veileders navn"
+                    title="Kopier veileders navn"
+                    class="copy-icon">
+                </lightning-button-icon> 
+                </p>
+            </lightning-layout-item>
+        </template>
     </lightning-layout>
 </template>
