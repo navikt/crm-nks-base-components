@@ -13,13 +13,18 @@
     --a-red-100: #ffc2c2;
     --a-blue-800: #00347d;
     --a-blue-200: #99c3ff;
+    --a-grayalpha-700: rgba(1, 11, 24, 0.68);
+    --a-grayalpha-200: rgba(17, 41, 64, 0.13);
     --a-gray-900: #23262a;
     --a-white: #fff;
     --a-border-radius-medium: 4px;
     --a-font-line-height-xlarge: 1.75rem;
+    --a-text-on-neutral: var(--a-white);
     --a-text-default: var(--a-gray-900);
     --a-surface-danger-subtle: var(--a-red-100);
     --a-surface-success-subtle: var(--a-green-100);
+    --a-surface-neutral-active: var(--a-gray-900);
+    --a-surface-neutral-subtle-hover: var(--a-grayalpha-200);
     --a-surface-default: var(--a-white);
     --a-icon-danger: var(--a-red-500);
     --a-icon-success: var(--a-green-500);
@@ -27,6 +32,8 @@
     --a-border-focus-on-inverted: var(--a-blue-200);
     --a-border-success: var(--a-green-500);
     --a-border-danger: var(--a-red-500);
+    --a-border-strong: var(--a-grayalpha-700);
+    --a-shadow-focus: 0 0 0 3px var(--a-border-focus);
 }
 
 .navds-alert--success {
@@ -135,6 +142,35 @@
 
 .navds-alert--error > .navds-alert__icon {
     color: var(--ac-alert-icon-error-color, var(--a-icon-danger));
+}
+
+.navds-button--tertiary-neutral:hover {
+    background-color: var(--ac-button-tertiary-neutral-hover-bg, var(--a-surface-neutral-subtle-hover));
+    color: var(--ac-button-tertiary-neutral-hover-text, var(--a-text-default));
+}
+
+.navds-button--tertiary-neutral:active {
+    background-color: var(--ac-button-tertiary-neutral-active-bg, var(--a-surface-neutral-active));
+    color: var(--ac-button-tertiary-neutral-active-text, var(--a-text-on-neutral));
+}
+
+.navds-button--tertiary-neutral:focus-visible:active {
+    box-shadow: inset 0 0 0 1px var(--a-surface-default), var(--a-shadow-focus);
+}
+
+.navds-button--tertiary-neutral:active:hover {
+    background-color: var(--ac-button-tertiary-neutral-active-hover-bg, var(--a-surface-neutral-active));
+}
+
+.navds-button--tertiary-neutral:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--ac-button-tertiary-neutral-focus-border, var(--a-border-strong)),
+        var(--a-shadow-focus);
+}
+
+.navds-button:focus-visible {
+    box-shadow: var(--a-shadow-focus);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
 }
 
 .boldFont {
