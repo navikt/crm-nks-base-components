@@ -1,24 +1,17 @@
-import { LightningElement, api, wire, track } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
-import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
 import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
-import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
-import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
-import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
-import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
-import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
-import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-export const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
+const PERSON_FIELDS = [PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD];
 
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
@@ -32,9 +25,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     historikkWiredData;
     isLoaded;
     actorId;
-    fullName;
-    citizenship;
-    navUnit;
     veilederName;
     gender;
 
@@ -42,7 +32,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     dateOfDeath;
     badgeContent;
-    formattedUnitLink;
 
     oppfolgingAndMeldekortData = {};
 
@@ -52,9 +41,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
-        console.log('HER ER IDENT: ' + this.veilederIdent);
         if (data) {
-            console.log('HER ER IDENT: 2' + data.primaerVeileder);
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
@@ -66,19 +53,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
-        this.veilederIdent = 'test123';
-        console.log('HAR IKKE DATA: ' + this.veilederIdent);
+        console.log('VEILEDER: ' + this.veilederIdent);
         if (data) {
-            console.log('Veilderder navn: ' + data);
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
-        } else {
-            console.log('no data veileder no');
+        } else if (error) {
+            console.log('Error occurred: ', JSON.stringify(error, null, 2));
         }
-        
-            // } else if (error) {
-        //     console.log('Error occurred: ', JSON.stringify(error, null, 2));
-        // }
     }
 
     @wire(getPersonBadgesAndInfo, {
@@ -175,9 +156,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             if (this.isLoaded) {
                 this.setUuAlertText();
             }
-        }
-
-        if (error) {
+        }else if (error) {
             this.addError(error);
 
             if (this.isLoaded) {

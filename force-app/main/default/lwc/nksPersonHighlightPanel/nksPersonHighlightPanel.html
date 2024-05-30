@@ -1,14 +1,16 @@
 <template>
     <div class={panelStyling}>
         <div class="highlightPanel">
-            <c-nks-person-highlight-panel-top
-            veileder-name = {veilederName}
-            veileder-ident = {veilederIdent}
-            person-id = {personId}
-            record-id = {recordId}
-            object-api-name = {objectApiName}
-            relationship-field = {relationshipField}
-        ></c-nks-person-highlight-panel-top>
+            <div class="highlightPanelTop">
+                <c-nks-person-highlight-panel-top
+                veileder-name = {veilederName}
+                veileder-ident = {veilederIdent}
+                person-id = {personId}
+                record-id = {recordId}
+                object-api-name = {objectApiName}
+                relationship-field = {relationshipField}
+                ></c-nks-person-highlight-panel-top>
+            </div>
     
         <c-nks-person-highlight-panel-mid
             lwc:if={highlightPanelOpen}
@@ -25,8 +27,7 @@
                         class="slds-theme_error slds-var-m-left_x-small slds-var-m-vertical_xx-small redBadge"
                         data-id={badge.name}
                         label={badge.label}
-                        role="heading"
-                    >
+                        role="heading">
                     </lightning-badge>
                 </div>
             </template>

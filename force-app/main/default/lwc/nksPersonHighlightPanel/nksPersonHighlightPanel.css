@@ -5,6 +5,10 @@
     width: 100%;
 }
 
+.highlightPanelTop {
+    height: 5.5rem;
+}
+
 .panel-blue {
     background-color: #0056B4;
 }

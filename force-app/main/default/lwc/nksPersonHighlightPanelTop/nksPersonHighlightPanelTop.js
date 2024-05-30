@@ -1,7 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
-import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
@@ -12,13 +11,14 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
+import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-export const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
+const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
 
 
 export default class NksPersonHighlightPanelTop extends LightningElement {
-    @api veilederName;
-    @api veilederIdent;
+
     @api personId;
     @api objectApiName;
     @api recordId;
@@ -31,14 +31,27 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     gender;
     age;
     maritalStatus;
-    wireFields;
     formattedUnitLink;
+    veilederIdent;
+    veilederName;
+    actorId;
 
-    getNavUnit;
-    getNavLinks;
+    @wire(getVeilederIdent, { actorId: '$actorId' })
+    wireVeilIdentInfo({ data, error }) {
+        if (data) {
+            this.veilederIdent = data.primaerVeileder;
+        } else if (error) {
+            console.error(error);
+        }
+    }
 
-    connectedCallback() {
-        this.wireFields = [this.objectApiName + '.Id'];
+    @wire(getVeilederName, { navIdent: '$veilederIdent' })
+    wiredName({ data, error }) {
+        if (data) {
+            this.veilederName = data;
+        } else if (error) {
+            console.error('Error occurred: ', JSON.stringify(error, null, 2));
+        }
     }
 
 
@@ -87,51 +100,21 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     })
     wiredData(result) {
         const { data, error } = result;
-        console.log('Yoyo navUnit');
         if (data) {
-            console.log('Yoyo navUnit hadde data');
-            this.navUnit = data.unit ? `${data.unit.enhetNr} ${data.unit.navn}` : '';
-            console.log('flemsk unit: ' + this.navUnit);
+            this.navUnit = data.unit;
             this.getFormattedLink();
-        } else {
-            console.log('no navUnit data noob');
+        } else if (error) {
+            console.error(`error: ${error}`);
         }
-
-        if (error) {
-            console.log(`error: ${error}`);
-        }
-    }
-
-    @wire(getNavLinks, {
-        field: '$relationshipfield',
-        parentObject: '$objectApiName',
-        parentRecordId: '$recordId',
-    })
-    wiredLinkData(result) {
-        console.log('wiredLinkData');
-        const {data, error} = result;
-        if(data) {
-            console.log('received flemsk link data:');
-            console.log(data);
-        } else {
-            console.log('no link data noob');
-        }
-
-        if(error){
-            console.log(error);
-        }
-
     }
 
     async getFormattedLink() {
-        console.log('formatted flemsk reporting');
         if (this.navUnit) {
-            console.log('NavUnit tilstede i formatted: navUnit: ' + this.navUnit);
             const link = await getNavLinks().then((list) => {
                 const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
-                console.log('onlinecheck: ' + onlineCheck);
+                console.log('ONLINECHECK: ' + onlineCheck);
                 if (onlineCheck !== undefined) return 'https://www.nav.no' + onlineCheck.path;
-                let returnLink = (
+                return (
                     'https://www.nav.no/kontor/' +
                     this.navUnit.navn
                         .replace(/\.\s/g, '.')
@@ -139,11 +122,8 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
                         .normalize('NFD')
                         .replace(/[\u0300-\u036f]/g, '')
                 );
-                console.log('returnLink: ' + returnLink);
-                return returnLink;
             });
             this.formattedUnitLink = link;
-            console.log('this.formattedUnitLink: ' + this.formattedUnitLink);
         }
     }
 
