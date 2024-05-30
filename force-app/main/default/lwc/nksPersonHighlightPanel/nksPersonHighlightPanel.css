@@ -12,9 +12,20 @@
     align-items: center;
 }
 
-.border-light-blue {
+.border-height {
     height: 0.125rem;
+}
+
+.border-light-blue {
     background-color: #66A5F4;
+}
+
+.border-light-purple {
+    background-color: #9A80BD;
+}
+
+.border-light-grey {
+    background-color: #858585;
 }
 
 .panel-blue {
@@ -22,6 +33,10 @@
 }
 .panel-purple {
     background-color: #634689;
+}
+
+.panel-black {
+    background-color: #484848;
 }
 
 .pointer {

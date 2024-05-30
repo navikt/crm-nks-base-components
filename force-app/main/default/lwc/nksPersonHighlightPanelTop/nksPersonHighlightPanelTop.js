@@ -2,7 +2,6 @@ import { LightningElement, api, wire } from 'lwc';
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
-import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
@@ -14,7 +13,7 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
+const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
 
 
 export default class NksPersonHighlightPanelTop extends LightningElement {
@@ -23,12 +22,12 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api objectApiName;
     @api recordId;
     @api relationshipField;
+    @api gender;
 
     personIdent;
     fullName;
     citizenship;
     navUnit;
-    gender;
     age;
     maritalStatus;
     formattedUnitLink;
@@ -64,7 +63,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
-            this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
 
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);

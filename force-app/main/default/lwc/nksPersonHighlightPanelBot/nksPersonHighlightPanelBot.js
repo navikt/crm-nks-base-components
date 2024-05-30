@@ -13,6 +13,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     @api hasPersonId = false;
     @api filterList = [];
     @api gender = '';
+    @api isDeceased;
 
     personInfo;
     fagsystemLinks = [];
@@ -33,9 +34,8 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         this._personIdent = value;
     }
 
-    // TODO: Add color for deceased?
     get panelStyling() {
-        return 'bot-panel ' + (this.gender === 'Kvinne' ? 'bot-panel-purple' : 'bot-panel-blue');
+        return 'bot-panel ' + (this.isDeceased ? 'bot-panel-black' : this.gender === 'Kvinne' ? 'bot-panel-purple' : 'bot-panel-blue');
     }
 
     @wire(getFagsoneIpAndOrgType)

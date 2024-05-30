@@ -5,11 +5,63 @@
                 <c-nks-person-highlight-panel-top
                 veileder-name = {veilederName}
                 veileder-ident = {veilederIdent}
+                gender = {gender}
                 person-id = {personId}
                 record-id = {recordId}
                 object-api-name = {objectApiName}
                 relationship-field = {relationshipField}
                 ></c-nks-person-highlight-panel-top>
+
+                <template for:each={personAccessBadges} for:item="badge">
+                    <div key={badge.name}>
+                        <lightning-badge
+                            class="slds-theme_error slds-var-m-left_x-small slds-var-m-vertical_xx-small redBadge"
+                            data-id={badge.name}
+                            label={badge.label}
+                            role="heading">
+                        </lightning-badge>
+                    </div>
+                </template>
+    
+                <template for:each={badges} for:item="badge">
+                    <div key={badge.name} data-id={badge.name}>
+                        <template lwc:if={badge.clickable}>
+                            <lightning-badge
+                                data-id={badge.name}
+                                label={badge.label}
+                                icon-name={badge.iconName}
+                                icon-position="start"
+                                class={badge.styling}
+                                tabindex={badge.tabindex}
+                                onkeypress={onKeyPressHandler}
+                                onclick={onClickHandler}
+                                aria-expanded="false"
+                                role="heading"
+                            >
+                            </lightning-badge>
+                        </template>
+                        <template lwc:else>
+                            <lightning-badge
+                                data-id={badge.name}
+                                label={badge.label}
+                                icon-name={badge.iconName}
+                                icon-position="start"
+                                class={badge.styling}
+                                role="heading"
+                            >
+                            </lightning-badge>
+                        </template>
+                        <div lwc:if={badge.badgeContent}>
+                            <c-nks-person-highlight-panel-badge-content
+                                data-id={badge.badgeContentType}
+                                shown-badge={shownBadge}
+                                type={badge.badgeContentType}
+                                badge-data={badge.badgeContent}
+                                onbadgeclosed={closeBadge}
+                            ></c-nks-person-highlight-panel-badge-content>
+                        </div>
+                    </div>
+                </template>
             </div>
     
         <c-nks-person-highlight-panel-mid
@@ -17,64 +69,14 @@
             badge-content={badgeContent}
         ></c-nks-person-highlight-panel-mid>
 
+        <div class={panelBorderStyling}></div>
 
-        <div class="border-light-blue"></div>
-
-
-            <template for:each={personAccessBadges} for:item="badge">
-                <div key={badge.name}>
-                    <lightning-badge
-                        class="slds-theme_error slds-var-m-left_x-small slds-var-m-vertical_xx-small redBadge"
-                        data-id={badge.name}
-                        label={badge.label}
-                        role="heading">
-                    </lightning-badge>
-                </div>
-            </template>
-
-            <template for:each={badges} for:item="badge">
-                <div key={badge.name} data-id={badge.name}>
-                    <template lwc:if={badge.clickable}>
-                        <lightning-badge
-                            data-id={badge.name}
-                            label={badge.label}
-                            icon-name={badge.iconName}
-                            icon-position="start"
-                            class={badge.styling}
-                            tabindex={badge.tabindex}
-                            onkeypress={onKeyPressHandler}
-                            onclick={onClickHandler}
-                            aria-expanded="false"
-                            role="heading"
-                        >
-                        </lightning-badge>
-                    </template>
-                    <template lwc:else>
-                        <lightning-badge
-                            data-id={badge.name}
-                            label={badge.label}
-                            icon-name={badge.iconName}
-                            icon-position="start"
-                            class={badge.styling}
-                            role="heading"
-                        >
-                        </lightning-badge>
-                    </template>
-                    <div lwc:if={badge.badgeContent}>
-                        <c-nks-person-highlight-panel-badge-content
-                            data-id={badge.badgeContentType}
-                            shown-badge={shownBadge}
-                            type={badge.badgeContentType}
-                            badge-data={badge.badgeContent}
-                            onbadgeclosed={closeBadge}
-                        ></c-nks-person-highlight-panel-badge-content>
-                    </div>
-                </div>
-            </template>
         </div>
         <c-nks-person-highlight-panel-bot
             record-id={recordId}
             object-api-name={objectApiName}
+            gender={gender}
+            is-deceased = {isDeceased}
         ></c-nks-person-highlight-panel-bot>
     </div>
 </template>

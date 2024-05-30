@@ -6,12 +6,13 @@ import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
+import IS_DECEASED_FIELD from '@salesforce/schema/Person__c.INT_IsDeceased__c';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-const PERSON_FIELDS = [PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD];
+const PERSON_FIELDS = [PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, IS_DECEASED_FIELD];
 
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
@@ -27,6 +28,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     actorId;
     veilederName;
     gender;
+    isDeceased;
 
     badges;
     errorMessages;
@@ -242,15 +244,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
+            this.isDeceased = getFieldValue(data, IS_DECEASED_FIELD);
             
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
-        } else {
-            console.log('there is no data noob');
-        }
-        if (error) {
-            console.log('yoyono data');
+        } else if (error) {
+            console.error(error);
         }
     }
 
@@ -270,10 +270,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
-    get panelStyling() { // TODO: Add color for deceased?
-        return 'highlightPanel ' + (this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue');
+    get panelStyling() {
+        return 'highlightPanel ' + (this.isDeceased ? 'panel-black' : this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue');
     }
 
+    get panelBorderStyling() {
+        return 'border-height ' + (this.isDeceased ? 'border-light-grey' : this.gender === 'Kvinne' ? 'border-light-purple' : 'border-light-blue');
+    }
 
     resolve(path, obj) {
         if (typeof path !== 'string') {
