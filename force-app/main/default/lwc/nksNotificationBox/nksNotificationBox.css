@@ -341,14 +341,6 @@
     max-width: 43.5rem;
 }
 
-.navds-body-long {
-    font-size: var(--a-font-size-large);
-    font-weight: var(--a-font-weight-regular);
-    letter-spacing: 0;
-    line-height: var(--a-font-line-height-xlarge);
-    margin: 0;
-}
-
 .navds-alert--close-button > .navds-alert__icon {
     margin-block-start: var(--a-spacing-05);
 }
@@ -416,4 +408,8 @@
     margin: 0;
     padding: var(--ac-button-padding, var(--__ac-button-padding));
     text-decoration: none;
+}
+
+.boldFont {
+    font-weight: bold;
 }

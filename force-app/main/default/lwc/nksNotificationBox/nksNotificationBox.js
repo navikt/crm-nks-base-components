@@ -5,9 +5,11 @@ export default class NksNotificationBox extends LightningElement {
     count = 0;
 
     @api
-    addNotification(text) {
+    addNotification(mainText, optionalText = null) {
         this.count++;
-        this.notificationList.push({ id: String(this.count), text: text });
+        const nowTime = new Date();
+        const time = `${nowTime.getHours()}:${nowTime.getMinutes()}`;
+        this.notificationList.push({ id: String(this.count), text: mainText, time: time, optionalText: optionalText });
     }
 
     removeNotification(event) {
