@@ -271,11 +271,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get panelStyling() {
-        return 'highlightPanel ' + (this.isDeceased ? 'panel-black' : this.gender === 'Kvinne' ? 'panel-purple' : 'panel-blue');
+        return 'highlightPanel ' + (this.isDeceased ? 'panel-black' : this.gender === 'Kvinne' ? 'panel-purple' : this.gender === 'Mann' ? 'panel-blue' : '');
     }
 
     get panelBorderStyling() {
-        return 'border-height ' + (this.isDeceased ? 'border-light-grey' : this.gender === 'Kvinne' ? 'border-light-purple' : 'border-light-blue');
+        return 'border-height ' + (this.isDeceased ? 'border-light-grey' : this.gender === 'Kvinne' ? 'border-light-purple' : this.gender === 'Mann' ? 'border-light-blue' : '');
     }
 
     resolve(path, obj) {

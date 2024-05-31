@@ -109,8 +109,6 @@ export default class NksPersonHeader extends LightningElement {
     }
 
     get formattedVeilder() {
-        console.log('Veileder navn: ' + this.veilederName);
-        console.log('Veileder Ident: ' + this.veilederIdent);
         return 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '');
     }
 
