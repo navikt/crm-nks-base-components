@@ -66,11 +66,10 @@
                 </template>
             </div>
 
-            <c-nks-person-highlight-panel-mid
-                lwc:if={highlightPanelOpen}
-                badge-content={badgeContent}
-            ></c-nks-person-highlight-panel-mid>
-
+            <c-nks-person-highlight-panel-mid	
+            gender={gender}
+            person-data={oppfolgingAndMeldekortData}
+        ></c-nks-person-highlight-panel-mid>
             <div class={panelBorderStyling}></div>
         </div>
 
