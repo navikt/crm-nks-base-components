@@ -2,7 +2,7 @@
     <template for:each={notificationList} for:item="notification">
         <div
             lwc:if={notification.success}
-            class="navds-alert navds-alert--success navds-alert--medium navds-alert--close-button"
+            class="navds-alert navds-alert--success navds-alert--medium navds-alert--close-button slds-var-m-bottom_x-small"
             key={notification.id}
         >
             <svg
@@ -57,7 +57,9 @@
             </div>
         </div>
         <div lwc:else key={notification.id}>
-            <div class="navds-alert navds-alert--error navds-alert--medium navds-alert--close-button">
+            <div
+                class="navds-alert navds-alert--error navds-alert--medium navds-alert--close-button slds-var-m-bottom_x-small"
+            >
                 <svg
                     width="1em"
                     height="1em"

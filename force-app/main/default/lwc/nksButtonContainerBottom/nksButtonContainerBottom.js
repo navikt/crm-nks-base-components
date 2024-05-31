@@ -5,7 +5,8 @@ import getLabels from '@salesforce/apex/NKS_LabelGetter.getLabels';
 const CONSTANTS = {
     FINISHED: 'FINISHED',
     FINISHED_SCREEN: 'FINISHED_SCREEN',
-    CONVERSATION_NOTE: 'Conversation note'
+    CONVERSATION_NOTE: 'Conversation note',
+    ERROR: 'ERROR'
 };
 
 export default class NksButtonContainerBottom extends LightningElement {
@@ -99,6 +100,10 @@ export default class NksButtonContainerBottom extends LightningElement {
             this.activeFlow = '';
             this.updateFlowLoop();
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
+            this.dispatchEvent(new CustomEvent('flowsucceeded', { detail: this.activeFlow }));
+        }
+        if (flowStatus === CONSTANTS.ERROR) {
+            this.dispatchEvent(new CustomEvent('flowfailed', { detail: this.activeFlow }));
         }
     }
 
