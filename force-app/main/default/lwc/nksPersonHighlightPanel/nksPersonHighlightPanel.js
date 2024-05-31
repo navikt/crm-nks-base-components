@@ -82,13 +82,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
         if (data) {
             const badges = [...data.badges];
-            if (historikkData) {
+            if (historikkData && historikkData != null && historikkData.length > 0) {
+                console.log('Snubbi');
+                console.log(historikkData);
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historisk fullmakter',
                     styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer greyBadge',
-                    iconName: '',
-                    iconAltText: 'geir',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
@@ -96,8 +96,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 });
             }
             this.badges = badges;
-            console.log('Baggy');
-            console.log(JSON.stringify(badges));
 
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
