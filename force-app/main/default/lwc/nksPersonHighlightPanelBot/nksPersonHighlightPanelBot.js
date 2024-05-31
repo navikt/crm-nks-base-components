@@ -5,7 +5,6 @@ import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModi
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publishToAmplitude } from 'c/amplitude';
 
-
 export default class NksPersonHighlightPanelBot extends LightningElement {
     @api recordId;
     @api objectApiName;
@@ -35,7 +34,16 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     }
 
     get panelStyling() {
-        return 'bot-panel ' + (this.isDeceased ? 'bot-panel-black' : this.gender === 'Kvinne' ? 'bot-panel-purple' : this.gender === 'Mann' ? 'bot-panel-blue' : '');
+        return (
+            'bot-panel ' +
+            (this.isDeceased
+                ? 'bot-panel-black'
+                : this.gender === 'Kvinne'
+                ? 'bot-panel-purple'
+                : this.gender === 'Mann'
+                ? 'bot-panel-blue'
+                : '')
+        );
     }
 
     @wire(getFagsoneIpAndOrgType)
@@ -44,7 +52,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             this.isSandbox = data.isSandboxOrScratch;
             this.inFagsone = data.ipResult.isInFagsone;
             if (!this.inFagsone) {
-                this.fagsoneText = 'Du er ikke i en sikker sone'
+                this.fagsoneText = 'Du er ikke i en sikker sone';
                 console.log('Ip is: ' + data.ipResult.ip);
             }
         } else if (error) {
@@ -53,13 +61,13 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     }
 
     @wire(getData, {
-        recordId: '$recordId', 
+        recordId: '$recordId',
         relatedField: '$relatedField',
         objectApiName: '$objectApiName',
         hasPersonId: '$hasPersonId'
     })
     wiredGetData({ error, data }) {
-        if (data) { 
+        if (data) {
             this.wiredRecordData = data;
             this.loadData();
         } else if (error) {
@@ -109,7 +117,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
-            this.fagsystemLinks = possibleLinks
+        this.fagsystemLinks = possibleLinks
             .filter((link) => listOfFilter.length === 0 || listOfFilter.includes(link.name))
             .map((link, index) => ({
                 ...link,

@@ -3,13 +3,13 @@
         <template lwc:if={gender}>
             <lightning-layout-item>
                 <c-nks-custom-svg
-                   size="large"
-                   class={genderIcon}
-                   src={genderIconSrc}
-                   alt-text={gender}
-                   classes={genderIconClass}
-               ></c-nks-custom-svg> 
-               </lightning-layout-item>
+                    size="large"
+                    class={genderIcon}
+                    src={genderIconSrc}
+                    alt-text={gender}
+                    classes={genderIconClass}
+                ></c-nks-custom-svg>
+            </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedFullName}>
@@ -20,61 +20,64 @@
 
         <template lwc:if={personIdent}>
             <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
-                <span>{personIdent}</span> 
+                <span>{personIdent}</span>
             </lightning-layout-item>
-            <lightning-layout-item  class="slds-var-p-right_small">
-                    <!-- sldsValidatorIgnoreNextLine -->
-                    <lightning-button-icon 
+            <lightning-layout-item class="slds-var-p-right_small">
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon
                     value={personIdent}
                     icon-name="utility:copy"
-                    variant="bare-inverse" 
-                    onclick={handleCopy} 
+                    variant="bare-inverse"
+                    onclick={handleCopy}
                     alternative-text="Kopier fødselsnummer"
                     title="Kopier fødselsnummer"
-                    class="copy-icon">
-                </lightning-button-icon> 
+                    class="copy-icon"
+                >
+                </lightning-button-icon>
             </lightning-layout-item>
         </template>
-            
+
         <template lwc:if={formattedPersonInfo}>
             <lightning-layout-item class="slds-var-p-around_small">
-                <p>{formattedPersonInfo}</p> 
+                <p>{formattedPersonInfo}</p>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedUnit}>
             <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
-                <span>{formattedUnit}</span> 
+                <span>{formattedUnit}</span>
             </lightning-layout-item>
-            <lightning-layout-item  class="slds-var-p-right_small">
-                    <!-- sldsValidatorIgnoreNextLine -->
-                    <lightning-button-icon
-                    value={formattedUnitLink} 
+            <lightning-layout-item class="slds-var-p-right_small">
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon
+                    value={formattedUnitLink}
                     icon-name="utility:copy"
-                    variant="bare-inverse" 
-                    onclick={handleCopy} 
+                    variant="bare-inverse"
+                    onclick={handleCopy}
                     alternative-text="Kopier nav enhet"
                     title="Kopier nav enhet"
-                    class="copy-icon">
-                </lightning-button-icon> 
+                    class="copy-icon"
+                >
+                </lightning-button-icon>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedVeileder}>
             <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
-                <span>{formattedVeileder}</span> 
+                <span>{formattedVeileder}</span>
             </lightning-layout-item>
-            <lightning-layout-item  class="slds-var-p-right_small">
-                    <!-- sldsValidatorIgnoreNextLine -->
-                    <lightning-button-icon 
-                    value={veilederName} 
+            <lightning-layout-item class="slds-var-p-right_small">
+                <!-- sldsValidatorIgnoreNextLine -->
+                <lightning-button-icon
+                    value={veilederName}
                     icon-name="utility:copy"
-                    variant="bare-inverse"  
-                    onclick={handleCopy} 
+                    variant="bare-inverse"
+                    onclick={handleCopy}
                     alternative-text="Kopier veileders navn"
                     title="Kopier veileders navn"
-                    class="copy-icon">
-                </lightning-button-icon> 
+                    class="copy-icon"
+                >
+                </lightning-button-icon>
             </lightning-layout-item>
         </template>
     </lightning-layout>

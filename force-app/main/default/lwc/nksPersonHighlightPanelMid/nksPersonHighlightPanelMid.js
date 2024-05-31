@@ -22,14 +22,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
 
     viewOppfolging() {
         trackAmplitudeEvent('Opened Aktivitetsplanen');
-        const {
-            actorId,
-            firstName,
-            name,
-            veilederName,
-            underOppfolging,
-            veilederIdent
-        } = this.personData || {};
+        const { actorId, firstName, name, veilederName, underOppfolging, veilederIdent } = this.personData || {};
 
         this.aktivitetsPageRef = {
             type: 'standard__navItemPage',

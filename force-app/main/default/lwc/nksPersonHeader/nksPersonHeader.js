@@ -172,7 +172,15 @@ export default class NksPersonHeader extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$personId',
-        fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
+        fields: [
+            FULL_NAME_FIELD,
+            PERSON_IDENT_FIELD,
+            PERSON_ACTORID_FIELD,
+            GENDER_FIELD,
+            AGE_FIELD,
+            CITIZENSHIP_FIELD,
+            MARITAL_STATUS_FIELD
+        ]
     })
     wiredPersonInfo({ error, data }) {
         if (data) {
@@ -276,5 +284,4 @@ export default class NksPersonHeader extends LightningElement {
     capitalizeFirstLetter(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
-
 }

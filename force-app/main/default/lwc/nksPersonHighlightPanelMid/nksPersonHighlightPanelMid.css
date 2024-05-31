@@ -3,7 +3,7 @@
 }
 
 .panel-dark-blue {
-    background-color: #00459C;
+    background-color: #00459c;
 }
 
 .font-styling {
@@ -30,5 +30,5 @@
     height: 2.5rem;
     display: flex;
     align-items: center;
-    border-top: .0625rem solid #66A5F4;
+    border-top: 0.0625rem solid #66a5f4;
 }

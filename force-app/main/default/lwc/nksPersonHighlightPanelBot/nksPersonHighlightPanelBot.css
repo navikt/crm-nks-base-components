@@ -8,7 +8,7 @@
 }
 
 .bot-panel-blue {
-    background-color: #0056B4;
+    background-color: #0056b4;
 }
 
 .bot-panel-purple {
@@ -30,7 +30,8 @@
     line-height: 1.876rem;
 }
 
-.fagsystem-element a, div {
+.fagsystem-element a,
+div {
     padding-right: 2.5rem;
     color: inherit;
     font-family: inherit;

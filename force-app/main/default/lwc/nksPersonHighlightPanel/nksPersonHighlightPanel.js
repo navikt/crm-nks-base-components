@@ -158,7 +158,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             if (this.isLoaded) {
                 this.setUuAlertText();
             }
-        }else if (error) {
+        } else if (error) {
             this.addError(error);
 
             if (this.isLoaded) {
@@ -245,7 +245,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.isDeceased = getFieldValue(data, IS_DECEASED_FIELD);
-            
+
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
@@ -271,11 +271,29 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get panelStyling() {
-        return 'highlightPanel ' + (this.isDeceased ? 'panel-black' : this.gender === 'Kvinne' ? 'panel-purple' : this.gender === 'Mann' ? 'panel-blue' : '');
+        return (
+            'highlightPanel ' +
+            (this.isDeceased
+                ? 'panel-black'
+                : this.gender === 'Kvinne'
+                ? 'panel-purple'
+                : this.gender === 'Mann'
+                ? 'panel-blue'
+                : '')
+        );
     }
 
     get panelBorderStyling() {
-        return 'border-height ' + (this.isDeceased ? 'border-light-grey' : this.gender === 'Kvinne' ? 'border-light-purple' : this.gender === 'Mann' ? 'border-light-blue' : '');
+        return (
+            'border-height ' +
+            (this.isDeceased
+                ? 'border-light-grey'
+                : this.gender === 'Kvinne'
+                ? 'border-light-purple'
+                : this.gender === 'Mann'
+                ? 'border-light-blue'
+                : '')
+        );
     }
 
     resolve(path, obj) {

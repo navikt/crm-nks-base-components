@@ -13,7 +13,14 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-const PERSON_FIELDS = [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD];
+const PERSON_FIELDS = [
+    FULL_NAME_FIELD,
+    PERSON_IDENT_FIELD,
+    PERSON_ACTORID_FIELD,
+    AGE_FIELD,
+    CITIZENSHIP_FIELD,
+    MARITAL_STATUS_FIELD
+];
 export default class NksPersonHighlightPanelTop extends LightningElement {
     @api personId;
     @api objectApiName;
@@ -156,7 +163,9 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedVeileder() {
-        return this.veilederName ? 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '') : undefined;
+        return this.veilederName
+            ? 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '')
+            : undefined;
     }
     get formattedUnit() {
         return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
