@@ -12,22 +12,6 @@
     align-items: center;
 }
 
-.border-height {
-    height: 0.125rem;
-}
-
-.border-light-blue {
-    background-color: #66a5f4;
-}
-
-.border-light-purple {
-    background-color: #9a80bd;
-}
-
-.border-light-grey {
-    background-color: #858585;
-}
-
 .panel-blue {
     background-color: #0056b4;
 }

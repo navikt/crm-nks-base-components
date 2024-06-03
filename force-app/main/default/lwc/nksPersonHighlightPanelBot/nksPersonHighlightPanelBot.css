@@ -2,7 +2,6 @@
     padding-right: 0.625rem;
     padding-top: 0.625rem;
     padding-bottom: 0.625rem;
-    height: 2.5rem;
     display: flex;
     align-items: center;
 }
@@ -15,7 +14,7 @@
     background-color: #634689;
 }
 
-.bot-panel-black {
+.bot-panel-grey {
     background-color: #484848;
 }
 

@@ -283,19 +283,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         );
     }
 
-    get panelBorderStyling() {
-        return (
-            'border-height ' +
-            (this.isDeceased
-                ? 'border-light-grey'
-                : this.gender === 'Kvinne'
-                ? 'border-light-purple'
-                : this.gender === 'Mann'
-                ? 'border-light-blue'
-                : '')
-        );
-    }
-
     resolve(path, obj) {
         if (typeof path !== 'string') {
             throw new Error('Path must be a string');

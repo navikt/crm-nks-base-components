@@ -65,16 +65,16 @@
                     </div>
                 </template>
             </div>
-
-            <c-nks-person-highlight-panel-mid	
-            gender={gender}
-            person-data={oppfolgingAndMeldekortData}
-        ></c-nks-person-highlight-panel-mid>
-            <div class={panelBorderStyling}></div>
+            <c-nks-person-highlight-panel-mid
+                gender={gender}
+                person-data={oppfolgingAndMeldekortData}
+                is-deceased={isDeceased}
+            ></c-nks-person-highlight-panel-mid>
         </div>
-
         <c-nks-person-highlight-panel-bot
-            record-id={recordId}
+            record-id={personId}
+            has-person-id="true"
+            related-field={relationshipField}
             object-api-name={objectApiName}
             gender={gender}
             is-deceased={isDeceased}

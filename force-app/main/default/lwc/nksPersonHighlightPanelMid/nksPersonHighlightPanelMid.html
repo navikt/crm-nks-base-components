@@ -2,7 +2,7 @@
     <lightning-layout class={midPanelStyling}>
         <lightning-layout-item class="margin-area"></lightning-layout-item>
         <template for:each={links} for:item="link">
-            <lightning-layout-item key={link.id} class="slds-grid slds-wrap content-padding">
+            <lightning-layout-item lwc-if={link.show} key={link.id} class="slds-grid slds-wrap content-padding">
                 <a onclick={link.onclick} class="font-styling" role="link">{link.name}</a>
             </lightning-layout-item>
         </template>

@@ -5,19 +5,31 @@ import { trackAmplitudeEvent } from 'c/amplitude';
 export default class NksPersonHighlightPanelMid extends NavigationMixin(LightningElement) {
     @api gender;
     @api personData;
-    links = [];
+    @api isDeceased;
 
-    connectedCallback() {
-        this.links = [
-            { id: 'aktivitetsplan', name: 'Aktivitetsplan', onclick: this.viewOppfolging.bind(this) },
-            { id: 'meldekort', name: 'Meldekort', onclick: this.viewMeldekort.bind(this) }
+    get links() {
+        return [
+            {
+                id: 'aktivitetsplan',
+                name: 'Aktivitetsplan',
+                show: this.personData?.underOppfolging,
+                onclick: this.viewOppfolging.bind(this)
+            },
+            { id: 'meldekort', name: 'Meldekort', show: true, onclick: this.viewMeldekort.bind(this) }
         ];
-        console.log('this.personData: ', this.personData);
     }
 
-    // TODO: Add color for deceased?
     get midPanelStyling() {
-        return 'mid-panel ' + (this.gender === 'Kvinne' ? 'panel-dark-purple' : 'panel-dark-blue');
+        return (
+            'mid-panel ' +
+            (this.isDeceased
+                ? 'panel-dark-grey'
+                : this.gender === 'Kvinne'
+                ? 'panel-dark-purple'
+                : this.gender === 'Mann'
+                ? 'panel-dark-blue'
+                : '')
+        );
     }
 
     viewOppfolging() {

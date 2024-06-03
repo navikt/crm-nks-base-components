@@ -8,10 +8,10 @@ import { publishToAmplitude } from 'c/amplitude';
 export default class NksPersonHighlightPanelBot extends LightningElement {
     @api recordId;
     @api objectApiName;
-    @api relatedField = 'Id'; // TODO: Unset this and let parent set
-    @api hasPersonId = false;
+    @api relatedField;
+    @api hasPersonId;
     @api filterList = [];
-    @api gender = '';
+    @api gender;
     @api isDeceased;
 
     personInfo;
@@ -37,7 +37,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         return (
             'bot-panel ' +
             (this.isDeceased
-                ? 'bot-panel-black'
+                ? 'bot-panel-grey'
                 : this.gender === 'Kvinne'
                 ? 'bot-panel-purple'
                 : this.gender === 'Mann'
