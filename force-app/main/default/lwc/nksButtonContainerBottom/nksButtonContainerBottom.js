@@ -97,10 +97,14 @@ export default class NksButtonContainerBottom extends LightningElement {
     handleStatusChange(event) {
         let flowStatus = event.detail.status;
         if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
+            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
+            this.dispatchEvent(
+                new CustomEvent('flowsucceeded', {
+                    detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                })
+            );
             this.activeFlow = '';
             this.updateFlowLoop();
-            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
-            this.dispatchEvent(new CustomEvent('flowsucceeded', { detail: this.activeFlow }));
         }
         if (flowStatus === CONSTANTS.ERROR) {
             this.dispatchEvent(new CustomEvent('flowfailed', { detail: this.activeFlow }));
