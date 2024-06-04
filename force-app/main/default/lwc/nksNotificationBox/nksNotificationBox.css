@@ -43,11 +43,10 @@
 
 .navds-alert {
     align-items: center;
-    border: 1px solid;
     border-radius: var(--a-border-radius-medium);
     display: flex;
     gap: var(--a-spacing-3);
-    padding: var(--a-spacing-4);
+    padding: var(--a-spacing-3);
 }
 
 .navds-alert--success > .navds-alert__icon {
