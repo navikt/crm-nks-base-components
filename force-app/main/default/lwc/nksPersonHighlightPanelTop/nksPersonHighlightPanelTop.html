@@ -1,7 +1,7 @@
 <template>
-    <lightning-layout class="slds-var-p-around_small slds-grid slds-wrap">
+    <lightning-layout class="custom-padding-around-small custom-grid custom-wrap">
         <template lwc:if={gender}>
-            <lightning-layout-item>
+            <lightning-layout-item class="custom-padding-around-small custom-grid-vertical-align-center">
                 <c-nks-custom-svg
                     size="large"
                     class={genderIcon}
@@ -13,16 +13,20 @@
         </template>
 
         <template lwc:if={formattedFullName}>
-            <lightning-layout-item class="slds-page-header__title slds-var-p-around_small">
+            <lightning-layout-item
+                class="slds-page-header__title custom-padding-around-small custom-grid-vertical-align-center"
+            >
                 <h1>{formattedFullName}</h1>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={personIdent}>
-            <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
+            <lightning-layout-item
+                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
+            >
                 <span>{personIdent}</span>
             </lightning-layout-item>
-            <lightning-layout-item class="slds-var-p-right_small">
+            <lightning-layout-item class="custom-padding-right-small">
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon
                     value={personIdent}
@@ -38,16 +42,18 @@
         </template>
 
         <template lwc:if={formattedPersonInfo}>
-            <lightning-layout-item class="slds-var-p-around_small">
+            <lightning-layout-item class="custom-padding-around-small custom-grid-vertical-align-center">
                 <p>{formattedPersonInfo}</p>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedUnit}>
-            <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
+            <lightning-layout-item
+                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
+            >
                 <span>{formattedUnit}</span>
             </lightning-layout-item>
-            <lightning-layout-item class="slds-var-p-right_small">
+            <lightning-layout-item class="custom-padding-right-small">
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon
                     value={formattedUnitLink}
@@ -63,10 +69,12 @@
         </template>
 
         <template lwc:if={formattedVeileder}>
-            <lightning-layout-item class="slds-var-p-top_small slds-var-p-left_small slds-var-p-bottom_small">
+            <lightning-layout-item
+                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
+            >
                 <span>{formattedVeileder}</span>
             </lightning-layout-item>
-            <lightning-layout-item class="slds-var-p-right_small">
+            <lightning-layout-item class="custom-padding-right-small">
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon
                     value={veilederName}

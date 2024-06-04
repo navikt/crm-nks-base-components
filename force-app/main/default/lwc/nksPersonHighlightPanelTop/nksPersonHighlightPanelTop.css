@@ -1,5 +1,39 @@
 .copy-icon {
-    padding-top: 8px;
+    padding-top: 14px;
     padding-left: 2px;
     float: right;
+}
+
+.custom-padding-around-small {
+    padding: 0.5rem;
+}
+
+.custom-padding-top-small {
+    padding-top: 0.5rem;
+}
+
+.custom-padding-left-small {
+    padding-left: 0.5rem;
+}
+
+.custom-padding-bottom-small {
+    padding-bottom: 0.5rem;
+}
+
+.custom-padding-right-small {
+    padding-right: 0.5rem;
+}
+
+.custom-grid-vertical-align-center {
+    display: flex;
+    align-items: center;
+}
+
+.custom-grid {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.custom-wrap {
+    flex-wrap: wrap;
 }
