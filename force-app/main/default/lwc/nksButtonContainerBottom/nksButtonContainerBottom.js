@@ -1,6 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
-import getLabels from '@salesforce/apex/NKS_LabelGetter.getLabels';
+import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
 
 const CONSTANTS = {
     FINISHED: 'FINISHED',
