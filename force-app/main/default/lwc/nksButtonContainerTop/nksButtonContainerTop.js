@@ -1,5 +1,6 @@
 import { LightningElement, api } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
+import REDACT_LABEL from '@salesforce/label/c.NKS_Set_To_Redaction';
 
 export default class NksChatButtonContainerTop extends LightningElement {
     @api recordId;
@@ -8,6 +9,7 @@ export default class NksChatButtonContainerTop extends LightningElement {
     @api channelName;
 
     showFlow = false;
+    redactLabel = REDACT_LABEL;
 
     get inputVariables() {
         return [
@@ -21,6 +23,10 @@ export default class NksChatButtonContainerTop extends LightningElement {
 
     get buttonExpanded() {
         return this.showFlow.toString();
+    }
+
+    get flowButtonClass() {
+        return 'full-width-grid-btn' + (this.flowButtonLabel === this.redactLabel ? ' redactButton' : '');
     }
 
     toggleFlow() {
