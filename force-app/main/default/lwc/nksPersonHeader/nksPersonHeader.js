@@ -9,7 +9,7 @@ import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
-import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
+import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
@@ -172,7 +172,15 @@ export default class NksPersonHeader extends LightningElement {
 
     @wire(getRecord, {
         recordId: '$personId',
-        fields: [FULL_NAME_FIELD, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD]
+        fields: [
+            FULL_NAME_FIELD,
+            PERSON_IDENT_FIELD,
+            PERSON_ACTORID_FIELD,
+            GENDER_FIELD,
+            AGE_FIELD,
+            CITIZENSHIP_FIELD,
+            MARITAL_STATUS_FIELD
+        ]
     })
     wiredPersonInfo({ error, data }) {
         if (data) {
@@ -276,5 +284,4 @@ export default class NksPersonHeader extends LightningElement {
     capitalizeFirstLetter(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
-
 }

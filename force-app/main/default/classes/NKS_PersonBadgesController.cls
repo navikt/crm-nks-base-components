@@ -148,7 +148,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
-        public List<PowerOfAttorney> powerOfAttorneys;
+        public List<NKS_FullmaktController.Fullmaktsgiver> powerOfAttorneys;
         // @AuraEnabled
         // public List<String> entitlements;
         @AuraEnabled
@@ -168,7 +168,7 @@ public with sharing class NKS_PersonBadgesController {
             securityMeasures = new List<SecurityMeasure>();
             spokenLanguagesIntepreter = new List<String>();
             guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
-            powerOfAttorneys = new List<PowerOfAttorney>();
+            powerOfAttorneys = new List<NKS_FullmaktController.Fullmaktsgiver>();
             // entitlements = new List<String>();
             errors = new List<String>();
             personIdentNameMap = new Map<String, String>();
@@ -291,51 +291,54 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void setPowerOfAttorney() {
-            if (String.isNotBlank(person.INT_PowerOfAttorney__c)) {
-                Map<String, Person__c> relatedPersonMap = new Map<String, Person__c>();
-                try {
-                    Integer i = 0;
-                    for (
-                        PowerOfAttorney poa : (List<PowerOfAttorney>) JSON.deserialize(
-                            person.INT_PowerOfAttorney__c,
-                            List<PowerOfAttorney>.class
-                        )
+            try {
+                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = NKS_FullmaktController.getFullmaktsgiver(
+                    person.Id,
+                    'Person__c'
+                );
+                if (fullmaktsgivere == null)
+                    return;
+                Integer i = 0;
+                for (NKS_FullmaktController.Fullmaktsgiver poa : fullmaktsgivere) {
+                    if (
+                        poa.gyldigFraOgMed <= Date.today() &&
+                        (poa.gyldigTilOgMed >= Date.today() ||
+                        poa.gyldigTilOgMed == null)
                     ) {
-                        if (poa.gyldigFraOgMed <= Date.today() && poa.gyldigTilOgMed >= Date.today()) {
-                            poa.id = '' + i;
-                            personIdentNameMap.put(poa.motpartsPersonident, '');
+                        poa.id = '' + i;
+                        personIdentNameMap.put(poa.motpartsPersonident, '');
 
-                            if (poa.omraader != null && poa.omraader.size() > 0) {
-                                if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
-                                    poa.omraader[0] = 'Gjelder alle ytelser';
-                                } else {
-                                    for (Integer x = 0; x < poa.omraader.size(); x++) {
-                                        if (themeMap.containsKey(poa.omraader[x])) {
-                                            poa.omraader[x] = themeMap.get(poa.omraader[x]).Name;
-                                        }
+                        /*if (poa.omraader != null && poa.omraader.size() > 0) {
+                            if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
+                                poa.omraader[0] = 'Gjelder alle ytelser';
+                            } else {
+                                for (Integer x = 0; x < poa.omraader.size(); x++) {
+                                    if (themeMap.containsKey(poa.omraader[x])) {
+                                        poa.omraader[x] = themeMap.get(poa.omraader[x]).Name;
                                     }
                                 }
                             }
-                            powerOfAttorneys.add(poa);
-                            i++;
-                        }
+                        }*/
+                        System.debug('poa: ' + poa);
+                        powerOfAttorneys.add(poa);
+                        i++;
                     }
-
-                    if (powerOfAttorneys.size() > 0) {
-                        badges.add(
-                            new Badge(
-                                'powerOfAttorney',
-                                'Fullmakt',
-                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                                '',
-                                '',
-                                true
-                            )
-                        );
-                    }
-                } catch (Exception e) {
-                    errors.add('Feil ved uthenting av fullmakts detaljer');
                 }
+
+                if (powerOfAttorneys.size() > 0) {
+                    badges.add(
+                        new Badge(
+                            'powerOfAttorney',
+                            'Fullmakt',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            '',
+                            '',
+                            true
+                        )
+                    );
+                }
+            } catch (Exception e) {
+                errors.add('Feil ved uthenting av fullmakts detaljer');
             }
         }
 
@@ -483,7 +486,7 @@ public with sharing class NKS_PersonBadgesController {
                 }
             }
 
-            for (PowerOfAttorney poa : powerOfAttorneys) {
+            for (NKS_FullmaktController.Fullmaktsgiver poa : powerOfAttorneys) {
                 String name = personIdentNameMap.get(poa.motpartsPersonident);
                 if (String.isNotBlank(name)) {
                     poa.motpartsNavn = name;

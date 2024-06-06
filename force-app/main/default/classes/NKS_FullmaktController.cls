@@ -5,6 +5,8 @@ public with sharing class NKS_FullmaktController {
             personId = [SELECT Account.CRM_Person__c FROM Case WHERE Id = :recordId].Account.CRM_Person__c;
         } else if (objectApiName == 'Account') {
             personId = [SELECT CRM_Person__c FROM Account WHERE Id = :recordId].CRM_Person__c;
+        } else if (objectApiName == 'Person__c') {
+            personId = recordId;
         }
         if (personId == null)
             return null;
@@ -29,19 +31,20 @@ public with sharing class NKS_FullmaktController {
             return null;
         }
 
-        // try {
-        HttpResponse resp = FullmaktService.getFullmaktsgiverHistorikk(personIdent);
-        if (resp.getStatusCode() == 200) {
-            List<FullmaktsgiverHistorikk> historikkData = (List<FullmaktsgiverHistorikk>) JSON.deserialize(
-                resp.getBody(),
-                List<FullmaktsgiverHistorikk>.class
-            );
-            return getFullmaktHistorikk(historikkData);
+        try {
+            HttpResponse resp = FullmaktService.getFullmaktsgiverHistorikk(personIdent);
+            if (resp.getStatusCode() == 200) {
+                List<FullmaktsgiverHistorikk> historikkData = (List<FullmaktsgiverHistorikk>) JSON.deserialize(
+                    resp.getBody(),
+                    List<FullmaktsgiverHistorikk>.class
+                );
+                return getFullmaktHistorikk(historikkData);
+            }
+            // ApplicationLogger logger = new ApplicationLogger();
+            return null;
+        } catch (Exception e) {
+            return null;
         }
-        return null;
-        // } catch (Exception e) {
-        //     return null;
-        // }
     }
 
     @TestVisible
@@ -63,8 +66,6 @@ public with sharing class NKS_FullmaktController {
             person.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
             person.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
             person.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
-            if (person.gyldigFraOgMed != null && person.gyldigTilOgMed != null)
-                person.periode = person.gyldigFraOgMed + '-' + person.gyldigTilOgMed;
             fmList.add(person);
             if (fmList.size() == 3)
                 break;
@@ -104,14 +105,12 @@ public with sharing class NKS_FullmaktController {
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
             Fullmaktsgiver fm = new Fullmaktsgiver();
             fm.motpartsPersonident = fmResponse.fullmektig;
-            fm.omraade = getOmraader(fmResponse.omraade);
-            fm.gyldigFraOgMed = fmResponse.gyldigFraOgMed == null ? null : formatDate(fmResponse.gyldigFraOgMed);
-            fm.gyldigTilOgMed = fmResponse.gyldigTilOgMed == null ? null : formatDate(fmResponse.gyldigTilOgMed);
-            fm.motpartsNavn = getMotpartsPersonName(fm.motpartsPersonident);
+            fm.omraader = getOmraader(fmResponse.omraade).split(', ');
+            fm.gyldigFraOgMed = fmResponse.gyldigFraOgMed;
+            fm.gyldigTilOgMed = fmResponse.gyldigTilOgMed;
+            fm.motpartsNavn = fmResponse.fullmektigsNavn;
             fm.motpartsRolle = 'Fullmektig';
             fmList.add(fm);
-            if (fmList.size() == 3)
-                break;
         }
         return fmList;
     }
@@ -176,13 +175,6 @@ public with sharing class NKS_FullmaktController {
         return DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
     }
 
-    private static String getMotpartsPersonName(String motpartsPersonident) {
-        if (motpartsPersonident == null) {
-            return null;
-        }
-        return [SELECT id, NKS_Full_Name__c FROM Person__c WHERE Name = :motpartsPersonident]?.NKS_Full_Name__c;
-    }
-
     public class FullmaktsgiverHistorikk {
         public String fullmaktId;
         public List<FullmaktsgiverHistorikkEndringer> fullmaktEndringsloggDetails;
@@ -198,8 +190,6 @@ public with sharing class NKS_FullmaktController {
 
     public class Historikk {
         @AuraEnabled
-        public String fullmaktsgiver; // personIdent
-        @AuraEnabled
         public String fullmektig; //related person Identity //motpartsPersonident
         @AuraEnabled
         public String omraade;
@@ -208,14 +198,18 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public String gyldigTilOgMed; //date
         @AuraEnabled
-        public String periode; //fullmakt periode
+        public String periode {
+            get {
+                if (gyldigFraOgMed != null && gyldigTilOgMed != null)
+                    return gyldigFraOgMed + '-' + gyldigTilOgMed;
+                if (gyldigFraOgMed != null)
+                    return gyldigFraOgMed + '- Tidsubegrenset';
+                return '';
+            }
+        } //fullmakt periode
         @AuraEnabled
         public String fullmektigsNavn; //related person name //motpartsPersonNavn
     }
-
-    // Har du fått svar?
-
-    // Hallo!?!?
 
     public class FullmaktsgiverHistorikkEndringer {
         public String fullmaktsgiver;
@@ -265,13 +259,17 @@ public with sharing class NKS_FullmaktController {
             set;
         }
         @AuraEnabled
-        public String gyldigFraOgMed;
+        public Date gyldigFraOgMed;
         @AuraEnabled
-        public String gyldigTilOgMed;
+        public Date gyldigTilOgMed;
         @AuraEnabled
         public String id;
 
         private String omraadeString() {
+            System.debug('omraader: ' + omraader);
+            if (omraader == null) {
+                return '';
+            }
             if (omraader.size() == 1 && '*'.equalsIgnoreCase(omraader[0])) {
                 return 'Gjelder alle ytelser';
             } else if (omraader.size() > 0) {
