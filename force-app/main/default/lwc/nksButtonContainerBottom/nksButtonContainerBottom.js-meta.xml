@@ -12,7 +12,7 @@
                 description="The variable is used to differentiate between channels. Select between Chat, Conversation note or STO."
                 label="Channel name" type="String" default="Chat" />
             <property name="flowNames" label="Flow developernames, seperated by commas"
-                type="String" default="NKS_Journal_Chat_Thread_Screenflow, NKS_Chat_Send_NAV_Task" />
+                type="String" default="NKS_Chat_Journal_Thread_v_2, NKS_Chat_Send_NAV_Task_v_2" />
             <property name="flowLabels" label="Label names for buttons, also seperated by commans"
                 type="String" default="NKS_Journal, NKS_Create_NAV_Task" />
             <property name="setBorders" label="Set top and bottom borders" type="Boolean"

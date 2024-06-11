@@ -57,7 +57,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get layoutClassName() {
-        return 'slds-var-p-vertical_medium' + (this.setBorders ? ' slds-border_top slds-border_bottom' : '');
+        return 'slds-var-p-around_medium' + (this.setBorders ? ' slds-border_top slds-border_bottom' : '');
     }
 
     get activeFlow() {
@@ -106,7 +106,7 @@ export default class NksButtonContainerBottom extends LightningElement {
         if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
             if (this.showNotifications) {
-                this.handleShowNotifications(outputVariables);
+                this.handleShowNotifications(this.activeFlow, outputVariables);
             } else {
                 this.dispatchEvent(
                     new CustomEvent('flowsucceeded', {
