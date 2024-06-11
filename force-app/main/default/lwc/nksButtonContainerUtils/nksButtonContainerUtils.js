@@ -1,6 +1,6 @@
 import getCommonCode from '@salesforce/apex/NKS_ButtonContainerController.getCommonCodeName';
 
-export function callGetCommonCode(inputId) {
+function callGetCommonCode(inputId) {
     return getCommonCode({ id: inputId })
         .then((result) => {
             console.log('result: ', result);
@@ -12,6 +12,39 @@ export function callGetCommonCode(inputId) {
         });
 }
 
-export function getOutputVariableValue(outputVaribales, variableName) {
+function getOutputVariableValue(outputVaribales, variableName) {
     return outputVaribales.find((element) => element.name === variableName && element.value !== null)?.value;
+}
+
+export async function handleShowNotifications(flowName, outputVariables, notificationBoxTemplate) {
+    if (!outputVariables) {
+        console.error('No output variables found in the event detail');
+        return;
+    }
+    try {
+        if (flowName.toLowerCase().includes('journal')) {
+            const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+            let journalTheme = '';
+            if (selectedThemeId) {
+                journalTheme = await callGetCommonCode(selectedThemeId);
+            }
+            notificationBoxTemplate.addNotification('Henvendelsen er journalført', journalTheme);
+        } else if (flowName.toLowerCase().includes('task')) {
+            const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+            const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
+            const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
+            let navTaskTheme = '';
+
+            if (selectedThemeId) {
+                navTaskTheme = await callGetCommonCode(selectedThemeId);
+            }
+
+            notificationBoxTemplate.addNotification(
+                'Oppgave opprettet',
+                `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
+            );
+        }
+    } catch (error) {
+        console.error('Error handling flow succeeded event: ', error);
+    }
 }
