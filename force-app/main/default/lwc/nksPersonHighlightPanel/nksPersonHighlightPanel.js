@@ -1,4 +1,4 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
@@ -18,6 +18,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
     @api objectApiName;
     @api relationshipField;
+
+    @track isLoading = true;
+    @track dataLoadCount = 0;
 
     shownBadge;
     personId;
@@ -51,17 +54,18 @@ export default class NksPersonHighlightPanel extends LightningElement {
         } else if (error) {
             console.error(error);
         }
+        this.handleDataLoaded();
     }
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
-        console.log('VEILEDER: ' + this.veilederIdent);
         if (data) {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
         } else if (error) {
             console.log('Error occurred: ', JSON.stringify(error, null, 2));
         }
+        this.handleDataLoaded();
     }
 
     @wire(getPersonBadgesAndInfo, {
@@ -73,6 +77,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredBadgeInfo(value) {
         this.wiredBadge = value;
         this.setWiredBadge();
+        this.handleDataLoaded();
     }
 
     setWiredBadge() {
@@ -83,8 +88,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             const badges = [...data.badges];
             if (historikkData && historikkData != null && historikkData.length > 0) {
-                console.log('Snubbi');
-                console.log(historikkData);
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historisk fullmakter',
@@ -125,6 +128,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.setWiredPersonAccessBadge();
         } catch (error) {
             console.log('There was problem to fetch data from wire-function: ' + error);
+        } finally {
+            this.handleDataLoaded();
         }
     }
 
@@ -141,9 +146,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (error) {
             console.log(error);
         }
+        this.handleDataLoaded();
     }
-
-    updateBadgeContent() {}
 
     setWiredPersonAccessBadge() {
         const { data, error } = this.wiredPersonAccessBadge;
@@ -250,6 +254,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         } else if (error) {
             console.error(error);
         }
+        this.handleDataLoaded();
     }
 
     @wire(getRecord, {
@@ -266,6 +271,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (error) {
             console.log(error);
         }
+        this.handleDataLoaded();
     }
 
     get panelStyling() {
@@ -289,5 +295,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
+    }
+
+    //Todo: Midlertidig metode for å sette isLoading. Må finen ut av hvordan denne skal settes.
+    handleDataLoaded() {
+        this.dataLoadCount += 1;
+        if (this.dataLoadCount >= 13) {
+            this.isLoading = false;
+        }
     }
 }

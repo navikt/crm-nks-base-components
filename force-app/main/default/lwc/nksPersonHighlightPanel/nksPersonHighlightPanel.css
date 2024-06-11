@@ -6,7 +6,8 @@
 }
 
 .highlightPanelTop {
-    height: 5.5rem;
+    min-height: 5.5rem;
+    height: auto;
     display: flex;
     justify-content: flex-start;
     align-items: center;

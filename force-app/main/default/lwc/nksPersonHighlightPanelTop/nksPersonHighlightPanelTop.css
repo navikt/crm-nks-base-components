@@ -1,5 +1,5 @@
 .copy-icon {
-    padding-top: 14px;
+    padding-bottom: 12px;
     padding-left: 2px;
     float: right;
 }
@@ -27,13 +27,4 @@
 .custom-grid-vertical-align-center {
     display: flex;
     align-items: center;
-}
-
-.custom-grid {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.custom-wrap {
-    flex-wrap: wrap;
 }
