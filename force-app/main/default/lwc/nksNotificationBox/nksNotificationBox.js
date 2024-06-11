@@ -5,6 +5,11 @@ export default class NksNotificationBox extends LightningElement {
     count = 0;
 
     @api
+    get hasNotifications() {
+        return this.notificationList.length > 0;
+    }
+
+    @api
     addNotification(mainText, optionalText = null) {
         this.count++;
         this.notificationList.push({
@@ -26,14 +31,6 @@ export default class NksNotificationBox extends LightningElement {
             optionalText: optionalText,
             success: false
         });
-    }
-
-    removeNotification(event) {
-        const dataId = event.currentTarget.dataset.id;
-        const notificationIndex = this.notificationList.findIndex((notification) => notification.id === dataId);
-        if (notificationIndex >= 0) {
-            this.notificationList.splice(notificationIndex, 1);
-        }
     }
 
     getCurrentTime() {

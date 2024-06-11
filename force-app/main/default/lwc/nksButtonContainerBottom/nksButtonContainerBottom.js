@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
+import { callGetCommonCode, getOutputVariableValue } from 'c/nksButtonContainerUtils';
 
 const CONSTANTS = {
     FINISHED: 'FINISHED',
@@ -15,6 +16,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     @api flowNames;
     @api flowLabels;
     @api setBorders = false;
+    @api showNotifications = false;
 
     flowLoop;
     timer;
@@ -70,6 +72,10 @@ export default class NksButtonContainerBottom extends LightningElement {
         }
     }
 
+    get notificationBoxTemplate() {
+        return this.template.querySelector('c-nks-notification-box');
+    }
+
     updateFlowLoop() {
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,
@@ -95,14 +101,19 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     handleStatusChange(event) {
-        let flowStatus = event.detail.status;
+        const outputVariables = event.detail?.outputVariables;
+        const flowStatus = event.detail.status;
         if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
-            this.dispatchEvent(
-                new CustomEvent('flowsucceeded', {
-                    detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
-                })
-            );
+            if (this.showNotifications) {
+                this.handleShowNotifications(outputVariables);
+            } else {
+                this.dispatchEvent(
+                    new CustomEvent('flowsucceeded', {
+                        detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                    })
+                );
+            }
             this.activeFlow = '';
             this.updateFlowLoop();
         }
@@ -118,5 +129,38 @@ export default class NksButtonContainerBottom extends LightningElement {
         this.timer = setTimeout(() => {
             this.activeFlow = flowName;
         }, 10);
+    }
+
+    async handleShowNotifications(flowName, outputVariables) {
+        if (!outputVariables) {
+            console.error('No output variables found in the event detail');
+            return;
+        }
+        try {
+            if (flowName.toLowerCase().includes('journal')) {
+                const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+                let journalTheme = '';
+                if (selectedThemeId) {
+                    journalTheme = await callGetCommonCode(selectedThemeId);
+                }
+                this.notificationBoxTemplate.addNotification('Henvendelsen er journalført', journalTheme);
+            } else if (flowName.toLowerCase().includes('task')) {
+                const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+                const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
+                const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
+                let navTaskTheme = '';
+
+                if (selectedThemeId) {
+                    navTaskTheme = await callGetCommonCode(selectedThemeId);
+                }
+
+                this.notificationBoxTemplate.addNotification(
+                    'Oppgave opprettet',
+                    `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
+                );
+            }
+        } catch (error) {
+            console.error('Error handling flow succeeded event: ', error);
+        }
     }
 }

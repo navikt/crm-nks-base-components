@@ -31,5 +31,8 @@
                 </lightning-card>
             </template>
         </lightning-layout-item>
+        <template lwc:if={showNotifications}>
+            <c-nks-notification-box></c-nks-notification-box>
+        </template>
     </lightning-layout>
 </template>
