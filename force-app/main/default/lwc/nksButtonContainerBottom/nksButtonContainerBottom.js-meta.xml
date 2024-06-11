@@ -17,6 +17,9 @@
                 type="String" default="NKS_Journal, NKS_Create_NAV_Task" />
             <property name="setBorders" label="Set top and bottom borders" type="Boolean"
                 default="false" />
+            <property name="showNotifications" label="Show error/success notifications for flows"
+                type="Boolean"
+                default="false" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
