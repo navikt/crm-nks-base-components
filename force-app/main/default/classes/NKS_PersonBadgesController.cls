@@ -158,9 +158,6 @@ public with sharing class NKS_PersonBadgesController {
 
         private Person__c person;
         private Set<String> fieldSet;
-
-        private Map<String, Common_Code__c> themeMap;
-        private Map<Id, String> themeGroups;
         private Map<String, String> personIdentNameMap;
 
         public PersonBadgeData(Person__c person) {
@@ -178,21 +175,7 @@ public with sharing class NKS_PersonBadgesController {
                 this.person = person;
                 //Get field set for use later in the class
                 fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
-                loadCommonCodes();
                 setBadgeData();
-            }
-        }
-
-        private void loadCommonCodes() {
-            themeMap = new Map<String, Common_Code__c>();
-            themeGroups = new Map<Id, String>();
-
-            for (Common_Code__c cc : [
-                SELECT Id, Name, CRM_Code__c, CRM_Code_Set__c
-                FROM Common_Code__c
-                WHERE CRM_Code_Set__c = 'Tema'
-            ]) {
-                themeMap.put(cc.CRM_Code__c, cc);
             }
         }
 
@@ -296,36 +279,21 @@ public with sharing class NKS_PersonBadgesController {
                     person.Id,
                     'Person__c'
                 );
-                if (fullmaktsgivere == null)
+                if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                     return;
+                Date today = Date.today();
                 Integer i = 0;
-                for (NKS_FullmaktController.Fullmaktsgiver poa : fullmaktsgivere) {
-                    if (
-                        poa.gyldigFraOgMed <= Date.today() &&
-                        (poa.gyldigTilOgMed >= Date.today() ||
-                        poa.gyldigTilOgMed == null)
-                    ) {
-                        poa.id = '' + i;
-                        personIdentNameMap.put(poa.motpartsPersonident, '');
 
-                        /*if (poa.omraader != null && poa.omraader.size() > 0) {
-                            if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
-                                poa.omraader[0] = 'Gjelder alle ytelser';
-                            } else {
-                                for (Integer x = 0; x < poa.omraader.size(); x++) {
-                                    if (themeMap.containsKey(poa.omraader[x])) {
-                                        poa.omraader[x] = themeMap.get(poa.omraader[x]).Name;
-                                    }
-                                }
-                            }
-                        }*/
-                        System.debug('poa: ' + poa);
+                for (NKS_FullmaktController.Fullmaktsgiver poa : fullmaktsgivere) {
+                    if (poa.gyldigFraOgMed <= today && (poa.gyldigTilOgMed >= today || poa.gyldigTilOgMed == null)) {
+                        poa.id = String.valueOf(i);
+                        personIdentNameMap.put(poa.motpartsPersonident, '');
                         powerOfAttorneys.add(poa);
                         i++;
                     }
                 }
 
-                if (powerOfAttorneys.size() > 0) {
+                if (!powerOfAttorneys.isEmpty()) {
                     badges.add(
                         new Badge(
                             'powerOfAttorney',

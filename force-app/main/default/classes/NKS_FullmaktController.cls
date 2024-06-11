@@ -1,4 +1,5 @@
 public with sharing class NKS_FullmaktController {
+    private static LoggerUtility logger = new LoggerUtility('Fullmakt');
     public static String checkAccessAndGetPersonIdent(Id recordId, String objectApiName) {
         Id personId;
         if (objectApiName == 'Case') {
@@ -21,56 +22,89 @@ public with sharing class NKS_FullmaktController {
         if (!access) {
             return null;
         }
-        return [SELECT Id, Name FROM Person__c WHERE Id = :personId]?.Name;
+        return [SELECT Name FROM Person__c WHERE Id = :personId]?.Name;
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Historikk> getHistorikk(Id recordId, String objectApiName) {
+    public static List<FullmaktsgiverHistorikk> getHistorikk(Id recordId, String objectApiName) {
+        System.debug('hallo');
         String personIdent = checkAccessAndGetPersonIdent(recordId, objectApiName);
         if (personIdent == null) {
             return null;
         }
-
+        System.debug('personIdent: ' + personIdent);
         try {
+            System.debug('yo');
             HttpResponse resp = FullmaktService.getFullmaktsgiverHistorikk(personIdent);
+            System.debug('dafuq');
             if (resp.getStatusCode() == 200) {
-                List<FullmaktsgiverHistorikk> historikkData = (List<FullmaktsgiverHistorikk>) JSON.deserialize(
+                List<FullmaktsgiverHistorikkWrapper> historikkData = (List<FullmaktsgiverHistorikkWrapper>) JSON.deserialize(
                     resp.getBody(),
-                    List<FullmaktsgiverHistorikk>.class
+                    List<FullmaktsgiverHistorikkWrapper>.class
                 );
+                System.debug('Response Body: ' + historikkData);
                 return getFullmaktHistorikk(historikkData);
+            } else {
+                logError(resp, 'Error retrieving FullmaktsgiverHistorikk');
             }
-            // ApplicationLogger logger = new ApplicationLogger();
-            return null;
         } catch (Exception e) {
-            return null;
+            logError('Exception occurred while retrieving FullmaktsgiverHistorikk: ' + e.getMessage());
         }
+        return null;
     }
 
     @TestVisible
-    private static List<Historikk> getFullmaktHistorikk(List<FullmaktsgiverHistorikk> historikkData) {
+    private static List<FullmaktsgiverHistorikk> getFullmaktHistorikk(
+        List<FullmaktsgiverHistorikkWrapper> historikkData
+    ) {
         if (historikkData == null && historikkData.isEmpty()) {
             return null;
         }
-
-        List<Historikk> fmList = new List<Historikk>();
-        for (FullmaktsgiverHistorikk histResp : historikkData) {
+        System.debug('hallo');
+        // Add tema to list
+        List<String> omdCodes = new List<String>();
+        for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
             FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.firstEndring;
-            if (fullmaktsHistorikk == null)
-                continue;
-            Historikk person = new Historikk();
-
-            person.fullmektig = fullmaktsHistorikk.fullmektig;
-            List<Omraade> omraade = (List<Omraade>) JSON.deserialize(fullmaktsHistorikk.omraade, List<Omraade>.class);
-            person.omraade = getOmraader(omraade);
-            person.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
-            person.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
-            person.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
-            fmList.add(person);
-            if (fmList.size() == 3)
-                break;
+            if (fullmaktsHistorikk != null) {
+                System.debug('fullmaktsHistorikk.omraade: ' + fullmaktsHistorikk.omraade);
+                List<Omraade> omraade = (List<Omraade>) JSON.deserialize(
+                    fullmaktsHistorikk.omraade,
+                    List<Omraade>.class
+                );
+                // TODO: Sometimes omraade is not an array. Find fix.
+                System.debug('omraade: ' + omraade);
+                if (omraade != null && !omraade.isEmpty()) {
+                    for (Omraade omd : omraade) {
+                        omdCodes.add(omd.tema);
+                    }
+                }
+            }
         }
-        return fmList;
+        System.debug('omdCodes: ' + omdCodes);
+        Map<String, String> omdNameByOmdCode = getOmraadeNames(omdCodes);
+        System.debug('omdNameByOmdCode: ' + omdNameByOmdCode);
+        List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
+        for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
+            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.firstEndring;
+            if (fullmaktsHistorikk != null) {
+                FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
+                historikk.fullmektig = fullmaktsHistorikk.fullmektig;
+                List<Omraade> omraade = (List<Omraade>) JSON.deserialize(
+                    fullmaktsHistorikk.omraade,
+                    List<Omraade>.class
+                );
+                historikk.omraade = getOmraader(omraade, omdNameByOmdCode);
+                System.debug('historikk.omraade: ' + historikk.omraade);
+                historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
+                historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
+                historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
+                historikkList.add(historikk);
+                if (historikkList.size() == 3) {
+                    break;
+                }
+            }
+        }
+        return historikkList;
     }
 
     @AuraEnabled(cacheable=true)
@@ -88,11 +122,13 @@ public with sharing class NKS_FullmaktController {
                     List<FullmaktsgiverWrapper>.class
                 );
                 return getFullmaktsgiverData(fullmaktsgiverData);
+            } else {
+                logError(resp, 'Error retrieving Fullmaktsgiver');
             }
-            return null;
         } catch (Exception e) {
-            return null;
+            logError('Exception occurred while retrieving Fullmaktsgiver: ' + e.getMessage());
         }
+        return null;
     }
 
     @TestVisible
@@ -101,11 +137,21 @@ public with sharing class NKS_FullmaktController {
             return null;
         }
 
+        List<String> omdCodes = new List<String>();
+        for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
+            if (fmResponse.omraade != null) {
+                for (Omraade omd : fmResponse.omraade) {
+                    omdCodes.add(omd.tema);
+                }
+            }
+        }
+        Map<String, String> omdNameByOmdCode = getOmraadeNames(omdCodes);
+
         List<Fullmaktsgiver> fmList = new List<Fullmaktsgiver>();
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
             Fullmaktsgiver fm = new Fullmaktsgiver();
             fm.motpartsPersonident = fmResponse.fullmektig;
-            fm.omraader = getOmraader(fmResponse.omraade).split(', ');
+            fm.omraader = getOmraader(fmResponse.omraade, omdNameByOmdCode).split(', ');
             fm.gyldigFraOgMed = fmResponse.gyldigFraOgMed;
             fm.gyldigTilOgMed = fmResponse.gyldigTilOgMed;
             fm.motpartsNavn = fmResponse.fullmektigsNavn;
@@ -115,20 +161,20 @@ public with sharing class NKS_FullmaktController {
         return fmList;
     }
 
-    private static String getOmraader(List<Omraade> omraade) {
-        if (omraade == null || omraade.size() == 0) {
-            return null;
+    private static String getOmraader(List<Omraade> omraade, Map<String, String> omdNameByOmdCode) {
+        if (omraade == null || omraade.isEmpty()) {
+            return '';
         }
         List<String> omdTemaList = new List<String>();
         for (Omraade omd : omraade) {
-            omdTemaList.add(omd.tema);
+            omdTemaList.add(omdNameByOmdCode.get(omd.tema) != null ? omdNameByOmdCode.get(omd.tema) : omd.tema);
         }
-        return getNamesOfOmraade(omdTemaList);
+        return String.join(omdTemaList, ', ');
     }
 
-    private static String getNamesOfOmraade(List<String> omdList) {
+    private static Map<String, String> getOmraadeNames(List<String> omdList) {
         if (omdList == null || omdList.isEmpty()) {
-            return '';
+            return new Map<String, String>();
         }
 
         List<Common_Code__c> omdNames = [
@@ -141,41 +187,38 @@ public with sharing class NKS_FullmaktController {
         for (Common_Code__c oCode : omdNames) {
             omdNameByOmdCode.put(oCode.CRM_Code__c, oCode.Name);
         }
-
-        List<String> omdNameList = new List<String>();
-        for (String code : omdList) {
-            String oName = omdNameByOmdCode.get(code);
-            if (oName != null) {
-                omdNameList.add(oName);
-            } else {
-                omdNameList.add(code);
-            }
-        }
-        return String.join(omdNameList, ', ');
+        return omdNameByOmdCode;
     }
 
     private static String getGyldigFraOgMed(FullmaktsgiverHistorikkEndringer fmResp) {
-        if (fmResp.gyldigFraOgMed == null) {
-            return null;
-        }
-        return formatDate(fmResp.gyldigFraOgMed);
+        return fmResp.gyldigFraOgMed == null ? null : formatDate(fmResp.gyldigFraOgMed);
     }
 
     private static String getGyldigTilOgMed(FullmaktsgiverHistorikkEndringer fmResp) {
-        if (fmResp.gyldigTilOgMed == null) {
-            return null;
-        }
-        return formatDate(fmResp.gyldigTilOgMed);
+        return fmResp.gyldigTilOgMed == null ? null : formatDate(fmResp.gyldigTilOgMed);
     }
 
     private static String formatDate(Date d) {
-        if (d == null) {
-            return null;
-        }
-        return DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
+        return d == null ? null : DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
     }
 
-    public class FullmaktsgiverHistorikk {
+    private static void logError(HttpResponse resp, String message) {
+        logger.error(
+            message + '\n ' + 'Status: ' + resp.getStatus() + '\n' + 'Body: ' + resp.getBody(),
+            null,
+            CRM_ApplicationDomain.Domain.NKS
+        );
+        logger.publish();
+    }
+
+    private static void logError(String message) {
+        logger.error(message + '\n ', null, CRM_ApplicationDomain.Domain.NKS);
+        logger.publish();
+    }
+
+    // WRAPPERS //
+
+    public class FullmaktsgiverHistorikkWrapper {
         public String fullmaktId;
         public List<FullmaktsgiverHistorikkEndringer> fullmaktEndringsloggDetails;
         public FullmaktsgiverHistorikkEndringer firstEndring {
@@ -188,15 +231,15 @@ public with sharing class NKS_FullmaktController {
         }
     }
 
-    public class Historikk {
+    public class FullmaktsgiverHistorikk {
         @AuraEnabled
-        public String fullmektig; //related person Identity //motpartsPersonident
+        public String fullmektig;
         @AuraEnabled
         public String omraade;
         @AuraEnabled
         public String gyldigFraOgMed;
         @AuraEnabled
-        public String gyldigTilOgMed; //date
+        public String gyldigTilOgMed;
         @AuraEnabled
         public String periode {
             get {
@@ -206,9 +249,9 @@ public with sharing class NKS_FullmaktController {
                     return gyldigFraOgMed + '- Tidsubegrenset';
                 return '';
             }
-        } //fullmakt periode
+        }
         @AuraEnabled
-        public String fullmektigsNavn; //related person name //motpartsPersonNavn
+        public String fullmektigsNavn;
     }
 
     public class FullmaktsgiverHistorikkEndringer {
@@ -266,16 +309,14 @@ public with sharing class NKS_FullmaktController {
         public String id;
 
         private String omraadeString() {
-            System.debug('omraader: ' + omraader);
-            if (omraader == null) {
+            if (omraader == null || omraader.isEmpty()) {
                 return '';
             }
             if (omraader.size() == 1 && '*'.equalsIgnoreCase(omraader[0])) {
                 return 'Gjelder alle ytelser';
-            } else if (omraader.size() > 0) {
+            } else {
                 return String.join(omraader, ',');
             }
-            return '';
         }
     }
 }

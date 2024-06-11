@@ -164,7 +164,6 @@ export default class NksPersonBadges extends LightningElement {
         const { data, error } = this.wiredBadge;
 
         if (data) {
-            console.log('Gibber?');
             /*
              * Det er foreløpig ikke avgjort hvordan åpne STO skal vises
              * så vi legger den ikke til i layouten. Lar imidlertid koden
@@ -175,7 +174,6 @@ export default class NksPersonBadges extends LightningElement {
             this.interpreterSpokenLanguages = data.spokenLanguagesIntepreter;
             this.guardianships = data.guardianships;
             this.powerOfAttorneys = data.powerOfAttorneys;
-            console.log('this.powerofAttorneys: ', JSON.stringify(this.powerOfAttorneys));
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
             this.dateOfDeath = data.dateOfDeath;
