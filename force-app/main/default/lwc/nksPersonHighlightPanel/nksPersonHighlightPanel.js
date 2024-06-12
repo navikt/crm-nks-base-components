@@ -178,7 +178,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     onKeyPressHandler(event) {
-        if (event.which === 13 || event.which === 32) {
+        if (event.key === 'Enter' || event.key === ' ') {
             this.onClickHandler(event);
         }
     }
