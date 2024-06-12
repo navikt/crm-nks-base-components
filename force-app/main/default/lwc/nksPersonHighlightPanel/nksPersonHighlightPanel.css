@@ -53,15 +53,19 @@
     background-color: #c6c6c6 !important;
 }
 
-.greenBadge + div c-nks-person-highlight-panel-badge-content {
+.nowrap-selector {
+    flex-wrap: wrap;
+}
+
+.greenBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
     --badge-line: #66c786;
 }
-.yellowBadge + div c-nks-person-highlight-panel-badge-content {
+.yellowBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
     --badge-line: #ffaa33;
 }
-.redBadge + div c-nks-person-highlight-panel-badge-content {
+.redBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
     --badge-line: #ad0000;
 }
-.greyBadge + div c-nks-person-highlight-panel-badge-content {
+.greyBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
     --badge-line: #c6c6c6;
 }
