@@ -26,7 +26,10 @@ export default class NksChatButtonContainerTop extends LightningElement {
     }
 
     get flowButtonClass() {
-        return 'full-width-grid-btn' + (this.flowButtonLabel === this.redactLabel ? ' redactButton' : '');
+        return (
+            'slds-button slds-button_brand slds-button_stretch' +
+            (this.flowButtonLabel === this.redactLabel ? ' redactButton' : '')
+        );
     }
 
     toggleFlow() {
