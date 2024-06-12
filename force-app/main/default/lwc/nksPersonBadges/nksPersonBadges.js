@@ -184,8 +184,6 @@ export default class NksPersonBadges extends LightningElement {
         }
 
         if (error) {
-            console.log('Bebe');
-            console.log(JSON.stringify(error));
             this.addError(error);
 
             if (this.isLoaded) {
