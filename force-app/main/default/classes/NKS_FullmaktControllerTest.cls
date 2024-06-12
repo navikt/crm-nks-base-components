@@ -126,12 +126,12 @@ public with sharing class NKS_FullmaktControllerTest {
     @IsTest
     static void testGetFullmaktsgiverHistorikkDataNullInput() {
         Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> histy = NKS_FullmaktController.getFullmaktsgiverHistorikkData(
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikkData(
             null
         );
         Test.stopTest();
 
-        Assert.isNull(histy);
+        Assert.isNull(historikk);
     }
 
     @IsTest
