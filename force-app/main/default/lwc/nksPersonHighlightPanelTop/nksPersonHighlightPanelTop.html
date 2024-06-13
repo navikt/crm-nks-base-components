@@ -14,16 +14,14 @@
 
         <template lwc:if={formattedFullName}>
             <lightning-layout-item
-                class="slds-page-header__title custom-padding-around-small custom-grid-vertical-align-center"
+                class="custom-padding-left-small slds-page-header__title custom-grid-vertical-align-center"
             >
                 <h1>{formattedFullName}</h1>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={personIdent}>
-            <lightning-layout-item
-                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
-            >
+            <lightning-layout-item class="custom-padding-left custom-grid-vertical-align-center">
                 <span>{personIdent}</span>
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon
@@ -40,15 +38,13 @@
         </template>
 
         <template lwc:if={formattedPersonInfo}>
-            <lightning-layout-item class="custom-padding-around-small custom-grid-vertical-align-center">
+            <lightning-layout-item class="custom-padding-left custom-grid-vertical-align-center">
                 <p>{formattedPersonInfo}</p>
             </lightning-layout-item>
         </template>
 
         <template lwc:if={formattedUnit}>
-            <lightning-layout-item
-                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
-            >
+            <lightning-layout-item class="custom-padding-left custom-grid-vertical-align-center">
                 <span>{formattedUnit}</span>
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon
@@ -65,9 +61,7 @@
         </template>
 
         <template lwc:if={formattedVeileder}>
-            <lightning-layout-item
-                class="custom-padding-top-small custom-padding-left-small custom-padding-bottom-small custom-grid-vertical-align-center"
-            >
+            <lightning-layout-item class="custom-padding-left custom-grid-vertical-align-center">
                 <span>{formattedVeileder}</span>
                 <!-- sldsValidatorIgnoreNextLine -->
                 <lightning-button-icon

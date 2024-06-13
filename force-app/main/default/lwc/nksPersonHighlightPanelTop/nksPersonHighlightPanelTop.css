@@ -8,22 +8,12 @@
     padding: 0.5rem;
 }
 
-.custom-padding-top-small {
-    padding-top: 0.5rem;
+.custom-padding-left {
+    padding-left: 1.875rem;
 }
-
 .custom-padding-left-small {
     padding-left: 0.5rem;
 }
-
-.custom-padding-bottom-small {
-    padding-bottom: 0.5rem;
-}
-
-.custom-padding-right-small {
-    padding-right: 0.5rem;
-}
-
 .custom-grid-vertical-align-center {
     display: flex;
     align-items: center;
