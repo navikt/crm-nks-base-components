@@ -225,7 +225,16 @@ public with sharing class NKS_FullmaktController {
 
     private static void logError(HttpResponse resp, String message) {
         logger.error(
-            message + '\n ' + 'Status: ' + resp.getStatus() + '\n' + 'Body: ' + resp.getBody(),
+            message +
+                '\n ' +
+                'Status code: ' +
+                resp.getStatusCode() +
+                '\n' +
+                'Status: ' +
+                resp.getStatus() +
+                '\n' +
+                'Body: ' +
+                resp.getBody(),
             null,
             CRM_ApplicationDomain.Domain.NKS
         );
@@ -247,7 +256,7 @@ public with sharing class NKS_FullmaktController {
         public List<FullmaktsgiverHistorikkEndringer> fullmaktEndringsloggDetails;
         public FullmaktsgiverHistorikkEndringer firstEndring {
             get {
-                if (fullmaktEndringsloggDetails.size() > 0) {
+                if (!fullmaktEndringsloggDetails.isEmpty()) {
                     return fullmaktEndringsloggDetails[0];
                 }
                 return null;

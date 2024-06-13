@@ -71,7 +71,7 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     /**
-     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependancy.
+     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependency.
      */
     private static Person__c getPerson(Id personId) {
         Set<String> objectFields = Schema.SObjectType.Person__c.fields.getMap().keySet();
