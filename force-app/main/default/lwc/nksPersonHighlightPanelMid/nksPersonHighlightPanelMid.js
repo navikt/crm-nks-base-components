@@ -28,7 +28,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
                 ? 'panel-dark-purple'
                 : this.gender === 'Mann'
                 ? 'panel-dark-blue'
-                : '')
+                : 'panel-dark-brown')
         );
     }
 

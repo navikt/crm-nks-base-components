@@ -284,7 +284,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 ? 'panel-purple'
                 : this.gender === 'Mann'
                 ? 'panel-blue'
-                : '')
+                : 'panel-brown')
         );
     }
 

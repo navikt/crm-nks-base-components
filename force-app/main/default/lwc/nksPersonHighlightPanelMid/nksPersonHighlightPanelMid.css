@@ -13,6 +13,10 @@
     border-top-color: #858585 !important;
 }
 
+.panel-dark-brown {
+    background-color: #4d3c23;
+}
+
 .font-styling {
     color: white;
     cursor: pointer;
