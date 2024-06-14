@@ -183,7 +183,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
                 return 'FemaleCircleFilled';
             default:
         }
-        return 'NeutralFilled';
+        return 'UnknownCircleFilled';
     }
 
     get genderIconSrc() {
