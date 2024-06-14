@@ -453,8 +453,8 @@ public with sharing class NKS_PersonBadgesController {
 
             // The code below is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
 
-            List<String> confidentialitySkills = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
-            List<String> originSkills = new List<String>{ 'BTO', 'STO' };
+            List<String> confidentialitySkillsName = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
+            List<String> originSkillsName = new List<String>{ 'BTO', 'STO' };
 
             Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
 
@@ -469,8 +469,10 @@ public with sharing class NKS_PersonBadgesController {
                     allRelevantSkills.add(pl.getLabel());
                 }
             }
-            allRelevantSkills.addAll(confidentialitySkills);
-            allRelevantSkills.addAll((originSkills));
+            List<String> allSpecialSkills = new List<String>();
+            allSpecialSkills.addAll(confidentialitySkillsName);
+            allSpecialSkills.addAll(originSkillsName);
+            allRelevantSkills.addAll(allSpecialSkills);
 
             Id userId = UserInfo.getUserId();
 
@@ -490,14 +492,33 @@ public with sharing class NKS_PersonBadgesController {
                     AND ServiceResource.IsActive = TRUE
             ]) {
                 //Separating domain skills and person access skills
-                if (confidentialitySkills.contains(srs.Skill.DeveloperName)) {
+                if (confidentialitySkillsName.contains(srs.Skill.DeveloperName)) {
                     userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
-                } else if (originSkills.contains(srs.Skill.DeveloperName)) {
+                } else if (originSkillsName.contains(srs.Skill.DeveloperName)) {
                     userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
                 } else {
                     skillMap.put(srs.SkillId, srs.Skill.MasterLabel);
                 }
             }
+
+            // Salesforce has a weird bug with filtering on skills, so we query them and add them to a list
+            // for use in the PendingServiceRoutning query.
+
+            List<Id> confidentialitySkillsIds = new List<Id>();
+            List<Id> originSkillsIds = new List<Id>();
+
+            for (Skill skill : [SELECT Id, DeveloperName FROM Skill WHERE DeveloperName IN :allSpecialSkills]) {
+                if (confidentialitySkillsName.contains(skill.DeveloperName)) {
+                    confidentialitySkillsIds.add(skill.Id);
+                }
+                if (originSkillsName.contains(skill.DeveloperName)) {
+                    confidentialitySkillsIds.add(skill.Id);
+                }
+            }
+
+            // Salesforce gives us a System.UnexpectedException: Illegal filter on SkillRequirement
+            // if we use Skill.DeveloperName instead of SkillId in the filters, so we query the skills
+            // as we did previously. For some unknown reason this works ¯\_(ツ)_/¯
 
             List<Id> casesInQueueList = new List<Id>();
             for (PendingServiceRouting psr : [
@@ -514,10 +535,10 @@ public with sharing class NKS_PersonBadgesController {
                         SELECT RelatedRecordId
                         FROM SkillRequirement
                         WHERE
-                            (Skill.DeveloperName NOT IN :userConfidentialMap.values()
-                            AND Skill.DeveloperName IN :confidentialitySkills)
-                            OR (Skill.DeveloperName NOT IN :userOriginMap.values()
-                            AND Skill.DeveloperName IN :originSkills)
+                            (SkillId NOT IN :userConfidentialMap.keySet()
+                            AND SkillId IN :confidentialitySkillsIds)
+                            OR (SkillId NOT IN :userOriginMap.keySet()
+                            AND SkillId IN :originSkillsIds)
                     )
                     AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
                     AND IsReadyForRouting = TRUE
@@ -971,5 +992,8 @@ public with sharing class NKS_PersonBadgesController {
             this.threadList = threadList;
             this.threadSize = threadList.size();
         }
+    }
+
+    public class mortenException extends Exception {
     }
 }
