@@ -1,6 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
-import FULL_NAME_FIELD from '@salesforce/schema/Person__c.CRM_FullName__c';
+import FULL_NAME_FIELD from '@salesforce/schema/Person__c.NKS_Full_Name__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
