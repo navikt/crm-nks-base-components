@@ -1,6 +1,8 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import REDACT_LABEL from '@salesforce/label/c.NKS_Set_To_Redaction';
+import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
+import { publish, MessageContext } from 'lightning/messageService';
 
 export default class NksChatButtonContainerTop extends LightningElement {
     @api recordId;
@@ -10,6 +12,9 @@ export default class NksChatButtonContainerTop extends LightningElement {
 
     showFlow = false;
     redactLabel = REDACT_LABEL;
+
+    @wire(MessageContext)
+    messageContext;
 
     get inputVariables() {
         return [
@@ -34,10 +39,20 @@ export default class NksChatButtonContainerTop extends LightningElement {
     }
 
     handleStatusChange(event) {
-        let flowStatus = event.detail.status;
-        if (flowStatus === 'FINISHED' || flowStatus === 'FINISHED_SCREEN') {
+        const status = event.detail.status;
+        const outputVariables = event.detail?.outputVariables;
+        if (status === 'FINISHED' || status === 'FINISHED_SCREEN') {
             this.showFlow = false;
             publishToAmplitude(this.channelName, { type: this.flowButtonLabel + ' finished' });
+            try {
+                const payload = {
+                    flowApiName: this.flowApiName,
+                    outputVariables: outputVariables
+                };
+                publish(this.messageContext, BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL, payload);
+            } catch (error) {
+                console.error('Error publishing message on button container message channel: ', error);
+            }
         }
     }
 }

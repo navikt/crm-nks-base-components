@@ -2,6 +2,8 @@ import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
 import { handleShowNotifications } from 'c/nksButtonContainerUtils';
+import { subscribe, unsubscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
+import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
 
 const CONSTANTS = {
     FINISHED: 'FINISHED',
@@ -21,6 +23,23 @@ export default class NksButtonContainerBottom extends LightningElement {
     flowLoop;
     timer;
     _activeFlow;
+    subscription = null;
+
+    /*
+    connectedCallback() {
+        this.subscribeToMessageChannel();
+    }*/
+
+    renderedCallback() {
+        this.subscribeToMessageChannel();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
+    }
+
+    @wire(MessageContext)
+    messageContext;
 
     @wire(getLabels, { labels: '$flowLabelList' })
     labelWire({ data, error }) {
@@ -29,8 +48,7 @@ export default class NksButtonContainerBottom extends LightningElement {
             this.updateFlowLoop();
         }
         if (error) {
-            console.log('Could not fetch labels for buttonContainerBottom');
-            console.log(error);
+            console.log('Could not fetch labels for buttonContainerBottom', error);
         }
     }
 
@@ -129,5 +147,23 @@ export default class NksButtonContainerBottom extends LightningElement {
         this.timer = setTimeout(() => {
             this.activeFlow = flowName;
         }, 10);
+    }
+
+    subscribeToMessageChannel() {
+        if (this.subscription) {
+            return;
+        }
+        this.subscription = subscribe(
+            this.messageContext,
+            BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL,
+            (message) =>
+                handleShowNotifications(message.flowApiName, message.outputVariables, this.notificationBoxTemplate),
+            { scope: APPLICATION_SCOPE }
+        );
+    }
+
+    unsubscribeToMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
     }
 }

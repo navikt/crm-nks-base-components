@@ -22,10 +22,6 @@ export async function handleShowNotifications(
     notificationBoxTemplate,
     journalConversationNote = false
 ) {
-    if (!outputVariables) {
-        console.error('No output variables found in the event detail');
-        return;
-    }
     try {
         if (flowName.toLowerCase().includes('journal')) {
             const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
@@ -50,8 +46,10 @@ export async function handleShowNotifications(
                 'Oppgave opprettet',
                 `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
             );
+        } else if (flowName.toLowerCase().includes('redact')) {
+            notificationBoxTemplate.addNotification('Henvendelsen ble satt til sladding');
         }
     } catch (error) {
-        console.error('Error handling flow succeeded event: ', error);
+        console.error('Error handling show notifications: ', error);
     }
 }
