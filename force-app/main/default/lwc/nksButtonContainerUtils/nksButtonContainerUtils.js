@@ -16,7 +16,12 @@ function getOutputVariableValue(outputVaribales, variableName) {
     return outputVaribales.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
-export async function handleShowNotifications(flowName, outputVariables, notificationBoxTemplate) {
+export async function handleShowNotifications(
+    flowName,
+    outputVariables,
+    notificationBoxTemplate,
+    journalConversationNote = false
+) {
     if (!outputVariables) {
         console.error('No output variables found in the event detail');
         return;
@@ -28,7 +33,10 @@ export async function handleShowNotifications(flowName, outputVariables, notific
             if (selectedThemeId) {
                 journalTheme = await callGetCommonCode(selectedThemeId);
             }
-            notificationBoxTemplate.addNotification('Henvendelsen er journalført', journalTheme);
+            let successMessage = journalConversationNote
+                ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
+                : 'Henvendelsen er journalført';
+            notificationBoxTemplate.addNotification(successMessage, journalTheme);
         } else if (flowName.toLowerCase().includes('task')) {
             const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
             const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
@@ -38,7 +46,6 @@ export async function handleShowNotifications(flowName, outputVariables, notific
             if (selectedThemeId) {
                 navTaskTheme = await callGetCommonCode(selectedThemeId);
             }
-
             notificationBoxTemplate.addNotification(
                 'Oppgave opprettet',
                 `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
