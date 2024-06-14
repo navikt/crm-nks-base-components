@@ -12,8 +12,8 @@ function callGetCommonCode(inputId) {
         });
 }
 
-function getOutputVariableValue(outputVaribales, variableName) {
-    return outputVaribales.find((element) => element.name === variableName && element.value !== null)?.value;
+export function getOutputVariableValue(outputVariables, variableName) {
+    return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
 export async function handleShowNotifications(
@@ -51,5 +51,12 @@ export async function handleShowNotifications(
         }
     } catch (error) {
         console.error('Error handling show notifications: ', error);
+        if (Array.isArray(error.body)) {
+            console.error('Error details: ', error.body.map((e) => e.message).join(', '));
+        } else if (error.body && typeof error.body.message === 'string') {
+            console.error(error.body.message);
+        } else {
+            console.error(error.message);
+        }
     }
 }

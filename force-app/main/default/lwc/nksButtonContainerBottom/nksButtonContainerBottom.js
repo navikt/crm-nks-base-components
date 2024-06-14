@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
-import { handleShowNotifications } from 'c/nksButtonContainerUtils';
+import { getOutputVariableValue, handleShowNotifications } from 'c/nksButtonContainerUtils';
 import { subscribe, unsubscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
 import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
 
@@ -121,16 +121,20 @@ export default class NksButtonContainerBottom extends LightningElement {
     handleStatusChange(event) {
         const outputVariables = event.detail?.outputVariables;
         const flowStatus = event.detail.status;
+        let publishNotification = getOutputVariableValue(outputVariables, 'Publish_Notification');
+
         if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
-            if (this.showNotifications) {
-                handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
-            } else {
-                this.dispatchEvent(
-                    new CustomEvent('flowsucceeded', {
-                        detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
-                    })
-                );
+            if (publishNotification) {
+                if (this.showNotifications) {
+                    handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
+                } else {
+                    this.dispatchEvent(
+                        new CustomEvent('flowsucceeded', {
+                            detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                        })
+                    );
+                }
             }
             this.activeFlow = '';
             this.updateFlowLoop();
