@@ -35,9 +35,9 @@
 }
 
 .mid-panel {
+    min-height: 2.5rem;
+    height: auto;
     padding-right: 0.625rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
     display: flex;
     align-items: center;
     border-top: 0.0625rem solid #858585;

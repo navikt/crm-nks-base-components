@@ -1,7 +1,7 @@
 .bot-panel {
+    min-height: 2.5rem;
+    height: auto;
     padding-right: 0.625rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
     display: flex;
     align-items: center;
 }
