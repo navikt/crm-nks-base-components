@@ -36,18 +36,34 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
         return templates[this.type] != null ? templates[this.type] : nksPersonHighlightPanelBadgeContent;
     }
 
+    connectedCallback() {
+        window.addEventListener('resize', this.calculateBadgeContent.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this.calculateBadgeContent.bind(this));
+    }
+
     get showBadge() {
         if (this.type === this.shownBadge) console.log(JSON.stringify(this.badgeData));
         return this.type === this.shownBadge;
     }
 
     renderedCallback() {
+        this.calculateBadgeContent();
+    }
+
+    calculateBadgeContent() {
         const renderedBadgeContent = this.template.querySelector('.backgroundStyling');
         if (!renderedBadgeContent) return;
+        renderedBadgeContent.style.removeProperty('right');
+        renderedBadgeContent.style.removeProperty('left');
         if (renderedBadgeContent.offsetWidth + renderedBadgeContent.getBoundingClientRect().left >= window.innerWidth) {
             renderedBadgeContent.style.right = 0;
+            renderedBadgeContent.style.left = 'auto';
         } else {
             renderedBadgeContent.style.right = 'auto';
+            renderedBadgeContent.style.removeProperty('left');
         }
     }
 
