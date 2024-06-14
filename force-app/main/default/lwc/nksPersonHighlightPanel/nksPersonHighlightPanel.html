@@ -33,7 +33,7 @@
                         </template>
 
                         <template for:each={badges} for:item="badge">
-                            <lightning-layout-item key={badge.name} data-id={badge.name}>
+                            <lightning-layout-item key={badge.name} data-id={badge.name} class="relativePosition">
                                 <template lwc:if={badge.clickable}>
                                     <lightning-badge
                                         data-id={badge.name}
