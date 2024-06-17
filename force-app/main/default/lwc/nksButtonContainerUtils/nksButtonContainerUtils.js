@@ -1,19 +1,22 @@
 import getCommonCode from '@salesforce/apex/NKS_ButtonContainerController.getCommonCodeName';
 
-function callGetCommonCode(inputId) {
-    return getCommonCode({ id: inputId })
-        .then((result) => {
-            console.log('result: ', result);
-            return result;
-        })
-        .catch((error) => {
-            console.error('Error calling getCommonCode(): ', error);
-            throw error;
-        });
+async function callGetCommonCode(inputId) {
+    try {
+        const result = await getCommonCode({ id: inputId });
+        console.log('result: ', result);
+        return result;
+    } catch (error) {
+        console.error('Error calling getCommonCode(): ', error);
+        throw error;
+    }
 }
 
-export function getOutputVariableValue(outputVariables, variableName) {
+function getOutputVariableValue(outputVariables, variableName) {
     return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
+}
+
+function addNotification(notificationBoxTemplate, message, theme = '') {
+    notificationBoxTemplate.addNotification(message, theme);
 }
 
 export async function handleShowNotifications(
@@ -22,43 +25,35 @@ export async function handleShowNotifications(
     notificationBoxTemplate,
     journalConversationNote = false
 ) {
+    const publishNotification = getOutputVariableValue(outputVariables, 'Publish_Notification');
+
+    if (!publishNotification) return;
+
     try {
-        if (flowName.toLowerCase().includes('journal')) {
-            const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
-            let journalTheme = '';
-            if (selectedThemeId) {
-                journalTheme = await callGetCommonCode(selectedThemeId);
-            }
-            let successMessage = journalConversationNote
+        const flowNameLower = flowName.toLowerCase();
+        const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+        let theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
+
+        if (flowNameLower.includes('journal')) {
+            const successMessage = journalConversationNote
                 ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                 : 'Henvendelsen er journalført';
-            notificationBoxTemplate.addNotification(successMessage, journalTheme);
-        } else if (flowName.toLowerCase().includes('task')) {
-            const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+            addNotification(notificationBoxTemplate, successMessage, theme);
+        } else if (flowNameLower.includes('task')) {
             const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
             const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
-            let navTaskTheme = '';
-
-            if (selectedThemeId) {
-                navTaskTheme = await callGetCommonCode(selectedThemeId);
-            }
-            notificationBoxTemplate.addNotification(
-                'Oppgave opprettet',
-                `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
-            );
-        } else if (flowName.toLowerCase().includes('redact')) {
-            notificationBoxTemplate.addNotification('Henvendelsen er sendt til sladding');
-        } else if (flowName.toLowerCase().includes('reserve')) {
-            notificationBoxTemplate.addNotification('Henvendelsen er reservert');
+            const taskMessage = `Oppgave opprettet ${theme} Sendt til: ${unitNumber} ${unitName}`;
+            addNotification(notificationBoxTemplate, taskMessage);
+        } else if (flowNameLower.includes('redact')) {
+            addNotification(notificationBoxTemplate, 'Henvendelsen er sendt til sladding');
+        } else if (flowNameLower.includes('reserve')) {
+            addNotification(notificationBoxTemplate, 'Henvendelsen er reservert');
         }
     } catch (error) {
         console.error('Error handling show notifications: ', error);
-        if (Array.isArray(error.body)) {
-            console.error('Error details: ', error.body.map((e) => e.message).join(', '));
-        } else if (error.body && typeof error.body.message === 'string') {
-            console.error(error.body.message);
-        } else {
-            console.error(error.message);
-        }
+        const errorMessage = Array.isArray(error.body)
+            ? error.body.map((e) => e.message).join(', ')
+            : error.body?.message || error.message;
+        console.error(errorMessage);
     }
 }
