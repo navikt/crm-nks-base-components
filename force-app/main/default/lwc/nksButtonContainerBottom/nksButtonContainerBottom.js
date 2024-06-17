@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
-import { getOutputVariableValue, handleShowNotifications } from 'c/nksButtonContainerUtils';
+import { handleShowNotifications } from 'c/nksButtonContainerUtils';
 import { subscribe, unsubscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
 import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
 
@@ -119,21 +119,20 @@ export default class NksButtonContainerBottom extends LightningElement {
 
     handleStatusChange(event) {
         const { status, outputVariables } = event.detail;
-        let publishNotification = getOutputVariableValue(outputVariables, 'Publish_Notification');
 
         if (status === CONSTANTS.FINISHED || status === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
-            if (publishNotification) {
-                if (this.showNotifications) {
-                    handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
-                } else {
-                    this.dispatchEvent(
-                        new CustomEvent('flowsucceeded', {
-                            detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
-                        })
-                    );
-                }
+
+            if (this.showNotifications) {
+                handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
+            } else {
+                this.dispatchEvent(
+                    new CustomEvent('flowsucceeded', {
+                        detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                    })
+                );
             }
+
             this.activeFlow = '';
             this.updateFlowLoop();
         }
