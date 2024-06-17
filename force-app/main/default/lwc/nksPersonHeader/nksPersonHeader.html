@@ -37,6 +37,13 @@
                 <lightning-layout-item class="slds-var-p-right_small personIdent">
                     <p>{formattedPersonInfo}</p>
                 </lightning-layout-item>
+
+                <template lwc:if={formattedWrittenStandard}>
+                    <lightning-layout-item class="slds-var-p-right_small personIdent">
+                        <p>{formattedWrittenStandard}</p>
+                    </lightning-layout-item>
+                </template>
+
                 <template if:true={showNavUnit}>
                     <lightning-layout-item class="slds-var-p-right_small">
                         <lightning-layout>
