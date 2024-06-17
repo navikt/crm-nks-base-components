@@ -90,7 +90,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             if (historikkData && historikkData != null && historikkData.length > 0) {
                 badges.push({
                     name: 'historicalGuardianship',
-                    label: 'Historisk fullmakter',
+                    label: 'Historisk Fullmakter',
                     styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer greyBadge',
                     clickable: true,
                     tabindex: '0',
