@@ -118,11 +118,10 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     handleStatusChange(event) {
-        const outputVariables = event.detail?.outputVariables;
-        const flowStatus = event.detail.status;
+        const { status, outputVariables } = event.detail;
         let publishNotification = getOutputVariableValue(outputVariables, 'Publish_Notification');
 
-        if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
+        if (status === CONSTANTS.FINISHED || status === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
             if (publishNotification) {
                 if (this.showNotifications) {

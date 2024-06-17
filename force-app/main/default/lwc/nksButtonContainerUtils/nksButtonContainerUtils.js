@@ -47,7 +47,9 @@ export async function handleShowNotifications(
                 `${navTaskTheme} Sendt til: ${unitNumber} ${unitName}`
             );
         } else if (flowName.toLowerCase().includes('redact')) {
-            notificationBoxTemplate.addNotification('Henvendelsen ble satt til sladding');
+            notificationBoxTemplate.addNotification('Henvendelsen er sendt til sladding');
+        } else if (flowName.toLowerCase().includes('reserve')) {
+            notificationBoxTemplate.addNotification('Henvendelsen er reservert');
         }
     } catch (error) {
         console.error('Error handling show notifications: ', error);
