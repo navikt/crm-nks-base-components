@@ -8,8 +8,7 @@ import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/b
 const CONSTANTS = {
     FINISHED: 'FINISHED',
     FINISHED_SCREEN: 'FINISHED_SCREEN',
-    CONVERSATION_NOTE: 'Conversation note',
-    ERROR: 'ERROR'
+    CONVERSATION_NOTE: 'Conversation note'
 };
 
 export default class NksButtonContainerBottom extends LightningElement {
@@ -138,9 +137,6 @@ export default class NksButtonContainerBottom extends LightningElement {
             }
             this.activeFlow = '';
             this.updateFlowLoop();
-        }
-        if (flowStatus === CONSTANTS.ERROR) {
-            this.dispatchEvent(new CustomEvent('flowfailed', { detail: this.activeFlow }));
         }
     }
 
