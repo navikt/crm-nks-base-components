@@ -24,19 +24,6 @@ export default class NksButtonContainerBottom extends LightningElement {
     _activeFlow;
     subscription = null;
 
-    /*
-    connectedCallback() {
-        this.subscribeToMessageChannel();
-    }*/
-
-    renderedCallback() {
-        this.subscribeToMessageChannel();
-    }
-
-    disconnectedCallback() {
-        this.unsubscribeToMessageChannel();
-    }
-
     @wire(MessageContext)
     messageContext;
 
@@ -45,10 +32,17 @@ export default class NksButtonContainerBottom extends LightningElement {
         if (data) {
             this.labelList = data;
             this.updateFlowLoop();
+        } else if (error) {
+            console.error('Could not fetch labels for buttonContainerBottom', error);
         }
-        if (error) {
-            console.log('Could not fetch labels for buttonContainerBottom', error);
-        }
+    }
+
+    renderedCallback() {
+        this.subscribeToMessageChannel();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
     }
 
     get inputVariables() {
@@ -62,22 +56,21 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get flowLabelList() {
-        return this.flowLabels?.replace(/ /g, '').split(',');
+        return this.flowLabels?.replace(/ /g, '').split(',') || [];
     }
 
     get flowNameList() {
-        return this.flowNames?.replace(/ /g, '').split(',');
+        return this.flowNames?.replace(/ /g, '').split(',') || [];
     }
 
     get showFlow() {
-        return this.activeFlow !== '' && this.activeFlow != null;
+        return Boolean(this.activeFlow);
     }
 
     get layoutClassName() {
-        return (
-            'slds-var-p-vertical_medium' +
-            (this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : '')
-        );
+        return `slds-p-vertical_medium${
+            this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : ''
+        }`;
     }
 
     get activeFlow() {
@@ -105,18 +98,16 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     toggleFlow(event) {
-        if (event.target?.dataset.id) {
-            const dataId = event.target.dataset.id;
+        const dataId = event.target?.dataset.id;
+        if (dataId) {
             if (this.activeFlow === dataId) {
-                this.activeFlow = '';
-                this.updateFlowLoop();
-                return;
-            }
-            if (this.showFlow) {
+                this._activeFlow = '';
+            } else if (this.showFlow) {
                 this.swapActiveFlow(dataId);
-                return;
+            } else {
+                this._activeFlow = dataId;
             }
-            this.activeFlow = dataId;
+            this.updateFlowLoop();
         }
     }
 
@@ -131,22 +122,22 @@ export default class NksButtonContainerBottom extends LightningElement {
             } else {
                 this.dispatchEvent(
                     new CustomEvent('flowsucceeded', {
-                        detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                        detail: { flowName: this.activeFlow, flowOutput: outputVariables }
                     })
                 );
             }
 
-            this.activeFlow = '';
+            this._activeFlow = '';
             this.updateFlowLoop();
         }
     }
 
     swapActiveFlow(flowName) {
         clearTimeout(this.timer);
-        this.activeFlow = '';
+        this._activeFlow = '';
         // eslint-disable-next-line @lwc/lwc/no-async-operation, @locker/locker/distorted-window-set-timeout
         this.timer = setTimeout(() => {
-            this.activeFlow = flowName;
+            this._activeFlow = flowName;
         }, 10);
     }
 
