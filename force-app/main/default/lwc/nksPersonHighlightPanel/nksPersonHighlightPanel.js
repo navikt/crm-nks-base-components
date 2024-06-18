@@ -1,14 +1,16 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
-import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
-import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
+import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import IS_DECEASED_FIELD from '@salesforce/schema/Person__c.INT_IsDeceased__c';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.NKS_Full_Name__c';
-import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+
+import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
+import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
+import getHistorikk from '@salesforce/apex/NKS_HistorikkViewController.getHistorikk';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
@@ -98,7 +100,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     setWiredBadge() {
         if (this.wiredBadge == null || this.historikkWiredData == null) return;
         const { data, error } = this.wiredBadge;
-        const { data: historikkData, error: historikkError } = this.historikkWiredData;
+        const { data: historikkData } = this.historikkWiredData;
         this.loadingStates.getPersonBadgesAndInfo = !(error || data);
 
         if (data) {
@@ -119,18 +121,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
             this.dateOfDeath = data.dateOfDeath;
-
-            if (this.isLoaded) {
-                this.setUuAlertText();
-            }
         }
-
         if (error) {
-            this.addError(error);
-
-            if (this.isLoaded) {
-                this.setUuAlertText();
-            }
+            console.error(error);
         }
     }
     @wire(getPersonAccessBadges, {
@@ -171,25 +164,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.isNavEmployee = data.some((element) => element.name === 'isNavEmployee');
             this.isConfidential = data.some((element) => element.name === 'isConfidential');
             this.personAccessBadges = data;
-
-            if (this.isLoaded) {
-                this.setUuAlertText();
-            }
         } else if (error) {
-            this.addError(error);
-
-            if (this.isLoaded) {
-                this.setUuAlertText();
-            }
+            console.error(error);
         }
-    }
-
-    setUuAlertText() {
-        console.log('Geir Arne');
-    }
-
-    addError(a) {
-        console.log('Error Arne', a);
     }
 
     onKeyPressHandler(event) {
