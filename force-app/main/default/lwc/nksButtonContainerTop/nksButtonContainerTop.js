@@ -54,6 +54,7 @@ export default class NksChatButtonContainerTop extends LightningElement {
             flowApiName: this.flowApiName,
             outputVariables
         };
+
         try {
             publish(this.messageContext, BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL, payload);
         } catch (error) {
