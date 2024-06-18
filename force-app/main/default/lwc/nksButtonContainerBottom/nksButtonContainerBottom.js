@@ -56,15 +56,15 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get flowLabelList() {
-        return this.flowLabels?.replace(/ /g, '').split(',') || [];
+        return this.flowLabels?.replace(/ /g, '').split(',');
     }
 
     get flowNameList() {
-        return this.flowNames?.replace(/ /g, '').split(',') || [];
+        return this.flowNames?.replace(/ /g, '').split(',');
     }
 
     get showFlow() {
-        return Boolean(this.activeFlow);
+        return this.activeFlow !== '' && this.activeFlow != null;
     }
 
     get layoutClassName() {
@@ -102,12 +102,14 @@ export default class NksButtonContainerBottom extends LightningElement {
         if (dataId) {
             if (this.activeFlow === dataId) {
                 this._activeFlow = '';
-            } else if (this.showFlow) {
-                this.swapActiveFlow(dataId);
-            } else {
-                this._activeFlow = dataId;
+                this.updateFlowLoop();
+                return;
             }
-            this.updateFlowLoop();
+            if (this.showFlow) {
+                this.swapActiveFlow(dataId);
+                return;
+            }
+            this._activeFlow = dataId;
         }
     }
 
