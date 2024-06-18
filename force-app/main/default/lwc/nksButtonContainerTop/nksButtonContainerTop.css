@@ -1,9 +1,3 @@
-.full-width-grid-btn,
-.redactButton {
-    display: grid;
-    width: 100%;
-}
-
 .redactButton {
     --slds-c-button-brand-color-background: #99c3ff;
     --slds-c-button-brand-color-border: #99c3ff;
