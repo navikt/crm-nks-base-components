@@ -16,10 +16,11 @@
                             object-api-name={objectApiName}
                             relationship-field={relationshipField}
                             is-deceased={isDeceased}
+                            full-name={fullName}
                         ></c-nks-person-highlight-panel-top>
                     </lightning-layout-item>
 
-                    <lightning-layout-item>
+                    <lightning-layout-item class="custom-padding-left">
                         <template for:each={personAccessBadges} for:item="badge">
                             <lightning-layout-item key={badge.name}>
                                 <lightning-badge
@@ -80,6 +81,7 @@
                     gender={gender}
                     person-data={oppfolgingAndMeldekortData}
                     is-deceased={isDeceased}
+                    full-name={fullName}
                 ></c-nks-person-highlight-panel-mid>
                 <c-nks-person-highlight-panel-bot
                     record-id={personId}
@@ -88,6 +90,7 @@
                     object-api-name={objectApiName}
                     gender={gender}
                     is-deceased={isDeceased}
+                    full-name={fullName}
                 ></c-nks-person-highlight-panel-bot>
             </div>
         </lightning-layout>

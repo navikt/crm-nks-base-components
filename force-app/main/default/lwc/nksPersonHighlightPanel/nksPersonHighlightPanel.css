@@ -28,6 +28,10 @@
     background-color: #6d5431;
 }
 
+.panel-grey {
+    background-color: #d0d0d0;
+}
+
 .pointer {
     cursor: pointer;
 }
@@ -76,4 +80,8 @@
 }
 .greyBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
     --badge-line: #c6c6c6;
+}
+
+.custom-padding-left {
+    padding-left: 1.875rem;
 }

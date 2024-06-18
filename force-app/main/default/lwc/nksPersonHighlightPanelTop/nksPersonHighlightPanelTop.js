@@ -1,10 +1,10 @@
 import { LightningElement, api, wire } from 'lwc';
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
-import FULL_NAME_FIELD from '@salesforce/schema/Person__c.NKS_Full_Name__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
+import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
@@ -14,12 +14,12 @@ import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEm
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
 const PERSON_FIELDS = [
-    FULL_NAME_FIELD,
     PERSON_IDENT_FIELD,
     PERSON_ACTORID_FIELD,
     AGE_FIELD,
     CITIZENSHIP_FIELD,
-    MARITAL_STATUS_FIELD
+    MARITAL_STATUS_FIELD,
+    WRITTEN_STANDARD_FIELD
 ];
 export default class NksPersonHighlightPanelTop extends LightningElement {
     @api personId;
@@ -28,9 +28,9 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api relationshipField;
     @api gender;
     @api isDeceased;
+    @api fullName;
 
     personIdent;
-    fullName;
     citizenship;
     navUnit;
     age;
@@ -39,6 +39,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     veilederIdent;
     veilederName;
     actorId;
+    writtenStandard;
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
@@ -64,11 +65,10 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     })
     wiredPersonInfo({ error, data }) {
         if (data) {
-            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
-
+            this.writtenStandard = getFieldValue(data, WRITTEN_STANDARD_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
             if (__citizenship != null && typeof __citizenship === 'string') {
                 this.citizenship = this.capitalizeFirstLetter(__citizenship.toLowerCase());
@@ -172,7 +172,20 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedFullName() {
-        return this.isDeceased ? this.fullName + ' (død)' : this.fullName;
+        return this.fullName ? (this.isDeceased ? this.fullName + ' (død)' : this.fullName) : 'Skjermet';
+    }
+
+    get formattedWrittenStandard() {
+        if (this.writtenStandard) {
+            const standard =
+                this.writtenStandard.toLowerCase() === 'nb'
+                    ? 'Bokmål'
+                    : this.writtenStandard.toLowerCase() === 'nn'
+                    ? 'Nynorsk'
+                    : null;
+            return standard ? 'Målform: ' + standard : null;
+        }
+        return null;
     }
 
     get genderIcon() {
@@ -182,8 +195,8 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             case 'Kvinne':
                 return 'FemaleCircleFilled';
             default:
+                return 'UnknownCircleFilled';
         }
-        return 'UnknownCircleFilled';
     }
 
     get genderIconSrc() {

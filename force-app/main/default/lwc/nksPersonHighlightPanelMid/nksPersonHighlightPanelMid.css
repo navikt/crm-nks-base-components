@@ -8,13 +8,17 @@
     border-top-color: #66a5f4 !important;
 }
 
-.panel-dark-grey {
+.panel-dark-black {
     background-color: #363636;
     border-top-color: #858585 !important;
 }
 
 .panel-dark-brown {
     background-color: #4d3c23;
+}
+
+.panel-dark-grey {
+    background-color: #b6b6b6;
 }
 
 .font-styling {

@@ -7,12 +7,20 @@ import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import IS_DECEASED_FIELD from '@salesforce/schema/Person__c.INT_IsDeceased__c';
+import FULL_NAME_FIELD from '@salesforce/schema/Person__c.NKS_Full_Name__c';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-const PERSON_FIELDS = [PERSON_FIRST_NAME, PERSON_IDENT_FIELD, PERSON_ACTORID_FIELD, GENDER_FIELD, IS_DECEASED_FIELD];
+const PERSON_FIELDS = [
+    PERSON_FIRST_NAME,
+    PERSON_IDENT_FIELD,
+    PERSON_ACTORID_FIELD,
+    GENDER_FIELD,
+    IS_DECEASED_FIELD,
+    FULL_NAME_FIELD
+];
 
 export default class NksPersonHighlightPanel extends LightningElement {
     @api recordId;
@@ -32,6 +40,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     veilederName;
     gender;
     isDeceased;
+    fullName;
 
     badges;
     errorMessages;
@@ -51,10 +60,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.underOppfolging = data.underOppfolging;
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
+            this.handleDataLoaded();
         } else if (error) {
             console.error(error);
+            this.handleDataLoaded();
         }
-        this.handleDataLoaded();
     }
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
@@ -62,10 +72,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
+            this.handleDataLoaded();
         } else if (error) {
             console.log('Error occurred: ', JSON.stringify(error, null, 2));
+            this.handleDataLoaded();
         }
-        this.handleDataLoaded();
     }
 
     @wire(getPersonBadgesAndInfo, {
@@ -142,11 +153,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const { data, error } = this.historikkWiredData;
         if (data) {
             this.setWiredBadge();
+            this.handleDataLoaded();
         }
         if (error) {
             console.log(error);
+            this.handleDataLoaded();
         }
-        this.handleDataLoaded();
     }
 
     setWiredPersonAccessBadge() {
@@ -248,14 +260,16 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.isDeceased = getFieldValue(data, IS_DECEASED_FIELD);
+            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
 
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
+            this.handleDataLoaded();
         } else if (error) {
             console.error(error);
+            this.handleDataLoaded();
         }
-        this.handleDataLoaded();
     }
 
     @wire(getRecord, {
@@ -267,18 +281,21 @@ export default class NksPersonHighlightPanel extends LightningElement {
             if (this.relationshipField && this.objectApiName) {
                 console.log('toto recordInfo');
                 this.getRelatedRecordId(this.relationshipField, this.objectApiName);
+                this.handleDataLoaded();
             }
         }
         if (error) {
             console.log(error);
+            this.handleDataLoaded();
         }
-        this.handleDataLoaded();
     }
 
     get panelStyling() {
         return (
             'highlightPanel ' +
-            (this.isDeceased
+            (!this.fullName
+                ? 'panel-grey'
+                : this.isDeceased
                 ? 'panel-black'
                 : this.gender === 'Kvinne'
                 ? 'panel-purple'
@@ -301,7 +318,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     //Todo: Midlertidig metode for å sette isLoading. Må finen ut av hvordan denne skal settes.
     handleDataLoaded() {
         this.dataLoadCount += 1;
-        if (this.dataLoadCount >= 13) {
+        if (this.dataLoadCount >= 6) {
             this.isLoading = false;
         }
     }

@@ -13,6 +13,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     @api filterList = [];
     @api gender;
     @api isDeceased;
+    @api fullName;
 
     personInfo;
     fagsystemLinks = [];

@@ -6,6 +6,7 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
     @api gender;
     @api personData;
     @api isDeceased;
+    @api fullName;
 
     get links() {
         return [
@@ -22,8 +23,10 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
     get midPanelStyling() {
         return (
             'mid-panel ' +
-            (this.isDeceased
+            (!this.fullName
                 ? 'panel-dark-grey'
+                : this.isDeceased
+                ? 'panel-dark-black'
                 : this.gender === 'Kvinne'
                 ? 'panel-dark-purple'
                 : this.gender === 'Mann'
