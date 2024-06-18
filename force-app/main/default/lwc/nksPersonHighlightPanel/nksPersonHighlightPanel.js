@@ -27,8 +27,15 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api objectApiName;
     @api relationshipField;
 
-    @track isLoading = true;
-    @track dataLoadCount = 0;
+    @track loadingStates = {
+        getVeilederIdent: true,
+        getVeilederName: true,
+        getPersonBadgesAndInfo: true,
+        getPersonAccessBadges: true,
+        getHistorikk: true,
+        getRecordPerson: true,
+        getRecord: true
+    };
 
     shownBadge;
     personId;
@@ -55,27 +62,25 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
+        this.loadingStates.getVeilederIdent = !(error || data);
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
-            this.handleDataLoaded();
         } else if (error) {
             console.error(error);
-            this.handleDataLoaded();
         }
     }
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
+        this.loadingStates.getVeilederName = !(error || data || 'undefined');
         if (data) {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
-            this.handleDataLoaded();
         } else if (error) {
             console.log('Error occurred: ', JSON.stringify(error, null, 2));
-            this.handleDataLoaded();
         }
     }
 
@@ -88,13 +93,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredBadgeInfo(value) {
         this.wiredBadge = value;
         this.setWiredBadge();
-        this.handleDataLoaded();
     }
 
     setWiredBadge() {
         if (this.wiredBadge == null || this.historikkWiredData == null) return;
         const { data, error } = this.wiredBadge;
         const { data: historikkData, error: historikkError } = this.historikkWiredData;
+        this.loadingStates.getPersonBadgesAndInfo = !(error || data);
 
         if (data) {
             const badges = [...data.badges];
@@ -140,7 +145,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         } catch (error) {
             console.log('There was problem to fetch data from wire-function: ' + error);
         } finally {
-            this.handleDataLoaded();
+            this.loadingStates.getPersonAccessBadges = false;
         }
     }
 
@@ -151,13 +156,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredHistorikk(value) {
         this.historikkWiredData = value;
         const { data, error } = this.historikkWiredData;
+        this.loadingStates.getHistorikk = !(error || data);
         if (data) {
             this.setWiredBadge();
-            this.handleDataLoaded();
-        }
-        if (error) {
+        } else if (error) {
             console.log(error);
-            this.handleDataLoaded();
         }
     }
 
@@ -232,7 +235,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     getRelatedRecordId(relationshipField, objectApiName) {
-        console.log('related Yo?');
         getRelatedRecord({
             parentId: this.recordId,
             relationshipField: relationshipField,
@@ -241,8 +243,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
             .then((record) => {
                 this.personId = this.resolve(relationshipField, record);
                 this.oppfolgingAndMeldekortData.personId = this.personId;
-                console.log('personId under');
-                console.log(this.personId);
             })
             .catch((error) => {
                 console.log(error);
@@ -254,6 +254,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         fields: PERSON_FIELDS
     })
     wiredPersonInfo({ error, data }) {
+        this.loadingStates.getRecordPerson = !(error || data);
         if (data) {
             this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
@@ -265,10 +266,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
-            this.handleDataLoaded();
         } else if (error) {
             console.error(error);
-            this.handleDataLoaded();
         }
     }
 
@@ -277,16 +276,15 @@ export default class NksPersonHighlightPanel extends LightningElement {
         fields: '$wireFields'
     })
     wiredRecordInfo({ error, data }) {
+        this.loadingStates.getRecord = !(error || data);
         if (data) {
             if (this.relationshipField && this.objectApiName) {
                 console.log('toto recordInfo');
                 this.getRelatedRecordId(this.relationshipField, this.objectApiName);
-                this.handleDataLoaded();
             }
         }
         if (error) {
             console.log(error);
-            this.handleDataLoaded();
         }
     }
 
@@ -305,6 +303,10 @@ export default class NksPersonHighlightPanel extends LightningElement {
         );
     }
 
+    get isLoading() {
+        return Object.values(this.loadingStates).some((isLoading) => isLoading);
+    }
+
     resolve(path, obj) {
         if (typeof path !== 'string') {
             throw new Error('Path must be a string');
@@ -313,13 +315,5 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
-    }
-
-    //Todo: Midlertidig metode for å sette isLoading. Må finen ut av hvordan denne skal settes.
-    handleDataLoaded() {
-        this.dataLoadCount += 1;
-        if (this.dataLoadCount >= 6) {
-            this.isLoading = false;
-        }
     }
 }
