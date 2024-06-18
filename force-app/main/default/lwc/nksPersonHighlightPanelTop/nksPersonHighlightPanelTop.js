@@ -1,15 +1,17 @@
 import { LightningElement, api, wire } from 'lwc';
+import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
-import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
+
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
@@ -69,23 +71,10 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
             this.writtenStandard = getFieldValue(data, WRITTEN_STANDARD_FIELD);
-            let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
-            if (__citizenship != null && typeof __citizenship === 'string') {
-                this.citizenship = this.capitalizeFirstLetter(__citizenship.toLowerCase());
-            } else {
-                this.citizenship = '';
-            }
-
-            let __maritalStatus = getFieldValue(data, MARITAL_STATUS_FIELD);
-            if (__maritalStatus != null && typeof __maritalStatus === 'string') {
-                this.maritalStatus = __maritalStatus
-                    .toLowerCase()
-                    .replace(/_/g, ' ')
-                    .replace(' eller enkemann', '/-mann');
-                this.maritalStatus = this.capitalizeFirstLetter(__maritalStatus.toLowerCase());
-            } else {
-                this.maritalStatus = '';
-            }
+            this.citizenship = this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD));
+            this.maritalStatus = this.capitalizeFirstLetter(
+                this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
+            );
         } else if (error) {
             console.error(error);
         }
@@ -139,13 +128,22 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         } catch (error) {
             this.showCopyToast('error');
         }
-
         document.body.removeChild(hiddenInput);
         event.currentTarget.focus();
     }
 
     capitalizeFirstLetter(str) {
-        return str.charAt(0).toUpperCase() + str.slice(1);
+        if (str == null || typeof str !== 'string') {
+            return '';
+        }
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    formatMaritalStatus(str) {
+        if (typeof str !== 'string') {
+            return str;
+        }
+        return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
     }
 
     showCopyToast(status) {
@@ -158,34 +156,43 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedPersonInfo() {
-        let personInfo = [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
-        return personInfo;
+        return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
     }
 
     get formattedVeileder() {
-        return this.veilederName
-            ? 'Veileder: ' + this.veilederName + (this.veilederIdent ? '(' + this.veilederIdent + ')' : '')
-            : undefined;
+        if (!this.veilederName) {
+            return undefined;
+        }
+        let veilederInfo = 'Veileder: ' + this.veilederName;
+        if (this.veilederIdent) {
+            veilederInfo += ' (' + this.veilederIdent + ')';
+        }
+        return veilederInfo;
     }
+
     get formattedUnit() {
-        return this.navUnit ? `${this.navUnit.enhetNr} ${this.navUnit.navn}` : '';
+        return this.navUnit ? this.navUnit.enhetNr + ' ' + this.navUnit.navn : '';
     }
 
     get formattedFullName() {
-        return this.fullName ? (this.isDeceased ? this.fullName + ' (død)' : this.fullName) : 'Skjermet';
+        if (!this.fullName) {
+            return 'Skjermet';
+        }
+        return this.isDeceased ? this.fullName + ' (død)' : this.fullName;
     }
 
     get formattedWrittenStandard() {
-        if (this.writtenStandard) {
-            const standard =
-                this.writtenStandard.toLowerCase() === 'nb'
-                    ? 'Bokmål'
-                    : this.writtenStandard.toLowerCase() === 'nn'
-                    ? 'Nynorsk'
-                    : null;
-            return standard ? 'Målform: ' + standard : null;
+        if (!this.writtenStandard) {
+            return null;
         }
-        return null;
+
+        const standardMap = {
+            nb: 'Bokmål',
+            nn: 'Nynorsk'
+        };
+
+        const standard = standardMap.get(this.writtenStandard.toLowerCase());
+        return standard ? 'Målform: ' + standard : null;
     }
 
     get genderIcon() {
@@ -200,11 +207,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get genderIconSrc() {
-        let returnvalue = NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
-        return returnvalue;
-    }
-
-    get genderIconClass() {
-        return this.genderIcon;
+        return NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
     }
 }
