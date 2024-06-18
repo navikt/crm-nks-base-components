@@ -31,10 +31,9 @@ export default class NksChatButtonContainerTop extends LightningElement {
     }
 
     get flowButtonClass() {
-        return (
-            'slds-button slds-button_brand slds-button_stretch' +
-            (this.flowButtonLabel === this.redactLabel ? ' redactButton' : '')
-        );
+        return `slds-button slds-button_brand slds-button_stretch${
+            this.flowButtonLabel === this.redactLabel ? ' redactButton' : ''
+        }`;
     }
 
     toggleFlow() {
@@ -46,15 +45,19 @@ export default class NksChatButtonContainerTop extends LightningElement {
         if (status === 'FINISHED' || status === 'FINISHED_SCREEN') {
             this.showFlow = false;
             publishToAmplitude(this.channelName, { type: this.flowButtonLabel + ' finished' });
-            try {
-                const payload = {
-                    flowApiName: this.flowApiName,
-                    outputVariables: outputVariables
-                };
-                publish(this.messageContext, BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL, payload);
-            } catch (error) {
-                console.error('Error publishing message on button container message channel: ', error);
-            }
+            this.publishMessag(outputVariables);
+        }
+    }
+
+    publishMessag(outputVariables) {
+        const payload = {
+            flowApiName: this.flowApiName,
+            outputVariables
+        };
+        try {
+            publish(this.messageContext, BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL, payload);
+        } catch (error) {
+            console.error('Error publishing message on button container message channel: ', error);
         }
     }
 }

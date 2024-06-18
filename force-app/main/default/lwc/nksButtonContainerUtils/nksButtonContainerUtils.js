@@ -3,10 +3,10 @@ import getCommonCode from '@salesforce/apex/NKS_ButtonContainerController.getCom
 async function callGetCommonCode(inputId) {
     try {
         const result = await getCommonCode({ id: inputId });
-        console.log('result: ', result);
+        console.log('Result: ', result);
         return result;
     } catch (error) {
-        console.error('Error calling getCommonCode(): ', error);
+        console.error('Error calling getCommonCode():', error);
         throw error;
     }
 }
@@ -28,17 +28,16 @@ export async function handleShowNotifications(
     const publishNotification = getOutputVariableValue(outputVariables, 'Publish_Notification');
 
     if (!publishNotification) return;
-
     try {
         const flowNameLower = flowName.toLowerCase();
         const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
-        let theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
+        const theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
 
         if (flowNameLower.includes('journal')) {
-            const successMessage = journalConversationNote
+            const message = journalConversationNote
                 ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                 : 'Henvendelsen er journalført';
-            addNotification(notificationBoxTemplate, successMessage, theme);
+            addNotification(notificationBoxTemplate, message, theme);
         } else if (flowNameLower.includes('task')) {
             const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
             const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
@@ -50,10 +49,10 @@ export async function handleShowNotifications(
             addNotification(notificationBoxTemplate, 'Henvendelsen er reservert');
         }
     } catch (error) {
-        console.error('Error handling show notifications: ', error);
-        const errorMessage = Array.isArray(error.body)
+        console.error('Error handling show notifications:', error);
+        const errorMessage = Array.isArray(error?.body)
             ? error.body.map((e) => e.message).join(', ')
-            : error.body?.message || error.message;
-        console.error(errorMessage);
+            : error?.body?.message || error.message;
+        console.error('Error message:', errorMessage);
     }
 }

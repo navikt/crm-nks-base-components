@@ -24,19 +24,6 @@ export default class NksButtonContainerBottom extends LightningElement {
     _activeFlow;
     subscription = null;
 
-    /*
-    connectedCallback() {
-        this.subscribeToMessageChannel();
-    }*/
-
-    renderedCallback() {
-        this.subscribeToMessageChannel();
-    }
-
-    disconnectedCallback() {
-        this.unsubscribeToMessageChannel();
-    }
-
     @wire(MessageContext)
     messageContext;
 
@@ -45,10 +32,17 @@ export default class NksButtonContainerBottom extends LightningElement {
         if (data) {
             this.labelList = data;
             this.updateFlowLoop();
-        }
-        if (error) {
+        } else if (error) {
             console.log('Could not fetch labels for buttonContainerBottom', error);
         }
+    }
+
+    renderedCallback() {
+        this.subscribeToMessageChannel();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
     }
 
     get inputVariables() {
@@ -62,22 +56,21 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get flowLabelList() {
-        return this.flowLabels?.replace(/ /g, '').split(',');
+        return this.flowLabels?.replace(/ /g, '').split(',') || [];
     }
 
     get flowNameList() {
-        return this.flowNames?.replace(/ /g, '').split(',');
+        return this.flowNames?.replace(/ /g, '').split(',') || [];
     }
 
     get showFlow() {
-        return this.activeFlow !== '' && this.activeFlow != null;
+        return Boolean(this.activeFlow);
     }
 
     get layoutClassName() {
-        return (
-            'slds-var-p-vertical_medium' +
-            (this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : '')
-        );
+        return `slds-var-p-vertical_medium${
+            this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : ''
+        }`;
     }
 
     get activeFlow() {
@@ -105,8 +98,8 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     toggleFlow(event) {
-        if (event.target?.dataset.id) {
-            const dataId = event.target.dataset.id;
+        const dataId = event.target?.dataset.id;
+        if (dataId) {
             if (this.activeFlow === dataId) {
                 this.activeFlow = '';
                 this.updateFlowLoop();
@@ -131,7 +124,7 @@ export default class NksButtonContainerBottom extends LightningElement {
             } else {
                 this.dispatchEvent(
                     new CustomEvent('flowsucceeded', {
-                        detail: { flowName: this.activeFlow, flowOutput: event.detail.outputVariables }
+                        detail: { flowName: this.activeFlow, flowOutput: outputVariables }
                     })
                 );
             }
