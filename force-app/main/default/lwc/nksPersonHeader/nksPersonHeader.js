@@ -8,6 +8,7 @@ import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
+import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getFullmaktsgiverHistorikk from '@salesforce/apex/NKS_FullmaktController.getFullmaktsgiverHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
@@ -35,6 +36,7 @@ export default class NksPersonHeader extends LightningElement {
     wireFields;
     navUnit;
     formattedUnitLink;
+    writtenStandard;
 
     @api btnClick = false;
     @api btnShowFullmakt = false;
@@ -120,6 +122,19 @@ export default class NksPersonHeader extends LightningElement {
         return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
     }
 
+    get formattedWrittenStandard() {
+        if (this.writtenStandard) {
+            const standard =
+                this.writtenStandard.toLowerCase() === 'nb'
+                    ? 'Bokmål'
+                    : this.writtenStandard.toLowerCase() === 'nn'
+                    ? 'Nynorsk'
+                    : null;
+            return standard ? 'Målform: ' + standard : null;
+        }
+        return null;
+    }
+
     get showVeilederName() {
         return this.showExtraInfo && this.veilederName;
     }
@@ -179,7 +194,9 @@ export default class NksPersonHeader extends LightningElement {
             GENDER_FIELD,
             AGE_FIELD,
             CITIZENSHIP_FIELD,
-            MARITAL_STATUS_FIELD
+            MARITAL_STATUS_FIELD,
+            WRITTEN_STANDARD_FIELD
+
         ]
     })
     wiredPersonInfo({ error, data }) {
@@ -189,6 +206,7 @@ export default class NksPersonHeader extends LightningElement {
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.gender = getFieldValue(data, GENDER_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
+            this.writtenStandard = getFieldValue(data, WRITTEN_STANDARD_FIELD);
             let __citizenship = getFieldValue(data, CITIZENSHIP_FIELD);
             if (__citizenship != null && typeof __citizenship === 'string') {
                 this.citizenship = this.capitalizeFirstLetter(__citizenship.toLowerCase());

@@ -7,7 +7,10 @@ public without sharing class NKS_KrrInformationController {
         CRM_DatabaseOperations cdo = new CRM_DatabaseOperations();
         cdo.setDomain(CRM_ApplicationDomain.Domain.NKS);
         try {
-            List<KrrCalloutService.Person> personer = KrrCalloutService.doPersonOppslag2(new List<String>{ personIdent }, null);
+            List<KrrCalloutService.Person> personer = KrrCalloutService.doPersonOppslag2(
+                new List<String>{ personIdent },
+                null
+            );
             if (personer != null && !personer.isEmpty()) {
                 for (Person__c person : [SELECT Id FROM Person__c WHERE Name = :personIdent]) {
                     personsToUpdate.add(
@@ -17,7 +20,8 @@ public without sharing class NKS_KrrInformationController {
                             INT_KrrMobilePhone__c = personer[0]?.mobiltelefonnummer,
                             INT_LastUpdatedFromKRR__c = Datetime.now(),
                             INT_VerifiedFromKRR__c = sistVerifisertDato(personer[0]),
-                            INT_KRR_Reservation__c = personer[0]?.reservert == null ? false : personer[0]?.reservert
+                            INT_KRR_Reservation__c = personer[0]?.reservert == null ? false : personer[0]?.reservert,
+                            INT_KrrWrittenStandard__c = personer[0]?.spraak
                         )
                     );
                 }
@@ -26,9 +30,9 @@ public without sharing class NKS_KrrInformationController {
             if (!personsToUpdate.isEmpty())
                 cdo.updateRecords(personsToUpdate);
         } catch (Exception e) {
-            if(!personsToUpdate.isEmpty()){
+            if (!personsToUpdate.isEmpty()) {
                 logger.exception(e, personsToUpdate[0]);
-            }else{
+            } else {
                 logger.exception(e, null, CRM_ApplicationDomain.Domain.NKS);
             }
             logger.publish();
