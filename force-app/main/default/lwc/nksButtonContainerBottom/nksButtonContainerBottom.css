@@ -8,7 +8,3 @@
     --slds-c-button-outline-brand-color-background-active: #cce1ff;
     --slds-c-button-outline-brand-color-border-hover: #0056b4;
 }
-
-.flowButton:last-child {
-    padding-right: 0px;
-}
