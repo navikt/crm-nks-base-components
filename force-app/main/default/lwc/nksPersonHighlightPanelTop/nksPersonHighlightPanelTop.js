@@ -161,7 +161,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             nn: 'Nynorsk'
         };
 
-        const standard = standardMap.get(this.writtenStandard.toLowerCase());
+        const standard = standardMap[this.writtenStandard.toLowerCase()];
         return standard ? 'Målform: ' + standard : null;
     }
 
