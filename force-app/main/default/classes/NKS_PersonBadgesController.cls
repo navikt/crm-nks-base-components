@@ -432,6 +432,11 @@ public with sharing class NKS_PersonBadgesController {
 
         /**
          * @description Setting badge for open STOs
+         * This function could have been used to check Case instead of PSR, which means we probably could have removed
+         * fetchSpecialSkills() and had a much easier query than the one that fetches PSR. However, since the
+         * Case table of records is so big, the query likely would have timed out or taken too long.
+         *
+         * The code is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
          */
         public void setOpenSTO(String caseId, Boolean filterSTO) {
             if (!filterSTO) {
@@ -444,7 +449,6 @@ public with sharing class NKS_PersonBadgesController {
                 return;
             }
 
-            // The code below is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
             List<String> confidentialitySkillsName = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
             List<String> originSkillsName = new List<String>{ 'BTO', 'STO' };
             Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
