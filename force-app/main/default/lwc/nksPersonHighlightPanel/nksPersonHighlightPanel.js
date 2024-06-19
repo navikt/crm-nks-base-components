@@ -148,7 +148,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredHistorikk(value) {
         this.historikkWiredData = value;
         const { data, error } = this.historikkWiredData;
-        this.loadingStates.getHistorikk = !(error || data);
+        // data is null if there is no historic data
+        this.loadingStates.getHistorikk = !(error || data || data === null);
         if (data) {
             this.setWiredBadge();
         } else if (error) {
