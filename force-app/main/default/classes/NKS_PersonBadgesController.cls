@@ -433,58 +433,101 @@ public with sharing class NKS_PersonBadgesController {
         /**
          * @description Setting badge for open STOs
          */
-
         public void setOpenSTO(String caseId, Boolean filterSTO) {
             if (!filterSTO) {
                 setOpenSTO(caseId);
                 return;
             }
 
-            Case currentCase = [
-                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
-                FROM Case
-                WHERE Id = :caseId
-                LIMIT 1
-            ];
-
+            Case currentCase = getCurrentCase(caseId);
             if (currentCase == null) {
                 return;
             }
 
             // The code below is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
-
             List<String> confidentialitySkillsName = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
             List<String> originSkillsName = new List<String>{ 'BTO', 'STO' };
-
             Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
 
             // Since Omni channel skills are org based, we want to only include skills that are used in STO
-            Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
-            List<Schema.PicklistEntry> ple = fieldResult.getPicklistValues();
+            List<String> allRelevantSkills = getAllRelevantSkills(stoThemeRenames);
+            allRelevantSkills.addAll(confidentialitySkillsName);
+            allRelevantSkills.addAll(originSkillsName);
+
+            Set<Id> skillIds = new Set<Id>();
+            Map<Id, String> userConfidentialMap = new Map<Id, String>();
+            Map<Id, String> userOriginMap = new Map<Id, String>();
+
+            fetchUserSkills(
+                allRelevantSkills,
+                confidentialitySkillsName,
+                originSkillsName,
+                skillIds,
+                userConfidentialMap,
+                userOriginMap
+            );
+
+            List<Id> confidentialitySkillsIds = new List<Id>();
+            List<Id> originSkillsIds = new List<Id>();
+            fetchSpecialSkills(confidentialitySkillsName, originSkillsName, confidentialitySkillsIds, originSkillsIds);
+
+            List<Id> casesInQueueList = fetchPendingServiceRoutings(
+                currentCase,
+                skillIds,
+                userConfidentialMap.keySet(),
+                confidentialitySkillsIds,
+                userOriginMap.keySet(),
+                originSkillsIds
+            );
+
+            if (casesInQueueList.isEmpty()) {
+                return;
+            }
+
+            List<Thread__c> threadList = fetchThreads(casesInQueueList);
+
+            if (threadList.isEmpty()) {
+                return;
+            }
+
+            countThreadsAndAddBadges(threadList);
+        }
+
+        private List<String> getAllRelevantSkills(Map<String, String> stoThemeRenames) {
             List<String> allRelevantSkills = new List<String>();
-            for (Schema.PicklistEntry pl : ple) {
+            Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
+            for (Schema.PicklistEntry pl : fieldResult.getPicklistValues()) {
                 if (stoThemeRenames.containsKey(pl.getLabel())) {
                     allRelevantSkills.add(stoThemeRenames.get(pl.getLabel()));
                 } else {
                     allRelevantSkills.add(pl.getLabel());
                 }
             }
-            List<String> allSpecialSkills = new List<String>();
-            allSpecialSkills.addAll(confidentialitySkillsName);
-            allSpecialSkills.addAll(originSkillsName);
-            allRelevantSkills.addAll(allSpecialSkills);
+            return allRelevantSkills;
+        }
 
-            Id userId = UserInfo.getUserId();
+        private Case getCurrentCase(String caseId) {
+            return [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+        }
 
-            Map<Id, String> skillMap = new Map<Id, String>();
-            Map<Id, String> userConfidentialMap = new Map<Id, String>();
-            Map<Id, String> userOriginMap = new Map<Id, String>();
-
+        private void fetchUserSkills(
+            List<String> allRelevantSkills,
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            Set<Id> skillIds,
+            Map<Id, String> userConfidentialMap,
+            Map<Id, String> userOriginMap
+        ) {
             for (ServiceResourceSkill srs : [
                 SELECT SkillId, Skill.DeveloperName, Skill.MasterLabel
                 FROM ServiceResourceSkill
                 WHERE
-                    ServiceResource.RelatedRecordId = :userId
+                    ServiceResource.RelatedRecordId = :UserInfo.getUserId()
                     AND Skill.DeveloperName IN :allRelevantSkills
                     AND EffectiveStartDate <= TODAY
                     AND (EffectiveEndDate >= TODAY
@@ -497,29 +540,44 @@ public with sharing class NKS_PersonBadgesController {
                 } else if (originSkillsName.contains(srs.Skill.DeveloperName)) {
                     userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
                 } else {
-                    skillMap.put(srs.SkillId, srs.Skill.MasterLabel);
+                    skillIds.add(srs.SkillId);
                 }
             }
+        }
 
-            // Salesforce has a weird bug with filtering on skills, so we query them and add them to a list
-            // for use in the PendingServiceRoutning query.
-
-            List<Id> confidentialitySkillsIds = new List<Id>();
-            List<Id> originSkillsIds = new List<Id>();
-
-            for (Skill skill : [SELECT Id, DeveloperName FROM Skill WHERE DeveloperName IN :allSpecialSkills]) {
+        // Salesforce has a weird bug with filtering on skills, so we query them and add them to a list
+        // for use in the PendingServiceRoutning query.
+        private void fetchSpecialSkills(
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            List<Id> confidentialitySkillsIds,
+            List<Id> originSkillsIds
+        ) {
+            for (Skill skill : [
+                SELECT Id, DeveloperName
+                FROM Skill
+                WHERE DeveloperName IN :confidentialitySkillsName OR DeveloperName IN :originSkillsName
+            ]) {
                 if (confidentialitySkillsName.contains(skill.DeveloperName)) {
                     confidentialitySkillsIds.add(skill.Id);
                 }
                 if (originSkillsName.contains(skill.DeveloperName)) {
-                    confidentialitySkillsIds.add(skill.Id);
+                    originSkillsIds.add(skill.Id);
                 }
             }
+        }
 
-            // Salesforce gives us a System.UnexpectedException: Illegal filter on SkillRequirement
-            // if we use Skill.DeveloperName instead of SkillId in the filters, so we query the skills
-            // as we did previously. For some unknown reason this works ¯\_(ツ)_/¯
-
+        // Salesforce gives us a System.UnexpectedException: Illegal filter on SkillRequirement
+        // if we use Skill.DeveloperName instead of SkillId in the filters, so we query the skills
+        // as we did previously. For some unknown reason this works ¯\_(ツ)_/¯
+        private List<Id> fetchPendingServiceRoutings(
+            Case currentCase,
+            Set<Id> skillIds,
+            Set<Id> userConfidentialSkillIds,
+            List<Id> confidentialitySkillsIds,
+            Set<Id> userOriginSkillIds,
+            List<Id> originSkillsIds
+        ) {
             List<Id> casesInQueueList = new List<Id>();
             for (PendingServiceRouting psr : [
                 SELECT WorkItemId
@@ -529,25 +587,28 @@ public with sharing class NKS_PersonBadgesController {
                     AND Id IN (
                         SELECT RelatedRecordId
                         FROM SkillRequirement
-                        WHERE SkillId IN :skillMap.keySet()
+                        WHERE SkillId IN :skillIds
                     )
-                    AND ID NOT IN (
+                    AND Id NOT IN (
                         SELECT RelatedRecordId
                         FROM SkillRequirement
                         WHERE
-                            (SkillId NOT IN :userConfidentialMap.keySet()
+                            (SkillId NOT IN :userConfidentialSkillIds
                             AND SkillId IN :confidentialitySkillsIds)
-                            OR (SkillId NOT IN :userOriginMap.keySet()
+                            OR (SkillId NOT IN :userOriginSkillIds
                             AND SkillId IN :originSkillsIds)
                     )
                     AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
                     AND IsReadyForRouting = TRUE
-                    AND isPushed = FALSE
+                    AND IsPushed = FALSE
             ]) {
                 casesInQueueList.add(psr.WorkItemId);
             }
+            return casesInQueueList;
+        }
 
-            List<Thread__c> threadList = [
+        private List<Thread__c> fetchThreads(List<Id> casesInQueueList) {
+            return [
                 SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
                 FROM Thread__c
                 WHERE
@@ -562,11 +623,9 @@ public with sharing class NKS_PersonBadgesController {
                     )
                 ORDER BY STO_Category__c ASC, CRM_Latest_Message_Datetime__c DESC
             ];
+        }
 
-            if (threadList.isEmpty()) {
-                return;
-            }
-
+        private void countThreadsAndAddBadges(List<Thread__c> threadList) {
             Integer count = 0;
             Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
             for (Thread__c th : threadList) {
@@ -574,13 +633,12 @@ public with sharing class NKS_PersonBadgesController {
                     threadsGroupedByQueue.put(th.STO_Category__c, new List<Thread__c>());
                 }
                 threadsGroupedByQueue.get(th.STO_Category__c).add(th);
-                count += 1;
+                count++;
             }
 
             List<OpenSTO> openSTO = new List<OpenSTO>();
-
             for (String queue : threadsGroupedByQueue.keySet()) {
-                openSTO.add(new openSTO(queue, threadsGroupedByQueue.get(queue)));
+                openSTO.add(new OpenSTO(queue, threadsGroupedByQueue.get(queue)));
             }
 
             badges.add(
