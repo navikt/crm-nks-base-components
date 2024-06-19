@@ -245,4 +245,35 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         System.assertEquals(0, result.badges.size(), 'Expected no guardianship badges');
     }
+
+    @IsTest
+    static void setOpenSTOTest() {
+        Person__c p = [
+            SELECT
+                Id,
+                CRM_Account__c,
+                INT_PowerOfAttorney__c,
+                INT_GuardianshipOrFuturePowerOfAttorney__c,
+                INT_KRR_Reservation__c,
+                NKS_NumberOfSecurityMeasures__c,
+                INT_DateOfDeath__c,
+                INT_IsDeceased__c,
+                INT_SpokenLanguageIntepreter__c,
+                INT_IsNavEmployee__c,
+                INT_Confidential__c,
+                INT_SecurityMeasures__c
+            FROM Person__c
+            WHERE Name = '12345678901'
+        ];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+
+        NKS_PersonBadgesController.PersonBadgeData pbd = new NKS_PersonBadgesController.PersonBadgeData(p);
+
+        Test.startTest();
+        pbd.setOpenSTO(c.Id.toString(), true);
+        Test.stopTest();
+    }
 }
