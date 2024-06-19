@@ -30,13 +30,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api relationshipField;
 
     @track loadingStates = {
-        getVeilederIdent: true,
         getVeilederName: true,
         getPersonBadgesAndInfo: true,
         getPersonAccessBadges: true,
         getHistorikk: true,
-        getRecordPerson: true,
-        getRecord: true
+        getRecordPerson: true
     };
 
     shownBadge;
@@ -47,9 +45,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     isLoaded;
     actorId;
     veilederName;
+    veilederIdent;
     gender;
     isDeceased;
     fullName;
+    personIdent;
 
     badges;
     errorMessages;
@@ -64,7 +64,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
-        this.loadingStates.getVeilederIdent = !(error || data);
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
@@ -77,7 +76,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
-        this.loadingStates.getVeilederName = !(error || data || 'undefined');
+        this.loadingStates.getVeilederName = !(error || data);
         if (data) {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
@@ -253,10 +252,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
         fields: '$wireFields'
     })
     wiredRecordInfo({ error, data }) {
-        this.loadingStates.getRecord = !(error || data);
         if (data) {
             if (this.relationshipField && this.objectApiName) {
-                console.log('toto recordInfo');
                 this.getRelatedRecordId(this.relationshipField, this.objectApiName);
             }
         }

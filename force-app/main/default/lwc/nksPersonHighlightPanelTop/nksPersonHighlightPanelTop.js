@@ -2,8 +2,6 @@ import { LightningElement, api, wire } from 'lwc';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
-import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
@@ -12,17 +10,8 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
-import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
-import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 
-const PERSON_FIELDS = [
-    PERSON_IDENT_FIELD,
-    PERSON_ACTORID_FIELD,
-    AGE_FIELD,
-    CITIZENSHIP_FIELD,
-    MARITAL_STATUS_FIELD,
-    WRITTEN_STANDARD_FIELD
-];
+const PERSON_FIELDS = [AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD, WRITTEN_STANDARD_FIELD];
 export default class NksPersonHighlightPanelTop extends LightningElement {
     @api personId;
     @api objectApiName;
@@ -31,35 +20,16 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api gender;
     @api isDeceased;
     @api fullName;
+    @api veilederIdent;
+    @api veilederName;
+    @api personIdent;
 
-    personIdent;
     citizenship;
     navUnit;
     age;
     maritalStatus;
     formattedUnitLink;
-    veilederIdent;
-    veilederName;
-    actorId;
     writtenStandard;
-
-    @wire(getVeilederIdent, { actorId: '$actorId' })
-    wireVeilIdentInfo({ data, error }) {
-        if (data) {
-            this.veilederIdent = data.primaerVeileder;
-        } else if (error) {
-            console.error(error);
-        }
-    }
-
-    @wire(getVeilederName, { navIdent: '$veilederIdent' })
-    wiredName({ data, error }) {
-        if (data) {
-            this.veilederName = data;
-        } else if (error) {
-            console.error('Error occurred: ', JSON.stringify(error, null, 2));
-        }
-    }
 
     @wire(getRecord, {
         recordId: '$personId',
@@ -67,8 +37,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     })
     wiredPersonInfo({ error, data }) {
         if (data) {
-            this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
-            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
             this.age = getFieldValue(data, AGE_FIELD);
             this.writtenStandard = getFieldValue(data, WRITTEN_STANDARD_FIELD);
             this.citizenship = this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD));
@@ -116,6 +84,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     handleCopy(event) {
+        // fjernes?
         const hiddenInput = document.createElement('input');
         const eventValue = event.currentTarget.value;
         hiddenInput.value = eventValue;
