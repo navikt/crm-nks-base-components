@@ -80,7 +80,7 @@
 }
 
 .unknownBackground {
-    --primaryBackgroundColor: #6d543;
+    --primaryBackgroundColor: #6d5431;
     --secondaryBackgroundColor: #4d3c23;
     /* Unknown border Color */
     --borderColor: black;
