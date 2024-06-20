@@ -146,7 +146,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
 
     get formattedFullName() {
         if (!this.fullName) {
-            return 'Skjermet';
+            return 'Skjermet person';
         }
         return this.isDeceased ? this.fullName + ' (død)' : this.fullName;
     }
@@ -166,6 +166,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get genderIcon() {
+        if (!this.fullName) return 'confidentialCircleFilled';
         switch (this.gender) {
             case 'Mann':
                 return 'MaleCircleFilled';
