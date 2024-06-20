@@ -30,7 +30,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api relationshipField;
 
     @track loadingStates = {
-        getVeilederIdent: true,
         getPersonBadgesAndInfo: true,
         getPersonAccessBadges: true,
         getHistorikk: true,
@@ -64,7 +63,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
-        this.loadingStates.getVeilederIdent = !(error || data);
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
@@ -247,6 +245,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.handleBackgroundColor();
         } else if (error) {
             console.error(error);
+            this.handleBackgroundColor();
         }
     }
 
@@ -283,7 +282,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     handleBackgroundColor() {
         const genderWrapper = this.template.querySelector('.gender-wrapper');
         const className = !this.fullName
-            ? 'panel-grey'
+            ? 'confidentialBackground'
             : this.isDeceased
             ? 'deadBackground'
             : this.gender === 'Kvinne'

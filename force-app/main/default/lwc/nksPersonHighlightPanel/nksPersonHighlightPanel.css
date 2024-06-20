@@ -92,15 +92,12 @@
     --borderColor: #858585;
 }
 
+.confidentialBackground {
+    --primaryBackgroundColor: #cbcfd5;
+    --secondaryBackgroundColor: #b9bcbf;
+    --borderColor: #eeeded;
+}
+
 .panelBackground {
     background-color: var(--primaryBackgroundColor, #0056b4);
 }
-
-/* Vet ikke hva disse to var brukt til, skal sjekke */
-
-/* .panel-grey {
-    background-color: #d0d0d0;
-}
-.panel-dark-grey {
-    background-color: #b6b6b6;
-}/ */
