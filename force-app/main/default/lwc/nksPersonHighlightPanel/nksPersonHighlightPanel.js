@@ -30,7 +30,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @api relationshipField;
 
     @track loadingStates = {
-        getVeilederName: true,
+        getVeilederIdent: true,
         getPersonBadgesAndInfo: true,
         getPersonAccessBadges: true,
         getHistorikk: true,
@@ -64,6 +64,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
+        this.loadingStates.getVeilederIdent = !(error || data);
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
@@ -76,7 +77,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
-        this.loadingStates.getVeilederName = !(error || data);
         if (data) {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
@@ -266,6 +266,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get isLoading() {
+        console.log(JSON.stringify(this.loadingStates));
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
     }
 
