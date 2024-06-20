@@ -3,9 +3,7 @@ import { NavigationMixin } from 'lightning/navigation';
 import { trackAmplitudeEvent } from 'c/amplitude';
 
 export default class NksPersonHighlightPanelMid extends NavigationMixin(LightningElement) {
-    @api gender;
     @api personData;
-    @api isDeceased;
     @api fullName;
 
     get links() {

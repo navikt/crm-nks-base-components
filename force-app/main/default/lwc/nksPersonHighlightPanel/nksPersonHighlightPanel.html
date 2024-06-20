@@ -70,8 +70,6 @@
                                             type={badge.badgeContentType}
                                             badge-data={badge.badgeContent}
                                             onbadgeclosed={closeBadge}
-                                            is-deceased={isDeceased}
-                                            gender={gender}
                                         ></c-nks-person-highlight-panel-badge-content>
                                     </lightning-layout-item>
                                 </lightning-layout-item>
@@ -80,9 +78,7 @@
                     </lightning-layout-item>
 
                     <c-nks-person-highlight-panel-mid
-                        gender={gender}
                         person-data={oppfolgingAndMeldekortData}
-                        is-deceased={isDeceased}
                         full-name={fullName}
                     ></c-nks-person-highlight-panel-mid>
                     <c-nks-person-highlight-panel-bot
@@ -90,8 +86,6 @@
                         has-person-id="true"
                         related-field={relationshipField}
                         object-api-name={objectApiName}
-                        gender={gender}
-                        is-deceased={isDeceased}
                         full-name={fullName}
                     ></c-nks-person-highlight-panel-bot>
                 </div>

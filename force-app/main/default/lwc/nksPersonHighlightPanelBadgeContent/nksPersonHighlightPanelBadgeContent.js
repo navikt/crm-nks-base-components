@@ -25,8 +25,6 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
     @api type;
     @api badgeData;
     @api shownBadge;
-    @api isDeceased;
-    @api gender;
     // In LWC you can import stylesheets to apply to all templates
     // https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css.html#assign-css-stylesheets-to-a-component
     static stylesheets = [sharedStyling];

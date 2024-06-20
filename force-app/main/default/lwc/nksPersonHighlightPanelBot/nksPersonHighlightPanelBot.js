@@ -11,8 +11,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     @api relatedField;
     @api hasPersonId;
     @api filterList = [];
-    @api gender;
-    @api isDeceased;
     @api fullName;
 
     personInfo;
