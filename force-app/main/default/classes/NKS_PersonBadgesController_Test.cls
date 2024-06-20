@@ -115,7 +115,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorney() {
-        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland"}]';
+        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland", "tjenesteomraade": [{"tjenesteoppgave": "fiske", "tjenestevirksomhet": "nav"}]}]';
 
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
         p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
@@ -144,6 +144,12 @@ private with sharing class NKS_PersonBadgesController_Test {
             result.guardianships[0].typeLabel,
             'Expected type to have a label'
         );
+        Assert.areNotEqual(
+            result.guardianships[0].motpartsPersonIdent,
+            result.guardianships[0].motpartLabel,
+            'Expected motpart to have a label'
+        );
+        Assert.isNotNull(result.guardianships[0].tjenesteomraadeLabel, 'Expected tjenesteomraade to have a label');
     }
 
     @IsTest
