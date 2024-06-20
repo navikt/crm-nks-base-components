@@ -66,5 +66,5 @@
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
-    <label>Scratch permissions</label>
+    <label>NKS Scratch permissions</label>
 </PermissionSet>

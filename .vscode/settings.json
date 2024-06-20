@@ -31,6 +31,6 @@
     },
     "scratch.default.permissionsets": [
         "Application_Logging",
-        "Scratch_Permissions"
+        "NKS_Scratch_Permissions"
     ]
 }
