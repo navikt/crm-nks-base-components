@@ -243,6 +243,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
+
+            this.handleBackgroundColor();
         } else if (error) {
             console.error(error);
         }
@@ -263,21 +265,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
-    get panelStyling() {
-        return (
-            'highlightPanel ' +
-            (!this.fullName
-                ? 'panel-grey'
-                : this.isDeceased
-                ? 'panel-black'
-                : this.gender === 'Kvinne'
-                ? 'panel-purple'
-                : this.gender === 'Mann'
-                ? 'panel-blue'
-                : 'panel-brown')
-        );
-    }
-
     get isLoading() {
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
     }
@@ -290,5 +277,19 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return path.split('.').reduce(function (prev, curr) {
             return prev ? prev[curr] : null;
         }, obj || {});
+    }
+
+    handleBackgroundColor() {
+        const genderWrapper = this.template.querySelector('.gender-wrapper');
+        const className = !this.fullName
+            ? 'panel-grey'
+            : this.isDeceased
+            ? 'deadBackground'
+            : this.gender === 'Kvinne'
+            ? 'femaleBackground'
+            : this.gender === 'Mann'
+            ? 'maleBackground'
+            : 'unknownBackground';
+        genderWrapper.className = 'gender-wrapper ' + className;
     }
 }

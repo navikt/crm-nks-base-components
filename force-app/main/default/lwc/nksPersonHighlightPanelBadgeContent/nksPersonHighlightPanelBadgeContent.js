@@ -84,17 +84,4 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
             }
         });
     }
-
-    get backgroundStyling() {
-        return (
-            'slds-m-left_x-small backgroundStyling ' +
-            (this.isDeceased
-                ? 'backgroundStylingBlack'
-                : this.gender === 'Kvinne'
-                ? 'backgroundStylingPurple'
-                : this.gender === 'Mann'
-                ? 'backgroundStylingBlue'
-                : '')
-        );
-    }
 }

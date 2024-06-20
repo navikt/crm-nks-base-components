@@ -22,3 +22,7 @@
 .person-info-container {
     flex-wrap: wrap;
 }
+
+.fillColor {
+    color: var(--primaryBackgroundColor, orange);
+}

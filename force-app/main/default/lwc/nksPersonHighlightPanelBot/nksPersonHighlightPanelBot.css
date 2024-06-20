@@ -4,18 +4,7 @@
     padding-right: 0.625rem;
     display: flex;
     align-items: center;
-}
-
-.bot-panel-blue {
-    background-color: #0056b4;
-}
-
-.bot-panel-purple {
-    background-color: #634689;
-}
-
-.bot-panel-grey {
-    background-color: #484848;
+    background-color: var(--primaryBackgroundColor, #484848);
 }
 
 .fagsystem-padding {

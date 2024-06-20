@@ -34,19 +34,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         this._personIdent = value;
     }
 
-    get panelStyling() {
-        return (
-            'bot-panel ' +
-            (this.isDeceased
-                ? 'bot-panel-grey'
-                : this.gender === 'Kvinne'
-                ? 'bot-panel-purple'
-                : this.gender === 'Mann'
-                ? 'bot-panel-blue'
-                : '')
-        );
-    }
-
     @wire(getFagsoneIpAndOrgType)
     wiredGetFagsoneIpAndOrgType({ error, data }) {
         if (data) {

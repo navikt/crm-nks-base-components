@@ -13,25 +13,6 @@
     align-items: center;
 }
 
-.panel-blue {
-    background-color: #0056b4;
-}
-.panel-purple {
-    background-color: #634689;
-}
-
-.panel-black {
-    background-color: #484848;
-}
-
-.panel-brown {
-    background-color: #6d5431;
-}
-
-.panel-grey {
-    background-color: #d0d0d0;
-}
-
 .pointer {
     cursor: pointer;
 }
@@ -85,3 +66,41 @@
 .custom-padding-left {
     padding-left: 1.875rem;
 }
+
+.maleBackground {
+    --primaryBackgroundColor: #0056b4;
+    --secondaryBackgroundColor: #00459c;
+    --borderColor: #66a5f4;
+}
+
+.femaleBackground {
+    --primaryBackgroundColor: #634689;
+    --secondaryBackgroundColor: #523874;
+    --borderColor: #9a80bd;
+}
+
+.unknownBackground {
+    --primaryBackgroundColor: #6d543;
+    --secondaryBackgroundColor: #4d3c23;
+    /* Unknown border Color */
+    --borderColor: black;
+}
+
+.deadBackground {
+    --primaryBackgroundColor: #484848;
+    --secondaryBackgroundColor: #363636;
+    --borderColor: #858585;
+}
+
+.panelBackground {
+    background-color: var(--primaryBackgroundColor, #0056b4);
+}
+
+/* Vet ikke hva disse to var brukt til, skal sjekke */
+
+/* .panel-grey {
+    background-color: #d0d0d0;
+}
+.panel-dark-grey {
+    background-color: #b6b6b6;
+}/ */

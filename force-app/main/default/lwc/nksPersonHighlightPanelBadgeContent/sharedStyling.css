@@ -5,33 +5,13 @@
     flex-direction: column;
 }
 
-.infoIcon {
-    color: #ffb249;
-    margin-right: 0.75rem;
-}
-
-.greyInfoIcon {
-    color: #c6c6c6;
-    margin-right: 0.75rem;
-}
-
 .backgroundStyling {
     position: absolute;
     z-index: 100;
     min-width: max-content;
     top: 3rem;
     left: 0rem;
-}
-
-.backgroundStylingBlue {
-    background: var(--badge-background, #0056b4);
-}
-.backgroundStylingPurple {
-    background: var(--badge-background, #634689);
-}
-
-.backgroundStylingBlack {
-    background: var(--badge-background, #484848);
+    background-color: var(--secondaryBackgroundColor, #0056b4);
 }
 
 .headerLine {

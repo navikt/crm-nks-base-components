@@ -20,21 +20,6 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
         ];
     }
 
-    get midPanelStyling() {
-        return (
-            'mid-panel ' +
-            (!this.fullName
-                ? 'panel-dark-grey'
-                : this.isDeceased
-                ? 'panel-dark-black'
-                : this.gender === 'Kvinne'
-                ? 'panel-dark-purple'
-                : this.gender === 'Mann'
-                ? 'panel-dark-blue'
-                : 'panel-dark-brown')
-        );
-    }
-
     viewOppfolging() {
         trackAmplitudeEvent('Opened Aktivitetsplanen');
         const { actorId, firstName, name, veilederName, underOppfolging, veilederIdent } = this.personData || {};
