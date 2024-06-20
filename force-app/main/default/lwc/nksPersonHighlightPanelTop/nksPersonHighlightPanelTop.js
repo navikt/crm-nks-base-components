@@ -177,6 +177,11 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         }
     }
 
+    get genderText() {
+        if (this.gender === 'Ukjent') return 'Ukjent kjønn';
+        return this.gender;
+    }
+
     get genderIconSrc() {
         return NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
     }
