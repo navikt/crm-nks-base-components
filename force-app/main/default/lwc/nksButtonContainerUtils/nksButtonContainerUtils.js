@@ -15,8 +15,8 @@ function getOutputVariableValue(outputVariables, variableName) {
     return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
-function addNotification(notificationBoxTemplate, message, theme = '') {
-    notificationBoxTemplate.addNotification(message, theme);
+function addNotification(notificationBoxTemplate, message, optionalText = '') {
+    notificationBoxTemplate.addNotification(message, optionalText);
 }
 
 export async function handleShowNotifications(
@@ -41,8 +41,8 @@ export async function handleShowNotifications(
         } else if (flowNameLower.includes('task')) {
             const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
             const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
-            const taskMessage = `Oppgave opprettet ${theme} Sendt til: ${unitNumber} ${unitName}`;
-            addNotification(notificationBoxTemplate, taskMessage);
+            const optionalText = `${theme}\xa0\xa0\xa0\xa0\xa0Sendt til: ${unitNumber} ${unitName}`;
+            addNotification(notificationBoxTemplate, 'Oppgave opprettet', optionalText);
         } else if (flowNameLower.includes('redact')) {
             addNotification(notificationBoxTemplate, 'Henvendelsen er sendt til sladding');
         } else if (flowNameLower.includes('reserve')) {
