@@ -1,0 +1,42 @@
+<template>
+    <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
+        <div class="headerLine"></div>
+        <div class="slds-m-around_medium">
+            <p><strong>Åpne Skriv Til Oss</strong></p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="openSTO">
+                    <lightning-layout-item
+                        key={openSTO.queue}
+                        size="12"
+                        class="slds-var-p-left_x-small slds-var-m-top_xxx-small"
+                    >
+                        <div>
+                            <h2 class="slds-var-p-bottom_xx-small" style="font-weight: bold">
+                                {openSTO.queue} ({openSTO.threadSize})
+                            </h2>
+                            <div>
+                                <template for:each={openSTO.threadList} for:item="thread">
+                                    <div key={thread.Id}>
+                                        <a
+                                            onclick={openRecordAndCloseList}
+                                            style="color: white; text-decoration: underline"
+                                        >
+                                            {thread.CRM_Thread_Type__c} -&nbsp;
+                                            <c-yt-formatted-date
+                                                data-id={thread.Id}
+                                                date={thread.CRM_Latest_Message_Datetime__c}
+                                                use-month-name
+                                                include-time
+                                            >
+                                            </c-yt-formatted-date>
+                                        </a>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </lightning-layout-item>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>

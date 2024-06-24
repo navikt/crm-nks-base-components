@@ -1,0 +1,27 @@
+.font-styling {
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.876rem;
+}
+
+.content-padding {
+    padding-right: 2.5rem;
+}
+
+.margin-area {
+    min-width: 5rem;
+    max-width: 5rem;
+}
+
+.mid-panel {
+    min-height: 2.5rem;
+    height: auto;
+    padding-right: 0.625rem;
+    display: flex;
+    align-items: center;
+    border-top: 0.0625rem solid;
+    background-color: var(--secondaryBackgroundColor, #4d3c23);
+    border-top-color: var(--borderColor, #66a5f4);
+}
