@@ -7,6 +7,10 @@ import PERSON_IDENT_FIELD from '@salesforce/schema/Person__c.Name';
 import GENDER_FIELD from '@salesforce/schema/Person__c.INT_Sex__c';
 import IS_DECEASED_FIELD from '@salesforce/schema/Person__c.INT_IsDeceased__c';
 import FULL_NAME_FIELD from '@salesforce/schema/Person__c.NKS_Full_Name__c';
+import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
+import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
+import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
+import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
@@ -21,7 +25,11 @@ const PERSON_FIELDS = [
     PERSON_ACTORID_FIELD,
     GENDER_FIELD,
     IS_DECEASED_FIELD,
-    FULL_NAME_FIELD
+    FULL_NAME_FIELD,
+    AGE_FIELD,
+    CITIZENSHIP_FIELD,
+    MARITAL_STATUS_FIELD,
+    WRITTEN_STANDARD_FIELD
 ];
 
 export default class NksPersonHighlightPanel extends LightningElement {
@@ -45,9 +53,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     actorId;
     veilederName;
     veilederIdent;
-    gender;
-    isDeceased;
     fullName;
+    firstName;
     personIdent;
 
     badges;
@@ -56,6 +63,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     badgeContent;
 
     oppfolgingAndMeldekortData = {};
+    personDetails = {};
 
     connectedCallback() {
         this.wireFields = [this.objectApiName + '.Id'];
@@ -231,12 +239,25 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredPersonInfo({ error, data }) {
         this.loadingStates.getRecordPerson = !(error || data);
         if (data) {
+            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
+            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
-            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
-            this.gender = getFieldValue(data, GENDER_FIELD);
-            this.isDeceased = getFieldValue(data, IS_DECEASED_FIELD);
-            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
+            this.personDetails = {
+                personId: this.personId,
+                firstName: this.firstName,
+                personIdent: this.personIdent,
+                actorId: this.actorId,
+                fullName: this.fullName,
+                gender: getFieldValue(data, GENDER_FIELD),
+                isDeceased: getFieldValue(data, IS_DECEASED_FIELD),
+                age: getFieldValue(data, AGE_FIELD),
+                writtenStandard: getFieldValue(data, WRITTEN_STANDARD_FIELD),
+                citizenship: this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD)),
+                maritalStatus: this.capitalizeFirstLetter(
+                    this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
+                )
+            };
 
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
@@ -264,11 +285,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
-    get isLoading() {
-        console.log(JSON.stringify(this.loadingStates));
-        return Object.values(this.loadingStates).some((isLoading) => isLoading);
-    }
-
     resolve(path, obj) {
         if (typeof path !== 'string') {
             throw new Error('Path must be a string');
@@ -281,15 +297,34 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     handleBackgroundColor() {
         const genderWrapper = this.template.querySelector('.gender-wrapper');
-        const className = !this.fullName
+        const className = !this.personDetails?.fullName
             ? 'confidentialBackground'
-            : this.isDeceased
+            : this.personDetails?.isDeceased
             ? 'deadBackground'
-            : this.gender === 'Kvinne'
+            : this.personDetails?.gender === 'Kvinne'
             ? 'femaleBackground'
-            : this.gender === 'Mann'
+            : this.personDetails?.gender === 'Mann'
             ? 'maleBackground'
             : 'unknownBackground';
         genderWrapper.className = 'gender-wrapper ' + className;
+    }
+
+    capitalizeFirstLetter(str) {
+        if (str == null || typeof str !== 'string') {
+            return '';
+        }
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    formatMaritalStatus(str) {
+        if (typeof str !== 'string') {
+            return str;
+        }
+        return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
+    }
+
+    get isLoading() {
+        console.log(JSON.stringify(this.loadingStates));
+        return Object.values(this.loadingStates).some((isLoading) => isLoading);
     }
 }

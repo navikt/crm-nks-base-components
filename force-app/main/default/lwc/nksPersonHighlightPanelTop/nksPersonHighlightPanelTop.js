@@ -2,51 +2,18 @@ import { LightningElement, api, wire } from 'lwc';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
-import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
-import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
-import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
-import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
-
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
-
-const PERSON_FIELDS = [AGE_FIELD, CITIZENSHIP_FIELD, MARITAL_STATUS_FIELD, WRITTEN_STANDARD_FIELD];
 export default class NksPersonHighlightPanelTop extends LightningElement {
-    @api personId;
+    @api personDetails;
     @api objectApiName;
     @api recordId;
-    @api relationshipField;
-    @api gender;
-    @api isDeceased;
-    @api fullName;
-    @api veilederIdent;
     @api veilederName;
-    @api personIdent;
+    @api veilederIdent;
 
-    citizenship;
     navUnit;
-    age;
-    maritalStatus;
     formattedUnitLink;
-    writtenStandard;
-
-    @wire(getRecord, {
-        recordId: '$personId',
-        fields: PERSON_FIELDS
-    })
-    wiredPersonInfo({ error, data }) {
-        if (data) {
-            this.age = getFieldValue(data, AGE_FIELD);
-            this.writtenStandard = getFieldValue(data, WRITTEN_STANDARD_FIELD);
-            this.citizenship = this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD));
-            this.maritalStatus = this.capitalizeFirstLetter(
-                this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
-            );
-        } else if (error) {
-            console.error(error);
-        }
-    }
 
     @wire(getNavUnit, {
         field: '$relationshipField',
@@ -102,20 +69,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         event.currentTarget.focus();
     }
 
-    capitalizeFirstLetter(str) {
-        if (str == null || typeof str !== 'string') {
-            return '';
-        }
-        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    }
-
-    formatMaritalStatus(str) {
-        if (typeof str !== 'string') {
-            return str;
-        }
-        return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
-    }
-
     showCopyToast(status) {
         const evt = new ShowToastEvent({
             message: status === 'success' ? 'kopiert til utklippstavlen.' : 'Kunne ikke kopiere',
@@ -126,7 +79,9 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedPersonInfo() {
-        return [this.age, this.citizenship, this.maritalStatus].filter((x) => x != null).join(' / ');
+        return [this.personDetails?.age, this.personDetails?.citizenship, this.personDetails?.maritalStatus]
+            .filter((x) => x != null)
+            .join(' / ');
     }
 
     get formattedVeileder() {
@@ -145,14 +100,14 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedFullName() {
-        if (!this.fullName) {
+        if (!this.personDetails?.fullName) {
             return 'Skjermet person';
         }
-        return this.isDeceased ? this.fullName + ' (død)' : this.fullName;
+        return this.personDetails?.isDeceased ? this.personDetails?.fullName + ' (død)' : this.personDetails?.fullName;
     }
 
     get formattedWrittenStandard() {
-        if (!this.writtenStandard) {
+        if (!this.personDetails?.writtenStandard) {
             return null;
         }
 
@@ -161,13 +116,13 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             nn: 'Nynorsk'
         };
 
-        const standard = standardMap[this.writtenStandard.toLowerCase()];
+        const standard = standardMap[this.personDetails?.writtenStandard.toLowerCase()];
         return standard ? 'Målform: ' + standard : null;
     }
 
     get genderIcon() {
-        if (!this.fullName) return 'confidentialCircleFilled';
-        switch (this.gender) {
+        if (!this.personDetails?.fullName) return 'confidentialCircleFilled';
+        switch (this.personDetails?.gender) {
             case 'Mann':
                 return 'MaleCircleFilled';
             case 'Kvinne':
@@ -178,11 +133,15 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get genderText() {
-        if (this.gender === 'Ukjent') return 'Ukjent kjønn';
-        return this.gender;
+        if (this.personDetails?.gender === 'Ukjent') return 'Ukjent kjønn';
+        return this.personDetails?.gender;
     }
 
     get genderIconSrc() {
         return NAV_ICONS + '/' + this.genderIcon + '.svg#' + this.genderIcon;
+    }
+
+    get personIdent() {
+        return this.personDetails?.personIdent;
     }
 }
