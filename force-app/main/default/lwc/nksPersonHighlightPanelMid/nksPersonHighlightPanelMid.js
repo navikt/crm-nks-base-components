@@ -18,6 +18,15 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
         ];
     }
 
+    @api updateOppfolging(newData) {
+        // Replace object with new to avoid proxy err
+        this.personData = {
+            ...this.personData,
+            veilederIdent: newData.veilederIdent,
+            underOppfolging: newData.underOppfolging
+        };
+    }
+
     viewOppfolging() {
         trackAmplitudeEvent('Opened Aktivitetsplanen');
         const { actorId, firstName, name, veilederName, underOppfolging, veilederIdent } = this.personData || {};
@@ -42,15 +51,13 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
 
     viewMeldekort() {
         trackAmplitudeEvent('Opened Meldekort');
-        const { personId } = this.personData || {};
-
         this.aktivitetsPageRef = {
             type: 'standard__navItemPage',
             attributes: {
                 apiName: 'NKS_Arenaytelser'
             },
             state: {
-                c__personId: personId
+                c__personId: this.personData?.personId
             }
         };
         this[NavigationMixin.GenerateUrl](this.aktivitetsPageRef);

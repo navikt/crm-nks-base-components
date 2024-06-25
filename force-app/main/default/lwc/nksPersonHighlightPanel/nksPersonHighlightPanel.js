@@ -76,6 +76,14 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.underOppfolging = data.underOppfolging;
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
+
+            // When wiredPersonInfo runs, it instantly sends oppfolgingAndMeldekortData to the mid component
+            // and does not resend it when this dependant wire has finished running, therefore the code below
+            // is needed to send oppfolging and veilederident afterwards.
+            const midPanel = this.template.querySelector('c-nks-person-highlight-panel-mid');
+            if (midPanel) {
+                midPanel.updateOppfolging(this.oppfolgingAndMeldekortData);
+            }
         } else if (error) {
             console.error(error);
         }
@@ -87,7 +95,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
         } else if (error) {
-            console.log('Error occurred: ', JSON.stringify(error, null, 2));
+            console.error('Error occurred: ', JSON.stringify(error, null, 2));
         }
     }
 
@@ -141,7 +149,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         try {
             this.setWiredPersonAccessBadge();
         } catch (error) {
-            console.log('There was problem to fetch data from wire-function: ' + error);
+            console.error('There was problem to fetch data from wire-function: ' + error);
         } finally {
             this.loadingStates.getPersonAccessBadges = false;
         }
@@ -159,7 +167,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.setWiredBadge();
         } else if (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -186,7 +194,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const cmp = this.template.querySelector(
             `lightning-layout-item[data-id="${selectedBadge}"] c-nks-person-highlight-panel-badge-content`
         );
-        console.log(cmp);
         this.handleSelectedBadge(cmp.dataset.id, selectedBadge);
     }
 
@@ -228,7 +235,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 this.oppfolgingAndMeldekortData.personId = this.personId;
             })
             .catch((error) => {
-                console.log(error);
+                console.error(error);
             });
     }
 
@@ -281,7 +288,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             }
         }
         if (error) {
-            console.log(error);
+            console.error(error);
         }
     }
 
@@ -324,7 +331,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get isLoading() {
-        console.log(JSON.stringify(this.loadingStates));
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
     }
 }
