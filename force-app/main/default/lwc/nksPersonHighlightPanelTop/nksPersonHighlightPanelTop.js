@@ -11,6 +11,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api recordId;
     @api veilederName;
     @api veilederIdent;
+    @api relationshipField;
 
     navUnit;
     formattedUnitLink;
