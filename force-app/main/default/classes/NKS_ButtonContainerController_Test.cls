@@ -31,6 +31,6 @@ public with sharing class NKS_ButtonContainerController_Test {
         String result = NKS_ButtonContainerController.getCommonCodeName(commonCode.Id);
         Test.stopTest();
 
-        System.assertEquals('Arbeid', result, 'The name should match the inserted Common_Code__c record');
+        Assert.areEqual('Arbeid', result, 'The name should match the inserted Common_Code__c record');
     }
 }

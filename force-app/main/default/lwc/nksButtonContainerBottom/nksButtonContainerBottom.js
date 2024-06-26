@@ -37,7 +37,7 @@ export default class NksButtonContainerBottom extends LightningElement {
         }
     }
 
-    renderedCallback() {
+    connectedCallback() {
         this.subscribeToMessageChannel();
     }
 

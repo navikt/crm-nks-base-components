@@ -45,11 +45,11 @@ export default class NksChatButtonContainerTop extends LightningElement {
         if (status === 'FINISHED' || status === 'FINISHED_SCREEN') {
             this.showFlow = false;
             publishToAmplitude(this.channelName, { type: this.flowButtonLabel + ' finished' });
-            this.publishMessag(outputVariables);
+            this.publishMessage(outputVariables);
         }
     }
 
-    publishMessag(outputVariables) {
+    publishMessage(outputVariables) {
         const payload = {
             flowApiName: this.flowApiName,
             outputVariables

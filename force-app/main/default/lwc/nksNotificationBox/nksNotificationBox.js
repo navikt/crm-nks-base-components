@@ -5,31 +5,13 @@ export default class NksNotificationBox extends LightningElement {
     count = 0;
 
     @api
-    get hasNotifications() {
-        return this.notificationList.length > 0;
-    }
-
-    @api
     addNotification(mainText, optionalText = null) {
         this.count++;
         this.notificationList.push({
             id: String(this.count),
             text: mainText,
             time: this.getCurrentTime(),
-            optionalText: optionalText,
-            success: true
-        });
-    }
-
-    @api
-    addErrorMessage(mainText, optionalText = null) {
-        this.count++;
-        this.notificationList.push({
-            id: String(this.count),
-            text: mainText,
-            time: this.getCurrentTime(),
-            optionalText: optionalText,
-            success: false
+            optionalText: optionalText
         });
     }
 
