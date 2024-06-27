@@ -1,8 +1,16 @@
-.highlightPanel {
+.highlightPanel,
+.highlightPanelConfidential {
     font-size: 16px;
     line-height: 1.5rem;
-    color: white;
     width: 100%;
+}
+
+.highlightPanel {
+    color: white;
+}
+
+.highlightPanelConfidential {
+    color: black;
 }
 
 .highlightPanelTop {

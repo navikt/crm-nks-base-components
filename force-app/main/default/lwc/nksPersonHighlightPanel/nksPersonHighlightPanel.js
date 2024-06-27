@@ -74,6 +74,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
+            console.log('wireVeilIdentInfo: ', this.underOppfolging);
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
 
@@ -332,5 +333,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get isLoading() {
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
+    }
+
+    get panelClass() {
+        return this.fullName ? 'highlightPanel' : 'highlightPanelConfidential';
     }
 }
