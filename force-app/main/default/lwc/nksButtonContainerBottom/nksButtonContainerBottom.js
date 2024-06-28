@@ -17,7 +17,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     @api flowNames;
     @api flowLabels;
     @api setBorders = false;
-    @api showNotifications = false;
+    @api showNotifications = false; // Show notifications if the component is used independently
 
     flowLoop;
     timer;
@@ -119,6 +119,9 @@ export default class NksButtonContainerBottom extends LightningElement {
         if (status === CONSTANTS.FINISHED || status === CONSTANTS.FINISHED_SCREEN) {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
 
+            /**
+             * If the component is a dependent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
+             */
             if (this.showNotifications) {
                 handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
             } else {
