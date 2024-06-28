@@ -19,7 +19,7 @@ public with sharing class NKS_HistorikkViewController {
         @AuraEnabled
         public String omraaderLabel {
             get {
-                if(omraader == '*') {
+                if (omraader == '*') {
                     return 'Gjelder alle ytelser';
                 }
                 return omraader;
@@ -114,7 +114,8 @@ public with sharing class NKS_HistorikkViewController {
         if (fmResp.motpartsRolle == null) {
             return null;
         }
-        return String.valueOf(fmResp.motpartsRolle);
+        String motpartsRolle = String.valueOf(fmResp.motpartsRolle).toLowerCase();
+        return motpartsRolle.substring(0, 1).toUpperCase() + motpartsRolle.substring(1);
     }
 
     private static String getOmraader(PDL_Fullmakt fmResp) {
