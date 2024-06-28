@@ -120,7 +120,7 @@ export default class NksButtonContainerBottom extends LightningElement {
             publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
 
             /**
-             * If the component is a dependent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
+             * If the component is an independent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
              */
             if (this.showNotifications) {
                 handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
