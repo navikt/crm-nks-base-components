@@ -42,11 +42,6 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
         window.removeEventListener('resize', this.calculateBadgeContent.bind(this));
     }
 
-    get showBadge() {
-        if (this.type === this.shownBadge) console.log(JSON.stringify(this.badgeData));
-        return this.type === this.shownBadge;
-    }
-
     renderedCallback() {
         this.calculateBadgeContent();
     }
@@ -81,5 +76,10 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
                 actionName: 'view'
             }
         });
+    }
+
+    get showBadge() {
+        if (this.type === this.shownBadge) console.log(JSON.stringify(this.badgeData));
+        return this.type === this.shownBadge;
     }
 }

@@ -1,5 +1,4 @@
 import { LightningElement, api, wire } from 'lwc';
-import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
@@ -28,27 +27,26 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             this.navUnit = data.unit;
             this.getFormattedLink();
         } else if (error) {
-            console.error(`error: ${error}`);
+            console.error(`Error retrieving nav unit: ${error}`);
         }
     }
 
-    async getFormattedLink() {
+    getFormattedLink() {
         if (!this.navUnit) {
             return;
         }
-        const link = await getNavLinks().then((list) => {
+        getNavLinks().then((list) => {
             const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
-            if (onlineCheck) return 'https://www.nav.no' + onlineCheck.path;
-            return (
-                'https://www.nav.no/kontor/' +
-                this.navUnit.navn
-                    .replace(/\.\s/g, '.')
-                    .replace(/[\s/]/g, '-')
-                    .normalize('NFD')
-                    .replace(/[\u0300-\u036f]/g, '')
-            );
+            if (onlineCheck) {
+                this.formattedUnitLink = 'https://www.nav.no' + onlineCheck.path;
+                return;
+            }
+            this.formattedUnitLink = `https://www.nav.no/kontor/${this.navUnit.navn
+                .replace(/\.\s/g, '.')
+                .replace(/[\s/]/g, '-')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')}`;
         });
-        this.formattedUnitLink = link;
     }
 
     handleCopy(event) {

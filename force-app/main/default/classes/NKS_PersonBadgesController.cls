@@ -45,7 +45,7 @@ public with sharing class NKS_PersonBadgesController {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
         PersonBadgeData badges = new PersonBadgeData(person);
-        if (parentObject == 'Case') {
+        if (parentObject.equalsIgnoreCase('Case')) {
             if (filterOpenSTO == null)
                 filterOpenSTO = false;
             badges.setOpenSTO(parentRecordId, filterOpenSTO);
@@ -230,7 +230,7 @@ public with sharing class NKS_PersonBadgesController {
                     }
                 }
                 if (0 < person.NKS_NumberOfSecurityMeasures__c) {
-                    if (securityMeasures.size() > 0) {
+                    if (!securityMeasures.isEmpty()) {
                         badges.add(
                             new Badge(
                                     'securityMeasures',
@@ -250,7 +250,7 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void setSpokenLanguagesIntepreter() {
-            if (true == String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
+            if (String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
                 List<SpokenLanguagesIntepreter> languages = new List<spokenLanguagesIntepreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
@@ -501,10 +501,11 @@ public with sharing class NKS_PersonBadgesController {
             List<String> allRelevantSkills = new List<String>();
             Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
             for (Schema.PicklistEntry pl : fieldResult.getPicklistValues()) {
-                if (stoThemeRenames.containsKey(pl.getLabel())) {
-                    allRelevantSkills.add(stoThemeRenames.get(pl.getLabel()));
+                String label = pl.getLabel();
+                if (stoThemeRenames.containsKey(label)) {
+                    allRelevantSkills.add(stoThemeRenames.get(label));
                 } else {
-                    allRelevantSkills.add(pl.getLabel());
+                    allRelevantSkills.add(label);
                 }
             }
             return allRelevantSkills;
@@ -633,16 +634,17 @@ public with sharing class NKS_PersonBadgesController {
             Integer count = 0;
             Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
             for (Thread__c th : threadList) {
-                if (!threadsGroupedByQueue.containsKey(th.STO_Category__c)) {
-                    threadsGroupedByQueue.put(th.STO_Category__c, new List<Thread__c>());
+                String category = th.STO_Category__c;
+                if (!threadsGroupedByQueue.containsKey(category)) {
+                    threadsGroupedByQueue.put(category, new List<Thread__c>());
                 }
-                threadsGroupedByQueue.get(th.STO_Category__c).add(th);
+                threadsGroupedByQueue.get(category).add(th);
                 count++;
             }
 
-            List<OpenSTO> openSTO = new List<OpenSTO>();
+            List<OpenSTO> openSTOList = new List<OpenSTO>();
             for (String queue : threadsGroupedByQueue.keySet()) {
-                openSTO.add(new OpenSTO(queue, threadsGroupedByQueue.get(queue)));
+                openSTOList.add(new OpenSTO(queue, threadsGroupedByQueue.get(queue)));
             }
 
             badges.add(
@@ -654,7 +656,7 @@ public with sharing class NKS_PersonBadgesController {
                         '',
                         true
                     )
-                    .setBadgeContent(openSTO)
+                    .setBadgeContent(openSTOList)
             );
         }
 
@@ -1051,11 +1053,8 @@ public with sharing class NKS_PersonBadgesController {
 
         public OpenSTO(String queue, List<Thread__c> threadList) {
             this.queue = queue;
-            this.threadList = threadList;
-            this.threadSize = threadList.size();
+            this.threadList = threadList != null ? threadList : new List<Thread__c>();
+            this.threadSize = this.threadList.size();
         }
-    }
-
-    public class mortenException extends Exception {
     }
 }

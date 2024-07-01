@@ -66,7 +66,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     personDetails = {};
 
     connectedCallback() {
-        this.wireFields = [this.objectApiName + '.Id'];
+        this.wireFields = [`${this.objectApiName}.Id`];
     }
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
@@ -119,7 +119,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
         if (data) {
             const badges = [...data.badges];
-            if (historikkData && historikkData != null && historikkData.length > 0) {
+            if (historikkData && historikkData.length > 0) {
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historisk Fullmakter',
@@ -191,10 +191,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     onClickHandler(event) {
-        let selectedBadge = event.target.dataset.id;
+        const selectedBadge = event.target.dataset.id;
         const cmp = this.template.querySelector(
             `lightning-layout-item[data-id="${selectedBadge}"] c-nks-person-highlight-panel-badge-content`
         );
+        if (cmp == null) return;
         this.handleSelectedBadge(cmp.dataset.id, selectedBadge);
     }
 
@@ -213,7 +214,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     setExpanded(selectedBadge) {
-        let badges = this.template.querySelectorAll('.slds-badge');
+        const badges = this.template.querySelectorAll('.slds-badge');
         badges.forEach((badge) => {
             if (badge instanceof HTMLElement && badge.dataset.id === selectedBadge && badge.ariaExpanded === 'false') {
                 // eslint-disable-next-line @locker/locker/distorted-element-set-attribute
@@ -305,6 +306,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     handleBackgroundColor() {
         const genderWrapper = this.template.querySelector('.gender-wrapper');
+        if (!genderWrapper) return;
         const className = !this.personDetails?.fullName
             ? 'confidentialBackground'
             : this.personDetails?.isDeceased
@@ -318,7 +320,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     capitalizeFirstLetter(str) {
-        if (str == null || typeof str !== 'string') {
+        if (!str || typeof str !== 'string') {
             return '';
         }
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
