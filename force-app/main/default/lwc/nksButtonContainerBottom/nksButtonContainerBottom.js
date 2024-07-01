@@ -1,6 +1,9 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
-import getLabels from '@salesforce/apex/NKS_LabelGetter.getLabels';
+import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
+import { handleShowNotifications } from 'c/nksButtonContainerUtils';
+import { subscribe, unsubscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
+import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
 
 const CONSTANTS = {
     FINISHED: 'FINISHED',
@@ -14,21 +17,32 @@ export default class NksButtonContainerBottom extends LightningElement {
     @api flowNames;
     @api flowLabels;
     @api setBorders = false;
+    @api showNotifications = false; // Show notifications if the component is used independently
 
     flowLoop;
     timer;
     _activeFlow;
+    subscription = null;
+
+    @wire(MessageContext)
+    messageContext;
 
     @wire(getLabels, { labels: '$flowLabelList' })
     labelWire({ data, error }) {
         if (data) {
             this.labelList = data;
             this.updateFlowLoop();
+        } else if (error) {
+            console.log('Could not fetch labels for buttonContainerBottom', error);
         }
-        if (error) {
-            console.log('Could not fetch labels for buttonContainerBottom');
-            console.log(error);
-        }
+    }
+
+    connectedCallback() {
+        this.subscribeToMessageChannel();
+    }
+
+    disconnectedCallback() {
+        this.unsubscribeToMessageChannel();
     }
 
     get inputVariables() {
@@ -42,22 +56,21 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get flowLabelList() {
-        return this.flowLabels?.replace(/ /g, '').split(',');
+        return this.flowLabels?.replace(/ /g, '').split(',') || [];
     }
 
     get flowNameList() {
-        return this.flowNames?.replace(/ /g, '').split(',');
+        return this.flowNames?.replace(/ /g, '').split(',') || [];
     }
 
     get showFlow() {
-        return this.activeFlow !== '' && this.activeFlow != null;
+        return Boolean(this.activeFlow);
     }
 
     get layoutClassName() {
-        return (
-            'slds-var-p-vertical_medium' +
-            (this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : '')
-        );
+        return `slds-grid slds-wrap slds-var-p-vertical_medium${
+            this.setBorders ? ' slds-var-p-right_xx-small slds-border_top slds-border_bottom' : ''
+        }`;
     }
 
     get activeFlow() {
@@ -72,6 +85,10 @@ export default class NksButtonContainerBottom extends LightningElement {
         }
     }
 
+    get notificationBoxTemplate() {
+        return this.template.querySelector('c-nks-notification-box');
+    }
+
     updateFlowLoop() {
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,
@@ -81,8 +98,8 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     toggleFlow(event) {
-        if (event.target?.dataset.id) {
-            const dataId = event.target.dataset.id;
+        const dataId = event.target?.dataset.id;
+        if (dataId) {
             if (this.activeFlow === dataId) {
                 this.activeFlow = '';
                 this.updateFlowLoop();
@@ -97,11 +114,26 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     handleStatusChange(event) {
-        let flowStatus = event.detail.status;
-        if (flowStatus === CONSTANTS.FINISHED || flowStatus === CONSTANTS.FINISHED_SCREEN) {
+        const { status, outputVariables } = event.detail;
+
+        if (status === CONSTANTS.FINISHED || status === CONSTANTS.FINISHED_SCREEN) {
+            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
+
+            /**
+             * If the component is an independent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
+             */
+            if (this.showNotifications) {
+                handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
+            } else {
+                this.dispatchEvent(
+                    new CustomEvent('flowsucceeded', {
+                        detail: { flowName: this.activeFlow, flowOutput: outputVariables }
+                    })
+                );
+            }
+
             this.activeFlow = '';
             this.updateFlowLoop();
-            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
         }
     }
 
@@ -112,5 +144,23 @@ export default class NksButtonContainerBottom extends LightningElement {
         this.timer = setTimeout(() => {
             this.activeFlow = flowName;
         }, 10);
+    }
+
+    subscribeToMessageChannel() {
+        if (this.subscription) {
+            return;
+        }
+        this.subscription = subscribe(
+            this.messageContext,
+            BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL,
+            (message) =>
+                handleShowNotifications(message.flowApiName, message.outputVariables, this.notificationBoxTemplate),
+            { scope: APPLICATION_SCOPE }
+        );
+    }
+
+    unsubscribeToMessageChannel() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
     }
 }
