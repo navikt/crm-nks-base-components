@@ -1,0 +1,19 @@
+<template>
+    <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
+        <div class="headerLine"></div>
+        <div class="slds-m-around_medium">
+            <p><Strong>Historiske Fullmakter</Strong></p>
+            <div class="flexWithGap">
+                <template for:each={badgeData} for:item="fullmakt">
+                    <div key={fullmakt}>
+                        <p><Strong>Periode:</Strong> {fullmakt.periode}</p>
+                        <p><Strong>Område:</Strong> {fullmakt.omraaderLabel}</p>
+                        <p><Strong>Rolle:</Strong> {fullmakt.motpartsRolle}</p>
+                        <p><Strong>Navn:</Strong> {fullmakt.motpartsPersonNavn}</p>
+                        <p><Strong>Nummer:</Strong> {fullmakt.motpartsPersonident}</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</template>
