@@ -31,10 +31,13 @@ export async function handleShowNotifications(
     try {
         const flowNameLower = flowName.toLowerCase();
         const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
+        const existingJournal = getOutputVariableValue(outputVariables, 'Existing_Journal');
         const theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
 
         if (flowNameLower.includes('journal')) {
-            const message = journalConversationNote
+            const message = existingJournal
+                ? 'Henvendelsen er allerede jounralført'
+                : journalConversationNote
                 ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                 : 'Henvendelsen er journalført';
             addNotification(notificationBoxTemplate, message, theme);
