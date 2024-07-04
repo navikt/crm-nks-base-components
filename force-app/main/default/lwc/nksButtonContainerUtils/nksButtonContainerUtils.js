@@ -31,11 +31,11 @@ export async function handleShowNotifications(
     try {
         const flowNameLower = flowName.toLowerCase();
         const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
-        const exsistinJorunal = getOutputVariableValue(outputVariables, 'Existing_Journal');
+        const existingJournal = getOutputVariableValue(outputVariables, 'Existing_Journal');
         const theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
 
         if (flowNameLower.includes('journal')) {
-            const message = exsistinJorunal
+            const message = existingJournal
                 ? 'Henvendelsen er allerede jounralført'
                 : journalConversationNote
                 ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
