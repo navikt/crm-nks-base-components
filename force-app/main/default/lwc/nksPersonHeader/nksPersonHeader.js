@@ -16,6 +16,7 @@ import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { resolve } from 'c/nksComponentsUtils';
 
 export default class NksPersonHeader extends LightningElement {
     @api recordId;
@@ -286,16 +287,6 @@ export default class NksPersonHeader extends LightningElement {
         if (error) {
             console.log(error);
         }
-    }
-
-    resolve(path, obj) {
-        if (typeof path !== 'string') {
-            throw new Error('Path must be a string');
-        }
-
-        return path.split('.').reduce(function (prev, curr) {
-            return prev ? prev[curr] : null;
-        }, obj || {});
     }
 
     capitalizeFirstLetter(str) {
