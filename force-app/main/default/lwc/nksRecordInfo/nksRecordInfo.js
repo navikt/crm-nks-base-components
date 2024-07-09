@@ -120,7 +120,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             objectApiName: objectApiName
         })
             .then((record) => {
-                this.viewedRecordId = this.resolve(relationshipField, record);
+                this.viewedRecordId = resolve(relationshipField, record);
                 // personId
                 this.personId = this.viewedObjectApiName === 'Person__c' ? this.viewedRecordId : '';
             })
