@@ -179,7 +179,7 @@ export default class NksPersonHeader extends LightningElement {
             objectApiName: objectApiName
         })
             .then((record) => {
-                this.personId = this.resolve(relationshipField, record);
+                this.personId = resolve(relationshipField, record);
             })
             .catch((error) => {
                 console.log(error);
