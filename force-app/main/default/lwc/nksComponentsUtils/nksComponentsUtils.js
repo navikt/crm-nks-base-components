@@ -11,7 +11,7 @@ async function callGetCommonCode(inputId) {
     }
 }
 
-function getOutputVariableValue(outputVariables, variableName) {
+export function getOutputVariableValue(outputVariables, variableName) {
     return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
