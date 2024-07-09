@@ -1,5 +1,6 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+import { resolve } from 'c/nksComponentsUtils';
 
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
@@ -233,7 +234,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             objectApiName: objectApiName
         })
             .then((record) => {
-                this.personId = this.resolve(relationshipField, record);
+                this.personId = resolve(relationshipField, record);
                 this.oppfolgingAndMeldekortData.personId = this.personId;
             })
             .catch((error) => {
@@ -292,16 +293,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (error) {
             console.error(error);
         }
-    }
-
-    resolve(path, obj) {
-        if (typeof path !== 'string') {
-            throw new Error('Path must be a string');
-        }
-
-        return path.split('.').reduce(function (prev, curr) {
-            return prev ? prev[curr] : null;
-        }, obj || {});
     }
 
     handleBackgroundColor() {
