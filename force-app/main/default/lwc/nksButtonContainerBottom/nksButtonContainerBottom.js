@@ -1,7 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { publishToAmplitude } from 'c/amplitude';
 import getLabels from '@salesforce/apex/NKS_ButtonContainerController.getLabels';
-import { handleShowNotifications } from 'c/nksComponentsUtils';
+import { handleShowNotifications, getOutputVariableValue } from 'c/nksComponentsUtils';
 import { subscribe, unsubscribe, MessageContext, APPLICATION_SCOPE } from 'lightning/messageService';
 import BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL from '@salesforce/messageChannel/buttonContainerNotifications__c';
 
@@ -153,8 +153,7 @@ export default class NksButtonContainerBottom extends LightningElement {
         this.subscription = subscribe(
             this.messageContext,
             BUTTON_CONTAINER_NOTIFICATIONS_CHANNEL,
-            (message) =>
-                handleShowNotifications(message.flowApiName, message.outputVariables, this.notificationBoxTemplate),
+            (message) => this.handleMessage(message),
             { scope: APPLICATION_SCOPE }
         );
     }
@@ -162,5 +161,13 @@ export default class NksButtonContainerBottom extends LightningElement {
     unsubscribeToMessageChannel() {
         unsubscribe(this.subscription);
         this.subscription = null;
+    }
+
+    handleMessage(message) {
+        handleShowNotifications(message.flowApiName, message.outputVariables, this.notificationBoxTemplate);
+        const publishNotification = getOutputVariableValue(message.outputVariables, 'Publish_Notification');
+        if (publishNotification) {
+            this.notificationBoxTemplate.scrollIntoView({ behavior: 'smooth' });
+        }
     }
 }
