@@ -51,6 +51,7 @@ export default class NksChatButtonContainerTop extends LightningElement {
 
     publishMessage(outputVariables) {
         const payload = {
+            recordId: this.recordId,
             flowApiName: this.flowApiName,
             outputVariables
         };
