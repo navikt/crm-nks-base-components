@@ -11,7 +11,7 @@ async function callGetCommonCode(inputId) {
     }
 }
 
-function getOutputVariableValue(outputVariables, variableName) {
+export function getOutputVariableValue(outputVariables, variableName) {
     return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
@@ -58,4 +58,14 @@ export async function handleShowNotifications(
             : error?.body?.message || error.message;
         console.error('Error message:', errorMessage);
     }
+}
+
+export function resolve(path, obj) {
+    if (typeof path !== 'string') {
+        throw new Error('Path must be a string');
+    }
+
+    return path.split('.').reduce(function (prev, curr) {
+        return prev ? prev[curr] : null;
+    }, obj || {});
 }
