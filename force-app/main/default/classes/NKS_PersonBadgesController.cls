@@ -251,7 +251,7 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setSpokenLanguagesIntepreter() {
             if (String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
-                List<SpokenLanguagesIntepreter> languages = new List<spokenLanguagesIntepreter>();
+                List<SpokenLanguagesIntepreter> languages = new List<SpokenLanguagesIntepreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
                         if (languageMap.containsKey(language)) {
