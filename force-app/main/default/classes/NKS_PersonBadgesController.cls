@@ -612,6 +612,7 @@ public with sharing class NKS_PersonBadgesController {
             return casesInQueueList;
         }
 
+        @TestVisible
         private List<Thread__c> fetchThreads(List<Id> casesInQueueList) {
             return [
                 SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
@@ -630,6 +631,7 @@ public with sharing class NKS_PersonBadgesController {
             ];
         }
 
+        @TestVisible
         private void countThreadsAndAddBadges(List<Thread__c> threadList) {
             Integer count = 0;
             Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();

@@ -282,4 +282,41 @@ private with sharing class NKS_PersonBadgesController_Test {
         pbd.setOpenSTO(c.Id.toString(), true);
         Test.stopTest();
     }
+
+    @IsTest
+    static void countThreadsAndAddBadgesTest() {
+        Person__c harryPotter = [
+            SELECT
+                Id,
+                CRM_Account__c,
+                INT_PowerOfAttorney__c,
+                INT_GuardianshipOrFuturePowerOfAttorney__c,
+                INT_KRR_Reservation__c,
+                NKS_NumberOfSecurityMeasures__c,
+                INT_DateOfDeath__c,
+                INT_IsDeceased__c,
+                INT_SpokenLanguageIntepreter__c,
+                INT_IsNavEmployee__c,
+                INT_Confidential__c,
+                INT_SecurityMeasures__c
+            FROM Person__c
+            WHERE Name = '12345678901'
+            LIMIT 1
+        ];
+
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = harryPotter.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        Thread__c t = new Thread__c(CRM_Account__c = harryPotter.CRM_Account__c, CRM_case__c = c.Id);
+        insert t;
+        List<Id> caseIdList = new List<Id>();
+        caseIdList.add(c.Id);
+
+        NKS_PersonBadgesController.PersonBadgeData pbd = new NKS_PersonBadgesController.PersonBadgeData(harryPotter);
+        Test.startTest();
+        pbd.countThreadsAndAddBadges(pbd.fetchThreads(caseIdList));
+        Test.stopTest();
+        Assert.isNotNull(pbd.badges, 'Should have badges');
+    }
 }
