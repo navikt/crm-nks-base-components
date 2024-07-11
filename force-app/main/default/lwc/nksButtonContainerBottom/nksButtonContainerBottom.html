@@ -1,11 +1,11 @@
 <template>
-    <lightning-layout class={layoutClassName} multiple-rows="true" size="12">
-        <lightning-layout-item class="slds-size_12-of-12">
-            <lightning-layout class="slds-grid slds-wrap slds-grid_align-spread">
+    <lightning-layout class={layoutClassName} multiple-rows="true">
+        <lightning-layout-item size="12">
+            <lightning-layout class="slds-size_12-of-12 slds-grid slds-grid_align-end">
                 <lightning-layout-item>
                     <slot name="backButton"></slot>
                 </lightning-layout-item>
-                <lightning-layout-item class="slds-grid slds-wrap slds-grid_align-end">
+                <lightning-layout-item class="slds-grid slds-grid_align-end slds-col_bump-left">
                     <template for:each={flowLoop} for:item="flow">
                         <lightning-layout-item
                             class="slds-var-p-right_small"
@@ -26,7 +26,7 @@
                 </lightning-layout-item>
             </lightning-layout>
         </lightning-layout-item>
-        <lightning-layout-item class="slds-size_12-of-12 slds-var-m-top_xx-small">
+        <lightning-layout-item size="12" class="slds-var-m-top_xx-small">
             <template lwc:if={showFlow}>
                 <lightning-card>
                     <lightning-flow
