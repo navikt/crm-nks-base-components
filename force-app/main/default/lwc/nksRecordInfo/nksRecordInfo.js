@@ -13,7 +13,6 @@ import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
 import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
 import NAME from '@salesforce/schema/Person__c.Name';
 import { resolve } from 'c/nksComponentsUtils';
-
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
     @api viewedRecordId; // Id of the record to display information for

@@ -1,0 +1,19 @@
+<template>
+    <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
+        <div class="headerLine"></div>
+        <div class="slds-m-around_medium">
+            <p><Strong>Død</Strong></p>
+            <template for:each={badgeData} for:item="data">
+                <p key={data.dateOfDeath}>
+                    <strong>Dødsdato: </strong>
+                    <lightning-formatted-date-time
+                        value={data.dateOfDeath}
+                        year="numeric"
+                        month="2-digit"
+                        day="2-digit"
+                    ></lightning-formatted-date-time>
+                </p>
+            </template>
+        </div>
+    </div>
+</template>
