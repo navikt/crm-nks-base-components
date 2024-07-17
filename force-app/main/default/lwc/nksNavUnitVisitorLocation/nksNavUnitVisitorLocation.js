@@ -4,15 +4,16 @@ export default class NksNavUnitVisitorLocation extends LightningElement {
     @api location;
 
     get visitingAddress() {
-        return this.location.besoeksadresse.concatenatedAddress;
+        const address = this.location.besoeksadresse;
+        if (!address) return '';
+
+        const { gatenavn, husnummer, postnummer, poststed } = address;
+
+        return `${gatenavn} ${husnummer}, ${postnummer} ${poststed}`;
     }
 
     get locationName() {
-        if (this.location.stedsbeskrivelse) {
-            return this.location.stedsbeskrivelse;
-        }
-
-        return null;
+        return this.location.stedsbeskrivelse;
     }
 
     get hasOpeningHours() {
