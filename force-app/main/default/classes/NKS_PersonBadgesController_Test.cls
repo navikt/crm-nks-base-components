@@ -71,7 +71,8 @@ private with sharing class NKS_PersonBadgesController_Test {
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'CRM_Person__c',
             'Account',
-            p.CRM_Account__c
+            p.CRM_Account__c,
+            false
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
@@ -103,7 +104,8 @@ private with sharing class NKS_PersonBadgesController_Test {
         NKS_PersonBadgesController.PersonBadgeData pbd = NKS_PersonBadgesController.getPersonBadgesAndInfo(
             'Account.CRM_Person__c',
             'Case',
-            c.Id
+            c.Id,
+            false
         );
 
         System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
@@ -113,7 +115,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorney() {
-        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland"}]';
+        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland", "tjenesteomraade": [{"tjenesteoppgave": "fiske", "tjenestevirksomhet": "nav"}]}]';
 
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
         p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
@@ -121,7 +123,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(1, result.guardianships.size(), 'Expected one guardianship');
@@ -142,6 +144,12 @@ private with sharing class NKS_PersonBadgesController_Test {
             result.guardianships[0].typeLabel,
             'Expected type to have a label'
         );
+        Assert.areNotEqual(
+            result.guardianships[0].motpartsPersonIdent,
+            result.guardianships[0].motpartLabel,
+            'Expected motpart to have a label'
+        );
+        Assert.isNotNull(result.guardianships[0].tjenesteomraadeLabel, 'Expected tjenesteomraade to have a label');
     }
 
     @IsTest
@@ -154,7 +162,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(0, result.guardianships.size(), 'Expected one guardianship');
@@ -184,7 +192,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(2, result.powerOfAttorneys.size(), 'Expected one guardianship');
@@ -214,7 +222,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one guardianship');
@@ -235,12 +243,80 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
-        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c);
+        result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
         System.assertEquals(0, result.powerOfAttorneys.size(), 'Expected no guardianships');
         System.assertEquals(1, result.errors.size(), 'Expected one error');
 
         System.assertEquals(0, result.badges.size(), 'Expected no guardianship badges');
+    }
+
+    @IsTest
+    static void setOpenSTOTest() {
+        Person__c p = [
+            SELECT
+                Id,
+                CRM_Account__c,
+                INT_PowerOfAttorney__c,
+                INT_GuardianshipOrFuturePowerOfAttorney__c,
+                INT_KRR_Reservation__c,
+                NKS_NumberOfSecurityMeasures__c,
+                INT_DateOfDeath__c,
+                INT_IsDeceased__c,
+                INT_SpokenLanguageIntepreter__c,
+                INT_IsNavEmployee__c,
+                INT_Confidential__c,
+                INT_SecurityMeasures__c
+            FROM Person__c
+            WHERE Name = '12345678901'
+        ];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+
+        NKS_PersonBadgesController.PersonBadgeData pbd = new NKS_PersonBadgesController.PersonBadgeData(p);
+
+        Test.startTest();
+        pbd.setOpenSTO(c.Id.toString(), true);
+        Test.stopTest();
+    }
+
+    @IsTest
+    static void countThreadsAndAddBadgesTest() {
+        Person__c harryPotter = [
+            SELECT
+                Id,
+                CRM_Account__c,
+                INT_PowerOfAttorney__c,
+                INT_GuardianshipOrFuturePowerOfAttorney__c,
+                INT_KRR_Reservation__c,
+                NKS_NumberOfSecurityMeasures__c,
+                INT_DateOfDeath__c,
+                INT_IsDeceased__c,
+                INT_SpokenLanguageIntepreter__c,
+                INT_IsNavEmployee__c,
+                INT_Confidential__c,
+                INT_SecurityMeasures__c
+            FROM Person__c
+            WHERE Name = '12345678901'
+            LIMIT 1
+        ];
+
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = harryPotter.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        Thread__c t = new Thread__c(CRM_Account__c = harryPotter.CRM_Account__c, CRM_case__c = c.Id);
+        insert t;
+        List<Id> caseIdList = new List<Id>();
+        caseIdList.add(c.Id);
+
+        NKS_PersonBadgesController.PersonBadgeData pbd = new NKS_PersonBadgesController.PersonBadgeData(harryPotter);
+        Test.startTest();
+        pbd.countThreadsAndAddBadges(pbd.fetchThreads(caseIdList));
+        Test.stopTest();
+        Assert.isNotNull(pbd.badges, 'Should have badges');
     }
 }

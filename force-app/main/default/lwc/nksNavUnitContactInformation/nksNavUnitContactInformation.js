@@ -16,10 +16,11 @@ export default class NksNavUnitContactInformation extends LightningElement {
             this._contactInformation = value;
             this.hasContactInformation = true;
 
-            if (value.publikumsmottak && value.publikumsmottak.length) {
+            const publikumsmottak = value.brukerkontakt?.publikumsmottak ?? [];
+            if (publikumsmottak.length) {
                 this.hasVisitorLocations = true;
-                this._visitorLocations = value.publikumsmottak;
-                this._visitorLocationsLength = value.publikumsmottak.length;
+                this._visitorLocations = publikumsmottak;
+                this._visitorLocationsLength = publikumsmottak.length;
             }
         }
     }
@@ -43,10 +44,20 @@ export default class NksNavUnitContactInformation extends LightningElement {
     }
 
     get postalAddress() {
-        return this.contactInformation.postadresse ? this.contactInformation.postadresse.concatenatedAddress : '';
+        const address = this.contactInformation.postadresse;
+        if (!address) return '';
+
+        const { postboksnummer, postnummer, poststed } = address;
+
+        return `Postboks ${postboksnummer}, ${postnummer} ${poststed}`;
     }
 
     get visitingAddress() {
-        return this.contactInformation.besoeksadresse ? this.contactInformation.besoeksadresse.concatenatedAddress : '';
+        const address = this.contactInformation.besoeksadresse;
+        if (!address) return '';
+
+        const { gatenavn, husnummer, postnummer, poststed } = address;
+
+        return `${gatenavn} ${husnummer}, ${postnummer} ${poststed}`;
     }
 }

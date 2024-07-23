@@ -1,4 +1,4 @@
-public with sharing class NKS_LabelGetter {
+public with sharing class NKS_ButtonContainerController {
     @AuraEnabled(cacheable=true)
     public static String getLabel(String label) {
         return System.Label.get('', label);
@@ -11,5 +11,10 @@ public with sharing class NKS_LabelGetter {
             labelList.add(getLabel(label));
         }
         return labelList;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static string getCommonCodeName(String id) {
+        return [SELECT Id, Name FROM Common_Code__c WHERE Id = :id]?.Name;
     }
 }

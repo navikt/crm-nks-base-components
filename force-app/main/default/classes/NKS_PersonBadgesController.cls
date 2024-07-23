@@ -36,12 +36,19 @@ public with sharing class NKS_PersonBadgesController {
      * @description Get an apex type holding all the data we need for showing badges.
      */
     @AuraEnabled(cacheable=true)
-    public static PersonBadgeData getPersonBadgesAndInfo(String field, String parentObject, String parentRecordId) {
+    public static PersonBadgeData getPersonBadgesAndInfo(
+        String field,
+        String parentObject,
+        String parentRecordId,
+        Boolean filterOpenSTO
+    ) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
         PersonBadgeData badges = new PersonBadgeData(person);
-        if (parentObject == 'Case') {
-            badges.setOpenSTO(parentRecordId);
+        if (parentObject.equalsIgnoreCase('Case')) {
+            if (filterOpenSTO == null)
+                filterOpenSTO = false;
+            badges.setOpenSTO(parentRecordId, filterOpenSTO);
         }
         return badges;
     }
@@ -190,11 +197,11 @@ public with sharing class NKS_PersonBadgesController {
                         new Badge(
                             'securityMeasures',
                             person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                            'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
                             '',
                             '',
                             true
-                        )
+                        ).setBadgeContent(securityMeasures)
                     );
                 }
             } catch (Exception e) {
@@ -204,27 +211,33 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setSpokenLanguagesIntepreter() {
             if (String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
-                badges.add(
-                    new Badge(
-                        'spokenLanguageIntepreter',
-                        getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
+                List<SpokenLanguagesIntepreter> languages = new List<SpokenLanguagesIntepreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
-                        String capCase = languageMap.containsKey(language)
-                            ? languageMap.get(language).toLowerCase().capitalize() + ' (' + language + ')'
-                            : language;
-                        spokenLanguagesIntepreter.add(capCase);
+                        if (languageMap.containsKey(language)) {
+                            String capCase = languageMap.get(language).toLowerCase().capitalize();
+                            spokenLanguagesIntepreter.add(capCase + ' (' + language + ')');
+                            languages.add(new SpokenLanguagesIntepreter(capCase + ' (' + language + ')'));
+                        } else {
+                            spokenLanguagesIntepreter.add(language);
+                            languages.add(new SpokenLanguagesIntepreter(language));
+                        }
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av språk for talespråktolk');
                 }
+
+                badges.add(
+                    new Badge(
+                            'spokenLanguageIntepreter',
+                            getFieldLabel('INT_SpokenLanguageIntepreter__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(languages)
+                );
             }
         }
 
@@ -238,13 +251,14 @@ public with sharing class NKS_PersonBadgesController {
             if (person.INT_IsDeceased__c) {
                 badges.add(
                     new Badge(
-                        'isDeceased',
-                        getFieldLabel('INT_IsDeceased__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
+                            'isDeceased',
+                            getFieldLabel('INT_IsDeceased__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(new IsDeceased(person.INT_DateOfDeath__c))
                 );
             }
         }
@@ -277,7 +291,7 @@ public with sharing class NKS_PersonBadgesController {
                             '',
                             '',
                             true
-                        )
+                        ).setBadgeContent(powerOfAttorneys)
                     );
                 }
             } catch (Exception e) {
@@ -287,17 +301,6 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setGuardianshipOrFuturePowerOfAttorney() {
             if (String.isNotBlank(person.INT_GuardianshipOrFuturePowerOfAttorney__c)) {
-                badges.add(
-                    new Badge(
-                        'guardianshipOrFuturePowerOfAttorney',
-                        'Vergemål',
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
                 try {
                     List<GuardianShipOrFuturePowerOfAttorney> guardianshipList = (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
                         person.INT_GuardianshipOrFuturePowerOfAttorney__c,
@@ -314,6 +317,18 @@ public with sharing class NKS_PersonBadgesController {
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av vergemål detaljer');
                 }
+
+                badges.add(
+                    new Badge(
+                            'guardianshipOrFuturePowerOfAttorney',
+                            'Vergemål',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(guardianships)
+                );
             }
         }
 
@@ -361,7 +376,236 @@ public with sharing class NKS_PersonBadgesController {
 
         /**
          * @description Setting badge for open STOs
+         * This function could have been used to check Case instead of PSR, which means we probably could have removed
+         * fetchSpecialSkills() and had a much easier query than the one that fetches PSR. However, since the
+         * Case table of records is so big, the query likely would have timed out or taken too long.
+         *
+         * The code is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
          */
+        public void setOpenSTO(String caseId, Boolean filterSTO) {
+            if (!filterSTO) {
+                setOpenSTO(caseId);
+                return;
+            }
+
+            Case currentCase = getCurrentCase(caseId);
+            if (currentCase == null) {
+                return;
+            }
+
+            List<String> confidentialitySkillsName = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
+            List<String> originSkillsName = new List<String>{ 'BTO', 'STO' };
+            Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
+
+            // Since Omni channel skills are org based, we want to only include skills that are used in STO
+            List<String> allRelevantSkills = getAllRelevantSkills(stoThemeRenames);
+            allRelevantSkills.addAll(confidentialitySkillsName);
+            allRelevantSkills.addAll(originSkillsName);
+
+            Set<Id> skillIds = new Set<Id>();
+            Map<Id, String> userConfidentialMap = new Map<Id, String>();
+            Map<Id, String> userOriginMap = new Map<Id, String>();
+
+            fetchUserSkills(
+                allRelevantSkills,
+                confidentialitySkillsName,
+                originSkillsName,
+                skillIds,
+                userConfidentialMap,
+                userOriginMap
+            );
+
+            List<Id> confidentialitySkillsIds = new List<Id>();
+            List<Id> originSkillsIds = new List<Id>();
+            fetchSpecialSkills(confidentialitySkillsName, originSkillsName, confidentialitySkillsIds, originSkillsIds);
+
+            List<Id> casesInQueueList = fetchPendingServiceRoutings(
+                currentCase,
+                skillIds,
+                userConfidentialMap.keySet(),
+                confidentialitySkillsIds,
+                userOriginMap.keySet(),
+                originSkillsIds
+            );
+
+            if (casesInQueueList.isEmpty()) {
+                return;
+            }
+
+            List<Thread__c> threadList = fetchThreads(casesInQueueList);
+
+            if (threadList.isEmpty()) {
+                return;
+            }
+
+            countThreadsAndAddBadges(threadList);
+        }
+
+        private List<String> getAllRelevantSkills(Map<String, String> stoThemeRenames) {
+            List<String> allRelevantSkills = new List<String>();
+            Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
+            for (Schema.PicklistEntry pl : fieldResult.getPicklistValues()) {
+                String label = pl.getLabel();
+                if (stoThemeRenames.containsKey(label)) {
+                    allRelevantSkills.add(stoThemeRenames.get(label));
+                } else {
+                    allRelevantSkills.add(label);
+                }
+            }
+            return allRelevantSkills;
+        }
+
+        private Case getCurrentCase(String caseId) {
+            return [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+        }
+
+        private void fetchUserSkills(
+            List<String> allRelevantSkills,
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            Set<Id> skillIds,
+            Map<Id, String> userConfidentialMap,
+            Map<Id, String> userOriginMap
+        ) {
+            for (ServiceResourceSkill srs : [
+                SELECT SkillId, Skill.DeveloperName, Skill.MasterLabel
+                FROM ServiceResourceSkill
+                WHERE
+                    ServiceResource.RelatedRecordId = :UserInfo.getUserId()
+                    AND Skill.DeveloperName IN :allRelevantSkills
+                    AND EffectiveStartDate <= TODAY
+                    AND (EffectiveEndDate >= TODAY
+                    OR EffectiveEndDate = NULL)
+                    AND ServiceResource.IsActive = TRUE
+            ]) {
+                //Separating domain skills and person access skills
+                if (confidentialitySkillsName.contains(srs.Skill.DeveloperName)) {
+                    userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else if (originSkillsName.contains(srs.Skill.DeveloperName)) {
+                    userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else {
+                    skillIds.add(srs.SkillId);
+                }
+            }
+        }
+
+        // Salesforce has a weird bug with filtering on skills, so we query them and add them to a list
+        // for use in the PendingServiceRoutning query.
+        private void fetchSpecialSkills(
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            List<Id> confidentialitySkillsIds,
+            List<Id> originSkillsIds
+        ) {
+            for (Skill skill : [
+                SELECT Id, DeveloperName
+                FROM Skill
+                WHERE DeveloperName IN :confidentialitySkillsName OR DeveloperName IN :originSkillsName
+            ]) {
+                if (confidentialitySkillsName.contains(skill.DeveloperName)) {
+                    confidentialitySkillsIds.add(skill.Id);
+                }
+                if (originSkillsName.contains(skill.DeveloperName)) {
+                    originSkillsIds.add(skill.Id);
+                }
+            }
+        }
+
+        // Salesforce gives us a System.UnexpectedException: Illegal filter on SkillRequirement
+        // if we use Skill.DeveloperName instead of SkillId in the filters, so we query the skills
+        // as we did previously. For some unknown reason this works ¯\_(ツ)_/¯
+        private List<Id> fetchPendingServiceRoutings(
+            Case currentCase,
+            Set<Id> skillIds,
+            Set<Id> userConfidentialSkillIds,
+            List<Id> confidentialitySkillsIds,
+            Set<Id> userOriginSkillIds,
+            List<Id> originSkillsIds
+        ) {
+            List<Id> casesInQueueList = new List<Id>();
+            for (PendingServiceRouting psr : [
+                SELECT WorkItemId
+                FROM PendingServiceRouting
+                WHERE
+                    WorkItem.AccountId = :currentCase.AccountId
+                    AND Id IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE SkillId IN :skillIds
+                    )
+                    AND Id NOT IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE
+                            (SkillId NOT IN :userConfidentialSkillIds
+                            AND SkillId IN :confidentialitySkillsIds)
+                            OR (SkillId NOT IN :userOriginSkillIds
+                            AND SkillId IN :originSkillsIds)
+                    )
+                    AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
+                    AND IsReadyForRouting = TRUE
+                    AND IsPushed = FALSE
+            ]) {
+                casesInQueueList.add(psr.WorkItemId);
+            }
+            return casesInQueueList;
+        }
+
+        @TestVisible
+        private List<Thread__c> fetchThreads(List<Id> casesInQueueList) {
+            return [
+                SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
+                FROM Thread__c
+                WHERE
+                    CRM_Case__c IN (
+                        SELECT Id
+                        FROM Case
+                        WHERE
+                            IsClosed = FALSE
+                            AND STO_Category__c != NULL
+                            AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
+                            AND Id IN :casesInQueueList
+                    )
+                ORDER BY STO_Category__c ASC, CRM_Latest_Message_Datetime__c DESC
+            ];
+        }
+
+        @TestVisible
+        private void countThreadsAndAddBadges(List<Thread__c> threadList) {
+            Integer count = 0;
+            Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
+            for (Thread__c th : threadList) {
+                String category = th.STO_Category__c;
+                if (!threadsGroupedByQueue.containsKey(category)) {
+                    threadsGroupedByQueue.put(category, new List<Thread__c>());
+                }
+                threadsGroupedByQueue.get(category).add(th);
+                count++;
+            }
+
+            List<OpenSTO> openSTOList = new List<OpenSTO>();
+            for (String queue : threadsGroupedByQueue.keySet()) {
+                openSTOList.add(new OpenSTO(queue, threadsGroupedByQueue.get(queue)));
+            }
+
+            badges.add(
+                new Badge(
+                        'openSTO',
+                        String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
+                        'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
+                        '',
+                        '',
+                        true
+                    )
+                    .setBadgeContent(openSTOList)
+            );
+        }
+
         public void setOpenSTO(String caseId) {
             Case c = [
                 SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
@@ -398,7 +642,7 @@ public with sharing class NKS_PersonBadgesController {
                 new Badge(
                     'openSTO',
                     String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
-                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
                     '',
                     '',
                     true,
@@ -459,6 +703,16 @@ public with sharing class NKS_PersonBadgesController {
         public String tabindex;
         @AuraEnabled
         public String badgeInfo; //Optional additional info to be sent to frontend
+        @AuraEnabled
+        public List<BadgeContent> badgeContent;
+        @AuraEnabled
+        public String badgeContentType {
+            get {
+                if (this.badgeContent == null || this.badgeContent?.size() == 0)
+                    return null;
+                return String.valueOf(this.badgeContent[0]).split(':')[0]; // Returns the name of the class instance
+            }
+        }
 
         /**
          * @description Constructor for only showing a badge without any formatting or logic
@@ -467,7 +721,14 @@ public with sharing class NKS_PersonBadgesController {
          *
          */
         public Badge(String name, String label) {
-            this(name, label, 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small', '', '', false);
+            this(
+                name,
+                label,
+                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small yellowBadge',
+                '',
+                '',
+                false
+            );
         }
 
         /**
@@ -517,8 +778,77 @@ public with sharing class NKS_PersonBadgesController {
             this(name, label, styling, iconName, iconAltText, clickable);
             this.badgeInfo = badgeInfo;
         }
+
+        public Badge setBadgeContent(List<BadgeContent> content) {
+            this.badgeContent = content;
+            return this;
+        }
+
+        public Badge setBadgeContent(BadgeContent content) {
+            this.badgeContent = new List<BadgeContent>{ content };
+            return this;
+        }
     }
 
+    public interface BadgeContent {
+    }
+
+    public class IsDeceased implements BadgeContent {
+        @AuraEnabled
+        public Date dateOfDeath;
+
+        public IsDeceased(Date dateOfDeath) {
+            this.dateOfDeath = dateOfDeath;
+        }
+    }
+
+    public class SpokenLanguagesIntepreter implements BadgeContent {
+        @AuraEnabled
+        public String language;
+
+        public SpokenLanguagesIntepreter(String language) {
+            this.language = language;
+        }
+    }
+
+    public class PowerOfAttorney implements BadgeContent {
+        @AuraEnabled
+        public String motpartsRolle {
+            get {
+                return motpartsRolle.toLowerCase().capitalize();
+            }
+            set;
+        }
+        @AuraEnabled
+        public String motpartsPersonident;
+        @AuraEnabled
+        public String motpartsNavn;
+        @AuraEnabled
+        public List<String> omraader;
+        @AuraEnabled
+        public String omraade {
+            get {
+                return omraadeString();
+            }
+            set;
+        }
+        @AuraEnabled
+        public Date gyldigFraOgMed;
+        @AuraEnabled
+        public Date gyldigTilOgMed;
+        @AuraEnabled
+        public String id;
+
+        private String omraadeString() {
+            if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
+                return 'Gjelder alle ytelser';
+            } else if (0 < omraader.size()) {
+                return String.join(omraader, ',');
+            }
+
+            return '';
+        }
+    }
     public class Navn {
         @AuraEnabled
         public String fornavn;
@@ -545,7 +875,7 @@ public with sharing class NKS_PersonBadgesController {
         public String tjenestevirksomhet;
     }
 
-    public class GuardianshipOrFuturePowerOfAttorney {
+    public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -583,6 +913,19 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String omfang;
         @AuraEnabled
+        public String motpartLabel {
+            get {
+                List<String> retString = new List<String>();
+                if (String.isNotEmpty(this.navn.fullName)) {
+                    retString.add(this.navn.fullName);
+                }
+                if (String.isNotEmpty(this.motpartsPersonIdent)) {
+                    retString.add(this.motpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
         public List<Tjenesteomraade> tjenesteomraade;
         @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
@@ -628,7 +971,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class SecurityMeasure {
+    public class SecurityMeasure implements BadgeContent {
         @AuraEnabled
         public Id RecordId;
         @AuraEnabled
@@ -643,6 +986,21 @@ public with sharing class NKS_PersonBadgesController {
             this.ToDate = toDate;
             this.FromDate = fromDate;
             this.SecurityMeasure = securityMeasure;
+        }
+    }
+
+    public class OpenSTO implements BadgeContent {
+        @AuraEnabled
+        public String queue;
+        @AuraEnabled
+        public List<Thread__c> threadList;
+        @AuraEnabled
+        public Integer threadSize;
+
+        public OpenSTO(String queue, List<Thread__c> threadList) {
+            this.queue = queue;
+            this.threadList = threadList != null ? threadList : new List<Thread__c>();
+            this.threadSize = this.threadList.size();
         }
     }
 }

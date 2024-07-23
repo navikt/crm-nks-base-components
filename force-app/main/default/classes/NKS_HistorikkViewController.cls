@@ -16,6 +16,15 @@ public with sharing class NKS_HistorikkViewController {
         public String periode; //fullmat periode
         @AuraEnabled
         public String motpartsPersonNavn; //related person name
+        @AuraEnabled
+        public String omraaderLabel {
+            get {
+                if (omraader == '*') {
+                    return 'Gjelder alle ytelser';
+                }
+                return omraader;
+            }
+        }
     }
 
     @AuraEnabled(cacheable=true)
@@ -105,7 +114,8 @@ public with sharing class NKS_HistorikkViewController {
         if (fmResp.motpartsRolle == null) {
             return null;
         }
-        return String.valueOf(fmResp.motpartsRolle);
+        String motpartsRolle = String.valueOf(fmResp.motpartsRolle).toLowerCase();
+        return motpartsRolle.substring(0, 1).toUpperCase() + motpartsRolle.substring(1);
     }
 
     private static String getOmraader(PDL_Fullmakt fmResp) {
