@@ -1,5 +1,5 @@
 <template>
-    <lightning-layout class="custom-padding-left-small person-info-container">
+    <lightning-layout class="custom-padding-left-small person-info-container" aria-hidden="true">
         <lightning-layout-item class="custom-padding-around-small custom-grid-vertical-align-center">
             <c-nks-custom-svg size="large" src={genderIconSrc} alt-text={genderText}></c-nks-custom-svg>
         </lightning-layout-item>
@@ -9,6 +9,7 @@
                 class="custom-padding-left-small slds-page-header__title custom-grid-vertical-align-center"
             >
                 <h1>{formattedFullName}</h1>
+                <p aria-label={genderPlainText}></p>
             </lightning-layout-item>
         </template>
 
