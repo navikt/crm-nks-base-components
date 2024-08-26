@@ -131,11 +131,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         }
     }
 
-    get genderPlainText() {
-        const gender = this.personDetails?.gender ? this.personDetails?.gender : 'ukjent';
-        return 'Kjønn: ' + gender;
-    }
-
     get genderText() {
         if (this.personDetails?.gender === 'Ukjent') return 'Ukjent kjønn';
         return this.personDetails?.gender;
