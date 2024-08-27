@@ -274,7 +274,6 @@ public with sharing class NKS_PersonBadgesController {
                     return;
                 Date today = Date.today();
 
-                List<PowerOfAttorney> powerOfAttorneys = new List<PowerOfAttorney>();
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
                     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
 
@@ -825,22 +824,8 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
-        
-        private String omraadeString() {
-            if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
-                return 'Gjelder alle ytelser';
-            } else if (0 < omraader.size()) {
-                return String.join(omraader, ',');
-            }
-
-            return '';
-        }
-
-        public PowerOfAttorney() {
-            super();
-        }
-    }
+    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {}
+    
     public class Navn {
         @AuraEnabled
         public String fornavn;
