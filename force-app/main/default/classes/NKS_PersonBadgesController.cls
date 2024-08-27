@@ -135,7 +135,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
-        public List<NKS_FullmaktController.Fullmaktsgiver> powerOfAttorneys;
+        public List<PowerOfAttorney> powerOfAttorneys;
         @AuraEnabled
         public List<String> errors;
         @AuraEnabled
@@ -152,7 +152,7 @@ public with sharing class NKS_PersonBadgesController {
             this.securityMeasures = new List<SecurityMeasure>();
             this.spokenLanguagesIntepreter = new List<String>();
             this.guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
-            this.powerOfAttorneys = new List<NKS_FullmaktController.Fullmaktsgiver>();
+            this.powerOfAttorneys = new List<PowerOfAttorney>();
             this.errors = new List<String>();
             this.personIdentNameMap = new Map<String, String>();
             // this.entitlements = new List<String>();
@@ -265,7 +265,7 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setPowerOfAttorney() {
             try {
-                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = NKS_FullmaktController.getFullmaktsgiver(
+                List<PowerOfAttorney> fullmaktsgivere = (List<PowerOfAttorney>) NKS_FullmaktController.getFullmaktsgiver(
                     person.Id,
                     'Person__c'
                 );
@@ -274,7 +274,7 @@ public with sharing class NKS_PersonBadgesController {
                 Date today = Date.today();
 
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
-                    NKS_FullmaktController.Fullmaktsgiver poa = fullmaktsgivere[i];
+                    PowerOfAttorney poa = fullmaktsgivere[i];
                     if (poa.gyldigFraOgMed <= today && (poa.gyldigTilOgMed >= today || poa.gyldigTilOgMed == null)) {
                         poa.id = String.valueOf(i);
                         personIdentNameMap.put(poa.motpartsPersonident, '');
@@ -671,7 +671,7 @@ public with sharing class NKS_PersonBadgesController {
                 }
             }
 
-            for (NKS_FullmaktController.Fullmaktsgiver poa : powerOfAttorneys) {
+            for (PowerOfAttorney poa : powerOfAttorneys) {
                 String name = personIdentNameMap.get(poa.motpartsPersonident);
                 if (String.isNotBlank(name)) {
                     poa.motpartsNavn = name;
@@ -811,34 +811,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class PowerOfAttorney implements BadgeContent {
-        @AuraEnabled
-        public String motpartsRolle {
-            get {
-                return motpartsRolle.toLowerCase().capitalize();
-            }
-            set;
-        }
-        @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public String motpartsNavn;
-        @AuraEnabled
-        public List<String> omraader;
-        @AuraEnabled
-        public String omraade {
-            get {
-                return omraadeString();
-            }
-            set;
-        }
-        @AuraEnabled
-        public Date gyldigFraOgMed;
-        @AuraEnabled
-        public Date gyldigTilOgMed;
-        @AuraEnabled
-        public String id;
-
+    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
         private String omraadeString() {
             if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
                 return 'Gjelder alle ytelser';
@@ -847,6 +820,10 @@ public with sharing class NKS_PersonBadgesController {
             }
 
             return '';
+        }
+
+        public PowerOfAttorney() {
+            super();
         }
     }
     public class Navn {

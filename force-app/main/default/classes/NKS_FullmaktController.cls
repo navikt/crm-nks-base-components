@@ -318,7 +318,7 @@ public with sharing class NKS_FullmaktController {
         public List<String> handling;
     }
 
-    public class Fullmaktsgiver {
+    public virtual class Fullmaktsgiver {
         @AuraEnabled
         public String motpartsRolle;
         @AuraEnabled
