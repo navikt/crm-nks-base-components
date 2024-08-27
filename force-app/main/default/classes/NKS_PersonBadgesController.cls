@@ -274,7 +274,6 @@ public with sharing class NKS_PersonBadgesController {
                     return;
                 Date today = Date.today();
 
-                List<PowerOfAttorney> powerOfAttorneys = new List<PowerOfAttorney>();
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
                     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
 
