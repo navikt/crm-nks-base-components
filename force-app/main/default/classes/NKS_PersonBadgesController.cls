@@ -265,17 +265,30 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setPowerOfAttorney() {
             try {
-                List<PowerOfAttorney> fullmaktsgivere = (List<PowerOfAttorney>) NKS_FullmaktController.getFullmaktsgiver(
-                    person.Id,
-                    'Person__c'
-                );
+                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = 
+            (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
+                person.Id,
+                'Person__c'
+            );
                 if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                     return;
                 Date today = Date.today();
 
+                List<PowerOfAttorney> powerOfAttorneys = new List<PowerOfAttorney>();
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
-                    PowerOfAttorney poa = fullmaktsgivere[i];
-                    if (poa.gyldigFraOgMed <= today && (poa.gyldigTilOgMed >= today || poa.gyldigTilOgMed == null)) {
+                    NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
+
+                    if (fullmaktsgiver.gyldigFraOgMed <= today && 
+                        (fullmaktsgiver.gyldigTilOgMed >= today || fullmaktsgiver.gyldigTilOgMed == null)) {
+
+                        PowerOfAttorney poa = new PowerOfAttorney();
+                        poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
+                        poa.omraade = fullmaktsgiver.omraade;
+                        poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
+                        poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
+                        poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
+                        poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
+                        
                         poa.id = String.valueOf(i);
                         personIdentNameMap.put(poa.motpartsPersonident, '');
                         powerOfAttorneys.add(poa);
@@ -296,6 +309,7 @@ public with sharing class NKS_PersonBadgesController {
                 }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av fullmakts detaljer');
+                errors.add(e.getMessage());
             }
         }
 
@@ -812,6 +826,7 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
+        
         private String omraadeString() {
             if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
                 return 'Gjelder alle ytelser';
