@@ -171,7 +171,7 @@ private with sharing class NKS_PersonBadgesController_Test {
     }
 
     @IsTest
-    static void setBadgeData_PowerOfAttorneyAllAreas() {
+    static void setBadgeData_PowerOfAttorneySomeAreas() {
         ApiMock.setTestMock('GET_FULLMAKTSGIVER', 200, 'ok');
 
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
@@ -192,27 +192,25 @@ private with sharing class NKS_PersonBadgesController_Test {
     }
 
     @IsTest
-    static void setBadgeData_PowerOfAttorneySomeAreas() {
-        NKS_PersonBadgesController.PowerOfAttorney poa = new NKS_PersonBadgesController.PowerOfAttorney();
-        poa.motpartsRolle = 'FULLMEKTIG';
-        poa.motpartsPersonident = '40000000000';
-        poa.omraader = new List<String>{ 'ARB' };
-        poa.gyldigFraOgMed = Date.today();
-        poa.gyldigTilOgMed = Date.today().addDays(1);
+    static void setBadgeData_PowerOfAttorneyAllAreas() {
+        SingleRequestMock mock = new SingleRequestMock(
+            200,
+            'ok',
+            '[{"fullmaktId": 17003,"registrert": "2024-08-28T11:10:44.912297Z","registrertAv": "25839399971","endret": "2024-08-28T12:28:55.828198Z","endretAv": "25839399971","opphoert": false,"fullmaktsgiver": "25839399971","fullmektig": "50819001615","omraade": "*","gyldigFraOgMed": "2024-08-28","gyldigTilOgMed": null,"fullmaktUuid": "cfdd0a5c-4fcf-46f9-b5eb-127f16f0849f","opplysningsId": null,"endringsId": null,"status": null,"kilde": "BRUKER SELV","fullmaktsgiverNavn": "FATTIG PERSILLE","fullmektigsNavn": "OPPBLÅST OPPLYST BABY"}]',
+            null
+        );
+        Test.setMock(HttpCalloutMock.class, mock);
 
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
-        p.INT_PowerOfAttorney__c = JSON.serialize(new List<NKS_PersonBadgesController.PowerOfAttorney>{ poa });
-        update p;
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
         result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
-        System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one guardianship');
-        System.assertEquals('40000000000', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 40000000000');
-        System.assertEquals('Fullmektig', result.powerOfAttorneys[0].motpartsRolle, 'Expected Fullmektig');
-        System.assertEquals('ARB', result.powerOfAttorneys[0].omraade, 'Expected Gjelder alle ytelser');
+        System.assertEquals(1, result.powerOfAttorneys.size(), 'Expected one powerOfAttorney');
+        System.assertEquals('50819001615', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 50819001615');
+        System.assertEquals('Gjelder alle ytelser', result.powerOfAttorneys[0].omraade, 'Expected Gjelder alle ytelser');
 
         System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
     }
