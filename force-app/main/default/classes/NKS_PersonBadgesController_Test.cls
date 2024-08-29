@@ -154,6 +154,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorneyError() {
+        ApiMock.setTestMock('GET_FULLMAKTSGIVER', 200, 'ok');
         String jsonString = '{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01234567890","embete":"fylkesmannenITromsOgFinnmark"}]';
 
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
@@ -167,7 +168,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         System.assertEquals(0, result.guardianships.size(), 'Expected one guardianship');
         System.assertEquals(1, result.errors.size(), 'Expected one error');
-        System.assertEquals(1, result.badges.size(), 'Expected one guardianship badge');
+        System.assertEquals(2, result.badges.size(), 'Expected one guardianship badge');
     }
 
     @IsTest
