@@ -307,8 +307,7 @@ public with sharing class NKS_PersonBadgesController {
                     );
                 }
             } catch (Exception e) {
-                errors.add('Feil ved uthenting av fullmakts detaljer');
-                errors.add(e.getMessage());
+                errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
         }
 

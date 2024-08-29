@@ -18,11 +18,12 @@ public with sharing class NKS_FullmaktController {
                 return getFullmaktsgiverHistorikkData(historikkData);
             } else {
                 logError(resp, 'Error retrieving FullmaktsgiverHistorikk');
+                throw new FullmaktException();
             }
         } catch (Exception e) {
             logError('Exception occurred while retrieving FullmaktsgiverHistorikk: ' + e.getMessage());
+            throw new FullmaktException(e.getMessage());
         }
-        return null;
     }
 
     @TestVisible
@@ -86,11 +87,12 @@ public with sharing class NKS_FullmaktController {
                 return getFullmaktsgiverData(fullmaktsgiverData);
             } else {
                 logError(resp, 'Error retrieving Fullmaktsgiver');
+                throw new FullmaktException();
             }
         } catch (Exception e) {
             logError('Exception occurred while retrieving Fullmaktsgiver: ' + e.getMessage());
+            throw new FullmaktException(e.getMessage());
         }
-        return null;
     }
 
     @TestVisible
@@ -355,5 +357,9 @@ public with sharing class NKS_FullmaktController {
         public Date gyldigTilOgMed;
         @AuraEnabled
         public String id;
+    }
+
+    public class FullmaktException extends Exception {
+
     }
 }

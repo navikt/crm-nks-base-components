@@ -219,11 +219,9 @@ private with sharing class NKS_PersonBadgesController_Test {
 
     @IsTest
     static void setBadgeData_PowerOfAttorneyError() {
-        String jsonString = '{"motpartsRolle": "FULLMEKTIG","motpartsPersonident": "40000000000","omraader": ["ARB"],"gyldigFraOgMed": "2020-02-05","gyldigTilOgMed": "2021-02-05"}]';
-
+        ApiMock.setTestMock('GET_FULLMAKTSGIVER', 400, 'ERROR');
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
-        p.INT_PowerOfAttorney__c = jsonString;
-        update p;
+
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
