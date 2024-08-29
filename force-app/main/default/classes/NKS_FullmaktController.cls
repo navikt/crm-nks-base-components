@@ -36,7 +36,7 @@ public with sharing class NKS_FullmaktController {
 
         List<String> omdCodes = new List<String>();
         for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
-            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.firstEndring;
+            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.sisteEndring;
             if (fullmaktsHistorikk != null) {
                 List<Omraade> omraade = parseOmraade(fullmaktsHistorikk.omraade);
                 for (Omraade omd : omraade) {
@@ -48,23 +48,20 @@ public with sharing class NKS_FullmaktController {
 
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
         for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
-            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.firstEndring;
-            if (fullmaktsHistorikk != null) {
-                if(fullmaktsHistorikk.opphoert == true || (fullmaktsHistorikk.gyldigFraOgMed != null && Date.valueOf(fullmaktsHistorikk.gyldigTilOgMed) < Date.today())) {
-                    FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
-                    historikk.fullmektig = fullmaktsHistorikk.fullmektig;
-                    historikk.omraade = getOmraader(parseOmraade(fullmaktsHistorikk.omraade), omdNameByOmdCode);
-                    historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
-                    historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
-                    historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
-                    historikk.opphoert = fullmaktsHistorikk.opphoert;
-                    historikkList.add(historikk);
-                    // Only show last 3 changes to historical power of attorney
-                    if (historikkList.size() == 3) {
-                        break;
-                    }
+            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.sisteEndring;
+            if (fullmaktsHistorikk != null && (fullmaktsHistorikk.opphoert == true || (fullmaktsHistorikk.gyldigFraOgMed != null && Date.valueOf(fullmaktsHistorikk.gyldigTilOgMed) < Date.today()))) {
+                FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
+                historikk.fullmektig = fullmaktsHistorikk.fullmektig;
+                historikk.omraade = getOmraader(parseOmraade(fullmaktsHistorikk.omraade), omdNameByOmdCode);
+                historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
+                historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
+                historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
+                historikk.opphoert = fullmaktsHistorikk.opphoert;
+                historikkList.add(historikk);
+                // Only show last 3 changes to historical power of attorney
+                if (historikkList.size() == 3) {
+                    break;
                 }
-
             }
         }
         return historikkList;
@@ -260,7 +257,7 @@ public with sharing class NKS_FullmaktController {
     public class FullmaktsgiverHistorikkWrapper {
         public String fullmaktId;
         public List<FullmaktsgiverHistorikkEndringer> fullmaktEndringsloggDetails;
-        public FullmaktsgiverHistorikkEndringer firstEndring {
+        public FullmaktsgiverHistorikkEndringer sisteEndring {
             get {
                 if (!fullmaktEndringsloggDetails.isEmpty()) {
                     return fullmaktEndringsloggDetails[0];
