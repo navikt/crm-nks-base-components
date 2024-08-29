@@ -94,14 +94,23 @@ public with sharing class NKS_FullmaktControllerTest {
         );
         ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER_HISTORIKK.name(), 500, 'Error');
 
+        
+        Boolean exceptionOccured = false;
         Test.startTest();
+        try {
         List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikk(
-            c.Id,
-            'Case'
-        );
+                c.Id,
+                'Case'
+                );
+                exceptionOccured = false;
+            } catch (Exception e) {
+                exceptionOccured = true;
+            }
         Test.stopTest();
+            
 
-        Assert.isNull(historikk);
+        Assert.isTrue(exceptionOccured);
+        // Assert.isNull(historikk);
     }
 
     @IsTest
@@ -113,14 +122,23 @@ public with sharing class NKS_FullmaktControllerTest {
         );
         ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER.name(), 500, 'Error');
 
+        Boolean exceptionOccured = false;
         Test.startTest();
-        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
-            c.Id,
-            'Case'
-        );
+        try {
+            List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
+                c.Id,
+                'Case'
+            );
+                exceptionOccured = false;
+            } catch (Exception e) {
+                exceptionOccured = true;
+            }
         Test.stopTest();
+            
 
-        Assert.isNull(fullmaktsGiver);
+        Assert.isTrue(exceptionOccured);
+
+        // Assert.isNull(fullmaktsGiver);
     }
 
     @IsTest
