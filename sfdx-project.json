@@ -17,7 +17,7 @@
                 },
                 {
                     "package": "crm-platform-integration",
-                    "versionNumber": "0.109.0.LATEST"
+                    "versionNumber": "0.121.0.LATEST"
                 },
                 {
                     "package": "crm-platform-reporting",
@@ -37,7 +37,7 @@
                 },
                 {
                     "package": "crm-journal-utilities",
-                    "versionNumber": "0.26.0.LATEST"
+                    "versionNumber": "0.30.0.LATEST"
                 },
                 {
                     "package": "crm-platform-oppgave",
