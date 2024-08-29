@@ -28,7 +28,7 @@ public with sharing class NKS_FullmaktControllerTest {
         ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER_HISTORIKK.name(), 200, 'OK');
 
         Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikk(
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
             c.Id,
             'Case'
         );
@@ -42,7 +42,7 @@ public with sharing class NKS_FullmaktControllerTest {
     static void getFullmaktsgiverHistorikkNoPersonIdentTest() {
         Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
         Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikk(
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
             a.Id,
             'Account'
         );
@@ -98,7 +98,7 @@ public with sharing class NKS_FullmaktControllerTest {
         Boolean exceptionOccured = false;
         Test.startTest();
         try {
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikk(
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
                 c.Id,
                 'Case'
                 );
@@ -110,7 +110,6 @@ public with sharing class NKS_FullmaktControllerTest {
             
 
         Assert.isTrue(exceptionOccured);
-        // Assert.isNull(historikk);
     }
 
     @IsTest
@@ -137,14 +136,12 @@ public with sharing class NKS_FullmaktControllerTest {
             
 
         Assert.isTrue(exceptionOccured);
-
-        // Assert.isNull(fullmaktsGiver);
     }
 
     @IsTest
     static void testGetFullmaktsgiverHistorikkDataNullInput() {
         Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getFullmaktsgiverHistorikkData(
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.processHistorikkData(
             null
         );
         Test.stopTest();
@@ -155,7 +152,7 @@ public with sharing class NKS_FullmaktControllerTest {
     @IsTest
     static void testGetFullmaktsgiverDataNullInput() {
         Test.startTest();
-        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiverData(null);
+        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.processFullmaktsgiverData(null);
         Test.stopTest();
 
         Assert.isNull(fullmaktsGiver);
@@ -170,7 +167,7 @@ public with sharing class NKS_FullmaktControllerTest {
         );
 
         Test.startTest();
-        String personIdent = NKS_FullmaktController.checkAccessAndGetPersonIdent(c.Id, 'Case');
+        String personIdent = NKS_FullmaktController.fetchPersonIdent(c.Id, 'Case');
         Test.stopTest();
 
         Assert.isNotNull(personIdent);
@@ -181,7 +178,7 @@ public with sharing class NKS_FullmaktControllerTest {
         Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
 
         Test.startTest();
-        String personIdent = NKS_FullmaktController.checkAccessAndGetPersonIdent(a.Id, 'Account');
+        String personIdent = NKS_FullmaktController.fetchPersonIdent(a.Id, 'Account');
         Test.stopTest();
 
         Assert.isNull(personIdent);
@@ -192,7 +189,7 @@ public with sharing class NKS_FullmaktControllerTest {
         Person__c p = [SELECT Id, Name FROM Person__c WHERE Name = '01234567890'];
 
         Test.startTest();
-        String personIdent = NKS_FullmaktController.checkAccessAndGetPersonIdent(p.Id, 'Person__c');
+        String personIdent = NKS_FullmaktController.fetchPersonIdent(p.Id, 'Person__c');
         Test.stopTest();
 
         Assert.areEqual('01234567890', personIdent);

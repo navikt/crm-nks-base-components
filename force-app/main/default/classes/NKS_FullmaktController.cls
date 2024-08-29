@@ -2,8 +2,8 @@ public with sharing class NKS_FullmaktController {
     private static LoggerUtility logger = new LoggerUtility('Fullmakt');
 
     @AuraEnabled(cacheable=true)
-    public static List<FullmaktsgiverHistorikk> getFullmaktsgiverHistorikk(Id recordId, String objectApiName) {
-        String personIdent = checkAccessAndGetPersonIdent(recordId, objectApiName);
+    public static List<FullmaktsgiverHistorikk> getHistorikk(Id recordId, String objectApiName) {
+        String personIdent = fetchPersonIdent(recordId, objectApiName);
         if (personIdent == null) {
             return null;
         }
@@ -11,11 +11,11 @@ public with sharing class NKS_FullmaktController {
         try {
             HttpResponse resp = FullmaktService.getFullmaktsgiverHistorikk(personIdent);
             if (resp.getStatusCode() == 200) {
-                List<FullmaktsgiverHistorikkWrapper> historikkData = (List<FullmaktsgiverHistorikkWrapper>) JSON.deserialize(
+                List<HistorikkWrapper> historikkData = (List<HistorikkWrapper>) JSON.deserialize(
                     resp.getBody(),
-                    List<FullmaktsgiverHistorikkWrapper>.class
+                    List<HistorikkWrapper>.class
                 );
-                return getFullmaktsgiverHistorikkData(historikkData);
+                return processHistorikkData(historikkData);
             } else {
                 logError(resp, 'Error retrieving FullmaktsgiverHistorikk');
                 throw new FullmaktException();
@@ -27,39 +27,22 @@ public with sharing class NKS_FullmaktController {
     }
 
     @TestVisible
-    private static List<FullmaktsgiverHistorikk> getFullmaktsgiverHistorikkData(
-        List<FullmaktsgiverHistorikkWrapper> historikkData
+    private static List<FullmaktsgiverHistorikk> processHistorikkData(
+        List<HistorikkWrapper> historikkData
     ) {
         if (historikkData == null || historikkData.isEmpty()) {
             return null;
         }
 
-        List<String> omdCodes = new List<String>();
-        for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
-            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.sisteEndring;
-            if (fullmaktsHistorikk != null) {
-                List<Omraade> omraade = parseOmraade(fullmaktsHistorikk.omraade);
-                for (Omraade omd : omraade) {
-                    omdCodes.add(omd.tema);
-                }
-            }
-        }
-        Map<String, String> omdNameByOmdCode = getOmraadeNames(omdCodes);
-
+        List<String> omdCodes = getOmraadeCodesFromOmraadeList(historikkData, true);
+        Map<String, String> omdNameByOmdCode = getOmraadeNamesFromCommonCodes(omdCodes);
+        
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
-        for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
-            FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.sisteEndring;
-            if (fullmaktsHistorikk != null && (fullmaktsHistorikk.opphoert == true || (fullmaktsHistorikk.gyldigFraOgMed != null && Date.valueOf(fullmaktsHistorikk.gyldigTilOgMed) < Date.today()))) {
-                FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
-                historikk.fullmektig = fullmaktsHistorikk.fullmektig;
-                historikk.omraade = getOmraader(parseOmraade(fullmaktsHistorikk.omraade), omdNameByOmdCode);
-                historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
-                historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
-                historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
-                historikk.opphoert = fullmaktsHistorikk.opphoert;
-                historikkList.add(historikk);
-                // Only show last 3 changes to historical power of attorney
-                if (historikkList.size() == 3) {
+        for (HistorikkWrapper historikkResponse : historikkData) {
+            HistorikkEndringer sisteEndring = historikkResponse.sisteEndring;
+            if (sisteEndring != null && (sisteEndring.opphoert == true || (sisteEndring.gyldigFraOgMed != null && Date.valueOf(sisteEndring.gyldigTilOgMed) < Date.today()))) {
+                historikkList.add(mapToHistorikk(sisteEndring, omdNameByOmdCode));
+                if (historikkList.size() == 3) { // Only show last 3 changes to historical power of attorney
                     break;
                 }
             }
@@ -69,7 +52,7 @@ public with sharing class NKS_FullmaktController {
 
     @AuraEnabled(cacheable=true)
     public static List<Fullmaktsgiver> getFullmaktsgiver(Id recordId, String objectApiName) {
-        String personIdent = checkAccessAndGetPersonIdent(recordId, objectApiName);
+        String personIdent = fetchPersonIdent(recordId, objectApiName);
         if (personIdent == null) {
             return null;
         }
@@ -81,7 +64,7 @@ public with sharing class NKS_FullmaktController {
                     resp.getBody(),
                     List<FullmaktsgiverWrapper>.class
                 );
-                return getFullmaktsgiverData(fullmaktsgiverData);
+                return processFullmaktsgiverData(fullmaktsgiverData);
             } else {
                 logError(resp, 'Error retrieving Fullmaktsgiver');
                 throw new FullmaktException();
@@ -93,74 +76,87 @@ public with sharing class NKS_FullmaktController {
     }
 
     @TestVisible
-    private static List<Fullmaktsgiver> getFullmaktsgiverData(List<FullmaktsgiverWrapper> fullmaktsgiverData) {
+    private static List<Fullmaktsgiver> processFullmaktsgiverData(List<FullmaktsgiverWrapper> fullmaktsgiverData) {
         if (fullmaktsgiverData == null || fullmaktsgiverData.isEmpty()) {
             return null;
         }
 
-        List<String> omdCodes = new List<String>();
-        for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
-            if (fmResponse.omraade != null) {
-                for (Omraade omd : fmResponse.omraade) {
-                    omdCodes.add(omd.tema);
-                }
-            }
-        }
-        Map<String, String> omdNameByOmdCode = getOmraadeNames(omdCodes);
+        List<String> omdCodes = getOmraadeCodesFromOmraadeList(fullmaktsgiverData, false);
+        Map<String, String> omdNameByOmdCode = getOmraadeNamesFromCommonCodes(omdCodes);
 
         List<Fullmaktsgiver> fmList = new List<Fullmaktsgiver>();
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
-            Fullmaktsgiver fm = new Fullmaktsgiver();
-            fm.motpartsPersonident = fmResponse.fullmektig;
-            fm.omraade = getOmraader(fmResponse.omraade, omdNameByOmdCode);
-            fm.gyldigFraOgMed = fmResponse.gyldigFraOgMed;
-            fm.gyldigTilOgMed = fmResponse.gyldigTilOgMed;
-            fm.motpartsNavn = fmResponse.fullmektigsNavn;
-            fm.motpartsRolle = 'Fullmektig';
-            fmList.add(fm);
+            fmList.add(mapToFullmaktsgiver(fmResponse, omdNameByOmdCode));
         }
         return fmList;
     }
 
-    public static String checkAccessAndGetPersonIdent(Id recordId, String objectApiName) {
-        Id personId;
-        if (objectApiName == 'Case') {
-            personId = [SELECT Account.CRM_Person__c FROM Case WHERE Id = :recordId].Account.CRM_Person__c;
-        } else if (objectApiName == 'Account') {
-            personId = [SELECT CRM_Person__c FROM Account WHERE Id = :recordId].CRM_Person__c;
-        } else if (objectApiName == 'Person__c') {
-            personId = recordId;
-        }
-        if (personId == null) {
-            return null;
-        }
-        if (!hasReadAccess(personId)) {
-            return null;
-        }
-        return [SELECT Name FROM Person__c WHERE Id = :personId]?.Name;
+    private static FullmaktsgiverHistorikk mapToHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omdNameByOmdCode) {
+        FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
+        historikk.fullmektig = sisteEndring.fullmektig;
+        historikk.omraade = getOmraadeTemaerFromOmraadeMap(parseOmraadeIntoList(sisteEndring.omraade), omdNameByOmdCode);
+        historikk.gyldigFraOgMed = getGyldigFraOgMed(sisteEndring);
+        historikk.gyldigTilOgMed = getGyldigTilOgMed(sisteEndring);
+        historikk.fullmektigsNavn = sisteEndring.fullmektigsNavn;
+        historikk.opphoert = sisteEndring.opphoert;
+        return historikk;
     }
 
-    private static Boolean hasReadAccess(Id personId) {
-        Id userId = UserInfo.getUserId();
-        return [SELECT RecordId, HasReadAccess FROM UserRecordAccess WHERE UserId = :userId AND RecordId = :personId]
-        .HasReadAccess;
+    private static Fullmaktsgiver mapToFullmaktsgiver(FullmaktsgiverWrapper fmGiverWrapper, Map<String, String> omdNameByOmdCode) {
+        Fullmaktsgiver fm = new Fullmaktsgiver();
+        fm.motpartsPersonident = fmGiverWrapper.fullmektig;
+        // TODO: Just return fmGiverWrapper.omraade directly and style it in js?
+        fm.omraade = getOmraadeTemaerFromOmraadeMap(fmGiverWrapper.omraade, omdNameByOmdCode);
+        fm.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed;
+        fm.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
+        fm.motpartsNavn = fmGiverWrapper.fullmektigsNavn;
+        fm.motpartsRolle = 'Fullmektig';
+        return fm;
     }
 
-    private static String getOmraader(List<Omraade> omraade, Map<String, String> omdNameByOmdCode) {
-        if (omraade == null || omraade.isEmpty()) {
+    private static String getOmraadeTemaerFromOmraadeMap(List<Omraade> omraadeList, Map<String, String> omdNameByOmdCode) {
+        if (omraadeList == null || omraadeList.isEmpty()) {
             return '';
         }
         List<String> omdTemaList = new List<String>();
-        for (Omraade omd : omraade) {
-            omdTemaList.add(omdNameByOmdCode.get(omd.tema) != null ? omdNameByOmdCode.get(omd.tema) : omd.tema);
+        for (Omraade omd : omraadeList) {
+            String temaName = omdNameByOmdCode.get(omd.tema);
+            omdTemaList.add(temaName != null ? temaName : omd.tema);
         }
-        if ('*'.equalsIgnoreCase(omdTemaList[0])) {
+        if (omdTemaList[0].equalsIgnoreCase('*')) {
             return 'Gjelder alle ytelser';
         }
         return String.join(omdTemaList, ', ');
     }
 
-    private static Map<String, String> getOmraadeNames(List<String> omdList) {
+    private static List<String> getOmraadeCodesFromOmraadeList(List<Object> dataList, Boolean isHistorikk) {
+        List<String> omdCodes = new List<String>();
+    
+        for (Object data : dataList) {
+            List<Omraade> omraadeList;
+    
+            if (isHistorikk && data instanceof HistorikkWrapper) {
+                HistorikkEndringer sisteEndring = ((HistorikkWrapper) data).sisteEndring;
+                if (sisteEndring != null) {
+                    omraadeList = parseOmraadeIntoList(sisteEndring.omraade);
+                }
+            } else if (!isHistorikk && data instanceof FullmaktsgiverWrapper) {
+                FullmaktsgiverWrapper fmGiverData = (FullmaktsgiverWrapper) data;
+                omraadeList = fmGiverData.omraade;
+            } else {
+                continue;
+            }
+    
+            if (omraadeList != null) {
+                for (Omraade omd : omraadeList) {
+                    omdCodes.add(omd.tema);
+                }
+            }
+        }
+        return omdCodes;
+    }
+
+    private static Map<String, String> getOmraadeNamesFromCommonCodes(List<String> omdList) {
         if (omdList == null || omdList.isEmpty()) {
             return new Map<String, String>();
         }
@@ -178,20 +174,8 @@ public with sharing class NKS_FullmaktController {
         return omdNameByOmdCode;
     }
 
-    private static String getGyldigFraOgMed(FullmaktsgiverHistorikkEndringer fmResp) {
-        return fmResp.gyldigFraOgMed == null ? null : formatDate(fmResp.gyldigFraOgMed);
-    }
-
-    private static String getGyldigTilOgMed(FullmaktsgiverHistorikkEndringer fmResp) {
-        return fmResp.gyldigTilOgMed == null ? null : formatDate(fmResp.gyldigTilOgMed);
-    }
-
-    private static String formatDate(Date d) {
-        return d == null ? null : DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
-    }
-
     // omraade response in history can be both array, string and semicolon separated string
-    private static List<Omraade> parseOmraade(String omraadeStr) {
+    private static List<Omraade> parseOmraadeIntoList(String omraadeStr) {
         List<Omraade> omraadeList = new List<Omraade>();
         if (String.isBlank(omraadeStr)) {
             return omraadeList;
@@ -210,6 +194,44 @@ public with sharing class NKS_FullmaktController {
             omraadeList.add(omraade);
         }
         return omraadeList;
+    }
+
+    @TestVisible
+    private static String fetchPersonIdent(Id recordId, String objectApiName) {
+        Id personId = getPersonId(recordId, objectApiName);
+        if (personId == null || !hasReadAccess(personId)) {
+            return null;
+        }
+        return [SELECT Name FROM Person__c WHERE Id = :personId].Name;
+    }
+
+    private static Id getPersonId(Id recordId, String objectApiName) {
+        if (objectApiName == 'Case') {
+            return [SELECT Account.CRM_Person__c FROM Case WHERE Id = :recordId].Account.CRM_Person__c;
+        } else if (objectApiName == 'Account') {
+            return [SELECT CRM_Person__c FROM Account WHERE Id = :recordId].CRM_Person__c;
+        } else if (objectApiName == 'Person__c') {
+            return recordId;
+        }
+        return null;
+    }
+
+    private static Boolean hasReadAccess(Id personId) {
+        Id userId = UserInfo.getUserId();
+        return [SELECT RecordId, HasReadAccess FROM UserRecordAccess WHERE UserId = :userId AND RecordId = :personId]
+        .HasReadAccess;
+    }
+
+    private static String getGyldigFraOgMed(HistorikkEndringer fmResp) {
+        return fmResp.gyldigFraOgMed == null ? null : formatDate(fmResp.gyldigFraOgMed);
+    }
+
+    private static String getGyldigTilOgMed(HistorikkEndringer fmResp) {
+        return fmResp.gyldigTilOgMed == null ? null : formatDate(fmResp.gyldigTilOgMed);
+    }
+
+    private static String formatDate(Date d) {
+        return d == null ? null : DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
     }
 
     private static Boolean isJsonArray(String jsonString) {
@@ -254,10 +276,10 @@ public with sharing class NKS_FullmaktController {
     // WRAPPERS
     //
 
-    public class FullmaktsgiverHistorikkWrapper {
+    public class HistorikkWrapper {
         public String fullmaktId;
-        public List<FullmaktsgiverHistorikkEndringer> fullmaktEndringsloggDetails;
-        public FullmaktsgiverHistorikkEndringer sisteEndring {
+        public List<HistorikkEndringer> fullmaktEndringsloggDetails;
+        public HistorikkEndringer sisteEndring {
             get {
                 if (!fullmaktEndringsloggDetails.isEmpty()) {
                     return fullmaktEndringsloggDetails[0];
@@ -266,6 +288,20 @@ public with sharing class NKS_FullmaktController {
             }
         }
     }
+
+    public class HistorikkEndringer {
+        public String fullmaktsgiver;
+        public String fullmektig;
+        public String omraade;
+        public Date gyldigFraOgMed;
+        public Date gyldigTilOgMed;
+        public String fullmaktsgiverNavn;
+        public String fullmektigsNavn;
+        public Boolean opphoert;
+        public String kilde;
+        public String kommentar;
+    }
+
 
     public class FullmaktsgiverHistorikk {
         @AuraEnabled
@@ -301,19 +337,6 @@ public with sharing class NKS_FullmaktController {
         }
     }
 
-    public class FullmaktsgiverHistorikkEndringer {
-        public String fullmaktsgiver;
-        public String fullmektig;
-        public String omraade;
-        public Date gyldigFraOgMed;
-        public Date gyldigTilOgMed;
-        public String fullmaktsgiverNavn;
-        public String fullmektigsNavn;
-        public Boolean opphoert;
-        public String kilde;
-        public String kommentar;
-    }
-
     public class FullmaktsgiverWrapper {
         public String fullmaktsgiver;
         public String fullmektig;
@@ -325,11 +348,6 @@ public with sharing class NKS_FullmaktController {
         public String opphoert;
         public String status;
         public String kilde;
-    }
-
-    public class Omraade {
-        public String tema;
-        public List<String> handling;
     }
 
     public virtual class Fullmaktsgiver {
@@ -354,6 +372,11 @@ public with sharing class NKS_FullmaktController {
         public Date gyldigTilOgMed;
         @AuraEnabled
         public String id;
+    }
+
+    public class Omraade {
+        public String tema;
+        public List<String> handling;
     }
 
     public class FullmaktException extends Exception {
