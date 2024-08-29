@@ -22,10 +22,12 @@
             <span>Tidsubegrenset</span>
         </template>
     </p>
-    <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap slds-p-top_x-small">
+    <div class="slds-p-top_x-small">
         <p>Områder:&nbsp;</p>
-        <template iterator:it={powerOfAttorney.omraader}>
-            <li class="slds-item" key={it.value}>{it.value}</li>
-        </template>
-    </ul>
+        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
+            <template iterator:it={powerOfAttorney.omraader}>
+                <li class="slds-item" key={it.value}>{it.value}</li>
+            </template>
+        </ul>
+    </div>
 </template>
