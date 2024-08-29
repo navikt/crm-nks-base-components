@@ -49,17 +49,21 @@ public with sharing class NKS_FullmaktController {
         for (FullmaktsgiverHistorikkWrapper histResp : historikkData) {
             FullmaktsgiverHistorikkEndringer fullmaktsHistorikk = histResp.firstEndring;
             if (fullmaktsHistorikk != null) {
-                FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
-                historikk.fullmektig = fullmaktsHistorikk.fullmektig;
-                historikk.omraade = getOmraader(parseOmraade(fullmaktsHistorikk.omraade), omdNameByOmdCode);
-                historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
-                historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
-                historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
-                historikkList.add(historikk);
-                // Only show last 3 changes to historical power of attorney
-                if (historikkList.size() == 3) {
-                    break;
+                if(fullmaktsHistorikk.opphoert == true || (fullmaktsHistorikk.gyldigFraOgMed != null && Date.valueOf(fullmaktsHistorikk.gyldigTilOgMed) < Date.today())) {
+                    FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
+                    historikk.fullmektig = fullmaktsHistorikk.fullmektig;
+                    historikk.omraade = getOmraader(parseOmraade(fullmaktsHistorikk.omraade), omdNameByOmdCode);
+                    historikk.gyldigFraOgMed = getGyldigFraOgMed(fullmaktsHistorikk);
+                    historikk.gyldigTilOgMed = getGyldigTilOgMed(fullmaktsHistorikk);
+                    historikk.fullmektigsNavn = fullmaktsHistorikk.fullmektigsNavn;
+                    historikk.opphoert = fullmaktsHistorikk.opphoert;
+                    historikkList.add(historikk);
+                    // Only show last 3 changes to historical power of attorney
+                    if (historikkList.size() == 3) {
+                        break;
+                    }
                 }
+
             }
         }
         return historikkList;
@@ -285,6 +289,17 @@ public with sharing class NKS_FullmaktController {
         }
         @AuraEnabled
         public String fullmektigsNavn;
+        @AuraEnabled
+        public Boolean opphoert;
+        @AuraEnabled
+        public String status {
+            get {
+                if(opphoert == true) {
+                    return 'Avsluttet';
+                }
+                return 'Utløpt';
+            }
+        }
     }
 
     public class FullmaktsgiverHistorikkEndringer {
@@ -295,7 +310,7 @@ public with sharing class NKS_FullmaktController {
         public Date gyldigTilOgMed;
         public String fullmaktsgiverNavn;
         public String fullmektigsNavn;
-        public String opphoert;
+        public Boolean opphoert;
         public String kilde;
         public String kommentar;
     }
