@@ -345,7 +345,7 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public List<String> omraader {
             get {
-                return omraade.split(', ');
+                return omraade != null ? omraade.split(', ') : new List<String>();
             }
             set;
         }
