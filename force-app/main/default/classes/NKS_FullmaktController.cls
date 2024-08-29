@@ -103,9 +103,8 @@ public with sharing class NKS_FullmaktController {
 
         List<String> omdCodes = new List<String>();
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
-            fmResponse.omraadeList = parseOmraade(fmResponse.omraade);
             if (fmResponse.omraade != null) {
-                for (Omraade omd : fmResponse.omraadeList) {
+                for (Omraade omd : fmResponse.omraade) {
                     omdCodes.add(omd.tema);
                 }
             }
@@ -116,10 +115,11 @@ public with sharing class NKS_FullmaktController {
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
             Fullmaktsgiver fm = new Fullmaktsgiver();
             fm.motpartsPersonident = fmResponse.fullmektig;
-            fm.omraade = getOmraader(fmResponse.omraadeList, omdNameByOmdCode);
+            fm.omraade = getOmraader(fmResponse.omraade, omdNameByOmdCode);
             fm.gyldigFraOgMed = fmResponse.gyldigFraOgMed;
             fm.gyldigTilOgMed = fmResponse.gyldigTilOgMed;
             fm.motpartsNavn = fmResponse.fullmektigsNavn;
+            fm.motpartsRolle = 'Fullmektig';
             fmList.add(fm);
         }
         return fmList;
@@ -320,8 +320,7 @@ public with sharing class NKS_FullmaktController {
     public class FullmaktsgiverWrapper {
         public String fullmaktsgiver;
         public String fullmektig;
-        public String omraade;
-        public List<Omraade> omraadeList;
+        public List<Omraade> omraade;
         public Date gyldigFraOgMed;
         public Date gyldigTilOgMed;
         public String fullmaktsgiverNavn;
