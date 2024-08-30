@@ -24,9 +24,11 @@
     </p>
     <div class="slds-p-top_x-small">
         <p>Områder:</p>
-        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
-            <template iterator:it={powerOfAttorney.omraader}>
-                <li class="slds-item" key={it.value}>{it.value}</li>
+        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap" style="padding-left: 0.75rem">
+            <template for:each={omraadeList} for:item="omraade">
+                <li key={omraade.name} class="slds-item">
+                    <strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}
+                </li>
             </template>
         </ul>
     </div>
