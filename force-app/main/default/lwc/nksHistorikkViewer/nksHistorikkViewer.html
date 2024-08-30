@@ -11,17 +11,14 @@
                         <th class="space3" scope="col">
                             <div class="slds-truncate" title="Periode">Periode</div>
                         </th>
-                        <th class="space2" scope="col">
-                            <div class="slds-truncate" title="Område">Område</div>
-                        </th>
-                        <th class="space2" scope="col">
-                            <div class="slds-truncate" title="Rolle">Rolle</div>
-                        </th>
                         <th class="space3" scope="col">
                             <div class="slds-truncate" title="Navn">Navn</div>
                         </th>
                         <th class="space2" scope="col">
-                            <div class="slds-truncate" title="Nummer">Nummer</div>
+                            <div class="slds-truncate" title="Område">Område</div>
+                        </th>
+                        <th class="space3" scope="col">
+                            <div class="slds-truncate" title="Periode">Status</div>
                         </th>
                     </tr>
                 </thead>
@@ -32,20 +29,15 @@
                                 <div class="slds-line-clamp" title={fullmakt.periode}>{fullmakt.periode}</div>
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
-                                <div class="slds-line-clamp" title={fullmakt.omraader}>{fullmakt.omraader}</div>
-                            </td>
-                            <td data-label="UniqueName">
-                                <div class="slds-truncate" title={fullmakt.motpartsRolle}>{fullmakt.motpartsRolle}</div>
+                                <div class="slds-line-clamp" title={fullmakt.motpartsPersonNavn}>
+                                    {fullmakt.fullmektigsNavn}
+                                </div>
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
-                                <div class="slds-line-clamp" title={fullmakt.motpartsPersonNavn}>
-                                    {fullmakt.motpartsPersonNavn}
-                                </div>
+                                <div class="slds-line-clamp" title={fullmakt.omraader}>{fullmakt.omraade}</div>
                             </td>
-                            <td data-label="UniqueName">
-                                <div class="slds-truncate" title={fullmakt.motpartsPersonident}>
-                                    {fullmakt.motpartsPersonident}
-                                </div>
+                            <td data-label="UniqueName" class="slds-cell-wrap">
+                                <div class="slds-line-clamp" title={fullmakt.status}>{fullmakt.status}</div>
                             </td>
                         </tr>
                     </template>
