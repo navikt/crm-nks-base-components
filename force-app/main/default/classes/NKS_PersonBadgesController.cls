@@ -299,7 +299,7 @@ public with sharing class NKS_PersonBadgesController {
                         new Badge(
                             'powerOfAttorney',
                             'Fullmakt',
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                             '',
                             '',
                             true
