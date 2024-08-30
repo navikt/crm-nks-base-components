@@ -33,6 +33,7 @@ export async function handleShowNotifications(
         const selectedThemeId = getOutputVariableValue(outputVariables, 'Selected_Theme_SF_Id');
         const existingJournal = getOutputVariableValue(outputVariables, 'Existing_Journal');
         const theme = selectedThemeId ? await callGetCommonCode(selectedThemeId) : '';
+        const navTaskSaved = getOutputVariableValue(outputVariables, 'NAV_Task_Saved');
 
         if (flowNameLower.includes('journal')) {
             const message = existingJournal
@@ -42,10 +43,17 @@ export async function handleShowNotifications(
                 : 'Henvendelsen er journalført';
             addNotification(notificationBoxTemplate, message, theme);
         } else if (flowNameLower.includes('task')) {
-            const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
-            const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
-            const optionalText = `${theme}\xa0\xa0\xa0\xa0\xa0Sendt til: ${unitNumber} ${unitName}`;
-            addNotification(notificationBoxTemplate, 'Oppgave opprettet', optionalText);
+            if (navTaskSaved) {
+                addNotification(
+                    notificationBoxTemplate,
+                    'Oppgaven er lagret, og blir sendt når samtalereferat er opprettet.'
+                );
+            } else {
+                const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
+                const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
+                const optionalText = `${theme}\xa0\xa0\xa0\xa0\xa0Sendt til: ${unitNumber} ${unitName}`;
+                addNotification(notificationBoxTemplate, 'Oppgave opprettet', optionalText);
+            }
         } else if (flowNameLower.includes('redact')) {
             addNotification(notificationBoxTemplate, 'Henvendelsen er sendt til sladding');
         } else if (flowNameLower.includes('reserve')) {
