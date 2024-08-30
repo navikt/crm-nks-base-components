@@ -195,13 +195,14 @@ public with sharing class NKS_PersonBadgesController {
                 if (person.NKS_NumberOfSecurityMeasures__c > 0 && !securityMeasures.isEmpty()) {
                     badges.add(
                         new Badge(
-                            'securityMeasures',
-                            person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                            'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
-                            '',
-                            '',
-                            true
-                        ).setBadgeContent(securityMeasures)
+                                'securityMeasures',
+                                person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
+                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
+                                '',
+                                '',
+                                true
+                            )
+                            .setBadgeContent(securityMeasures)
                     );
                 }
             } catch (Exception e) {
@@ -265,11 +266,10 @@ public with sharing class NKS_PersonBadgesController {
 
         private void setPowerOfAttorney() {
             try {
-                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = 
-            (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
-                person.Id,
-                'Person__c'
-            );
+                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
+                    person.Id,
+                    'Person__c'
+                );
                 if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                     return;
                 Date today = Date.today();
@@ -277,9 +277,11 @@ public with sharing class NKS_PersonBadgesController {
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
                     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
 
-                    if (fullmaktsgiver.gyldigFraOgMed <= today && 
-                        (fullmaktsgiver.gyldigTilOgMed >= today || fullmaktsgiver.gyldigTilOgMed == null)) {
-
+                    if (
+                        fullmaktsgiver.gyldigFraOgMed <= today &&
+                        (fullmaktsgiver.gyldigTilOgMed >= today ||
+                        fullmaktsgiver.gyldigTilOgMed == null)
+                    ) {
                         PowerOfAttorney poa = new PowerOfAttorney();
                         poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
                         poa.omraade = fullmaktsgiver.omraade;
@@ -287,7 +289,7 @@ public with sharing class NKS_PersonBadgesController {
                         poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
                         poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
                         poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
-                        
+
                         poa.id = String.valueOf(i);
                         personIdentNameMap.put(poa.motpartsPersonident, '');
                         powerOfAttorneys.add(poa);
@@ -297,13 +299,14 @@ public with sharing class NKS_PersonBadgesController {
                 if (!powerOfAttorneys.isEmpty()) {
                     badges.add(
                         new Badge(
-                            'powerOfAttorney',
-                            'Fullmakt',
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                            '',
-                            '',
-                            true
-                        ).setBadgeContent(powerOfAttorneys)
+                                'powerOfAttorney',
+                                'Fullmakt',
+                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                                '',
+                                '',
+                                true
+                            )
+                            .setBadgeContent(powerOfAttorneys)
                     );
                 }
             } catch (Exception e) {
@@ -823,8 +826,9 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {}
-    
+    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
+    }
+
     public class Navn {
         @AuraEnabled
         public String fornavn;
