@@ -36,34 +36,31 @@ public with sharing class NKS_PersonBadgesController {
      * @description Get an apex type holding all the data we need for showing badges.
      */
     @AuraEnabled(cacheable=true)
-    public static PersonBadgeData getPersonBadgesAndInfo(String field, String parentObject, String parentRecordId) {
+    public static PersonBadgeData getPersonBadgesAndInfo(
+        String field,
+        String parentObject,
+        String parentRecordId,
+        Boolean filterOpenSTO
+    ) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
         Person__c person = getPerson(personId);
         PersonBadgeData badges = new PersonBadgeData(person);
-        if (parentObject == 'Case') {
-            badges.setOpenSTO(parentRecordId);
+        if (parentObject.equalsIgnoreCase('Case')) {
+            if (filterOpenSTO == null)
+                filterOpenSTO = false;
+            badges.setOpenSTO(parentRecordId, filterOpenSTO);
         }
         return badges;
     }
 
     /**
      * @description Dynamically find the person ID
-     * *Example
-     * - field = 'Account.CRM_Person__c';
-     * - objString = 'Case';
-     * - recordId = '5001X000007xMSuQAM';
-     * - relation = 'Id';
+     * Example: field = 'Account.CRM_Person__c', parentObject = 'Case', parentRecordId = '5001X000007xMSuQAM'
      */
     private static Id getPersonId(String field, String parentObject, String parentRecordId) {
-        Id personId = null;
         String queryString = 'SELECT ' + field + ' FROM ' + parentObject + ' WHERE Id = :parentRecordId LIMIT 1';
         List<SObject> objList = Database.query(String.escapeSingleQuotes(queryString));
-
-        if (false == objList.isEmpty()) {
-            personId = (Id) NKS_PersonBadgesController.getFieldValue(objList[0], field);
-        }
-
-        return personId;
+        return !objList.isEmpty() ? (Id) getFieldValue(objList[0], field) : null;
     }
 
     /**
@@ -75,37 +72,29 @@ public with sharing class NKS_PersonBadgesController {
         }
         List<String> fieldNameList = fieldName.split('\\.');
 
-        if (1 < fieldNameList.size()) {
-            return getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'));
-        }
-
-        return obj.get(fieldNameList[0]);
+        return fieldNameList.size() > 1
+            ? getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'))
+            : obj.get(fieldNameList[0]);
     }
 
     /**
-     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependancy.
+     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependency.
      */
     private static Person__c getPerson(Id personId) {
-        Person__c person;
         Set<String> objectFields = Schema.SObjectType.Person__c.fields.getMap().keySet();
-        Set<String> fields = new Set<String>();
-        Set<String> fieldsToLabel = new Set<String>();
+        Set<String> fields = new Set<String>{
+            'Id',
+            'INT_GuardianshipOrFuturePowerOfAttorney__c',
+            'INT_IsDeceased__c',
+            'INT_DateOfDeath__c',
+            'INT_PowerOfAttorney__c',
+            'INT_SpokenLanguageIntepreter__c',
+            'INT_KRR_Reservation__c',
+            'NKS_NumberOfSecurityMeasures__c'
+        };
+        Set<String> fieldsToLabel = new Set<String>{ 'HOT_DegreeOfHearingAndVisualImpairment__c' };
+
         String queryString = 'SELECT ';
-
-        fields.add('Id');
-        fields.add('INT_GuardianshipOrFuturePowerOfAttorney__c');
-        fields.add('INT_IsDeceased__c');
-        fields.add('INT_DateOfDeath__c');
-        fields.add('INT_PowerOfAttorney__c');
-        fields.add('INT_SpokenLanguageIntepreter__c');
-        fields.add('INT_KRR_Reservation__c');
-        fields.add('NKS_NumberOfSecurityMeasures__c');
-
-        //HOT Fields
-        // fields.add('HOT_HasEntitlement__c');
-        // fields.addAll(HOT_ENTITLEMENT_FIELDS);
-        fieldsToLabel.add('HOT_DegreeOfHearingAndVisualImpairment__c');
-
         for (String str : fields) {
             if (objectFields.contains(str.toLowerCase())) {
                 queryString += str += ', ';
@@ -127,11 +116,9 @@ public with sharing class NKS_PersonBadgesController {
             '		INT_ValidToDate__c' +
             '	FROM SecurityMeasures__r' +
             ')';
-
         queryString += ' FROM Person__c WHERE Id = :personId';
 
         List<Person__c> personList = (List<Person__c>) Database.query(queryString);
-
         return personList.isEmpty() ? null : personList[0];
     }
 
@@ -149,50 +136,33 @@ public with sharing class NKS_PersonBadgesController {
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
         public List<PowerOfAttorney> powerOfAttorneys;
-        // @AuraEnabled
-        // public List<String> entitlements;
         @AuraEnabled
         public List<String> errors;
         @AuraEnabled
         public Date dateOfDeath;
+        // @AuraEnabled
+        // public List<String> entitlements;
 
         private Person__c person;
         private Set<String> fieldSet;
-
-        private Map<String, Common_Code__c> themeMap;
-        private Map<Id, String> themeGroups;
         private Map<String, String> personIdentNameMap;
 
         public PersonBadgeData(Person__c person) {
-            badges = new List<Badge>();
-            securityMeasures = new List<SecurityMeasure>();
-            spokenLanguagesIntepreter = new List<String>();
-            guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
-            powerOfAttorneys = new List<PowerOfAttorney>();
-            // entitlements = new List<String>();
-            errors = new List<String>();
-            personIdentNameMap = new Map<String, String>();
+            this.badges = new List<Badge>();
+            this.securityMeasures = new List<SecurityMeasure>();
+            this.spokenLanguagesIntepreter = new List<String>();
+            this.guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
+            this.powerOfAttorneys = new List<PowerOfAttorney>();
+            this.errors = new List<String>();
+            this.personIdentNameMap = new Map<String, String>();
+            // this.entitlements = new List<String>();
 
-            if (null != person) {
-                dateOfDeath = person.INT_DateOfDeath__c;
+            if (person != null) {
+                this.dateOfDeath = person.INT_DateOfDeath__c;
                 this.person = person;
                 //Get field set for use later in the class
-                fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
-                loadCommonCodes();
+                this.fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
                 setBadgeData();
-            }
-        }
-
-        private void loadCommonCodes() {
-            themeMap = new Map<String, Common_Code__c>();
-            themeGroups = new Map<Id, String>();
-
-            for (Common_Code__c cc : [
-                SELECT Id, Name, CRM_Code__c, CRM_Code_Set__c
-                FROM Common_Code__c
-                WHERE CRM_Code_Set__c = 'Tema'
-            ]) {
-                themeMap.put(cc.CRM_Code__c, cc);
             }
         }
 
@@ -203,9 +173,9 @@ public with sharing class NKS_PersonBadgesController {
             setGuardianshipOrFuturePowerOfAttorney();
             setSpokenLanguagesIntepreter();
             setDegreeOfHearingAndVisualImpairment();
-            // setEntitlements();
             setPersonName();
             setKrrReservation();
+            // setEntitlements();
         }
 
         private void setSecurityMeasures() {
@@ -222,19 +192,18 @@ public with sharing class NKS_PersonBadgesController {
                         );
                     }
                 }
-                if (0 < person.NKS_NumberOfSecurityMeasures__c) {
-                    if (securityMeasures.size() > 0) {
-                        badges.add(
-                            new Badge(
+                if (person.NKS_NumberOfSecurityMeasures__c > 0 && !securityMeasures.isEmpty()) {
+                    badges.add(
+                        new Badge(
                                 'securityMeasures',
                                 person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
                                 '',
                                 '',
                                 true
                             )
-                        );
-                    }
+                            .setBadgeContent(securityMeasures)
+                    );
                 }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av sikkerhetstiltak');
@@ -242,134 +211,139 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void setSpokenLanguagesIntepreter() {
-            if (true == String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
-                badges.add(
-                    new Badge(
-                        'spokenLanguageIntepreter',
-                        getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
+            if (String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
+                List<SpokenLanguagesIntepreter> languages = new List<SpokenLanguagesIntepreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
                         if (languageMap.containsKey(language)) {
                             String capCase = languageMap.get(language).toLowerCase().capitalize();
                             spokenLanguagesIntepreter.add(capCase + ' (' + language + ')');
+                            languages.add(new SpokenLanguagesIntepreter(capCase + ' (' + language + ')'));
                         } else {
                             spokenLanguagesIntepreter.add(language);
+                            languages.add(new SpokenLanguagesIntepreter(language));
                         }
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av språk for talespråktolk');
                 }
+
+                badges.add(
+                    new Badge(
+                            'spokenLanguageIntepreter',
+                            getFieldLabel('INT_SpokenLanguageIntepreter__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(languages)
+                );
             }
         }
 
         private void setKrrReservation() {
-            if (true == person.INT_KRR_Reservation__c) {
+            if (person.INT_KRR_Reservation__c) {
                 badges.add(new Badge('krr', getFieldLabel('INT_KRR_Reservation__c')));
             }
         }
 
         private void setIsDeceased() {
-            if (true == person.INT_IsDeceased__c) {
+            if (person.INT_IsDeceased__c) {
                 badges.add(
                     new Badge(
-                        'isDeceased',
-                        getFieldLabel('INT_IsDeceased__c'),
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
+                            'isDeceased',
+                            getFieldLabel('INT_IsDeceased__c'),
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(new IsDeceased(person.INT_DateOfDeath__c))
                 );
             }
         }
 
         private void setPowerOfAttorney() {
-            if (String.isNotBlank(person.INT_PowerOfAttorney__c)) {
-                Map<String, Person__c> relatedPersonMap = new Map<String, Person__c>();
-                try {
-                    Integer i = 0;
-                    for (
-                        PowerOfAttorney poa : (List<PowerOfAttorney>) JSON.deserialize(
-                            person.INT_PowerOfAttorney__c,
-                            List<PowerOfAttorney>.class
-                        )
+            try {
+                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
+                    person.Id,
+                    'Person__c'
+                );
+                if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
+                    return;
+                Date today = Date.today();
+
+                for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
+                    NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
+
+                    if (
+                        fullmaktsgiver.gyldigFraOgMed <= today &&
+                        (fullmaktsgiver.gyldigTilOgMed >= today ||
+                        fullmaktsgiver.gyldigTilOgMed == null)
                     ) {
-                        if (poa.gyldigFraOgMed <= Date.today() && poa.gyldigTilOgMed >= Date.today()) {
-                            poa.id = '' + i;
-                            personIdentNameMap.put(poa.motpartsPersonident, '');
+                        PowerOfAttorney poa = new PowerOfAttorney();
+                        poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
+                        poa.omraade = fullmaktsgiver.omraade;
+                        poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
+                        poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
+                        poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
+                        poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
 
-                            if (poa.omraader != null && poa.omraader.size() > 0) {
-                                if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
-                                    poa.omraader[0] = 'Gjelder alle ytelser';
-                                } else {
-                                    for (Integer x = 0; x < poa.omraader.size(); x++) {
-                                        if (themeMap.containsKey(poa.omraader[x])) {
-                                            poa.omraader[x] = themeMap.get(poa.omraader[x]).Name;
-                                        }
-                                    }
-                                }
-                            }
-                            powerOfAttorneys.add(poa);
-                            i++;
-                        }
+                        poa.id = String.valueOf(i);
+                        personIdentNameMap.put(poa.motpartsPersonident, '');
+                        powerOfAttorneys.add(poa);
                     }
+                }
 
-                    if (powerOfAttorneys.size() > 0) {
-                        badges.add(
-                            new Badge(
+                if (!powerOfAttorneys.isEmpty()) {
+                    badges.add(
+                        new Badge(
                                 'powerOfAttorney',
                                 'Fullmakt',
-                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
                                 '',
                                 '',
                                 true
                             )
-                        );
-                    }
-                } catch (Exception e) {
-                    errors.add('Feil ved uthenting av fullmakts detaljer');
+                            .setBadgeContent(powerOfAttorneys)
+                    );
                 }
+            } catch (Exception e) {
+                errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
         }
 
         private void setGuardianshipOrFuturePowerOfAttorney() {
             if (String.isNotBlank(person.INT_GuardianshipOrFuturePowerOfAttorney__c)) {
-                badges.add(
-                    new Badge(
-                        'guardianshipOrFuturePowerOfAttorney',
-                        'Vergemål',
-                        'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-                        '',
-                        '',
-                        true
-                    )
-                );
-
                 try {
-                    Integer i = 0;
-                    for (
-                        GuardianshipOrFuturePowerOfAttorney guardienship : (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
-                            person.INT_GuardianshipOrFuturePowerOfAttorney__c,
-                            List<GuardianshipOrFuturePowerOfAttorney>.class
-                        )
-                    ) {
-                        guardienship.id = '' + i;
-                        if (String.isNotBlank(guardienship.motpartsPersonident)) {
-                            personIdentNameMap.put(guardienship.motpartsPersonident, '');
+                    List<GuardianShipOrFuturePowerOfAttorney> guardianshipList = (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
+                        person.INT_GuardianshipOrFuturePowerOfAttorney__c,
+                        List<GuardianshipOrFuturePowerOfAttorney>.class
+                    );
+                    for (Integer i = 0; i < guardianshipList.size(); i++) {
+                        GuardianShipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
+                        guardianship.id = String.valueOf(i);
+                        if (String.isNotBlank(guardianship.motpartsPersonident)) {
+                            personIdentNameMap.put(guardianship.motpartsPersonident, '');
                         }
-                        guardianships.add(guardienship);
-                        i++;
+                        guardianships.add(guardianship);
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av vergemål detaljer');
                 }
+
+                badges.add(
+                    new Badge(
+                            'guardianshipOrFuturePowerOfAttorney',
+                            'Vergemål',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(guardianships)
+                );
             }
         }
 
@@ -417,7 +391,236 @@ public with sharing class NKS_PersonBadgesController {
 
         /**
          * @description Setting badge for open STOs
+         * This function could have been used to check Case instead of PSR, which means we probably could have removed
+         * fetchSpecialSkills() and had a much easier query than the one that fetches PSR. However, since the
+         * Case table of records is so big, the query likely would have timed out or taken too long.
+         *
+         * The code is mostly a duplication of the nksGetStoUtilityController class in crm-sto.
          */
+        public void setOpenSTO(String caseId, Boolean filterSTO) {
+            if (!filterSTO) {
+                setOpenSTO(caseId);
+                return;
+            }
+
+            Case currentCase = getCurrentCase(caseId);
+            if (currentCase == null) {
+                return;
+            }
+
+            List<String> confidentialitySkillsName = new List<String>{ 'Fortrolig_addresse', 'Skjermede_personer' };
+            List<String> originSkillsName = new List<String>{ 'BTO', 'STO' };
+            Map<String, String> stoThemeRenames = new Map<String, String>{ 'Ufør' => 'Ufoeretrygd' };
+
+            // Since Omni channel skills are org based, we want to only include skills that are used in STO
+            List<String> allRelevantSkills = getAllRelevantSkills(stoThemeRenames);
+            allRelevantSkills.addAll(confidentialitySkillsName);
+            allRelevantSkills.addAll(originSkillsName);
+
+            Set<Id> skillIds = new Set<Id>();
+            Map<Id, String> userConfidentialMap = new Map<Id, String>();
+            Map<Id, String> userOriginMap = new Map<Id, String>();
+
+            fetchUserSkills(
+                allRelevantSkills,
+                confidentialitySkillsName,
+                originSkillsName,
+                skillIds,
+                userConfidentialMap,
+                userOriginMap
+            );
+
+            List<Id> confidentialitySkillsIds = new List<Id>();
+            List<Id> originSkillsIds = new List<Id>();
+            fetchSpecialSkills(confidentialitySkillsName, originSkillsName, confidentialitySkillsIds, originSkillsIds);
+
+            List<Id> casesInQueueList = fetchPendingServiceRoutings(
+                currentCase,
+                skillIds,
+                userConfidentialMap.keySet(),
+                confidentialitySkillsIds,
+                userOriginMap.keySet(),
+                originSkillsIds
+            );
+
+            if (casesInQueueList.isEmpty()) {
+                return;
+            }
+
+            List<Thread__c> threadList = fetchThreads(casesInQueueList);
+
+            if (threadList.isEmpty()) {
+                return;
+            }
+
+            countThreadsAndAddBadges(threadList);
+        }
+
+        private List<String> getAllRelevantSkills(Map<String, String> stoThemeRenames) {
+            List<String> allRelevantSkills = new List<String>();
+            Schema.DescribeFieldResult fieldResult = Case.STO_Category__c.getDescribe();
+            for (Schema.PicklistEntry pl : fieldResult.getPicklistValues()) {
+                String label = pl.getLabel();
+                if (stoThemeRenames.containsKey(label)) {
+                    allRelevantSkills.add(stoThemeRenames.get(label));
+                } else {
+                    allRelevantSkills.add(label);
+                }
+            }
+            return allRelevantSkills;
+        }
+
+        private Case getCurrentCase(String caseId) {
+            return [
+                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                FROM Case
+                WHERE Id = :caseId
+                LIMIT 1
+            ];
+        }
+
+        private void fetchUserSkills(
+            List<String> allRelevantSkills,
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            Set<Id> skillIds,
+            Map<Id, String> userConfidentialMap,
+            Map<Id, String> userOriginMap
+        ) {
+            for (ServiceResourceSkill srs : [
+                SELECT SkillId, Skill.DeveloperName, Skill.MasterLabel
+                FROM ServiceResourceSkill
+                WHERE
+                    ServiceResource.RelatedRecordId = :UserInfo.getUserId()
+                    AND Skill.DeveloperName IN :allRelevantSkills
+                    AND EffectiveStartDate <= TODAY
+                    AND (EffectiveEndDate >= TODAY
+                    OR EffectiveEndDate = NULL)
+                    AND ServiceResource.IsActive = TRUE
+            ]) {
+                //Separating domain skills and person access skills
+                if (confidentialitySkillsName.contains(srs.Skill.DeveloperName)) {
+                    userConfidentialMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else if (originSkillsName.contains(srs.Skill.DeveloperName)) {
+                    userOriginMap.put(srs.SkillId, srs.Skill.DeveloperName);
+                } else {
+                    skillIds.add(srs.SkillId);
+                }
+            }
+        }
+
+        // Salesforce has a weird bug with filtering on skills, so we query them and add them to a list
+        // for use in the PendingServiceRoutning query.
+        private void fetchSpecialSkills(
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName,
+            List<Id> confidentialitySkillsIds,
+            List<Id> originSkillsIds
+        ) {
+            for (Skill skill : [
+                SELECT Id, DeveloperName
+                FROM Skill
+                WHERE DeveloperName IN :confidentialitySkillsName OR DeveloperName IN :originSkillsName
+            ]) {
+                if (confidentialitySkillsName.contains(skill.DeveloperName)) {
+                    confidentialitySkillsIds.add(skill.Id);
+                }
+                if (originSkillsName.contains(skill.DeveloperName)) {
+                    originSkillsIds.add(skill.Id);
+                }
+            }
+        }
+
+        // Salesforce gives us a System.UnexpectedException: Illegal filter on SkillRequirement
+        // if we use Skill.DeveloperName instead of SkillId in the filters, so we query the skills
+        // as we did previously. For some unknown reason this works ¯\_(ツ)_/¯
+        private List<Id> fetchPendingServiceRoutings(
+            Case currentCase,
+            Set<Id> skillIds,
+            Set<Id> userConfidentialSkillIds,
+            List<Id> confidentialitySkillsIds,
+            Set<Id> userOriginSkillIds,
+            List<Id> originSkillsIds
+        ) {
+            List<Id> casesInQueueList = new List<Id>();
+            for (PendingServiceRouting psr : [
+                SELECT WorkItemId
+                FROM PendingServiceRouting
+                WHERE
+                    WorkItem.AccountId = :currentCase.AccountId
+                    AND Id IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE SkillId IN :skillIds
+                    )
+                    AND Id NOT IN (
+                        SELECT RelatedRecordId
+                        FROM SkillRequirement
+                        WHERE
+                            (SkillId NOT IN :userConfidentialSkillIds
+                            AND SkillId IN :confidentialitySkillsIds)
+                            OR (SkillId NOT IN :userOriginSkillIds
+                            AND SkillId IN :originSkillsIds)
+                    )
+                    AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
+                    AND IsReadyForRouting = TRUE
+                    AND IsPushed = FALSE
+            ]) {
+                casesInQueueList.add(psr.WorkItemId);
+            }
+            return casesInQueueList;
+        }
+
+        @TestVisible
+        private List<Thread__c> fetchThreads(List<Id> casesInQueueList) {
+            return [
+                SELECT Id, STO_Category__c, CRM_Thread_Type__c, CRM_Latest_Message_Datetime__c
+                FROM Thread__c
+                WHERE
+                    CRM_Case__c IN (
+                        SELECT Id
+                        FROM Case
+                        WHERE
+                            IsClosed = FALSE
+                            AND STO_Category__c != NULL
+                            AND Status NOT IN ('In progress', 'On Hold', 'Reserved')
+                            AND Id IN :casesInQueueList
+                    )
+                ORDER BY STO_Category__c ASC, CRM_Latest_Message_Datetime__c DESC
+            ];
+        }
+
+        @TestVisible
+        private void countThreadsAndAddBadges(List<Thread__c> threadList) {
+            Integer count = 0;
+            Map<String, List<Thread__c>> threadsGroupedByQueue = new Map<String, List<Thread__c>>();
+            for (Thread__c th : threadList) {
+                String category = th.STO_Category__c;
+                if (!threadsGroupedByQueue.containsKey(category)) {
+                    threadsGroupedByQueue.put(category, new List<Thread__c>());
+                }
+                threadsGroupedByQueue.get(category).add(th);
+                count++;
+            }
+
+            List<OpenSTO> openSTOList = new List<OpenSTO>();
+            for (String queue : threadsGroupedByQueue.keySet()) {
+                openSTOList.add(new OpenSTO(queue, threadsGroupedByQueue.get(queue)));
+            }
+
+            badges.add(
+                new Badge(
+                        'openSTO',
+                        String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
+                        'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
+                        '',
+                        '',
+                        true
+                    )
+                    .setBadgeContent(openSTOList)
+            );
+        }
+
         public void setOpenSTO(String caseId) {
             Case c = [
                 SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
@@ -454,7 +657,7 @@ public with sharing class NKS_PersonBadgesController {
                 new Badge(
                     'openSTO',
                     String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
-                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer',
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
                     '',
                     '',
                     true,
@@ -515,6 +718,16 @@ public with sharing class NKS_PersonBadgesController {
         public String tabindex;
         @AuraEnabled
         public String badgeInfo; //Optional additional info to be sent to frontend
+        @AuraEnabled
+        public List<BadgeContent> badgeContent;
+        @AuraEnabled
+        public String badgeContentType {
+            get {
+                if (this.badgeContent == null || this.badgeContent?.size() == 0)
+                    return null;
+                return String.valueOf(this.badgeContent[0]).split(':')[0]; // Returns the name of the class instance
+            }
+        }
 
         /**
          * @description Constructor for only showing a badge without any formatting or logic
@@ -523,7 +736,14 @@ public with sharing class NKS_PersonBadgesController {
          *
          */
         public Badge(String name, String label) {
-            this(name, label, 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small', '', '', false);
+            this(
+                name,
+                label,
+                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small yellowBadge',
+                '',
+                '',
+                false
+            );
         }
 
         /**
@@ -573,46 +793,42 @@ public with sharing class NKS_PersonBadgesController {
             this(name, label, styling, iconName, iconAltText, clickable);
             this.badgeInfo = badgeInfo;
         }
-    }
 
-    public class PowerOfAttorney {
-        @AuraEnabled
-        public String motpartsRolle {
-            get {
-                return motpartsRolle.toLowerCase().capitalize();
-            }
-            set;
+        public Badge setBadgeContent(List<BadgeContent> content) {
+            this.badgeContent = content;
+            return this;
         }
-        @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public String motpartsNavn;
-        @AuraEnabled
-        public List<String> omraader;
-        @AuraEnabled
-        public String omraade {
-            get {
-                return omraadeString();
-            }
-            set;
-        }
-        @AuraEnabled
-        public Date gyldigFraOgMed;
-        @AuraEnabled
-        public Date gyldigTilOgMed;
-        @AuraEnabled
-        public String id;
 
-        private String omraadeString() {
-            if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
-                return 'Gjelder alle ytelser';
-            } else if (0 < omraader.size()) {
-                return String.join(omraader, ',');
-            }
-
-            return '';
+        public Badge setBadgeContent(BadgeContent content) {
+            this.badgeContent = new List<BadgeContent>{ content };
+            return this;
         }
     }
+
+    public interface BadgeContent {
+    }
+
+    public class IsDeceased implements BadgeContent {
+        @AuraEnabled
+        public Date dateOfDeath;
+
+        public IsDeceased(Date dateOfDeath) {
+            this.dateOfDeath = dateOfDeath;
+        }
+    }
+
+    public class SpokenLanguagesIntepreter implements BadgeContent {
+        @AuraEnabled
+        public String language;
+
+        public SpokenLanguagesIntepreter(String language) {
+            this.language = language;
+        }
+    }
+
+    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
+    }
+
     public class Navn {
         @AuraEnabled
         public String fornavn;
@@ -639,7 +855,7 @@ public with sharing class NKS_PersonBadgesController {
         public String tjenestevirksomhet;
     }
 
-    public class GuardianshipOrFuturePowerOfAttorney {
+    public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -677,6 +893,19 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String omfang;
         @AuraEnabled
+        public String motpartLabel {
+            get {
+                List<String> retString = new List<String>();
+                if (String.isNotEmpty(this.navn.fullName)) {
+                    retString.add(this.navn.fullName);
+                }
+                if (String.isNotEmpty(this.motpartsPersonIdent)) {
+                    retString.add(this.motpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
         public List<Tjenesteomraade> tjenesteomraade;
         @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
@@ -722,7 +951,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class SecurityMeasure {
+    public class SecurityMeasure implements BadgeContent {
         @AuraEnabled
         public Id RecordId;
         @AuraEnabled
@@ -737,6 +966,21 @@ public with sharing class NKS_PersonBadgesController {
             this.ToDate = toDate;
             this.FromDate = fromDate;
             this.SecurityMeasure = securityMeasure;
+        }
+    }
+
+    public class OpenSTO implements BadgeContent {
+        @AuraEnabled
+        public String queue;
+        @AuraEnabled
+        public List<Thread__c> threadList;
+        @AuraEnabled
+        public Integer threadSize;
+
+        public OpenSTO(String queue, List<Thread__c> threadList) {
+            this.queue = queue;
+            this.threadList = threadList != null ? threadList : new List<Thread__c>();
+            this.threadSize = this.threadList.size();
         }
     }
 }

@@ -6,7 +6,8 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>NAV Unit person location missing</shortDescription>
-        <value>Kan ikke finne brukers enhet basert på geografisk tilhørighet. Finner ikke kommunenummer eller bydelsnummer på bruker.</value>
+        <value>Unable to locate user's device based on geographic proximity. Cannot find
+            municipality number or district number on user.</value>
     </labels>
     <labels>
         <fullName>NAV_Unit_Error_person_not_accessible</fullName>
@@ -14,7 +15,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>NAV_Unit_Error_person_not_accessible</shortDescription>
-        <value>Har ikke tilgangsrettigheter på bruker. Oppslaget på enhet krever tilgang på bruker.</value>
+        <value>Does not have access rights on user. The lookup on device requires user access.</value>
     </labels>
     <labels>
         <fullName>NAV_Unit_Subheader_more_actions</fullName>
@@ -23,5 +24,37 @@
         <protected>false</protected>
         <shortDescription>NAV_Unit_Subheader_more_actions</shortDescription>
         <value>More actions</value>
+    </labels>
+    <labels>
+        <fullName>NKS_Create_NAV_Task</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Create NAV Task</shortDescription>
+        <value>Create NAV Task</value>
+    </labels>
+    <labels>
+        <fullName>NKS_Journal</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Journal</shortDescription>
+        <value>Journal</value>
+    </labels>
+    <labels>
+        <fullName>NKS_Set_To_Redaction</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Set To Redaction</shortDescription>
+        <value>Set to redaction</value>
+    </labels>
+    <labels>
+        <fullName>NKS_Open_Security_Rutines</fullName>
+        <categories>NKS, Buttons</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>NKS_Open_Security_Rutines</shortDescription>
+        <value>Open security rutines</value>
     </labels>
 </CustomLabels>
