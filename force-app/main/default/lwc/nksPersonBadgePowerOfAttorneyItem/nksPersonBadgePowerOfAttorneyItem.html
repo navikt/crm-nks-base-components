@@ -27,7 +27,9 @@
         <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap" style="padding-left: 0.75rem">
             <template for:each={omraadeList} for:item="omraade">
                 <li key={omraade.name} class="slds-item">
-                    <strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}
+                    {omraade.name}
+                    <!-- TODO: To be determined how PoA should look with permissions-->
+                    <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
                 </li>
             </template>
         </ul>

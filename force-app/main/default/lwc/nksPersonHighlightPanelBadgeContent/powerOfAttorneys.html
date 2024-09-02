@@ -32,16 +32,13 @@
                             <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
                                 <template for:each={powerOfAttorney.omraader} for:item="omraade">
                                     <li key={omraade.name} class="slds-item">
-                                        <strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}
+                                        {omraade.name}
+                                        <!-- TODO: To be determined how PoA should look with permissions-->
+                                        <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
                                     </li>
                                 </template>
                             </ul>
                         </div>
-                        <!--<ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
-                            <template iterator:it={powerOfAttorney.omraader}>
-                                <li class="slds-item" key={it.value}>{it.value}</li>
-                            </template>
-                        </ul>-->
                     </div>
                 </template>
             </div>

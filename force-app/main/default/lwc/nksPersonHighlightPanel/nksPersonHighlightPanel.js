@@ -327,7 +327,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
     }
 
-    // TODO: To be determined how PoA should look with permissions
     formatPowerOfAttorneyBadges() {
         this.badges = this.badges.map((badge) => {
             let clonedBadge = { ...badge };
