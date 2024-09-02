@@ -185,7 +185,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         Assert.areEqual(3,  result.powerOfAttorneys.size(), 'Expected one guardianship');
         Assert.areEqual('13899498180', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 13899498180');
         Assert.isTrue(
-            result.powerOfAttorneys[0].omraade.split(',').size() > 0,
+            result.powerOfAttorneys[0].omraade.keySet().size() > 0,
             'Expected multiple omraade'
         );
 
