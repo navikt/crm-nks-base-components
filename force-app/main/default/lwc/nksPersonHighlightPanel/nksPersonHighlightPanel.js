@@ -351,6 +351,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     get isLoading() {
+        // eslint-disable-next-line @salesforce/aura/ecma-intrinsics, compat/compat
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
     }
 

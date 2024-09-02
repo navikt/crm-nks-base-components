@@ -12,14 +12,14 @@
                             key={flow.developerName}
                             data-expanded={flow.expanded}
                         >
-                            <lightning-button
-                                class="custom-button"
-                                label={flow.label}
+                            <button
+                                class={buttonClass}
                                 data-id={flow.developerName}
-                                variant="brand-outline"
                                 onclick={toggleFlow}
                                 aria-expanded={flow.expanded}
-                            ></lightning-button>
+                            >
+                                {flow.label}
+                            </button>
                         </lightning-layout-item>
                     </template>
                     <slot name="navigationButton"></slot>
