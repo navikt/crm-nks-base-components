@@ -85,11 +85,11 @@ public with sharing class NKS_FullmaktController {
 
         Map<String, List<String>> handlingerByOmraadeTema = extractOmraaderFromOmraadeList(fullmaktsgiverData);
         Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(handlingerByOmraadeTema.keySet());
-        Map<String, List<String>> handlingerByOmraadeName = setHandlingerByOmraadeName(handlingerByOmraadeTema, omraadeNameByOmraadeTema);
+        List<Omraade> omraadeList = setOmraadeList(handlingerByOmraadeTema, omraadeNameByOmraadeTema);
 
         List<Fullmaktsgiver> fmList = new List<Fullmaktsgiver>();
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
-            fmList.add(mapToFullmaktsgiver(fmResponse, handlingerByOmraadeName));
+            fmList.add(mapToFullmaktsgiver(fmResponse, omraadeList));
         }
         return fmList;
     }
@@ -105,10 +105,10 @@ public with sharing class NKS_FullmaktController {
         return historikk;
     }
 
-    private static Fullmaktsgiver mapToFullmaktsgiver(FullmaktsgiverWrapper fmGiverWrapper, Map<String, List<String>> handlingerByOmraadeName) {
+    private static Fullmaktsgiver mapToFullmaktsgiver(FullmaktsgiverWrapper fmGiverWrapper, List<Omraade> omraadeList) {
         Fullmaktsgiver fm = new Fullmaktsgiver();
         fm.motpartsPersonident = fmGiverWrapper.fullmektig;
-        fm.omraade = handlingerByOmraadeName;
+        fm.omraader = omraadeList;
         fm.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed;
         fm.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
         fm.motpartsNavn = fmGiverWrapper.fullmektigsNavn;
@@ -153,14 +153,16 @@ public with sharing class NKS_FullmaktController {
         return omraader;
     }
 
-    private static Map<String, List<String>> setHandlingerByOmraadeName(Map<String, List<String>> handlingerByOmraadeTema, Map<String, String> omraadeNameByOmraadeTema) {
-        Map<String, List<String>> handlingerByOmraadeName = new Map<String, List<String>>();
+    private static List<Omraade> setOmraadeList(Map<String, List<String>> handlingerByOmraadeTema, Map<String, String> omraadeNameByOmraadeTema) {
+        List<Omraade> omraaderWithHandlinger = new List<Omraade>();
         for (String omraade : handlingerByOmraadeTema.keySet()) {
+            Omraade omd = new Omraade();
             String omraadeName = omraadeNameByOmraadeTema.get(omraade);
-            String actualOmraadeName = omraadeName != null ? omraadeName : omraade;           
-            handlingerByOmraadeName.put(actualOmraadeName, handlingerByOmraadeTema.get(omraade));
+            omd.tema = omraadeName != null ? omraadeName : omraade;
+            omd.handling = handlingerByOmraadeTema.get(omraade);
+            omraaderWithHandlinger.add(omd);     
         }
-        return handlingerByOmraadeName;
+        return omraaderWithHandlinger;
     }
 
     private static Map<String, String> getOmraadeNamesFromCommonCodes(Set<String> omdList) {
@@ -365,16 +367,16 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public String motpartsNavn;
         @AuraEnabled
-        public Map<String, List<String>> omraade;
+        public List<Omraade> omraader;
         @AuraEnabled
         public List<Map<String, String>> formattedOmraadeList {
             get {
                 List<Map<String, String>> formattedList = new List<Map<String, String>>();
-                if (omraade != null) {
-                    for (String key : omraade.keySet()) {
+                if (omraader != null) {
+                    for (Omraade omd : omraader) {
                         Map<String, String> omraadeMap = new Map<String, String>();
-                        omraadeMap.put('name', key);
-                        omraadeMap.put('permissions', String.join(omraade.get(key), ', '));
+                        omraadeMap.put('name', omd.tema);
+                        omraadeMap.put('permissions', String.join(omd.handling, ', '));
                         formattedList.add(omraadeMap);
                     }
                 }

@@ -284,7 +284,7 @@ public with sharing class NKS_PersonBadgesController {
                     ) {
                         PowerOfAttorney poa = new PowerOfAttorney();
                         poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
-                        poa.omraade = fullmaktsgiver.omraade;
+                        poa.omraader = fullmaktsgiver.omraader;
                         poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
                         poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
                         poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
