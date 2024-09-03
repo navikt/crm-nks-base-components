@@ -336,7 +336,7 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public String status {
             get {
-                if(opphoert == true) {
+                if (opphoert) {
                     return 'Avsluttet';
                 }
                 return 'Utløpt';
@@ -366,6 +366,21 @@ public with sharing class NKS_FullmaktController {
         public String motpartsNavn;
         @AuraEnabled
         public Map<String, List<String>> omraade;
+        @AuraEnabled
+        public List<Map<String, String>> formattedOmraadeList {
+            get {
+                List<Map<String, String>> formattedList = new List<Map<String, String>>();
+                if (omraade != null) {
+                    for (String key : omraade.keySet()) {
+                        Map<String, String> omraadeMap = new Map<String, String>();
+                        omraadeMap.put('name', key);
+                        omraadeMap.put('permissions', String.join(omraade.get(key), ', '));
+                        formattedList.add(omraadeMap);
+                    }
+                }
+                return formattedList;
+            }
+        }
         @AuraEnabled
         public Date gyldigFraOgMed;
         @AuraEnabled

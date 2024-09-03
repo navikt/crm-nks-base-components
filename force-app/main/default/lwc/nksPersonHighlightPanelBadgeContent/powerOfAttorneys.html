@@ -30,7 +30,7 @@
                         <div class="slds-p-top_x-small">
                             <p>Områder:</p>
                             <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
-                                <template for:each={powerOfAttorney.omraader} for:item="omraade">
+                                <template for:each={powerOfAttorney.formattedOmraadeList} for:item="omraade">
                                     <li key={omraade.name} class="slds-item">
                                         {omraade.name}
                                         <!-- TODO: To be determined how PoA should look with permissions-->

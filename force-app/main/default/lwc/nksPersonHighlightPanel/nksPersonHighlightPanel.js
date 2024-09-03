@@ -131,9 +131,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     badgeContentType: 'historicalPowerOfAttorney'
                 });
             }
-            console.log(JSON.stringify(badges));
             this.badges = badges;
-            this.formatPowerOfAttorneyBadges();
 
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
@@ -325,29 +323,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
             return str;
         }
         return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
-    }
-
-    formatPowerOfAttorneyBadges() {
-        this.badges = this.badges.map((badge) => {
-            let clonedBadge = { ...badge };
-
-            if (clonedBadge.badgeContent && clonedBadge.badgeContentType === 'PowerOfAttorney') {
-                clonedBadge.badgeContent = clonedBadge.badgeContent.map((badgeContent) => {
-                    let clonedBadgeContent = { ...badgeContent };
-
-                    if (clonedBadgeContent.omraade) {
-                        clonedBadgeContent.omraader = Object.keys(clonedBadgeContent.omraade).map((key) => {
-                            return {
-                                name: key,
-                                permissions: clonedBadgeContent.omraade[key].join(', ')
-                            };
-                        });
-                    }
-                    return clonedBadgeContent;
-                });
-            }
-            return clonedBadge;
-        });
     }
 
     get isLoading() {
