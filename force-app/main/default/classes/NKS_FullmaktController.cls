@@ -33,7 +33,7 @@ public with sharing class NKS_FullmaktController {
             return null;
         }
 
-        Set<String> omraader = extractOmraaderFromOmraadeList(historikkData).keySet();
+        Set<Omraade> omraader = extractOmraaderFromOmraadeList(historikkData);
         Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(omraader);
 
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
@@ -45,7 +45,7 @@ public with sharing class NKS_FullmaktController {
                 (sisteEndring.gyldigFraOgMed != null &&
                 Date.valueOf(sisteEndring.gyldigTilOgMed) < Date.today()))
             ) {
-                historikkList.add(mapToHistorikk(sisteEndring, omraadeNameByOmraadeTema));
+                historikkList.add(new FullmaktsgiverHistorikk(sisteEndring, omraadeNameByOmraadeTema));
                 if (historikkList.size() == 3) {
                     // Only show last 3 changes to historical power of attorney
                     break;
@@ -87,103 +87,53 @@ public with sharing class NKS_FullmaktController {
             return null;
         }
 
-        Map<String, List<String>> handlingerByOmraadeTema = extractOmraaderFromOmraadeList(fullmaktsgiverData);
-        Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(handlingerByOmraadeTema.keySet());
-        List<Omraade> omraadeList = setOmraadeList(handlingerByOmraadeTema, omraadeNameByOmraadeTema);
+        Set<Omraade> omraader = extractOmraaderFromOmraadeList(fullmaktsgiverData);
+        Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(omraader);
 
         List<Fullmaktsgiver> fmList = new List<Fullmaktsgiver>();
         for (FullmaktsgiverWrapper fmResponse : fullmaktsgiverData) {
-            fmList.add(mapToFullmaktsgiver(fmResponse, omraadeList));
+            fmList.add(new Fullmaktsgiver(fmResponse, omraadeNameByOmraadeTema));
         }
         return fmList;
     }
 
-    private static FullmaktsgiverHistorikk mapToHistorikk(
-        HistorikkEndringer sisteEndring,
-        Map<String, String> omraadeNameByOmraadeTema
-    ) {
-        FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
-        historikk.fullmektig = sisteEndring.fullmektig;
-        historikk.omraade = setOmraadeString(parseOmraadeIntoList(sisteEndring.omraade), omraadeNameByOmraadeTema);
-        historikk.gyldigFraOgMed = getGyldigFraOgMed(sisteEndring);
-        historikk.gyldigTilOgMed = getGyldigTilOgMed(sisteEndring);
-        historikk.fullmektigsNavn = sisteEndring.fullmektigsNavn;
-        historikk.opphoert = sisteEndring.opphoert;
-        return historikk;
-    }
-
-    private static Fullmaktsgiver mapToFullmaktsgiver(FullmaktsgiverWrapper fmGiverWrapper, List<Omraade> omraadeList) {
-        Fullmaktsgiver fm = new Fullmaktsgiver();
-        fm.motpartsPersonident = fmGiverWrapper.fullmektig;
-        fm.omraader = omraadeList;
-        fm.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed;
-        fm.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
-        fm.motpartsNavn = fmGiverWrapper.fullmektigsNavn;
-        fm.motpartsRolle = 'Fullmektig';
-        return fm;
-    }
-
-    private static String setOmraadeString(List<Omraade> omraadeList, Map<String, String> omraadeNameByOmraadeTema) {
-        if (omraadeList == null || omraadeList.isEmpty()) {
-            return '';
-        }
-        List<String> omdTemaList = new List<String>();
-        for (Omraade omd : omraadeList) {
-            String temaName = omraadeNameByOmraadeTema.get(omd.tema);
-            omdTemaList.add(temaName != null ? temaName : omd.tema);
-        }
-        if (omdTemaList[0].equalsIgnoreCase('*')) {
-            return 'Gjelder alle ytelser';
-        }
-        return String.join(omdTemaList, ', ');
-    }
-
-    private static Map<String, List<String>> extractOmraaderFromOmraadeList(List<Object> dataList) {
-        Map<String, List<String>> omraader = new Map<String, List<String>>();
+    private static Set<Omraade> extractOmraaderFromOmraadeList(List<Object> dataList) {
+        Set<Omraade> omraader = new Set<Omraade>();
 
         for (Object data : dataList) {
             List<Omraade> omraadeList;
 
             if (data instanceof HistorikkWrapper) {
                 HistorikkEndringer sisteEndring = ((HistorikkWrapper) data).sisteEndring;
-                omraadeList = sisteEndring != null ? parseOmraadeIntoList(sisteEndring.omraade) : null;
+                omraadeList = sisteEndring != null ? parseHistorikkOmraadeIntoList(sisteEndring.omraade) : null;
             } else if (data instanceof FullmaktsgiverWrapper) {
                 omraadeList = ((FullmaktsgiverWrapper) data).omraade;
+            } else {
+                continue;
             }
 
             if (omraadeList != null) {
                 for (Omraade omd : omraadeList) {
-                    omraader.put(omd.tema, omd.handling);
+                    omraader.add(omd);
                 }
             }
         }
         return omraader;
     }
 
-    private static List<Omraade> setOmraadeList(
-        Map<String, List<String>> handlingerByOmraadeTema,
-        Map<String, String> omraadeNameByOmraadeTema
-    ) {
-        List<Omraade> omraaderWithHandlinger = new List<Omraade>();
-        for (String omraade : handlingerByOmraadeTema.keySet()) {
-            Omraade omd = new Omraade();
-            String omraadeName = omraadeNameByOmraadeTema.get(omraade);
-            omd.tema = omraadeName != null ? omraadeName : omraade;
-            omd.handling = handlingerByOmraadeTema.get(omraade);
-            omraaderWithHandlinger.add(omd);
-        }
-        return omraaderWithHandlinger;
-    }
-
-    private static Map<String, String> getOmraadeNamesFromCommonCodes(Set<String> omdList) {
+    private static Map<String, String> getOmraadeNamesFromCommonCodes(Set<Omraade> omdList) {
         if (omdList.isEmpty()) {
             return new Map<String, String>();
+        }
+        Set<String> omraadeTemaer = new Set<String>();
+        for (Omraade omd : omdList) {
+            omraadeTemaer.add(omd.tema);
         }
 
         List<Common_Code__c> omdNames = [
             SELECT Name, CRM_Code__c
             FROM Common_Code__c
-            WHERE CRM_Code__c IN :omdList AND CRM_Code_Set__c = 'Tema'
+            WHERE CRM_Code__c IN :omraadeTemaer AND CRM_Code_Set__c = 'Tema'
         ];
 
         Map<String, String> omraadeNameByOmraadeTema = new Map<String, String>();
@@ -193,8 +143,44 @@ public with sharing class NKS_FullmaktController {
         return omraadeNameByOmraadeTema;
     }
 
+    private static String setHistorikkOmraadeString(
+        List<Omraade> omraader,
+        Map<String, String> omraadeNameByOmraadeTema
+    ) {
+        if (omraader == null || omraader.isEmpty()) {
+            return '';
+        }
+        List<String> omdTemaList = new List<String>();
+        for (Omraade omd : omraader) {
+            String temaName = omraadeNameByOmraadeTema.get(omd.tema);
+            omdTemaList.add(temaName != null ? temaName : omd.tema);
+        }
+        if (omdTemaList[0].equalsIgnoreCase('*')) {
+            return 'Gjelder alle ytelser';
+        }
+        return String.join(omdTemaList, ', ');
+    }
+
+    private static List<Omraade> setFullmaktOmraadeList(
+        List<Omraade> omraader,
+        Map<String, String> omraadeNameByOmraadeTema
+    ) {
+        if (omraader == null || omraader.isEmpty()) {
+            return new List<Omraade>();
+        }
+        List<Omraade> omraaderWithHandlinger = new List<Omraade>();
+        for (Omraade omraade : omraader) {
+            Omraade omd = new Omraade();
+            String omraadeName = omraadeNameByOmraadeTema.get(omraade.tema);
+            omd.tema = omraadeName != null ? omraadeName : omraade.tema;
+            omd.handling = omraade.handling;
+            omraaderWithHandlinger.add(omd);
+        }
+        return omraaderWithHandlinger;
+    }
+
     // omraade response in history can be both array, string and semicolon separated string
-    private static List<Omraade> parseOmraadeIntoList(String omraadeStr) {
+    private static List<Omraade> parseHistorikkOmraadeIntoList(String omraadeStr) {
         List<Omraade> omraadeList = new List<Omraade>();
         if (String.isBlank(omraadeStr)) {
             return omraadeList;
@@ -353,6 +339,18 @@ public with sharing class NKS_FullmaktController {
                 return 'Utløpt';
             }
         }
+
+        public FullmaktsgiverHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omraadeNameByOmraadeTema) {
+            this.fullmektig = sisteEndring.fullmektig;
+            this.omraade = setHistorikkOmraadeString(
+                parseHistorikkOmraadeIntoList(sisteEndring.omraade),
+                omraadeNameByOmraadeTema
+            );
+            this.gyldigFraOgMed = getGyldigFraOgMed(sisteEndring);
+            this.gyldigTilOgMed = getGyldigTilOgMed(sisteEndring);
+            this.fullmektigsNavn = sisteEndring.fullmektigsNavn;
+            this.opphoert = sisteEndring.opphoert;
+        }
     }
 
     public class FullmaktsgiverWrapper {
@@ -398,6 +396,18 @@ public with sharing class NKS_FullmaktController {
         public Date gyldigTilOgMed;
         @AuraEnabled
         public String id;
+
+        public Fullmaktsgiver() {
+        }
+
+        public Fullmaktsgiver(FullmaktsgiverWrapper fmGiverWrapper, Map<String, String> omraadeNameByOmraadeTema) {
+            this.motpartsPersonident = fmGiverWrapper.fullmektig;
+            this.motpartsNavn = fmGiverWrapper.fullmektigsNavn;
+            this.motpartsRolle = 'Fullmektig';
+            this.omraader = setFullmaktOmraadeList(fmGiverWrapper.omraade, omraadeNameByOmraadeTema);
+            this.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed;
+            this.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
+        }
     }
 
     public class Omraade {
