@@ -27,11 +27,18 @@
                                 day="numeric"
                             ></lightning-formatted-date-time>
                         </p>
-                        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
-                            <template iterator:it={powerOfAttorney.omraader}>
-                                <li class="slds-item" key={it.value}>{it.value}</li>
-                            </template>
-                        </ul>
+                        <div class="slds-p-top_x-small">
+                            <p>Områder:</p>
+                            <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
+                                <template for:each={powerOfAttorney.formattedOmraadeList} for:item="omraade">
+                                    <li key={omraade.name} class="slds-item">
+                                        {omraade.name}
+                                        <!-- TODO: To be determined how PoA should look with permissions-->
+                                        <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
                     </div>
                 </template>
             </div>

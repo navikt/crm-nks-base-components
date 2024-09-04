@@ -119,6 +119,6 @@ Entitlement er vi ikke helt sikker på 😅
 ## Historiske fullmakter
 
 Historiske fullmakter er i bunn og grunn fullmakter som ikke er gyldige lenger.
-Logikken for å hente dette ligger i NKS_HistorikkViewController, mens visningen håndteres i lwc-kompoentne nksPersonHeader
+Logikken for å hente dette ligger i NKS_FullmaktController, mens visningen håndteres i lwc-komponentene nksPersonHeader/nksPersonHighlightPanel
 
 Denne dataen hentes direkte fra PDL ved api, da henter vi ut alle digitale fullmakter som har flagget historisk tikket på.

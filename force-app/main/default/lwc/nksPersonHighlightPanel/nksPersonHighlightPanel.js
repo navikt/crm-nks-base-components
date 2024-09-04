@@ -15,7 +15,7 @@ import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenS
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
-import getFullmaktsgiverHistorikk from '@salesforce/apex/NKS_FullmaktController.getFullmaktsgiverHistorikk';
+import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
@@ -141,6 +141,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             console.error(error);
         }
     }
+
     @wire(getPersonAccessBadges, {
         field: '$relationshipField',
         parentObject: '$objectApiName',
@@ -157,7 +158,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
-    @wire(getFullmaktsgiverHistorikk, {
+    @wire(getHistorikk, {
         recordId: '$recordId',
         objectApiName: '$objectApiName'
     })
