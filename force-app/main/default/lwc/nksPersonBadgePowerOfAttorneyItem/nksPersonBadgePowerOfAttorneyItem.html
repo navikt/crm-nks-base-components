@@ -1,5 +1,5 @@
 <template>
-    <div>{powerOfAttorney.motpartsRolle}: {powerOfAttorney.motpartsNavn} {powerOfAttorney.motpartsPersonident}</div>
+    <div>{powerOfAttorney.motpartsRolle}: {powerOfAttorney.motpartsNavn} ({powerOfAttorney.motpartsPersonident})</div>
     <p>
         Gyldig:&nbsp;
         <lightning-formatted-date-time
@@ -10,16 +10,24 @@
         >
         </lightning-formatted-date-time>
         &nbsp;-&nbsp;
-        <lightning-formatted-date-time
-            value={powerOfAttorney.gyldigTilOgMed}
-            year="numeric"
-            month="numeric"
-            day="numeric"
-        ></lightning-formatted-date-time>
-    </p>
-    <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap slds-p-top_x-small">
-        <template iterator:it={powerOfAttorney.omraader}>
-            <li class="slds-item" key={it.value}>{it.value}</li>
+        <template lwc:if={powerOfAttorney.gyldigTilOgMed}>
+            <lightning-formatted-date-time
+                value={powerOfAttorney.gyldigTilOgMed}
+                year="numeric"
+                month="numeric"
+                day="numeric"
+            ></lightning-formatted-date-time>
         </template>
-    </ul>
+        <template lwc:else>
+            <span>Tidsubegrenset</span>
+        </template>
+    </p>
+    <div class="slds-p-top_x-small">
+        <p>Områder:</p>
+        <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
+            <template iterator:it={powerOfAttorney.omraader}>
+                <li class="slds-item" key={it.value}>{it.value}</li>
+            </template>
+        </ul>
+    </div>
 </template>

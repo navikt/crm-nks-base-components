@@ -55,22 +55,12 @@ public with sharing class NKS_PersonBadgesController {
 
     /**
      * @description Dynamically find the person ID
-     * *Example
-     * - field = 'Account.CRM_Person__c';
-     * - objString = 'Case';
-     * - recordId = '5001X000007xMSuQAM';
-     * - relation = 'Id';
+     * Example: field = 'Account.CRM_Person__c', parentObject = 'Case', parentRecordId = '5001X000007xMSuQAM'
      */
     private static Id getPersonId(String field, String parentObject, String parentRecordId) {
-        Id personId = null;
         String queryString = 'SELECT ' + field + ' FROM ' + parentObject + ' WHERE Id = :parentRecordId LIMIT 1';
         List<SObject> objList = Database.query(String.escapeSingleQuotes(queryString));
-
-        if (false == objList.isEmpty()) {
-            personId = (Id) NKS_PersonBadgesController.getFieldValue(objList[0], field);
-        }
-
-        return personId;
+        return !objList.isEmpty() ? (Id) getFieldValue(objList[0], field) : null;
     }
 
     /**
@@ -82,37 +72,29 @@ public with sharing class NKS_PersonBadgesController {
         }
         List<String> fieldNameList = fieldName.split('\\.');
 
-        if (1 < fieldNameList.size()) {
-            return getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'));
-        }
-
-        return obj.get(fieldNameList[0]);
+        return fieldNameList.size() > 1
+            ? getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'))
+            : obj.get(fieldNameList[0]);
     }
 
     /**
-     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependancy.
+     * @description The get Person query is made dynamic in order to use some HOT fields without having a package dependency.
      */
     private static Person__c getPerson(Id personId) {
-        Person__c person;
         Set<String> objectFields = Schema.SObjectType.Person__c.fields.getMap().keySet();
-        Set<String> fields = new Set<String>();
-        Set<String> fieldsToLabel = new Set<String>();
+        Set<String> fields = new Set<String>{
+            'Id',
+            'INT_GuardianshipOrFuturePowerOfAttorney__c',
+            'INT_IsDeceased__c',
+            'INT_DateOfDeath__c',
+            'INT_PowerOfAttorney__c',
+            'INT_SpokenLanguageIntepreter__c',
+            'INT_KRR_Reservation__c',
+            'NKS_NumberOfSecurityMeasures__c'
+        };
+        Set<String> fieldsToLabel = new Set<String>{ 'HOT_DegreeOfHearingAndVisualImpairment__c' };
+
         String queryString = 'SELECT ';
-
-        fields.add('Id');
-        fields.add('INT_GuardianshipOrFuturePowerOfAttorney__c');
-        fields.add('INT_IsDeceased__c');
-        fields.add('INT_DateOfDeath__c');
-        fields.add('INT_PowerOfAttorney__c');
-        fields.add('INT_SpokenLanguageIntepreter__c');
-        fields.add('INT_KRR_Reservation__c');
-        fields.add('NKS_NumberOfSecurityMeasures__c');
-
-        //HOT Fields
-        // fields.add('HOT_HasEntitlement__c');
-        // fields.addAll(HOT_ENTITLEMENT_FIELDS);
-        fieldsToLabel.add('HOT_DegreeOfHearingAndVisualImpairment__c');
-
         for (String str : fields) {
             if (objectFields.contains(str.toLowerCase())) {
                 queryString += str += ', ';
@@ -134,11 +116,9 @@ public with sharing class NKS_PersonBadgesController {
             '		INT_ValidToDate__c' +
             '	FROM SecurityMeasures__r' +
             ')';
-
         queryString += ' FROM Person__c WHERE Id = :personId';
 
         List<Person__c> personList = (List<Person__c>) Database.query(queryString);
-
         return personList.isEmpty() ? null : personList[0];
     }
 
@@ -156,50 +136,33 @@ public with sharing class NKS_PersonBadgesController {
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
         public List<PowerOfAttorney> powerOfAttorneys;
-        // @AuraEnabled
-        // public List<String> entitlements;
         @AuraEnabled
         public List<String> errors;
         @AuraEnabled
         public Date dateOfDeath;
+        // @AuraEnabled
+        // public List<String> entitlements;
 
         private Person__c person;
         private Set<String> fieldSet;
-
-        private Map<String, Common_Code__c> themeMap;
-        private Map<Id, String> themeGroups;
         private Map<String, String> personIdentNameMap;
 
         public PersonBadgeData(Person__c person) {
-            badges = new List<Badge>();
-            securityMeasures = new List<SecurityMeasure>();
-            spokenLanguagesIntepreter = new List<String>();
-            guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
-            powerOfAttorneys = new List<PowerOfAttorney>();
-            // entitlements = new List<String>();
-            errors = new List<String>();
-            personIdentNameMap = new Map<String, String>();
+            this.badges = new List<Badge>();
+            this.securityMeasures = new List<SecurityMeasure>();
+            this.spokenLanguagesIntepreter = new List<String>();
+            this.guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
+            this.powerOfAttorneys = new List<PowerOfAttorney>();
+            this.errors = new List<String>();
+            this.personIdentNameMap = new Map<String, String>();
+            // this.entitlements = new List<String>();
 
-            if (null != person) {
-                dateOfDeath = person.INT_DateOfDeath__c;
+            if (person != null) {
+                this.dateOfDeath = person.INT_DateOfDeath__c;
                 this.person = person;
                 //Get field set for use later in the class
-                fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
-                loadCommonCodes();
+                this.fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
                 setBadgeData();
-            }
-        }
-
-        private void loadCommonCodes() {
-            themeMap = new Map<String, Common_Code__c>();
-            themeGroups = new Map<Id, String>();
-
-            for (Common_Code__c cc : [
-                SELECT Id, Name, CRM_Code__c, CRM_Code_Set__c
-                FROM Common_Code__c
-                WHERE CRM_Code_Set__c = 'Tema'
-            ]) {
-                themeMap.put(cc.CRM_Code__c, cc);
             }
         }
 
@@ -210,9 +173,9 @@ public with sharing class NKS_PersonBadgesController {
             setGuardianshipOrFuturePowerOfAttorney();
             setSpokenLanguagesIntepreter();
             setDegreeOfHearingAndVisualImpairment();
-            // setEntitlements();
             setPersonName();
             setKrrReservation();
+            // setEntitlements();
         }
 
         private void setSecurityMeasures() {
@@ -229,20 +192,18 @@ public with sharing class NKS_PersonBadgesController {
                         );
                     }
                 }
-                if (0 < person.NKS_NumberOfSecurityMeasures__c) {
-                    if (!securityMeasures.isEmpty()) {
-                        badges.add(
-                            new Badge(
-                                    'securityMeasures',
-                                    person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                                    'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
-                                    '',
-                                    '',
-                                    true
-                                )
-                                .setBadgeContent(securityMeasures)
-                        );
-                    }
+                if (person.NKS_NumberOfSecurityMeasures__c > 0 && !securityMeasures.isEmpty()) {
+                    badges.add(
+                        new Badge(
+                                'securityMeasures',
+                                person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
+                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
+                                '',
+                                '',
+                                true
+                            )
+                            .setBadgeContent(securityMeasures)
+                    );
                 }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av sikkerhetstiltak');
@@ -282,13 +243,13 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void setKrrReservation() {
-            if (true == person.INT_KRR_Reservation__c) {
+            if (person.INT_KRR_Reservation__c) {
                 badges.add(new Badge('krr', getFieldLabel('INT_KRR_Reservation__c')));
             }
         }
 
         private void setIsDeceased() {
-            if (true == person.INT_IsDeceased__c) {
+            if (person.INT_IsDeceased__c) {
                 badges.add(
                     new Badge(
                             'isDeceased',
@@ -304,71 +265,69 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void setPowerOfAttorney() {
-            if (String.isNotBlank(person.INT_PowerOfAttorney__c)) {
-                Map<String, Person__c> relatedPersonMap = new Map<String, Person__c>();
-                try {
-                    Integer i = 0;
-                    for (
-                        PowerOfAttorney poa : (List<PowerOfAttorney>) JSON.deserialize(
-                            person.INT_PowerOfAttorney__c,
-                            List<PowerOfAttorney>.class
-                        )
+            try {
+                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
+                    person.Id,
+                    'Person__c'
+                );
+                if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
+                    return;
+                Date today = Date.today();
+
+                for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
+                    NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
+
+                    if (
+                        fullmaktsgiver.gyldigFraOgMed <= today &&
+                        (fullmaktsgiver.gyldigTilOgMed >= today ||
+                        fullmaktsgiver.gyldigTilOgMed == null)
                     ) {
-                        if (poa.gyldigFraOgMed <= Date.today() && poa.gyldigTilOgMed >= Date.today()) {
-                            poa.id = '' + i;
-                            personIdentNameMap.put(poa.motpartsPersonident, '');
+                        PowerOfAttorney poa = new PowerOfAttorney();
+                        poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
+                        poa.omraade = fullmaktsgiver.omraade;
+                        poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
+                        poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
+                        poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
+                        poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
 
-                            if (poa.omraader != null && poa.omraader.size() > 0) {
-                                if (poa.omraader.size() == 1 && poa.omraader[0] == '*') {
-                                    poa.omraader[0] = 'Gjelder alle ytelser';
-                                } else {
-                                    for (Integer x = 0; x < poa.omraader.size(); x++) {
-                                        if (themeMap.containsKey(poa.omraader[x])) {
-                                            poa.omraader[x] = themeMap.get(poa.omraader[x]).Name;
-                                        }
-                                    }
-                                }
-                            }
-                            powerOfAttorneys.add(poa);
-                            i++;
-                        }
+                        poa.id = String.valueOf(i);
+                        personIdentNameMap.put(poa.motpartsPersonident, '');
+                        powerOfAttorneys.add(poa);
                     }
-
-                    if (powerOfAttorneys.size() > 0) {
-                        badges.add(
-                            new Badge(
-                                    'powerOfAttorney',
-                                    'Fullmakt',
-                                    'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
-                                    '',
-                                    '',
-                                    true
-                                )
-                                .setBadgeContent(powerOfAttorneys)
-                        );
-                    }
-                } catch (Exception e) {
-                    errors.add('Feil ved uthenting av fullmakts detaljer');
                 }
+
+                if (!powerOfAttorneys.isEmpty()) {
+                    badges.add(
+                        new Badge(
+                                'powerOfAttorney',
+                                'Fullmakt',
+                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                                '',
+                                '',
+                                true
+                            )
+                            .setBadgeContent(powerOfAttorneys)
+                    );
+                }
+            } catch (Exception e) {
+                errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
         }
 
         private void setGuardianshipOrFuturePowerOfAttorney() {
             if (String.isNotBlank(person.INT_GuardianshipOrFuturePowerOfAttorney__c)) {
                 try {
-                    Integer i = 0;
-                    for (
-                        GuardianshipOrFuturePowerOfAttorney guardienship : (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
-                            person.INT_GuardianshipOrFuturePowerOfAttorney__c,
-                            List<GuardianshipOrFuturePowerOfAttorney>.class
-                        )
-                    ) {
-                        guardienship.id = '' + i;
-                        if (String.isNotBlank(guardienship.motpartsPersonident)) {
-                            personIdentNameMap.put(guardienship.motpartsPersonident, '');
+                    List<GuardianShipOrFuturePowerOfAttorney> guardianshipList = (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
+                        person.INT_GuardianshipOrFuturePowerOfAttorney__c,
+                        List<GuardianshipOrFuturePowerOfAttorney>.class
+                    );
+                    for (Integer i = 0; i < guardianshipList.size(); i++) {
+                        GuardianShipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
+                        guardianship.id = String.valueOf(i);
+                        if (String.isNotBlank(guardianship.motpartsPersonident)) {
+                            personIdentNameMap.put(guardianship.motpartsPersonident, '');
                         }
-                        guardianships.add(guardienship);
-                        i++;
+                        guardianships.add(guardianship);
                     }
                 } catch (Exception e) {
                     errors.add('Feil ved uthenting av vergemål detaljer');
@@ -867,44 +826,9 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class PowerOfAttorney implements BadgeContent {
-        @AuraEnabled
-        public String motpartsRolle {
-            get {
-                return motpartsRolle.toLowerCase().capitalize();
-            }
-            set;
-        }
-        @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public String motpartsNavn;
-        @AuraEnabled
-        public List<String> omraader;
-        @AuraEnabled
-        public String omraade {
-            get {
-                return omraadeString();
-            }
-            set;
-        }
-        @AuraEnabled
-        public Date gyldigFraOgMed;
-        @AuraEnabled
-        public Date gyldigTilOgMed;
-        @AuraEnabled
-        public String id;
-
-        private String omraadeString() {
-            if (1 == omraader.size() && '*'.equalsIgnoreCase(omraader[0])) {
-                return 'Gjelder alle ytelser';
-            } else if (0 < omraader.size()) {
-                return String.join(omraader, ',');
-            }
-
-            return '';
-        }
+    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
     }
+
     public class Navn {
         @AuraEnabled
         public String fornavn;

@@ -89,6 +89,12 @@ export default class NksButtonContainerBottom extends LightningElement {
         return this.template.querySelector('c-nks-notification-box');
     }
 
+    get buttonClass() {
+        return `slds-button slds-button_outline-brand slds-grid slds-grid_align-center custom-button${
+            this.channelName === CONSTANTS.CONVERSATION_NOTE ? ' responsive-button' : ''
+        }`;
+    }
+
     updateFlowLoop() {
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,

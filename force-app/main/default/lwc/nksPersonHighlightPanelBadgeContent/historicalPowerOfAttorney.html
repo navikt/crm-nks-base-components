@@ -7,10 +7,9 @@
                 <template for:each={badgeData} for:item="fullmakt">
                     <div key={fullmakt}>
                         <p><Strong>Periode:</Strong> {fullmakt.periode}</p>
-                        <p><Strong>Område:</Strong> {fullmakt.omraaderLabel}</p>
-                        <p><Strong>Rolle:</Strong> {fullmakt.motpartsRolle}</p>
-                        <p><Strong>Navn:</Strong> {fullmakt.motpartsPersonNavn}</p>
-                        <p><Strong>Nummer:</Strong> {fullmakt.motpartsPersonident}</p>
+                        <p><Strong>Navn:</Strong> {fullmakt.fullmektigsNavn}</p>
+                        <p><Strong>Område:</Strong> For langt (sikkert)</p>
+                        <p><Strong>Status:</Strong> {fullmakt.status}</p>
                     </div>
                 </template>
             </div>

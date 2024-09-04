@@ -5,11 +5,11 @@
             "default": true,
             "package": "crm-nks-base-components",
             "versionName": "ver 0.1",
-            "versionNumber": "0.61.0.NEXT",
+            "versionNumber": "0.63.0.NEXT",
             "dependencies": [
                 {
                     "package": "crm-platform-base",
-                    "versionNumber": "0.220.0.LATEST"
+                    "versionNumber": "0.225.0.LATEST"
                 },
                 {
                     "package": "crm-henvendelse-base",
@@ -17,7 +17,7 @@
                 },
                 {
                     "package": "crm-platform-integration",
-                    "versionNumber": "0.109.0.LATEST"
+                    "versionNumber": "0.123.0.LATEST"
                 },
                 {
                     "package": "crm-platform-reporting",
@@ -37,7 +37,7 @@
                 },
                 {
                     "package": "crm-journal-utilities",
-                    "versionNumber": "0.26.0.LATEST"
+                    "versionNumber": "0.30.0.LATEST"
                 },
                 {
                     "package": "crm-platform-oppgave",
