@@ -28,22 +28,26 @@ public with sharing class NKS_FullmaktController {
     }
 
     @TestVisible
-    private static List<FullmaktsgiverHistorikk> processHistorikkData(
-        List<HistorikkWrapper> historikkData
-    ) {
+    private static List<FullmaktsgiverHistorikk> processHistorikkData(List<HistorikkWrapper> historikkData) {
         if (historikkData == null || historikkData.isEmpty()) {
             return null;
         }
 
         Set<String> omraader = extractOmraaderFromOmraadeList(historikkData).keySet();
         Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(omraader);
-        
+
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
         for (HistorikkWrapper historikkResponse : historikkData) {
             HistorikkEndringer sisteEndring = historikkResponse.sisteEndring;
-            if (sisteEndring != null && (sisteEndring.opphoert == true || (sisteEndring.gyldigFraOgMed != null && Date.valueOf(sisteEndring.gyldigTilOgMed) < Date.today()))) {
+            if (
+                sisteEndring != null &&
+                (sisteEndring.opphoert == true ||
+                (sisteEndring.gyldigFraOgMed != null &&
+                Date.valueOf(sisteEndring.gyldigTilOgMed) < Date.today()))
+            ) {
                 historikkList.add(mapToHistorikk(sisteEndring, omraadeNameByOmraadeTema));
-                if (historikkList.size() == 3) { // Only show last 3 changes to historical power of attorney
+                if (historikkList.size() == 3) {
+                    // Only show last 3 changes to historical power of attorney
                     break;
                 }
             }
@@ -65,7 +69,7 @@ public with sharing class NKS_FullmaktController {
                     resp.getBody(),
                     List<FullmaktsgiverWrapper>.class
                 );
-                
+
                 return processFullmaktsgiverData(fullmaktsgiverData);
             } else {
                 logError(resp, 'Error retrieving Fullmaktsgiver');
@@ -94,7 +98,10 @@ public with sharing class NKS_FullmaktController {
         return fmList;
     }
 
-    private static FullmaktsgiverHistorikk mapToHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omraadeNameByOmraadeTema) {
+    private static FullmaktsgiverHistorikk mapToHistorikk(
+        HistorikkEndringer sisteEndring,
+        Map<String, String> omraadeNameByOmraadeTema
+    ) {
         FullmaktsgiverHistorikk historikk = new FullmaktsgiverHistorikk();
         historikk.fullmektig = sisteEndring.fullmektig;
         historikk.omraade = setOmraadeString(parseOmraadeIntoList(sisteEndring.omraade), omraadeNameByOmraadeTema);
@@ -133,17 +140,17 @@ public with sharing class NKS_FullmaktController {
 
     private static Map<String, List<String>> extractOmraaderFromOmraadeList(List<Object> dataList) {
         Map<String, List<String>> omraader = new Map<String, List<String>>();
-        
+
         for (Object data : dataList) {
             List<Omraade> omraadeList;
-    
+
             if (data instanceof HistorikkWrapper) {
                 HistorikkEndringer sisteEndring = ((HistorikkWrapper) data).sisteEndring;
                 omraadeList = sisteEndring != null ? parseOmraadeIntoList(sisteEndring.omraade) : null;
             } else if (data instanceof FullmaktsgiverWrapper) {
                 omraadeList = ((FullmaktsgiverWrapper) data).omraade;
             }
-    
+
             if (omraadeList != null) {
                 for (Omraade omd : omraadeList) {
                     omraader.put(omd.tema, omd.handling);
@@ -153,14 +160,17 @@ public with sharing class NKS_FullmaktController {
         return omraader;
     }
 
-    private static List<Omraade> setOmraadeList(Map<String, List<String>> handlingerByOmraadeTema, Map<String, String> omraadeNameByOmraadeTema) {
+    private static List<Omraade> setOmraadeList(
+        Map<String, List<String>> handlingerByOmraadeTema,
+        Map<String, String> omraadeNameByOmraadeTema
+    ) {
         List<Omraade> omraaderWithHandlinger = new List<Omraade>();
         for (String omraade : handlingerByOmraadeTema.keySet()) {
             Omraade omd = new Omraade();
             String omraadeName = omraadeNameByOmraadeTema.get(omraade);
             omd.tema = omraadeName != null ? omraadeName : omraade;
             omd.handling = handlingerByOmraadeTema.get(omraade);
-            omraaderWithHandlinger.add(omd);     
+            omraaderWithHandlinger.add(omd);
         }
         return omraaderWithHandlinger;
     }
@@ -311,7 +321,6 @@ public with sharing class NKS_FullmaktController {
         public String kommentar;
     }
 
-
     public class FullmaktsgiverHistorikk {
         @AuraEnabled
         public String fullmektig;
@@ -397,6 +406,5 @@ public with sharing class NKS_FullmaktController {
     }
 
     public class FullmaktException extends Exception {
-
     }
 }

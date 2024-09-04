@@ -182,12 +182,9 @@ private with sharing class NKS_PersonBadgesController_Test {
         result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
-        Assert.areEqual(3,  result.powerOfAttorneys.size(), 'Expected one guardianship');
+        Assert.areEqual(3, result.powerOfAttorneys.size(), 'Expected one guardianship');
         Assert.areEqual('13899498180', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 13899498180');
-        Assert.isTrue(
-            result.powerOfAttorneys[0].omraade.keySet().size() > 0,
-            'Expected multiple omraade'
-        );
+        Assert.isTrue(result.powerOfAttorneys[0].omraade.keySet().size() > 0, 'Expected multiple omraade');
 
         System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
     }
@@ -196,7 +193,6 @@ private with sharing class NKS_PersonBadgesController_Test {
     static void setBadgeData_PowerOfAttorneyError() {
         ApiMock.setTestMock('GET_FULLMAKTSGIVER', 400, 'ERROR');
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
-
 
         NKS_PersonBadgesController.PersonBadgeData result;
         Test.startTest();
