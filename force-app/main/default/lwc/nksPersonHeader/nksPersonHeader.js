@@ -267,9 +267,11 @@ export default class NksPersonHeader extends LightningElement {
      */
     handleFullmaktData() {
         if (!this.btnClick) {
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.btnClick = true;
             this.customclass = 'blue-icon';
         } else if (this.btnClick) {
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.btnClick = false;
             this.customclass = 'grey-icon';
         }
@@ -281,7 +283,9 @@ export default class NksPersonHeader extends LightningElement {
     })
     wiredHistorikk({ error, data }) {
         if (data) {
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.fullmaktHistData = data;
+            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
             this.btnShowFullmakt = this.fullmaktHistData.length > 0;
         }
         if (error) {
