@@ -33,7 +33,7 @@ export default class NksButtonContainerBottom extends LightningElement {
             this.labelList = data;
             this.updateFlowLoop();
         } else if (error) {
-            console.log('Could not fetch labels for buttonContainerBottom', error);
+            console.error('Could not fetch labels for buttonContainerBottom', error);
         }
     }
 
@@ -104,43 +104,40 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     toggleFlow(event) {
-        const dataId = event.target?.dataset.id;
-        if (dataId) {
-            if (this.activeFlow === dataId) {
-                this.activeFlow = '';
-                this.updateFlowLoop();
-                return;
-            }
-            if (this.showFlow) {
-                this.swapActiveFlow(dataId);
-                return;
-            }
-            this.activeFlow = dataId;
+        const flowName = event.target.dataset.id;
+        if (!flowName) return;
+        if (this.activeFlow === flowName) {
+            this.activeFlow = '';
+            this.updateFlowLoop();
+            return;
         }
+        if (this.showFlow) {
+            this.swapActiveFlow(flowName);
+            return;
+        }
+        this.activeFlow = flowName;
     }
 
     handleStatusChange(event) {
         const { status, outputVariables } = event.detail;
+        if (status !== CONSTANTS.FINISHED && status !== CONSTANTS.FINISHED_SCREEN) return;
 
-        if (status === CONSTANTS.FINISHED || status === CONSTANTS.FINISHED_SCREEN) {
-            publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
+        publishToAmplitude(this.channelName, { type: `${event.target.label} completed` });
 
-            /**
-             * If the component is an independent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
-             */
-            if (this.showNotifications) {
-                handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
-            } else {
-                this.dispatchEvent(
-                    new CustomEvent('flowsucceeded', {
-                        detail: { flowName: this.activeFlow, flowOutput: outputVariables }
-                    })
-                );
-            }
-
-            this.activeFlow = '';
-            this.updateFlowLoop();
+        /**
+         * If the component is an independent component, show notifications; otherwise, dispatch a custom event (when the component is used as a child)
+         */
+        if (this.showNotifications) {
+            handleShowNotifications(this.activeFlow, outputVariables, this.notificationBoxTemplate);
+        } else {
+            this.dispatchEvent(
+                new CustomEvent('flowsucceeded', {
+                    detail: { flowName: this.activeFlow, flowOutput: outputVariables }
+                })
+            );
         }
+        this.activeFlow = '';
+        this.updateFlowLoop();
     }
 
     swapActiveFlow(flowName) {
