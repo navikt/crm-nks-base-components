@@ -4,11 +4,9 @@ export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
     @track _contactInformation;
     @track _visitorLocations = [];
-    @track _visitorChannels;
     _visitorLocationsLength = 0;
     hasContactInformation = false;
     hasVisitorLocations = false;
-    hasVisitorChannels = false;
 
     @api
     set contactInformation(value) {
@@ -37,10 +35,6 @@ export default class NksNavUnitContactInformation extends LightningElement {
     //get hasVisitorLocations() { return 0 < this._visitorLocationsLength; }
     get visitorLocations() {
         return this._visitorLocations;
-    }
-
-    get visitorChannels() {
-        return this._visitorChannels;
     }
 
     get postalAddress() {

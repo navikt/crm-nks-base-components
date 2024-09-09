@@ -30,6 +30,19 @@
                         Offentlig informasjon
                     </h2>
                     <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Offentlige vakttelefoner:</h3>
+                        <div if:true={publikumskanaler}>
+                            <template for:each={publikumskanaler} for:item="kanal">
+                                <p key={kanal.beskrivelse}>
+                                    {kanal.beskrivelse} : <span style="font-weight: bold">{kanal.telefon}</span>
+                                </p>
+                            </template>
+                        </div>
+                        <div if:false={publikumskanaler}>
+                            <p>Ingen vakttelefon</p>
+                        </div>
+                    </div>
+                    <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Tilleggstjenester</h3>
                         <div if:true={tjenester}>
                             <ul class="slds-list_dotted">
