@@ -31,20 +31,20 @@
                     </h2>
                     <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Offentlige vakttelefoner:</h3>
-                        <div if:true={publikumskanaler}>
+                        <div lwc:if={publikumskanaler}>
                             <template for:each={publikumskanaler} for:item="kanal">
                                 <p key={kanal.beskrivelse}>
                                     {kanal.beskrivelse} : <span style="font-weight: bold">{kanal.telefon}</span>
                                 </p>
                             </template>
                         </div>
-                        <div if:false={publikumskanaler}>
+                        <div lwc:else>
                             <p>Ingen vakttelefon</p>
                         </div>
                     </div>
                     <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Tilleggstjenester</h3>
-                        <div if:true={tjenester}>
+                        <div lwc:if={tjenester}>
                             <ul class="slds-list_dotted">
                                 <template for:each={tjenester} for:item="tjeneste">
                                     <li lwc:if={tjeneste.type} key={tjeneste.type}>{tjeneste.type}</li>
@@ -52,10 +52,10 @@
                                 </template>
                             </ul>
                         </div>
-                        <div if:false={tjenester}>
+                        <div lwc:if={tjenester}>
                             <p>Kun de obligatoriske oppgavene etter sosialtjenesteloven</p>
                         </div>
-                        <div if:true={ytterligereInformasjon}>
+                        <div lwc:if={ytterligereInformasjon}>
                             <p>{ytterligereInformasjon}</p>
                         </div>
                     </div>
@@ -69,14 +69,14 @@
                     </div>
                     <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Lenker:</h3>
-                        <div if:true={digitaleSoeknader}>
+                        <div lwc:if={digitaleSoeknader}>
                             <template for:each={digitaleSoeknader} for:item="link">
                                 <a href={link.lenke} target="_blank" key={link.lenke} style="display: block"
                                     >{link.lenketekst}</a
                                 >
                             </template>
                         </div>
-                        <div if:false={digitaleSoeknader}>
+                        <div lwc:else>
                             <p>Ingen informasjon</p>
                         </div>
                     </div>
