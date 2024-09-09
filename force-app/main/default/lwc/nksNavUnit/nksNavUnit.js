@@ -45,4 +45,12 @@ export default class NksNavUnit extends LightningElement {
         if (digitaleSoeknader == null || digitaleSoeknader.length === 0) return null;
         return digitaleSoeknader;
     }
+
+    get publikumskanaler() {
+        const publikumskanaler = this.contactInformationV2?.brukerkontakt?.publikumskanaler?.filter(
+            (kanal) => kanal.telefon != null && kanal.telefon !== ''
+        );
+        if (publikumskanaler == null || publikumskanaler.length === 0) return null;
+        return publikumskanaler;
+    }
 }
