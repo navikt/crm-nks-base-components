@@ -10,11 +10,3 @@
     --slds-c-button-outline-brand-color-background-active: #cce1ff;
     --slds-c-button-outline-brand-color-border-hover: #0056b4;
 }
-
-.button-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-    overflow: hidden;
-}

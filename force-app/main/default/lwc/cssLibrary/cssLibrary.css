@@ -9,3 +9,11 @@
     white-space: normal;
     word-wrap: break-word;
 }
+
+.button-container {
+    display: flex !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: hidden;
+    gap: 0.5rem;
+}
