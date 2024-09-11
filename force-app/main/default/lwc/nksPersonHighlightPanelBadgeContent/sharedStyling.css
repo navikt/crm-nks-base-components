@@ -7,7 +7,7 @@
 
 .backgroundStyling {
     position: absolute;
-    z-index: 100;
+    z-index: 1001;
     width: max-content;
     max-width: 800px;
     top: 3rem;
