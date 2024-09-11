@@ -31,7 +31,7 @@
                             <p>Områder:</p>
                             <template for:each={powerOfAttorney.formattedOmraadeListByThemeGroup} for:item="omraade">
                                 <p key={omraade.themeGroup}>
-                                    <span style="font-weight: bold">{omraade.themeGroup}</span>: {omraade.temaString}
+                                    <strong>{omraade.themeGroup}</strong>: {omraade.temaString}
                                 </p>
                                 <!-- TODO: To be determined how PoA should look with permissions-->
                                 <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
