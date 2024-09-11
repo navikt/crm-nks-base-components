@@ -317,16 +317,16 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgiver) {
-            for (Integer i = (fullmaktsgiver.size()-1) ; i>= 0 ; i--) {
-                NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgiver[i];                
-                for (Integer j = (fullmakt.omraader.size()-1) ; j>= 0 ; j--){
+            for (Integer i = (fullmaktsgiver.size() - 1); i >= 0; i--) {
+                NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgiver[i];
+                for (Integer j = (fullmakt.omraader.size() - 1); j >= 0; j--) {
                     NKS_FullmaktController.Omraade omraade = fullmakt.omraader[j];
-                    if(omraade.handling.contains('KOMMUNISER') || omraade.handling.contains('SKRIV')) {
+                    if (omraade.handling.contains('KOMMUNISER') || omraade.handling.contains('SKRIV')) {
                         continue;
                     }
                     fullmakt.omraader.remove(j);
-                } 
-                if(fullmakt.omraader == null || fullmakt.omraader.isEmpty()) {
+                }
+                if (fullmakt.omraader == null || fullmakt.omraader.isEmpty()) {
                     fullmaktsgiver.remove(i);
                 }
             }
