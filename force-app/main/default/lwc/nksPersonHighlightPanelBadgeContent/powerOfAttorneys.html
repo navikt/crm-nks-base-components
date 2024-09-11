@@ -29,15 +29,13 @@
                         </p>
                         <div class="slds-p-top_x-small">
                             <p>Områder:</p>
-                            <ul class="slds-list_horizontal slds-has-dividers_right slds-wrap">
-                                <template for:each={powerOfAttorney.formattedOmraadeList} for:item="omraade">
-                                    <li key={omraade.name} class="slds-item">
-                                        {omraade.name}
-                                        <!-- TODO: To be determined how PoA should look with permissions-->
-                                        <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
-                                    </li>
-                                </template>
-                            </ul>
+                            <template for:each={powerOfAttorney.formattedOmraadeListByThemeGroup} for:item="omraade">
+                                <p key={omraade.themeGroup}>
+                                    <span style="font-weight: bold">{omraade.themeGroup}</span>: {omraade.temaString}
+                                </p>
+                                <!-- TODO: To be determined how PoA should look with permissions-->
+                                <!--<strong>{omraade.name}</strong>:&nbsp;{omraade.permissions}-->
+                            </template>
                         </div>
                     </div>
                 </template>
