@@ -17,7 +17,7 @@ public with sharing class NKS_FullmaktController {
             'YRK'
         },
         'Familie' => new Set<String>{ 'BAR', 'BID', 'ENF', 'FAR', 'FOR', 'GRA', 'GRU', 'KON', 'OMS' },
-        'Familie' => new Set<String>{ 'SYK', 'SYM', 'UFO' },
+        'Helse' => new Set<String>{ 'SYK', 'SYM', 'UFO' },
         'Hjelpemidler' => new Set<String>{ 'BIL', 'HEL', 'HJE' },
         'Pensjon' => new Set<String>{ 'EYB', 'EYO', 'FIP', 'PEN', 'SUP' },
         'Øvrig' => new Set<String>{ 'AGR', 'ERS', 'FEI', 'GEN', 'MED', 'RPO', 'SAK', 'SER', 'UFM', 'TRY' }
