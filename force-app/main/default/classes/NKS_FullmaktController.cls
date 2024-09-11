@@ -1,8 +1,8 @@
 public with sharing class NKS_FullmaktController {
     private static LoggerUtility logger = new LoggerUtility('Fullmakt');
 
-    private static Map<String, Set<String>> fullmaktThemesByGroups = new Map<String, Set<String>> {
-        'Arbeid' => new Set<String> {
+    private static Map<String, Set<String>> fullmaktThemesByGroups = new Map<String, Set<String>>{
+        'Arbeid' => new Set<String>{
             'AAP',
             'AAR',
             'DAG',
@@ -16,41 +16,10 @@ public with sharing class NKS_FullmaktController {
             'VEN',
             'YRK'
         },
-        'Familie' => new Set<String> {
-            'BAR',
-            'BID',
-            'ENF',
-            'FAR',
-            'FOR',
-            'GRA',
-            'GRU',
-            'KON',
-            'OMS'
-        },
-        'Hjelpemidler' => new Set<String> {
-            'BIL',
-            'HEL',
-            'HJE'
-        },
-        'Pensjon' => new Set<String> {
-            'EYB',
-            'EYO',
-            'FIP',
-            'PEN',
-            'SUP'
-        },
-        'Øvrig' => new Set<String> {
-            'AGR',
-            'ERS',
-            'FEI',
-            'GEN',
-            'MED',
-            'RPO',
-            'SAK',
-            'SER',
-            'UFM',
-            'TRY'
-        }
+        'Familie' => new Set<String>{ 'BAR', 'BID', 'ENF', 'FAR', 'FOR', 'GRA', 'GRU', 'KON', 'OMS' },
+        'Hjelpemidler' => new Set<String>{ 'BIL', 'HEL', 'HJE' },
+        'Pensjon' => new Set<String>{ 'EYB', 'EYO', 'FIP', 'PEN', 'SUP' },
+        'Øvrig' => new Set<String>{ 'AGR', 'ERS', 'FEI', 'GEN', 'MED', 'RPO', 'SAK', 'SER', 'UFM', 'TRY' }
     };
 
     @AuraEnabled(cacheable=true)
@@ -439,20 +408,20 @@ public with sharing class NKS_FullmaktController {
                         allThemes.add(omder.temaKode);
                         omraadeMap.put(omder.temaKode, omder);
                     }
-                    for(String themeGroup : fullmaktThemesByGroups.keySet()) {
+                    for (String themeGroup : fullmaktThemesByGroups.keySet()) {
                         Set<String> themesInThemeGroup = fullmaktThemesByGroups.get(themeGroup);
                         List<String> tempList;
-                        if(allThemes.containsAll(themesInThemeGroup)) {
-                            tempList =  new List<String>{'Gjelder alle ytelser'};
+                        if (allThemes.containsAll(themesInThemeGroup)) {
+                            tempList = new List<String>{ 'Gjelder alle ytelser' };
                         } else {
                             tempList = new List<String>();
-                            for(String th : allThemes) {
-                                if(themesInThemeGroup.contains(th)) {
+                            for (String th : allThemes) {
+                                if (themesInThemeGroup.contains(th)) {
                                     tempList.add(omraadeMap.get(th).tema);
                                 }
                             }
                         }
-                        if(!tempList.isEmpty()) {
+                        if (!tempList.isEmpty()) {
                             formattedList.add(new OmraadeGroup(themeGroup, tempList));
                         }
                     }
@@ -500,7 +469,6 @@ public with sharing class NKS_FullmaktController {
         public OmraadeGroup(String themeGroup, List<String> temaKoder) {
             this.themeGroup = themeGroup;
             this.temaKoder = temakoder;
-
         }
     }
 
