@@ -1,0 +1,128 @@
+/*
+.navds-button {
+    display: inline-flex;
+    cursor: pointer;
+    background: none;
+    margin: 0;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 4px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    gap: 0.5rem;
+}
+
+.navds-button--secondary {
+    box-shadow: inset 0 0 0 2px;
+    background-color: #ffffff;
+    color: #0067c5;
+}
+.navds-button--secondary:hover,
+.navds-button--secondary:active {
+    color: #0056b4;
+    background-color: #cce1ff;
+}
+.navds-button--secondary:active {
+    background-color: #00459c;
+    box-shadow: none;
+    color: #fff;
+}
+
+.navds-label {
+    font-family: 'Source Sans 3', 'Source Sans Pro', Arial, sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.navds-button--tertiary {
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.navds-button--tertiary:hover,
+.navds-button--tertiary:focus {
+    border-color: #0067c5;
+}
+
+.navds-button--primary,
+.navds-button--danger {
+    color: white;
+    border-width: 1px;
+}
+
+.navds-button--primary:hover {
+    background-color: #0056b4;
+    border-color: #0056b4;
+}
+
+.navds-button--danger {
+    background-color: #ba3a26;
+    border-color: #ba3a26;
+}
+
+.navds-button--danger:hover {
+    background-color: #a32a17;
+    border-color: #a32a17;
+}
+
+.navds-button--primary {
+    background-color: #0067c5;
+    border-color: #0067c5;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+    -webkit-appearance: button;
+}
+
+button,
+[type='button'],
+[type='reset'],
+[type='submit'] {
+    -webkit-appearance: button;
+}
+
+button {
+    color: inherit;
+    text-transform: none;
+    font-family: inherit;
+    font-size: 100%;
+    line-height: 1.15;
+    margin: 0;
+    overflow: visible;
+}
+
+* {
+    box-sizing: border-box;
+}
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.navds-button:disabled:disabled {
+    background-color: #a0a0a0;
+    color: #ffffff;
+    cursor: not-allowed;
+    border-width: 0;
+    box-shadow: none;
+    transform: none;
+}
+
+.navds-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px #00347d !important;
+}
+
+.navds-button--primary:focus,
+.navds-button--danger:focus {
+    border-color: white;
+}*/

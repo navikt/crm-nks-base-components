@@ -1,11 +1,11 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
-import OPEN_SECURITY_RUTINES_LABEL from '@salesforce/label/c.NKS_Open_Security_Rutines';
+import OPEN_SECURITY_ROUTINES_LABEL from '@salesforce/label/c.NKS_Open_Security_Rutines';
 
 export default class NksSecurityRoutines extends NavigationMixin(LightningElement) {
     @api articleId;
 
-    openSecurityRutines = OPEN_SECURITY_RUTINES_LABEL;
+    openSecurityRoutines = OPEN_SECURITY_ROUTINES_LABEL;
 
     handleSecurity() {
         this.articleId.split(',').forEach((article, index) => {
