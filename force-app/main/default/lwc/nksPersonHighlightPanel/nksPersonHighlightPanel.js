@@ -66,6 +66,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     oppfolgingAndMeldekortData = {};
     personDetails = {};
 
+    uuAlertText = '';
+
     connectedCallback() {
         this.wireFields = [`${this.objectApiName}.Id`];
     }
@@ -136,6 +138,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
             this.dateOfDeath = data.dateOfDeath;
+            this.setUuAlertText();
         }
         if (error) {
             console.error(error);
@@ -181,6 +184,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.isNavEmployee = data.some((element) => element.name === 'isNavEmployee');
             this.isConfidential = data.some((element) => element.name === 'isConfidential');
             this.personAccessBadges = data;
+            this.setUuAlertText();
         } else if (error) {
             console.error(error);
         }
@@ -323,6 +327,32 @@ export default class NksPersonHighlightPanel extends LightningElement {
             return str;
         }
         return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
+    }
+
+    setUuAlertText() {
+        const securityMeasures = this.badges?.find((badge) => badge.badgeContentType === 'SecurityMeasure');
+        const hasSecurityMeasures = securityMeasures?.badgeContent.length > 0;
+        if (!(hasSecurityMeasures || this.isConfidential || this.isNavEmployee)) {
+            this.uuAlertText = '';
+            return;
+        }
+
+        const navEmployeeText = ' er egen ansatt';
+        const isConfidentialText = ' skjermet';
+        let alertText = `Bruker${this.isNavEmployee ? navEmployeeText : ''}`;
+        const securityMeasureText = hasSecurityMeasures
+            ? ` har ${securityMeasures?.label}: ${securityMeasures?.badgeContent
+                  .map((secMeasure) => secMeasure.SecurityMeasure)
+                  .join(', ')}`
+            : '';
+        const confidentialityText =
+            this.isNavEmployee && this.isConfidential ? ', og' : this.isConfidential ? ' er' : '';
+        alertText += confidentialityText;
+        alertText += this.isConfidential ? isConfidentialText : '';
+        alertText += (this.isNavEmployee || this.isConfidential) && hasSecurityMeasures ? ' og' : '';
+        alertText += securityMeasureText || '';
+        alertText += '.';
+        this.uuAlertText = alertText;
     }
 
     get isLoading() {
