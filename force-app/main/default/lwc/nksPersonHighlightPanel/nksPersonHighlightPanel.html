@@ -19,6 +19,7 @@
                         </lightning-layout-item>
 
                         <template lwc:if={fullName}>
+                            <span lwc:if={uuAlertText} class="slds-assistive-text" role="alert">{uuAlertText}</span>
                             <lightning-layout-item class="custom-padding-left">
                                 <template for:each={personAccessBadges} for:item="badge">
                                     <lightning-layout-item key={badge.name}>
