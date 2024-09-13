@@ -30,10 +30,8 @@ export default class NksChatButtonContainerTop extends LightningElement {
         return this.showFlow.toString();
     }
 
-    get flowButtonClass() {
-        return `slds-button slds-button_brand slds-button_stretch custom-button${
-            this.flowButtonLabel === this.redactLabel ? ' redactButton' : ''
-        }`;
+    get flowButtonStyling() {
+        return this.flowButtonLabel === this.redactLabel ? 'redact' : '';
     }
 
     toggleFlow() {

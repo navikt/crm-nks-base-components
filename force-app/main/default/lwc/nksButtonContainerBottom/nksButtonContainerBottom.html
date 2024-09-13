@@ -8,14 +8,13 @@
                 <lightning-layout-item class="slds-grid slds-grid_align-end slds-col_bump-left button-container">
                     <template for:each={flowLoop} for:item="flow">
                         <lightning-layout-item key={flow.developerName} data-expanded={flow.expanded}>
-                            <button
-                                class={buttonClass}
-                                data-id={flow.developerName}
-                                onclick={toggleFlow}
+                            <c-nks-button
+                                button-label={flow.label}
+                                button-styling="secondary"
+                                element-data-id={flow.developerName}
                                 aria-expanded={flow.expanded}
-                            >
-                                {flow.label}
-                            </button>
+                                onbuttonclick={toggleFlow}
+                            ></c-nks-button>
                         </lightning-layout-item>
                     </template>
                     <slot name="navigationButton"></slot>
