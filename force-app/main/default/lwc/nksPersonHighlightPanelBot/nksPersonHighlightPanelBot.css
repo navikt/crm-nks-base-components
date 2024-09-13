@@ -44,3 +44,11 @@ div {
 .slds-text-link:hover {
     color: inherit;
 }
+
+.slds-text-link:focus {
+    color: white;
+}
+
+.slds-text-link:active {
+    color: white;
+}

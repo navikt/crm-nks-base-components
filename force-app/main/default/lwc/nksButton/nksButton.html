@@ -1,5 +1,5 @@
 <template>
-    <a lwc:if={isLink} onclick={handleClick} class={buttonClass}>{buttonLabel}</a>
+    <a lwc:if={isLink} onclick={handleClick} class={buttonClass} tabindex="0">{buttonLabel}</a>
     <button
         lwc:else
         id={elementId}

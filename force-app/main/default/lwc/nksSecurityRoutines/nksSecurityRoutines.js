@@ -23,4 +23,11 @@ export default class NksSecurityRoutines extends NavigationMixin(LightningElemen
             }, 1000 * index);
         });
     }
+
+    handleKeyDown(event) {
+        if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+            event.preventDefault();
+            this.handleSecurity();
+        }
+    }
 }

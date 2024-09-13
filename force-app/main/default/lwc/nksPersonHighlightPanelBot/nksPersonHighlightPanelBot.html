@@ -14,20 +14,15 @@
                             <a href={link.field} target="_blank" onclick={handleClick}>{link.name}</a>
                         </template>
                         <template if:true={link.custom}>
-                            <template if:true={link.literalLink}>
-                                <a href={link.literalLink} target="_blank" onclick={handleClick}>{link.name}</a>
-                            </template>
-                            <template if:false={link.literalLink}>
-                                <div
-                                    role="link"
-                                    onclick={link.eventFunc}
-                                    onkeydown={link.eventFunc}
-                                    class="slds-text-link"
-                                    tabindex="0"
-                                >
-                                    {link.title}
-                                </div>
-                            </template>
+                            <div
+                                role="link"
+                                onclick={link.eventFunc}
+                                onkeydown={link.eventFunc}
+                                class="slds-text-link"
+                                tabindex="0"
+                            >
+                                {link.title}
+                            </div>
                         </template>
                     </lightning-layout-item>
                 </template>
