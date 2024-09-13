@@ -1,6 +1,28 @@
 public with sharing class NKS_FullmaktController {
     private static LoggerUtility logger = new LoggerUtility('Fullmakt');
 
+    private static Map<String, Set<String>> fullmaktThemesByGroups = new Map<String, Set<String>>{
+        'Arbeid' => new Set<String>{
+            'AAP',
+            'AAR',
+            'DAG',
+            'FOS',
+            'IND',
+            'KLL',
+            'OPP',
+            'SAP',
+            'TSO',
+            'TSR',
+            'VEN',
+            'YRK'
+        },
+        'Familie' => new Set<String>{ 'BAR', 'BID', 'ENF', 'FAR', 'FOR', 'GRA', 'GRU', 'KON', 'OMS' },
+        'Helse' => new Set<String>{ 'SYK', 'SYM', 'UFO' },
+        'Hjelpemidler' => new Set<String>{ 'BIL', 'HEL', 'HJE' },
+        'Pensjon' => new Set<String>{ 'EYB', 'EYO', 'FIP', 'PEN', 'SUP' },
+        'Øvrig' => new Set<String>{ 'AGR', 'ERS', 'FEI', 'GEN', 'MED', 'RPO', 'SAK', 'SER', 'UFM', 'TRY' }
+    };
+
     @AuraEnabled(cacheable=true)
     public static List<FullmaktsgiverHistorikk> getHistorikk(Id recordId, String objectApiName) {
         String personIdent = fetchPersonIdent(recordId, objectApiName);
@@ -173,6 +195,7 @@ public with sharing class NKS_FullmaktController {
             Omraade omd = new Omraade();
             String omraadeName = omraadeNameByOmraadeTema.get(omraade.tema);
             omd.tema = omraadeName != null ? omraadeName : omraade.tema;
+            omd.temaKode = omraade.tema;
             omd.handling = omraade.handling;
             omraaderWithHandlinger.add(omd);
         }
@@ -376,15 +399,33 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public List<Omraade> omraader;
         @AuraEnabled
-        public List<Map<String, String>> formattedOmraadeList {
+        public List<OmraadeGroup> formattedOmraadeListByThemeGroup {
             get {
-                List<Map<String, String>> formattedList = new List<Map<String, String>>();
+                List<OmraadeGroup> formattedList = new List<OmraadeGroup>();
                 if (omraader != null) {
-                    for (Omraade omd : omraader) {
-                        Map<String, String> omraadeMap = new Map<String, String>();
-                        omraadeMap.put('name', omd.tema);
-                        omraadeMap.put('permissions', String.join(omd.handling, ', '));
-                        formattedList.add(omraadeMap);
+                    Set<String> allThemes = new Set<String>();
+                    Map<String, Omraade> omraadeMap = new Map<String, Omraade>();
+                    for (Omraade omder : omraader) {
+                        allThemes.add(omder.temaKode);
+                        omraadeMap.put(omder.temaKode, omder);
+                    }
+                    for (String themeGroup : fullmaktThemesByGroups.keySet()) {
+                        Set<String> themesInThemeGroup = fullmaktThemesByGroups.get(themeGroup);
+                        List<String> tempList;
+                        // Helse is a special case where we never want to say "Gjelder alle ytelser"
+                        if (themeGroup != 'Helse' && allThemes.containsAll(themesInThemeGroup)) {
+                            tempList = new List<String>{ 'Gjelder alle ytelser' };
+                        } else {
+                            tempList = new List<String>();
+                            for (String th : allThemes) {
+                                if (themesInThemeGroup.contains(th)) {
+                                    tempList.add(omraadeMap.get(th).tema);
+                                }
+                            }
+                        }
+                        if (!tempList.isEmpty()) {
+                            formattedList.add(new OmraadeGroup(themeGroup, tempList));
+                        }
                     }
                 }
                 return formattedList;
@@ -412,7 +453,25 @@ public with sharing class NKS_FullmaktController {
 
     public class Omraade {
         public String tema;
+        public String temaKode;
         public List<String> handling;
+    }
+
+    public class OmraadeGroup {
+        @AuraEnabled
+        public String themeGroup;
+        public List<String> temaKoder;
+        @AuraEnabled
+        public String temaString {
+            get {
+                return String.join(temaKoder, ', ').removeEnd(', ');
+            }
+        }
+
+        public OmraadeGroup(String themeGroup, List<String> temaKoder) {
+            this.themeGroup = themeGroup;
+            this.temaKoder = temakoder;
+        }
     }
 
     public class FullmaktException extends Exception {

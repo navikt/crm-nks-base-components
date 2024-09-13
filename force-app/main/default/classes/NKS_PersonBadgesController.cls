@@ -270,6 +270,8 @@ public with sharing class NKS_PersonBadgesController {
                     person.Id,
                     'Person__c'
                 );
+                filterFullmaktOmraade(fullmaktsgivere);
+
                 if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                     return;
                 Date today = Date.today();
@@ -311,6 +313,22 @@ public with sharing class NKS_PersonBadgesController {
                 }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
+            }
+        }
+
+        private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgiver) {
+            for (Integer i = (fullmaktsgiver.size() - 1); i >= 0; i--) {
+                NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgiver[i];
+                for (Integer j = (fullmakt.omraader.size() - 1); j >= 0; j--) {
+                    NKS_FullmaktController.Omraade omraade = fullmakt.omraader[j];
+                    if (omraade.handling.contains('KOMMUNISER') || omraade.handling.contains('SKRIV')) {
+                        continue;
+                    }
+                    fullmakt.omraader.remove(j);
+                }
+                if (fullmakt.omraader == null || fullmakt.omraader.isEmpty()) {
+                    fullmaktsgiver.remove(i);
+                }
             }
         }
 
