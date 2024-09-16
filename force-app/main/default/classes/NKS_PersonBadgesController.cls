@@ -319,6 +319,7 @@ public with sharing class NKS_PersonBadgesController {
         private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere) {
             if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                 return;
+                
             for (Integer i = (fullmaktsgivere.size() - 1); i >= 0; i--) {
                 NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgivere[i];
                 for (Integer j = (fullmakt.omraader.size() - 1); j >= 0; j--) {
