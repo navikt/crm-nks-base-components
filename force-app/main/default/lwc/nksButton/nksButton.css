@@ -1,3 +1,9 @@
+.slds-button {
+    line-height: 1.275rem;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
 /*
 .navds-button {
     display: inline-flex;
