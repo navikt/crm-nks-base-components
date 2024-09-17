@@ -11,10 +11,9 @@ export default class NksPersonHighlightPanelMid extends NavigationMixin(Lightnin
             {
                 id: 'aktivitetsplan',
                 name: 'Aktivitetsplan',
-                show: this.personData?.underOppfolging,
                 onclick: this.viewOppfolging
             },
-            { id: 'meldekort', name: 'Meldekort', show: true, onclick: this.viewMeldekort }
+            { id: 'meldekort', name: 'Meldekort', onclick: this.viewMeldekort }
         ];
     }
 
