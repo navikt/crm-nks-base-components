@@ -3,7 +3,7 @@
         <lightning-layout-item class="margin-area"></lightning-layout-item>
         <template lwc:if={fullName}>
             <template for:each={links} for:item="link">
-                <lightning-layout-item lwc:if={link.show} key={link.id} class="slds-grid slds-wrap content-padding">
+                <lightning-layout-item key={link.id} class="slds-grid slds-wrap content-padding">
                     <a onclick={link.onclick} class="font-styling">{link.name}</a>
                 </lightning-layout-item>
             </template>
