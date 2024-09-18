@@ -19,6 +19,7 @@ import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
+import getArbeidssoeker from '@salesforce/apex/NKS_ArbeidssoekerController.getArbeidssoeker';
 
 const PERSON_FIELDS = [
     PERSON_FIRST_NAME,
@@ -62,6 +63,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     dateOfDeath;
     badgeContent;
+    arbeidssoekerPerioder;
 
     oppfolgingAndMeldekortData = {};
     personDetails = {};
@@ -300,6 +302,16 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
+    @wire(getArbeidssoeker, { identnr: '$personIdent' })
+    wiredArbeidssoeker({ data, error }) {
+        if (data) {
+            this.arbeidssoekerPerioder = JSON.parse(data);
+        }
+        if (error) {
+            console.error(error);
+        }
+    }
+
     handleBackgroundColor() {
         const genderWrapper = this.template.querySelector('.gender-wrapper');
         if (!genderWrapper) return;
@@ -362,5 +374,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get panelClass() {
         return this.fullName ? 'highlightPanel' : 'highlightPanelConfidential';
+    }
+
+    get isArbeidssoeker() {
+        return this.arbeidssoekerPerioder?.some((period) => period.avsluttet == null);
     }
 }
