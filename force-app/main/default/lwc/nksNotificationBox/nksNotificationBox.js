@@ -15,6 +15,13 @@ export default class NksNotificationBox extends LightningElement {
         });
     }
 
+    @api
+    filterNotification(inputText) {
+        this.notificationList = this.notificationList.filter(
+            (item) => !item.text.toLowerCase().includes(inputText.toLowerCase())
+        );
+    }
+
     getCurrentTime() {
         const nowTime = new Date();
         return `${('0' + nowTime.getHours()).slice(-2)}:${('0' + nowTime.getMinutes()).slice(-2)}`;
