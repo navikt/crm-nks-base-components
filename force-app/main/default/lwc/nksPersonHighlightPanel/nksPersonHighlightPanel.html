@@ -76,6 +76,17 @@
                                         </lightning-layout-item>
                                     </lightning-layout-item>
                                 </template>
+
+                                <template lwc:if={isArbeidssoeker}>
+                                    <lightning-layout-item>
+                                        <lightning-badge
+                                            class="slds-theme_error slds-var-m-left_x-small slds-var-m-vertical_xx-small yellowBadge"
+                                            label="Arbeidssøker"
+                                            role="heading"
+                                        >
+                                        </lightning-badge>
+                                    </lightning-layout-item>
+                                </template>
                             </lightning-layout-item>
                         </template>
                     </lightning-layout-item>
