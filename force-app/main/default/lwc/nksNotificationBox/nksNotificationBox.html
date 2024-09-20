@@ -1,7 +1,7 @@
 <template>
     <div style="display: flex; flex-direction: column; gap: 6px">
         <template for:each={notificationList} for:item="notification">
-            <div class="navds-alert navds-alert--success slds-var-m-bottom_x-small" key={notification.id}>
+            <div role="alert" class="navds-alert navds-alert--success slds-var-m-bottom_x-small" key={notification.id}>
                 <svg
                     width="1em"
                     height="1em"
