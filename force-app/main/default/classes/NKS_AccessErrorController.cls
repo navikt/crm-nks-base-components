@@ -1,12 +1,14 @@
 public without sharing class NKS_AccessErrorController {
     @AuraEnabled
-    //public static String checkAccess(Id recordId, String objectApiName) {
     public static String checkAccess(String field, String parentObject, String parentRecordId) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
+        if (personId == null) {
+            return null;
+        }
         Person__c person = getPerson(personId);
         Boolean hasAccess = hasAccess(personId);
 
-        if (false == accountNameSetToNotAvailable(person) && false == hasAccess) {
+        if (!accountNameSetToNotAvailable(person) && !hasAccess) {
             return 'Du mangler tilgang til å se informasjon knyttet til denne brukeren';
         }
 
@@ -32,7 +34,7 @@ public without sharing class NKS_AccessErrorController {
         String queryString = 'SELECT ' + field + ' FROM ' + parentObject + ' WHERE Id = :parentRecordId LIMIT 1';
         List<SObject> objList = Database.query(String.escapeSingleQuotes(queryString));
 
-        if (false == objList.isEmpty()) {
+        if (!objList.isEmpty()) {
             personId = (Id) getFieldValue(objList[0], field);
         }
 
@@ -45,8 +47,12 @@ public without sharing class NKS_AccessErrorController {
     private static Object getFieldValue(SObject obj, String fieldName) {
         List<String> fieldNameList = fieldName.split('\\.');
 
-        if (1 < fieldNameList.size()) {
-            return getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'));
+        if (fieldNameList.size() > 1) {
+            SObject nestedObj = obj.getSObject(fieldNameList.remove(0));
+            if (nestedObj == null) {
+                return null;
+            }
+            return getFieldValue(nestedObj, String.join(fieldNameList, '.'));
         }
 
         return obj.get(fieldNameList[0]);
@@ -63,6 +69,6 @@ public without sharing class NKS_AccessErrorController {
     }
 
     private static Boolean accountNameSetToNotAvailable(Person__c person) {
-        return person.CRM_Account__r.Name.equalsIgnoreCase('skjermet');
+        return person?.CRM_Account__r?.Name.equalsIgnoreCase('skjermet');
     }
 }
