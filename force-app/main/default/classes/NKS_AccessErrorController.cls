@@ -2,7 +2,7 @@ public without sharing class NKS_AccessErrorController {
     @AuraEnabled
     public static String checkAccess(String field, String parentObject, String parentRecordId) {
         Id personId = getPersonId(field, parentObject, parentRecordId);
-        if (personId == null) {
+        if (personId == null) { // This would only happen if case does not have related person for cnotes
             return null;
         }
         Person__c person = getPerson(personId);
