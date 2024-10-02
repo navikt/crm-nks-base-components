@@ -1,20 +1,4 @@
 public with sharing class NKS_PersonBadgesController {
-    // Static final class for holding all the HOT entitlement fields.
-    public static final Set<String> HOT_ENTITLEMENT_FIELDS = new Set<String>{
-        'HOT_DailyLifeInterpreter__c',
-        'HOT_EducationInterpreter__c',
-        'HOT_Escort__c',
-        'HOT_HapticCommunication__c',
-        'HOT_InterpreterAtWork__c',
-        'HOT_RemoteInterpreter__c',
-        'HOT_SignLanguage__c',
-        'HOT_SignLanguageWithLimitedFieldOfView__c',
-        'HOT_SignToSupportMouthReading__c',
-        'HOT_SpeechInterpreting__c',
-        'HOT_TactileSignLanguage__c',
-        'HOT_WritenInterpreting__c'
-    };
-
     private static Map<String, String> languageMap {
         get {
             if (languageMap == null) {
@@ -384,33 +368,6 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         /**
-         * @description We don't have the HOT fields in all sanboxes or scratch orgs, therefore we need to check if they exist before trying to add any badges;
-         */
-
-        // private void setEntitlements() {
-        //     if (fieldSet.contains('hot_hasentitlement__c')) {
-        //         if (true == (Boolean) person.get('HOT_HasEntitlement__c')) {
-        //             badges.add(
-        //                 new Badge(
-        //                     'entitlements',
-        //                     getFieldLabel('HOT_HasEntitlement__c'),
-        //                     'slds-theme_warsning slds-m-left_x-small slds-m-vertical_xx-small pointer',
-        //                     '',
-        //                     '',
-        //                     true
-        //                 )
-        //             );
-
-        //             for (String entitlementField : NKS_PersonBadgesController.HOT_ENTITLEMENT_FIELDS) {
-        //                 if (true == (Boolean) person.get(entitlementField)) {
-        //                     entitlements.add(getFieldLabel(entitlementField));
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-
-        /**
          * @description Setting badge for open STOs
          * This function could have been used to check Case instead of PSR, which means we probably could have removed
          * fetchSpecialSkills() and had a much easier query than the one that fetches PSR. However, since the
@@ -716,7 +673,7 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private String getFieldLabel(String fieldApiName) {
-            SObjectType type = Schema.getGlobalDescribe().get('Person__c');
+            SObjectType type = Person__c.sObjectType;
             Map<String, Schema.SObjectField> mfields = type.getDescribe().fields.getMap();
             return mfields.get(fieldApiName).getDescribe().getLabel();
         }
