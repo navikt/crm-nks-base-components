@@ -4,6 +4,10 @@
     padding-bottom: 0.3rem;
 }
 
+.button-full-height {
+    height: 100%;
+}
+
 /*
 .navds-button {
     display: inline-flex;
