@@ -83,7 +83,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 name: 'DinPensjon',
                 label: 'Din Pensjon',
                 field: this.generateUrl('DinPensjon'),
-                show: this.personIdent && this.navIdent
+                show: this.personIdent
             },
             {
                 name: 'DinUfore',
@@ -121,11 +121,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             case 'Barnetrygd':
                 return `https://barnetrygd.intern.nav.no/oppgaver`;
             case 'DinPensjon':
-                return `https://pensjon-pselv${
-                    this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'
-                }/pselv/publisering/dinpensjon.jsf?_brukerId=${this.personIdent}&context=pensjon&_loggedOnName=${
-                    this.navIdent
-                }`;
+                return `https://pensjon-selvbetjening-dinpensjon-frontend-veileder${
+                    this.isSandbox ? '-q2.intern.dev' : '.intern'
+                }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${this.personIdent}`;
             case 'DinUfore':
                 return `https://pensjon-pselv${
                     this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'
