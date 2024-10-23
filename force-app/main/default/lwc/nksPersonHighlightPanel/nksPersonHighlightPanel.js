@@ -60,7 +60,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     personIdent;
 
     badges;
-    errorMessages;
     dateOfDeath;
     badgeContent;
     arbeidssoekerPerioder;
@@ -79,7 +78,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
-            console.log('wireVeilIdentInfo: ', this.underOppfolging);
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
 
@@ -91,6 +89,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 midPanel.updateOppfolging(this.oppfolgingAndMeldekortData);
             }
         } else if (error) {
+            this.addErrorMessage('getVeilederIdent', error);
             console.error(error);
         }
     }
@@ -113,6 +112,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     })
     wiredBadgeInfo(value) {
         this.wiredBadge = value;
+        const { data, error } = value;
+        this.loadingStates.getPersonBadgesAndInfo = !(error || data);
         this.setWiredBadge();
     }
 
@@ -120,7 +121,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (this.wiredBadge == null || this.historikkWiredData == null) return;
         const { data, error } = this.wiredBadge;
         const { data: historikkData } = this.historikkWiredData;
-        this.loadingStates.getPersonBadgesAndInfo = !(error || data);
 
         if (data) {
             const badges = [...data.badges];
@@ -138,11 +138,14 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.badges = badges;
 
             // this.entitlements = data.entitlements;
-            this.errorMessages = data.errors;
+            if (data.errors && data.errors.lenght > 0) {
+                this.addErrorMessage('setWiredBadge', data.errors);
+            }
             this.dateOfDeath = data.dateOfDeath;
             this.setUuAlertText();
         }
         if (error) {
+            this.addErrorMessage('setWiredBadge', error);
             console.error(error);
         }
     }
@@ -175,6 +178,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.setWiredBadge();
         } else if (error) {
+            this.addErrorMessage('getHistorikk', error);
             console.error(error);
         }
     }
@@ -188,6 +192,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.personAccessBadges = data;
             this.setUuAlertText();
         } else if (error) {
+            this.addErrorMessage('setWiredPersonAccessBadge', error);
             console.error(error);
         }
     }
@@ -245,6 +250,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 this.oppfolgingAndMeldekortData.personId = this.personId;
             })
             .catch((error) => {
+                this.addErrorMessage('getRelatedRecord', error);
                 console.error(error);
             });
     }
@@ -282,6 +288,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
             this.handleBackgroundColor();
         } else if (error) {
+            this.addErrorMessage('getRecord', error);
             console.error(error);
             this.handleBackgroundColor();
         }
@@ -298,6 +305,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             }
         }
         if (error) {
+            this.addErrorMessage('wiredRecordInfo', error);
             console.error(error);
         }
     }
@@ -308,6 +316,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.arbeidssoekerPerioder = JSON.parse(data);
         }
         if (error) {
+            this.addErrorMessage('getArbeidssoeker', error);
             console.error(error);
         }
     }
@@ -365,6 +374,38 @@ export default class NksPersonHighlightPanel extends LightningElement {
         alertText += securityMeasureText || '';
         alertText += '.';
         this.uuAlertText = alertText;
+    }
+
+    errorMessageList = {};
+
+    addErrorMessage(errorName, error) {
+        if (Array.isArray(error)) {
+            this.errorMessageList[errorName] = error.flat();
+        } else if (typeof error === 'object') {
+            this.errorMessageList[errorName] = error.body?.exceptionType + ': ' + error.body?.message;
+        } else {
+            this.errorMessageList[errorName] = error;
+        }
+        this.updateErrorMessages();
+    }
+
+    closeErrorMessage() {
+        this.closeErrorMessages();
+    }
+
+    closeErrorMessages(errorName) {
+        if (Object.keys(this.errorMessageList).includes(errorName)) {
+            delete this.errorMessageList[errorName];
+            this.updateErrorMessages();
+        }
+    }
+
+    errorMessages;
+
+    updateErrorMessages() {
+        this.errorMessages = Object.keys(this.errorMessageList).map((errorName) => {
+            return { errorName: errorName, error: this.errorMessageList[errorName] };
+        });
     }
 
     get isLoading() {

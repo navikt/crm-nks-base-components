@@ -108,3 +108,7 @@
 .panelBackground {
     background-color: var(--primaryBackgroundColor, #0056b4);
 }
+
+.errorPanelBackground {
+    background-color: #ad0000;
+}
