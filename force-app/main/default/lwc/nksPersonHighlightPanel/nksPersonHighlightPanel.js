@@ -12,6 +12,7 @@ import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
+import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
@@ -63,6 +64,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     dateOfDeath;
     badgeContent;
     arbeidssoekerPerioder;
+    errorMessageList = {};
+    errorMessages;
 
     oppfolgingAndMeldekortData = {};
     personDetails = {};
@@ -376,8 +379,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         this.uuAlertText = alertText;
     }
 
-    errorMessageList = {};
-
     addErrorMessage(errorName, error) {
         if (Array.isArray(error)) {
             this.errorMessageList[errorName] = error.flat();
@@ -389,8 +390,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
         this.updateErrorMessages();
     }
 
-    closeErrorMessage() {
-        this.closeErrorMessages();
+    closeErrorMessage(event) {
+        const errorName = event.currentTarget.dataset.errorName;
+        this.closeErrorMessages(errorName);
     }
 
     closeErrorMessages(errorName) {
@@ -399,8 +401,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.updateErrorMessages();
         }
     }
-
-    errorMessages;
 
     updateErrorMessages() {
         this.errorMessages = Object.keys(this.errorMessageList).map((errorName) => {
@@ -419,5 +419,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get isArbeidssoeker() {
         return this.arbeidssoekerPerioder?.some((period) => period.avsluttet == null);
+    }
+
+    get warningIconSrc() {
+        return NAV_ICONS + '/warningTriangle.svg#warningTriangle';
+    }
+
+    get xMarkIconSrc() {
+        return NAV_ICONS + '/xMarkIcon.svg#xMarkIcon';
     }
 }
