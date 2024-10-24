@@ -1,4 +1,19 @@
 <template>
+    <template lwc:if={errorMessages}>
+        <template iterator:it={errorMessages}>
+            <div class="errorPanel highlightPanel" key={it.value.errorName}>
+                <div class="warningIcon">
+                    <c-nks-custom-svg src={warningIconSrc} alt-text="warning"></c-nks-custom-svg>
+                </div>
+                <p>{it.value.error}</p>
+                <div class="xMarkIcon" data-error-name={it.value.errorName} onclick={closeErrorMessage}>
+                    <c-nks-custom-svg src={xMarkIconSrc} alt-text="close"></c-nks-custom-svg>
+                </div>
+            </div>
+            <div lwc:if={it.last} key={it.value.errorName}></div>
+            <div lwc:else key={it.value.errorName} class="errorBorder"></div>
+        </template>
+    </template>
     <div class="gender-wrapper">
         <template lwc:if={isLoading}>
             <c-nks-skeleton-loading-component></c-nks-skeleton-loading-component>

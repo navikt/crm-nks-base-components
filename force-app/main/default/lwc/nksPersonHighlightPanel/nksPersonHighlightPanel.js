@@ -12,6 +12,7 @@ import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
+import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
@@ -60,10 +61,11 @@ export default class NksPersonHighlightPanel extends LightningElement {
     personIdent;
 
     badges;
-    errorMessages;
     dateOfDeath;
     badgeContent;
     arbeidssoekerPerioder;
+    errorMessageList = {};
+    errorMessages;
 
     oppfolgingAndMeldekortData = {};
     personDetails = {};
@@ -79,7 +81,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.veilederIdent = data.primaerVeileder;
             this.underOppfolging = data.underOppfolging;
-            console.log('wireVeilIdentInfo: ', this.underOppfolging);
             this.oppfolgingAndMeldekortData.underOppfolging = this.underOppfolging;
             this.oppfolgingAndMeldekortData.veilederIdent = this.veilederIdent;
 
@@ -91,6 +92,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 midPanel.updateOppfolging(this.oppfolgingAndMeldekortData);
             }
         } else if (error) {
+            this.addErrorMessage('getVeilederIdent', error);
             console.error(error);
         }
     }
@@ -113,6 +115,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     })
     wiredBadgeInfo(value) {
         this.wiredBadge = value;
+        const { data, error } = value;
+        this.loadingStates.getPersonBadgesAndInfo = !(error || data);
         this.setWiredBadge();
     }
 
@@ -120,7 +124,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (this.wiredBadge == null || this.historikkWiredData == null) return;
         const { data, error } = this.wiredBadge;
         const { data: historikkData } = this.historikkWiredData;
-        this.loadingStates.getPersonBadgesAndInfo = !(error || data);
 
         if (data) {
             const badges = [...data.badges];
@@ -138,11 +141,14 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.badges = badges;
 
             // this.entitlements = data.entitlements;
-            this.errorMessages = data.errors;
+            if (data.errors && data.errors.length > 0) {
+                this.addErrorMessage('setWiredBadge', data.errors);
+            }
             this.dateOfDeath = data.dateOfDeath;
             this.setUuAlertText();
         }
         if (error) {
+            this.addErrorMessage('setWiredBadge', error);
             console.error(error);
         }
     }
@@ -175,6 +181,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             this.setWiredBadge();
         } else if (error) {
+            this.addErrorMessage('getHistorikk', error);
             console.error(error);
         }
     }
@@ -188,6 +195,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.personAccessBadges = data;
             this.setUuAlertText();
         } else if (error) {
+            this.addErrorMessage('setWiredPersonAccessBadge', error);
             console.error(error);
         }
     }
@@ -245,6 +253,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 this.oppfolgingAndMeldekortData.personId = this.personId;
             })
             .catch((error) => {
+                this.addErrorMessage('getRelatedRecord', error);
                 console.error(error);
             });
     }
@@ -282,6 +291,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
             this.handleBackgroundColor();
         } else if (error) {
+            this.addErrorMessage('getRecord', error);
             console.error(error);
             this.handleBackgroundColor();
         }
@@ -298,6 +308,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             }
         }
         if (error) {
+            this.addErrorMessage('wiredRecordInfo', error);
             console.error(error);
         }
     }
@@ -308,6 +319,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.arbeidssoekerPerioder = JSON.parse(data);
         }
         if (error) {
+            this.addErrorMessage('getArbeidssoeker', error);
             console.error(error);
         }
     }
@@ -367,6 +379,35 @@ export default class NksPersonHighlightPanel extends LightningElement {
         this.uuAlertText = alertText;
     }
 
+    addErrorMessage(errorName, error) {
+        if (Array.isArray(error)) {
+            this.errorMessageList[errorName] = error.flat();
+        } else if (typeof error === 'object') {
+            this.errorMessageList[errorName] = error.body?.exceptionType + ': ' + error.body?.message;
+        } else {
+            this.errorMessageList[errorName] = error;
+        }
+        this.updateErrorMessages();
+    }
+
+    closeErrorMessage(event) {
+        const errorName = event.currentTarget.dataset.errorName;
+        this.closeErrorMessages(errorName);
+    }
+
+    closeErrorMessages(errorName) {
+        if (Object.keys(this.errorMessageList).includes(errorName)) {
+            delete this.errorMessageList[errorName];
+            this.updateErrorMessages();
+        }
+    }
+
+    updateErrorMessages() {
+        this.errorMessages = Object.keys(this.errorMessageList).map((errorName) => {
+            return { errorName: errorName, error: this.errorMessageList[errorName] };
+        });
+    }
+
     get isLoading() {
         // eslint-disable-next-line @salesforce/aura/ecma-intrinsics, compat/compat
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
@@ -378,5 +419,13 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get isArbeidssoeker() {
         return this.arbeidssoekerPerioder?.some((period) => period.avsluttet == null);
+    }
+
+    get warningIconSrc() {
+        return NAV_ICONS + '/warningTriangle.svg#warningTriangle';
+    }
+
+    get xMarkIconSrc() {
+        return NAV_ICONS + '/xMarkIcon.svg#xMarkIcon';
     }
 }
