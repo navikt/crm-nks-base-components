@@ -141,7 +141,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.badges = badges;
 
             // this.entitlements = data.entitlements;
-            if (data.errors && data.errors.lenght > 0) {
+            if (data.errors && data.errors.length > 0) {
                 this.addErrorMessage('setWiredBadge', data.errors);
             }
             this.dateOfDeath = data.dateOfDeath;
