@@ -37,7 +37,7 @@ export async function handleShowNotifications(
 
         if (flowNameLower.includes('journal')) {
             const message = existingJournal
-                ? 'Henvendelsen er allerede jounralført'
+                ? 'Henvendelsen er allerede journalført'
                 : journalConversationNote
                 ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                 : 'Henvendelsen er journalført';
