@@ -148,7 +148,10 @@ private with sharing class NKS_PersonBadgesController_Test {
             result.guardianships[0].vergeEllerFullmektig.motpartLabel,
             'Expected motpart to have a label'
         );
-        Assert.isNotNull(result.guardianships[0].vergeEllerFullmektig.tjenesteomraadeLabel, 'Expected tjenesteomraade to have a label');
+        Assert.isNotNull(
+            result.guardianships[0].vergeEllerFullmektig.tjenesteomraadeLabel,
+            'Expected tjenesteomraade to have a label'
+        );
     }
 
     @IsTest

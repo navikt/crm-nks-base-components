@@ -258,7 +258,7 @@ public with sharing class NKS_PersonBadgesController {
 
                 if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                     return;
-                
+
                 Date today = Date.today();
                 for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
                     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
@@ -303,7 +303,7 @@ public with sharing class NKS_PersonBadgesController {
         private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere) {
             if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
                 return;
-                
+
             for (Integer i = (fullmaktsgivere.size() - 1); i >= 0; i--) {
                 NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgivere[i];
                 for (Integer j = (fullmakt.omraader.size() - 1); j >= 0; j--) {
@@ -841,7 +841,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public VergeEllerFullmektig vergeEllerFullmektig;
         @AuraEnabled
-        public String id; 
+        public String id;
 
         private Map<String, String> typeMap {
             get {
@@ -867,7 +867,7 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class VergeEllerFullmektig {  
+    public class VergeEllerFullmektig {
         @AuraEnabled
         public String motpartsPersonident;
         @AuraEnabled
@@ -878,7 +878,7 @@ public with sharing class NKS_PersonBadgesController {
         public String omfang;
         @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
-        
+
         @AuraEnabled
         public String motpartLabel {
             get {
@@ -917,7 +917,7 @@ public with sharing class NKS_PersonBadgesController {
                 return String.isNotBlank(label) ? label : this.omfang;
             }
         }
-        
+
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -935,7 +935,6 @@ public with sharing class NKS_PersonBadgesController {
                 return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
             }
         }
-       
     }
 
     public class SecurityMeasure implements BadgeContent {
