@@ -855,7 +855,6 @@ public with sharing class NKS_PersonBadgesController {
         public String embete;
         @AuraEnabled
         public VergeEllerFullmektig vergeEllerFullmektig;
-        @AuraEnabled
         public List<Tjenesteomraade> tjenesteomraade;
         @AuraEnabled
         public String id;
