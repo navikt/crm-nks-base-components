@@ -329,8 +329,8 @@ public with sharing class NKS_PersonBadgesController {
                     for (Integer i = 0; i < guardianshipList.size(); i++) {
                         GuardianShipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
                         guardianship.id = String.valueOf(i);
-                        if (String.isNotBlank(guardianship.motpartsPersonident)) {
-                            personIdentNameMap.put(guardianship.motpartsPersonident, '');
+                        if (String.isNotBlank(guardianship.vergeEllerFullmektig.motpartsPersonident)) {
+                            personIdentNameMap.put(guardianship.vergeEllerFullmektig.motpartsPersonident, '');
                         }
                         guardianships.add(guardianship);
                     }
@@ -658,9 +658,9 @@ public with sharing class NKS_PersonBadgesController {
             }
 
             for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {
-                String name = personIdentNameMap.get(gofoa.motpartsPersonident);
+                String name = personIdentNameMap.get(gofoa.vergeEllerFullmektig.motpartsPersonident);
                 if (String.isNotBlank(name)) {
-                    gofoa.navn = new Navn(name);
+                    gofoa.vergeEllerFullmektig.navn = new Navn(name);
                 }
             }
 
@@ -834,17 +834,6 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
-        private Map<String, String> omfangMap {
-            get {
-                return new Map<String, String>{
-                    'utlendingssakerPersonligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)',
-                    'personligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området',
-                    'oekonomiskeInteresser' => 'Ivareta personens interesser innenfor det økonomiske området',
-                    'personligeInteresser' => 'Ivareta personens interesser innenfor det personlige området'
-                };
-            }
-        }
-
         private Map<String, String> typeMap {
             get {
                 return new Map<String, String>{
@@ -865,34 +854,9 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String embete;
         @AuraEnabled
-        public Navn navn;
+        public VergeEllerFullmektig vergeEllerFullmektig;
         @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public String omfang;
-        @AuraEnabled
-        public String motpartLabel {
-            get {
-                List<String> retString = new List<String>();
-                if (String.isNotEmpty(this.navn.fullName)) {
-                    retString.add(this.navn.fullName);
-                }
-                if (String.isNotEmpty(this.motpartsPersonIdent)) {
-                    retString.add(this.motpartsPersonident);
-                }
-
-                return String.join(retString, ' - ');
-            }
-        }
         public List<Tjenesteomraade> tjenesteomraade;
-        @AuraEnabled
-        public Boolean omfangetErInnenPersonligOmraade;
-        @AuraEnabled
-        public String omfangetErInnenPersonligOmraadeTxt {
-            get {
-                return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
-            }
-        }
         @AuraEnabled
         public String id;
 
@@ -913,6 +877,57 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         @AuraEnabled
+        public String typeLabel {
+            get {
+                String label = this.typeMap.get(this.type);
+                return String.isNotBlank(label) ? label : this.type;
+            }
+        }
+    }
+
+    public class VergeEllerFullmektig {
+        private Map<String, String> omfangMap {
+            get {
+                return new Map<String, String>{
+                    'utlendingssakerPersonligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)',
+                    'personligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området',
+                    'oekonomiskeInteresser' => 'Ivareta personens interesser innenfor det økonomiske området',
+                    'personligeInteresser' => 'Ivareta personens interesser innenfor det personlige området'
+                };
+            }
+        }
+        
+        @AuraEnabled
+        public Boolean omfangetErInnenPersonligOmraade;
+        @AuraEnabled
+        public String omfang;
+        @AuraEnabled
+        public Navn navn;
+        @AuraEnabled
+        public String motpartsPersonident;
+        
+        @AuraEnabled
+        public String omfangetErInnenPersonligOmraadeTxt {
+            get {
+                return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
+            }
+        }
+        @AuraEnabled
+        public String motpartLabel {
+            get {
+                List<String> retString = new List<String>();
+                if (String.isNotEmpty(this.navn?.fullName)) {
+                    retString.add(this.navn.fullName);
+                }
+                if (String.isNotEmpty(this.motpartsPersonIdent)) {
+                    retString.add(this.motpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
+        
+        @AuraEnabled
         public String omfangLabel {
             get {
                 String label = this.omfangMap.get(this.omfang);
@@ -920,13 +935,6 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
-        @AuraEnabled
-        public String typeLabel {
-            get {
-                String label = this.typeMap.get(this.type);
-                return String.isNotBlank(label) ? label : this.type;
-            }
-        }
     }
 
     public class SecurityMeasure implements BadgeContent {
