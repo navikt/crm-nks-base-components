@@ -834,6 +834,15 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
+        @AuraEnabled
+        public String type;
+        @AuraEnabled
+        public String embete;
+        @AuraEnabled
+        public VergeEllerFullmektig vergeEllerFullmektig;
+        @AuraEnabled
+        public String id; 
+
         private Map<String, String> typeMap {
             get {
                 return new Map<String, String>{
@@ -850,14 +859,40 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         @AuraEnabled
-        public String type;
+        public String typeLabel {
+            get {
+                String label = this.typeMap.get(this.type);
+                return String.isNotBlank(label) ? label : this.type;
+            }
+        }
+    }
+
+    public class VergeEllerFullmektig {  
         @AuraEnabled
-        public String embete;
+        public String motpartsPersonident;
         @AuraEnabled
-        public VergeEllerFullmektig vergeEllerFullmektig;
         public List<Tjenesteomraade> tjenesteomraade;
         @AuraEnabled
-        public String id;
+        public Navn navn;
+        @AuraEnabled
+        public String omfang;
+        @AuraEnabled
+        public Boolean omfangetErInnenPersonligOmraade;
+        
+        @AuraEnabled
+        public String motpartLabel {
+            get {
+                List<String> retString = new List<String>();
+                if (String.isNotEmpty(this.navn?.fullName)) {
+                    retString.add(this.navn.fullName);
+                }
+                if (String.isNotEmpty(this.motpartsPersonIdent)) {
+                    retString.add(this.motpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
 
         @AuraEnabled
         public String tjenesteomraadeLabel {
@@ -876,15 +911,13 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         @AuraEnabled
-        public String typeLabel {
+        public String omfangLabel {
             get {
-                String label = this.typeMap.get(this.type);
-                return String.isNotBlank(label) ? label : this.type;
+                String label = this.omfangMap.get(this.omfang);
+                return String.isNotBlank(label) ? label : this.omfang;
             }
         }
-    }
-
-    public class VergeEllerFullmektig {
+        
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -895,45 +928,14 @@ public with sharing class NKS_PersonBadgesController {
                 };
             }
         }
-        
-        @AuraEnabled
-        public Boolean omfangetErInnenPersonligOmraade;
-        @AuraEnabled
-        public String omfang;
-        @AuraEnabled
-        public Navn navn;
-        @AuraEnabled
-        public String motpartsPersonident;
-        
+
         @AuraEnabled
         public String omfangetErInnenPersonligOmraadeTxt {
             get {
                 return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
             }
         }
-        @AuraEnabled
-        public String motpartLabel {
-            get {
-                List<String> retString = new List<String>();
-                if (String.isNotEmpty(this.navn?.fullName)) {
-                    retString.add(this.navn.fullName);
-                }
-                if (String.isNotEmpty(this.motpartsPersonIdent)) {
-                    retString.add(this.motpartsPersonident);
-                }
-
-                return String.join(retString, ' - ');
-            }
-        }
-        
-        @AuraEnabled
-        public String omfangLabel {
-            get {
-                String label = this.omfangMap.get(this.omfang);
-                return String.isNotBlank(label) ? label : this.omfang;
-            }
-        }
-
+       
     }
 
     public class SecurityMeasure implements BadgeContent {

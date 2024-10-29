@@ -75,9 +75,9 @@ private with sharing class NKS_PersonBadgesController_Test {
             false
         );
 
-        System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(3, pbd.badges.size(), 'Expected three');
-        System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
+        Assert.areEqual(1, pbd.securityMeasures.size(), 'Expected one');
+        Assert.areEqual(3, pbd.badges.size(), 'Expected three');
+        Assert.areEqual(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
         Test.stopTest();
     }
 
@@ -108,15 +108,14 @@ private with sharing class NKS_PersonBadgesController_Test {
             false
         );
 
-        System.assertEquals(1, pbd.securityMeasures.size(), 'Expected one');
-        System.assertEquals(5, pbd.badges.size(), 'Expected five');
-        System.assertEquals(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
+        Assert.areEqual(1, pbd.securityMeasures.size(), 'Expected one');
+        Assert.areEqual(5, pbd.badges.size(), 'Expected five');
+        Assert.areEqual(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
     }
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorney() {
-        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":{"fornavn":"Motpart","mellomnavn":"Old Name" ,"etternavn":"Motpartsen"},"motpartsPersonident":"01234567890","embete":"Fylkesmannen i Rogaland", "tjenesteomraade": [{"tjenesteoppgave": "fiske", "tjenestevirksomhet": "nav"}]}]';
-
+        String jsonString = '[{"type": "voksen","embete": "Fylkesmannen i Trøndelag","vergeEllerFullmektig": {"navn": {"fornavn": "Djerv","mellomnavn": null,"etternavn": "Eplekake"},"identifiserendeInformasjon": {"navn": {"fornavn": "Djerv","mellomnavn": null,"etternavn": "Eplekake"},"kjoenn": null,"foedselsdato": null,"statsborgerskap": null},"motpartsPersonident": "01234567890","omfang": "personligeOgOekonomiskeInteresser","omfangetErInnenPersonligOmraade": true,"tjenesteomraade": []}}]';
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
         p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
         update p;
@@ -126,17 +125,17 @@ private with sharing class NKS_PersonBadgesController_Test {
         result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
-        System.assertEquals(1, result.guardianships.size(), 'Expected one guardianship');
-        System.assertEquals(
+        Assert.areEqual(1, result.guardianships.size(), 'Expected one guardianship');
+        Assert.areEqual(
             'Ja',
-            result.guardianships[0].omfangetErInnenPersonligOmraadeTxt,
+            result.guardianships[0].vergeEllerFullmektig.omfangetErInnenPersonligOmraadeTxt,
             'Expected "Ja" since omfangetErInnenPersonligOmraade = "true"'
         );
-        System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
-        System.assertEquals('Motpart Motpartsen', result.guardianships[0].navn.fullName, 'Wrong name');
+        Assert.areEqual(1, result.badges.size(), 'Expected one guardianship');
+        Assert.areEqual('Motpart Motpartsen', result.guardianships[0].vergeEllerFullmektig.navn.fullName, 'Wrong name');
         System.assertNotEquals(
-            result.guardianships[0].omfang,
-            result.guardianships[0].omfangLabel,
+            result.guardianships[0].vergeEllerFullmektig.omfang,
+            result.guardianships[0].vergeEllerFullmektig.omfangLabel,
             'Expected omfang to have a label'
         );
         System.assertNotEquals(
@@ -145,18 +144,17 @@ private with sharing class NKS_PersonBadgesController_Test {
             'Expected type to have a label'
         );
         Assert.areNotEqual(
-            result.guardianships[0].motpartsPersonIdent,
-            result.guardianships[0].motpartLabel,
+            result.guardianships[0].vergeEllerFullmektig.motpartsPersonIdent,
+            result.guardianships[0].vergeEllerFullmektig.motpartLabel,
             'Expected motpart to have a label'
         );
-        Assert.isNotNull(result.guardianships[0].tjenesteomraadeLabel, 'Expected tjenesteomraade to have a label');
+        Assert.isNotNull(result.guardianships[0].vergeEllerFullmektig.tjenesteomraadeLabel, 'Expected tjenesteomraade to have a label');
     }
 
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorneyError() {
         ApiMock.setTestMock('GET_FULLMAKTSGIVER', 200, 'ok');
         String jsonString = '{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01234567890","embete":"fylkesmannenITromsOgFinnmark"}]';
-
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
         p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
         update p;
@@ -166,9 +164,9 @@ private with sharing class NKS_PersonBadgesController_Test {
         result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
-        System.assertEquals(0, result.guardianships.size(), 'Expected one guardianship');
-        System.assertEquals(1, result.errors.size(), 'Expected one error');
-        System.assertEquals(2, result.badges.size(), 'Expected one guardianship badge');
+        Assert.areEqual(0, result.guardianships.size(), 'Expected 0 guardianship');
+        Assert.areEqual(1, result.errors.size(), 'Expected 1 error');
+        Assert.areEqual(2, result.badges.size(), 'Expected 2 guardianship badge');
     }
 
     @IsTest
@@ -185,7 +183,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         Assert.areEqual(3, result.powerOfAttorneys.size(), 'Expected one guardianship');
         Assert.areEqual('13899498180', result.powerOfAttorneys[0].motpartsPersonident, 'Expected 13899498180');
         Assert.isTrue(result.powerOfAttorneys[0].omraader.size() > 0, 'Expected multiple omraade');
-        System.assertEquals(1, result.badges.size(), 'Expected one guardianship');
+        Assert.areEqual(1, result.badges.size(), 'Expected one guardianship');
     }
 
     @IsTest
@@ -198,10 +196,10 @@ private with sharing class NKS_PersonBadgesController_Test {
         result = NKS_PersonBadgesController.getPersonBadgesAndInfo('CRM_Person__c', 'Account', p.CRM_Account__c, false);
         Test.stopTest();
 
-        System.assertEquals(0, result.powerOfAttorneys.size(), 'Expected no guardianships');
-        System.assertEquals(1, result.errors.size(), 'Expected one error');
+        Assert.areEqual(0, result.powerOfAttorneys.size(), 'Expected no guardianships');
+        Assert.areEqual(1, result.errors.size(), 'Expected one error');
 
-        System.assertEquals(0, result.badges.size(), 'Expected no guardianship badges');
+        Assert.areEqual(0, result.badges.size(), 'Expected no guardianship badges');
     }
 
     @IsTest
