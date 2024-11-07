@@ -1,0 +1,48 @@
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-weight: 400;
+    font-size: 14px;
+    padding: 0.8rem;
+}
+
+.panel-header-first {
+    border-top: 1px solid #a9a9a9;
+}
+
+.panel-background {
+    background-color: #ffffff;
+    border-bottom: 1px solid #a9a9a9;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.custom-icon-background,
+.panel-background-expanded,
+.panel-header:hover {
+    background-color: #e9f0ff;
+}
+
+.panel-body {
+    padding: 1rem;
+    background-color: #ffffff;
+}
+
+.custom-icon-background {
+    fill: #e9f0ff;
+}
+
+.panel-header:hover .custom-icon-background {
+    fill: #00459c;
+}
+
+.panel-header:hover .custom-icon-chevron {
+    fill: #e9f0ff;
+}
+
+.custom-icon-chevron {
+    fill: #00459c;
+}

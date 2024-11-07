@@ -1,0 +1,22 @@
+<template>
+    <div class={containerStyle}>
+        <div class={panelHeaderStyle} onclick={toggleExpand}>
+            <h3>{title}</h3>
+            <span class="slds-icon_container">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 26 26"
+                    class="slds-icon slds-icon-text-default slds-icon_small"
+                >
+                    <rect width="26" height="26" rx="10" class="custom-icon-background" />
+                    <path d={arrowDirection} class="custom-icon-chevron" />
+                </svg>
+            </span>
+        </div>
+        <template if:true={isExpanded}>
+            <div class="panel-body">
+                <slot></slot>
+            </div>
+        </template>
+    </div>
+</template>
