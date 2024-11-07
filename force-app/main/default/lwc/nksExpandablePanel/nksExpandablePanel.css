@@ -1,12 +1,17 @@
 .panel-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding: 0.5rem;
     font-weight: 400;
     font-size: 14px;
-    padding: 0.8rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+}
+
+.panel-header-space-between {
+    justify-content: space-between;
 }
 
 .panel-header-first {
@@ -31,6 +36,13 @@
     background-color: #ffffff;
 }
 
+.panel-body-left {
+    border-left: 2px solid #c1c4cb;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+}
+
 .custom-icon-background {
     fill: #e9f0ff;
 }
@@ -45,4 +57,13 @@
 
 .custom-icon-chevron {
     fill: #00459c;
+}
+
+.rotate-chevron {
+    transform: rotate(-180deg);
+    transition: transform 0.2s ease;
+}
+
+.custom-chevron {
+    transition: transform 0.2s ease;
 }
