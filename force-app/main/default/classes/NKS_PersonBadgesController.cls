@@ -329,8 +329,8 @@ public with sharing class NKS_PersonBadgesController {
                     for (Integer i = 0; i < guardianshipList.size(); i++) {
                         GuardianShipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
                         guardianship.id = String.valueOf(i);
-                        if (String.isNotBlank(guardianship.vergeEllerFullmektig.motpartsPersonident)) {
-                            personIdentNameMap.put(guardianship.vergeEllerFullmektig.motpartsPersonident, '');
+                        if (String.isNotBlank(guardianship.actualMotpartsPersonident)) {
+                            personIdentNameMap.put(guardianship.actualMotpartsPersonident, '');
                         }
                         guardianships.add(guardianship);
                     }
@@ -658,9 +658,9 @@ public with sharing class NKS_PersonBadgesController {
             }
 
             for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {
-                String name = personIdentNameMap.get(gofoa.vergeEllerFullmektig.motpartsPersonident);
+                String name = personIdentNameMap.get(gofoa.actualMotpartsPersonident);
                 if (String.isNotBlank(name)) {
-                    gofoa.vergeEllerFullmektig.navn = new Navn(name);
+                    gofoa.actualNavn = new Navn(name);
                 }
             }
 
@@ -834,14 +834,80 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
+        // Common between both old and new
         @AuraEnabled
         public String type;
         @AuraEnabled
         public String embete;
         @AuraEnabled
-        public VergeEllerFullmektig vergeEllerFullmektig;
-        @AuraEnabled
         public String id;
+
+        // Old format
+        @AuraEnabled
+        public Navn navn;
+        @AuraEnabled
+        public String motpartsPersonident;
+        @AuraEnabled
+        public String omfang;
+        @AuraEnabled
+        public Boolean omfangetErInnenPersonligOmraade;
+
+        // New format
+        @AuraEnabled
+        public VergeEllerFullmektig vergeEllerFullmektig;
+
+        @AuraEnabled
+        public String omfangLabel {
+            get {
+                String actualOmfang = vergeEllerFullmektig != null ? vergeEllerFullmektig.omfang : omfang;
+                String label = this.omfangMap.get(actualOmfang);
+                return String.isNotBlank(label) ? label : actualOmfang;
+            }
+        }
+
+        @AuraEnabled
+        public String omfangetErInnenPersonligOmraadeTxt {
+            get {
+                Boolean actualOmfangetErInnenPersonligOmraade = vergeEllerFullmektig != null ? vergeEllerFullmektig.omfangetErInnenPersonligOmraade : omfangetErInnenPersonligOmraade;
+                return true == actualOmfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
+            }
+        }
+
+        @AuraEnabled
+        public Navn actualNavn {
+            get {
+                return vergeEllerFullmektig != null ? vergeEllerFullmektig.navn : navn;
+            }
+            set {
+                if(vergeEllerFullmektig != null){
+                    vergeEllerFullmektig.navn = value;
+                } else {
+                    navn = value;
+                }
+            }
+        }
+
+        @AuraEnabled
+        public String actualMotpartsPersonident {
+            get {
+                return vergeEllerFullmektig != null ? vergeEllerFullmektig.motpartsPersonident : motpartsPersonident;
+            }
+        }
+
+        @AuraEnabled
+        public String motpartLabel {
+            get {
+                List<String> retString = new List<String>();
+                if (String.isNotEmpty(this.actualNavn?.fullName)) {
+                    retString.add(this.actualNavn.fullName);
+                }
+                if (String.isNotEmpty(this.actualMotpartsPersonIdent)) {
+                    retString.add(this.actualMotpartsPersonident);
+                }
+
+                return String.join(retString, ' - ');
+            }
+        }
 
         private Map<String, String> typeMap {
             get {
@@ -865,6 +931,18 @@ public with sharing class NKS_PersonBadgesController {
                 return String.isNotBlank(label) ? label : this.type;
             }
         }
+
+        private Map<String, String> omfangMap {
+            get {
+                return new Map<String, String>{
+                    'utlendingssakerPersonligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)',
+                    'personligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området',
+                    'oekonomiskeInteresser' => 'Ivareta personens interesser innenfor det økonomiske området',
+                    'personligeInteresser' => 'Ivareta personens interesser innenfor det personlige området'
+                };
+            }
+        }
+
     }
 
     public class VergeEllerFullmektig {
@@ -880,21 +958,6 @@ public with sharing class NKS_PersonBadgesController {
         public Boolean omfangetErInnenPersonligOmraade;
 
         @AuraEnabled
-        public String motpartLabel {
-            get {
-                List<String> retString = new List<String>();
-                if (String.isNotEmpty(this.navn?.fullName)) {
-                    retString.add(this.navn.fullName);
-                }
-                if (String.isNotEmpty(this.motpartsPersonIdent)) {
-                    retString.add(this.motpartsPersonident);
-                }
-
-                return String.join(retString, ' - ');
-            }
-        }
-
-        @AuraEnabled
         public String tjenesteomraadeLabel {
             get {
                 String label = '';
@@ -907,32 +970,6 @@ public with sharing class NKS_PersonBadgesController {
                     }
                 }
                 return label.removeEnd(', ');
-            }
-        }
-
-        @AuraEnabled
-        public String omfangLabel {
-            get {
-                String label = this.omfangMap.get(this.omfang);
-                return String.isNotBlank(label) ? label : this.omfang;
-            }
-        }
-
-        private Map<String, String> omfangMap {
-            get {
-                return new Map<String, String>{
-                    'utlendingssakerPersonligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området herunder utlendingssaken (kun for EMA)',
-                    'personligeOgOekonomiskeInteresser' => 'Ivareta personens interesser innenfor det personlige og økonomiske området',
-                    'oekonomiskeInteresser' => 'Ivareta personens interesser innenfor det økonomiske området',
-                    'personligeInteresser' => 'Ivareta personens interesser innenfor det personlige området'
-                };
-            }
-        }
-
-        @AuraEnabled
-        public String omfangetErInnenPersonligOmraadeTxt {
-            get {
-                return true == omfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
             }
         }
     }

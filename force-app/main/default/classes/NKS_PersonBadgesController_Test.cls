@@ -128,14 +128,14 @@ private with sharing class NKS_PersonBadgesController_Test {
         Assert.areEqual(1, result.guardianships.size(), 'Expected one guardianship');
         Assert.areEqual(
             'Ja',
-            result.guardianships[0].vergeEllerFullmektig.omfangetErInnenPersonligOmraadeTxt,
+            result.guardianships[0].omfangetErInnenPersonligOmraadeTxt,
             'Expected "Ja" since omfangetErInnenPersonligOmraade = "true"'
         );
         Assert.areEqual(1, result.badges.size(), 'Expected one guardianship');
         Assert.areEqual('Motpart Motpartsen', result.guardianships[0].vergeEllerFullmektig.navn.fullName, 'Wrong name');
         System.assertNotEquals(
             result.guardianships[0].vergeEllerFullmektig.omfang,
-            result.guardianships[0].vergeEllerFullmektig.omfangLabel,
+            result.guardianships[0].omfangLabel,
             'Expected omfang to have a label'
         );
         System.assertNotEquals(
@@ -145,7 +145,7 @@ private with sharing class NKS_PersonBadgesController_Test {
         );
         Assert.areNotEqual(
             result.guardianships[0].vergeEllerFullmektig.motpartsPersonIdent,
-            result.guardianships[0].vergeEllerFullmektig.motpartLabel,
+            result.guardianships[0].motpartLabel,
             'Expected motpart to have a label'
         );
         Assert.isNotNull(

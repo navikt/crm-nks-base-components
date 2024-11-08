@@ -7,11 +7,11 @@
                 <template for:each={badgeData} for:item="guardianship">
                     <div key={guardianship}>
                         <p><strong>Type:</strong> {guardianship.typeLabel}</p>
-                        <p><strong>Motpart:</strong> {guardianship.vergeEllerFullmektig.motpartLabel}</p>
-                        <p><strong>Omfang:</strong> {guardianship.vergeEllerFullmektig.omfangLabel}</p>
+                        <p><strong>Motpart:</strong> {guardianship.motpartLabel}</p>
+                        <p><strong>Omfang:</strong> {guardianship.omfangLabel}</p>
                         <p>
                             <strong>Innen personlig område:</strong>
-                            {guardianship.vergeEllerFullmektig.omfangetErInnenPersonligOmraadeTxt}
+                            {guardianship.omfangetErInnenPersonligOmraadeTxt}
                         </p>
                         <p><strong>Embete:</strong> {guardianship.embete}</p>
                     </div>
