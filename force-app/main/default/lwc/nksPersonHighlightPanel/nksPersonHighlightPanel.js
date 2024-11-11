@@ -133,7 +133,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (data) {
             let badges = [];
             if (this.erNasjonalOppfolging) {
-                console.log('Bango');
                 badges.push({
                     name: 'NOE',
                     label: 'NOE',
