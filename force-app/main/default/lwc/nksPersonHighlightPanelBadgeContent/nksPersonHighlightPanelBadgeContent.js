@@ -9,6 +9,7 @@ import nksPersonHighlightPanelBadgeContent from './nksPersonHighlightPanelBadgeC
 import dateOfDeath from './dateOfDeath.html';
 import historicalPowerOfAttorney from './historicalPowerOfAttorney.html';
 import openSTO from './openSTO.html';
+import NOE from './NOE.html';
 import sharedStyling from './sharedStyling.css';
 
 const templates = {
@@ -18,7 +19,8 @@ const templates = {
     PowerOfAttorney: powerOfAttorneys,
     IsDeceased: dateOfDeath,
     historicalPowerOfAttorney: historicalPowerOfAttorney,
-    OpenSTO: openSTO
+    OpenSTO: openSTO,
+    NOE: NOE
 };
 
 export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin(LightningElement) {
