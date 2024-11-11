@@ -66,6 +66,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     arbeidssoekerPerioder;
     errorMessageList = {};
     errorMessages;
+    erNasjonalOppfolging = false;
 
     oppfolgingAndMeldekortData = {};
     personDetails = {};
@@ -90,6 +91,10 @@ export default class NksPersonHighlightPanel extends LightningElement {
             const midPanel = this.template.querySelector('c-nks-person-highlight-panel-mid');
             if (midPanel) {
                 midPanel.updateOppfolging(this.oppfolgingAndMeldekortData);
+            }
+            if (data.underOppfolging && data.OppfolgingsEnhet.enhetId === '4154') {
+                this.erNasjonalOppfolging = true;
+                this.setWiredBadge();
             }
         } else if (error) {
             this.addErrorMessage('getVeilederIdent', error);
@@ -126,7 +131,20 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const { data: historikkData } = this.historikkWiredData;
 
         if (data) {
-            const badges = [...data.badges];
+            let badges = [];
+            if (this.erNasjonalOppfolging) {
+                console.log('Bango');
+                badges.push({
+                    name: 'NOE',
+                    label: 'NOE',
+                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                    clickable: true,
+                    tabindex: '0',
+                    badgeContent: 'NOE',
+                    badgeContentType: 'NOE'
+                });
+            }
+            badges = [...badges, ...data.badges];
             if (historikkData && historikkData.length > 0) {
                 badges.push({
                     name: 'historicalGuardianship',
