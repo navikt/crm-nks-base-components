@@ -1,0 +1,49 @@
+<template>
+    <template if:true={hasContactInformation}>
+        <lightning-layout multiple-rows="true">
+            <!-- BESØKS ADRESSE -->
+            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                <p class="slds-text-title_bold">Besøksadresse:</p>
+                <p>{visitingAddress}</p>
+            </lightning-layout-item>
+
+            <!-- POST ADRESSE -->
+            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                <p class="slds-text-title_bold">Postadresse:</p>
+                <p>{postalAddress}</p>
+            </lightning-layout-item>
+
+            <!-- TELEFON -->
+            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                <p class="slds-text-title_bold">Telefon:</p>
+                <p>{contactInformation.telefonnummer}</p>
+            </lightning-layout-item>
+
+            <!-- SPESIELLE OPPLYSNINGER -->
+            <lightning-layout-item size="12" class="slds-p-bottom_medium">
+                <p class="slds-text-title_bold">Spesielle opplysninger:</p>
+                <p>{contactInformation.spesielleOpplysninger}</p>
+            </lightning-layout-item>
+
+            <!-- PUBLIKUMSMOTTAK -->
+            <template if:true={hasVisitorLocations}>
+                <lightning-layout-item size="12" class="slds-p-top_medium">
+                    <div class="slds-text-heading_small slds-p-bottom_medium" style="font-weight: bold">
+                        Publikumsmottak
+                    </div>
+                    <ul>
+                        <template for:each={visitorLocations} for:item="visitorLocation">
+                            <li key={visitorLocation.id} class="slds-item slds-p-bottom_x-large">
+                                <c-nks-nav-unit-visitor-location
+                                    location={visitorLocation}
+                                    use-new-design={useNewDesign}
+                                >
+                                </c-nks-nav-unit-visitor-location>
+                            </li>
+                        </template>
+                    </ul>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </template>
+</template>

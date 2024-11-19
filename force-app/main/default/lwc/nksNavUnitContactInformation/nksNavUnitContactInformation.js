@@ -1,7 +1,10 @@
 import { LightningElement, api, track } from 'lwc';
+import nksNavUnitContactInformationV2HTML from './nksNavUnitContactInformationV2.html';
+import nksNavUnitContactInformationHTML from './nksNavUnitContactInformation.html';
 
 export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
+    @api useNewDesign = false;
     @track _contactInformation;
     @track _visitorLocations = [];
     _visitorLocationsLength = 0;
@@ -21,6 +24,10 @@ export default class NksNavUnitContactInformation extends LightningElement {
                 this._visitorLocationsLength = publikumsmottak.length;
             }
         }
+    }
+
+    render() {
+        return this.useNewDesign ? nksNavUnitContactInformationV2HTML : nksNavUnitContactInformationHTML;
     }
 
     get columnWidth() {

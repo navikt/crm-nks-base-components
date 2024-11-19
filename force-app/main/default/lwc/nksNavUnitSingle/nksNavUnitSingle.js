@@ -17,6 +17,7 @@ export default class NksNavUnitSingle extends LightningElement {
     @api numCols = 2; // Number of columns for the displayed fields
     @api cardLayout = false; // If true, use the card layout, if not use box layout
     @api boxLayout = false;
+    @api useNewDesign = false;
 
     @track navUnit;
     @track contactInformation;
