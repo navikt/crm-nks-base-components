@@ -19,12 +19,6 @@
                 <p>{contactInformation.telefonnummer}</p>
             </lightning-layout-item>
 
-            <!-- SPESIELLE OPPLYSNINGER -->
-            <lightning-layout-item size="12" class="slds-p-bottom_medium">
-                <p class="slds-text-title_bold">Spesielle opplysninger:</p>
-                <p>{contactInformation.spesielleOpplysninger}</p>
-            </lightning-layout-item>
-
             <!-- PUBLIKUMSMOTTAK -->
             <template if:true={hasVisitorLocations}>
                 <lightning-layout-item size="12" class="slds-p-top_medium">
