@@ -544,4 +544,50 @@ public class UTIL_TestDataFactory {
             //No dml fields
         }
     }
+
+    public class MessagingSessionDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults() {
+            return getFieldDefaults(false);
+        }
+        public Map<String, Object> getFieldDefaults(Boolean bulkify) {
+            return new Map<String, Object>{
+                'MessagingEndUserId' => 'MessagingEndUser', 'Status' => 'New', 'MessagingChannelId' => 'geirArne'
+            };
+        }
+        public Map<String, String> getDmlFields() {
+            return new Map<String, String>{ 'MessagingEndUserId' => 'MessagingEndUser', 'MessagingChannelId' => 'MessagingChannel'};
+        }
+    }
+    
+    public class MessagingEndUserDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults() {
+            return getFieldDefaults(false);
+        }
+        public Map<String, Object> getFieldDefaults(Boolean bulkify) {
+            return new Map<String, Object>{'MessageType' => 'EmbeddedMessaging', 'Name' => 'Guest', 'MessagingPlatformKey' => generateRandomString(20), 'MessagingChannelId' => 'geirArne' };
+        }
+        public Map<String, String> getDmlFields() {
+            return new Map<String, String>{'MessagingChannelId' => 'MessagingChannel'};
+            //No dml fields
+        }
+    }
+
+    public class MessagingChannelDefaults implements FieldDefaults {
+        public Map<String, Object> getFieldDefaults() {
+            return getFieldDefaults(false);
+        }
+        public Map<String, Object> getFieldDefaults(Boolean bulkify) {
+            return new Map<String, Object>{
+            'MasterLabel' => 'TestChannel',
+            'DeveloperName' => 'TestChannel',
+            'IsActive' => true,
+            'MessageType' => 'Text',
+            'MessagingPlatformKey' => 'TestChannel'
+            };
+        }
+        public Map<String, String> getDmlFields() {
+            return new Map<String, String>{};
+            //No dml fields
+        }
+    }
 }
