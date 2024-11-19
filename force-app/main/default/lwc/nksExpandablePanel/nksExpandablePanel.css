@@ -30,7 +30,8 @@
 }
 
 .panel-body {
-    padding: 1rem;
+    padding-left: 1.5rem;
+    padding-right: 1rem;
     background-color: #ffffff;
 }
 
@@ -41,14 +42,12 @@
     margin-top: 0.5rem;
 }
 
-.custom-icon-background {
-    fill: #e9f0ff;
-}
-
+.custom-icon-chevron,
 .panel-header:hover .custom-icon-background {
     fill: #00459c;
 }
 
+.custom-icon-background,
 .panel-header:hover .custom-icon-chevron {
     fill: #e9f0ff;
 }
