@@ -12,7 +12,7 @@ export default class NksExpandablePanel extends LightningElement {
     }
 
     get containerStyle() {
-        return this.sldsSize + ' panel-background';
+        return '${this.sldsSize} panel-background';
     }
 
     get panelHeaderStyle() {
