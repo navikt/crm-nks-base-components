@@ -1,7 +1,13 @@
 import { LightningElement, api } from 'lwc';
-
+import nksNavUnitVisitorLocationV2HTML from './nksNavUnitVisitorLocationV2.html';
+import nksNavUnitVisitorLocationHTML from './nksNavUnitVisitorLocation.html';
 export default class NksNavUnitVisitorLocation extends LightningElement {
     @api location;
+    @api useNewDesign = false;
+
+    render() {
+        return this.useNewDesign ? nksNavUnitVisitorLocationV2HTML : nksNavUnitVisitorLocationHTML;
+    }
 
     get visitingAddress() {
         const address = this.location.besoeksadresse;
