@@ -15,23 +15,23 @@
 
         <template if:true={hasOpeningHours}>
             <!-- SPESIELLE ÅPNINGSTIDER -->
-            <lightning-layout-item size="12" class="slds-p-top_small">
+            <lightning-layout-item size="12" class="slds-var-p-top_x-small">
                 <c-nks-nav-unit-opening-hours
                     title="Spesielle åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="false"
-                    use-new-design={useNewDesign}
+                    use-new-design
                 >
                 </c-nks-nav-unit-opening-hours>
             </lightning-layout-item>
 
             <!-- ÅPNINGSTIDER -->
-            <lightning-layout-item size="12" class="slds-p-top_small">
+            <lightning-layout-item size="12" class="slds-var-p-top_small">
                 <c-nks-nav-unit-opening-hours
                     title="Åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="true"
-                    use-new-design={useNewDesign}
+                    use-new-design
                 >
                 </c-nks-nav-unit-opening-hours>
             </lightning-layout-item>
