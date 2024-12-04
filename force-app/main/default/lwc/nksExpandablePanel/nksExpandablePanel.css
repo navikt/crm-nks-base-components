@@ -4,7 +4,18 @@
     cursor: pointer;
     font-weight: 400;
     font-size: 14px;
+}
+
+.panel-header-min-height {
+    min-height: 3rem;
+}
+
+.panel-header-padding-small {
     padding: 0.8rem 0.3rem;
+}
+
+.panel-header-padding-medium {
+    padding: 0.8em 1.25rem 0.8rem 2rem;
 }
 
 .panel-header-space-between {
@@ -17,6 +28,9 @@
 
 .panel-background {
     background-color: #ffffff;
+}
+
+.panel-background-bottom-border {
     border-bottom: 1px solid #a9a9a9;
 }
 
@@ -30,6 +44,14 @@
     padding-left: 1.5rem;
     padding-right: 1rem;
     background-color: #ffffff;
+}
+
+.panel-body-small {
+    padding-left: 1.5rem;
+}
+
+.panel-body-medium {
+    padding-left: 2rem;
 }
 
 .panel-body-left {
@@ -58,4 +80,18 @@
 .rotate-chevron,
 .custom-chevron {
     transition: transform 0.2s ease;
+}
+
+.card-border {
+    border: 1px solid #767676;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* .title-margin {
+    margin-left: 0.5rem;
+} */
+
+.panel-divider {
+    border-bottom: 1px solid #cccccc;
 }
