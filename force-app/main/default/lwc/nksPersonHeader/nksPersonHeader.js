@@ -13,7 +13,7 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 import getFullmaktsgiverHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
-import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
+import getVeilederName from '@salesforce/apex/NKS_NOMController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { resolve } from 'c/nksComponentsUtils';
