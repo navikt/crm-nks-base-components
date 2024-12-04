@@ -77,3 +77,16 @@ export function resolve(path, obj) {
         return prev ? prev[curr] : null;
     }, obj || {});
 }
+
+export function handleCopy(event) {
+    const hiddenInput = document.createElement('input');
+    const eventValue = event.currentTarget.value;
+    hiddenInput.value = eventValue;
+    document.body.appendChild(hiddenInput);
+    hiddenInput.focus();
+    hiddenInput.select();
+    // eslint-disable-next-line @locker/locker/distorted-document-exec-command
+    document.execCommand('copy');
+    document.body.removeChild(hiddenInput);
+    event.currentTarget.focus();
+}
