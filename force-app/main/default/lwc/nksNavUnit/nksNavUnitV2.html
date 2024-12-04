@@ -1,16 +1,19 @@
 <template>
-    <lightning-layout multiple-rows="true" class="slds-var-p-right_small slds-var-p-left_large">
-        <lightning-layout-item class="slds-var-p-right_large slds-text-title_bold"
-            >{getUnitNameAndNumber}
+    <lightning-layout
+        multiple-rows="true"
+        class="custom-padding-bottom-medium custom-padding-right-small custom-padding-left-large"
+    >
+        <lightning-layout-item class="custom-padding-right-large slds-text-title_bold">
+            {getUnitNameAndNumber}
         </lightning-layout-item>
 
-        <lightning-layout-item size="12" class="slds-var-p-top_large slds-var-p-right_medium">
+        <lightning-layout-item size="12" class="custom-padding-top-large custom-padding-right-medium">
             <c-nks-expandable-panel title="Kontorinformasjon for NKS" chevron-left="true" is-first="true">
-                <p class="slds-text-title_bold slds-var-p-bottom_x-small">Intern informasjon</p>
+                <p class="slds-text-title_bold custom-padding-bottom-x-small">Intern informasjon</p>
                 <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
                 <br />
                 <p class="slds-text-title_bold">Offentlig informasjon</p>
-                <div class="slds-var-p-bottom_medium">
+                <div class="custom-padding-bottom-medium">
                     <p>Offentlige vakttelefoner:</p>
                     <div lwc:if={publikumskanaler}>
                         <template for:each={publikumskanaler} for:item="kanal">
@@ -23,7 +26,7 @@
                         <p>Ingen vakttelefon</p>
                     </div>
                 </div>
-                <div class="slds-var-p-bottom_medium">
+                <div class="custom-padding-bottom-medium">
                     <p class="slds-text-title_bold">Tilleggstjenester</p>
                     <div lwc:if={tjenester}>
                         <ul class="slds-list_dotted">
@@ -40,15 +43,15 @@
                         <p>{ytterligereInformasjon}</p>
                     </div>
                 </div>
-                <div class="slds-var-p-bottom_medium">
+                <div class="custom-padding-bottom-medium">
                     <p class="slds-text-title_bold">Papirsøknad</p>
                     <p>{papirsoeknadInformasjon}</p>
                 </div>
-                <div class="slds-var-p-bottom_medium">
+                <div class="custom-padding-bottom-medium">
                     <p class="slds-text-title_bold">Utbetaling</p>
                     <p>{informasjonUtbetalinger}</p>
                 </div>
-                <div class="slds-var-p-bottom_medium">
+                <div class="custom-padding-bottom-medium">
                     <p class="slds-text-title_bold">Lenker:</p>
                     <div lwc:if={digitaleSoeknader}>
                         <template for:each={digitaleSoeknader} for:item="link">
