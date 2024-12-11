@@ -1,11 +1,13 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class NksExpandablePanel extends LightningElement {
-    @api title = 'Expandable Section';
-    @api sldsSize = '';
+    @api title;
+    @api sldsSize;
     @api isFirst = false;
-    @api chevronLeft = false; // Changes between the "detail" and "communication" styles
-    @track isExpanded = false;
+    @api chevronLeft = false;
+    @api isExpandable = false;
+
+    isExpanded = false;
 
     toggleExpand() {
         this.isExpanded = !this.isExpanded;
@@ -21,7 +23,8 @@ export default class NksExpandablePanel extends LightningElement {
             (this.chevronLeft
                 ? ' panel-header-padding-medium'
                 : ' panel-header-space-between panel-divider panel-header-padding-medium panel-header-min-height') +
-            (this.isFirst ? ' panel-header-first' : '')
+            (this.isFirst ? ' panel-header-first' : '') +
+            (this.isExpandable ? ' panel-header-expandable' : '')
         );
     }
 

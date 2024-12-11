@@ -1,7 +1,6 @@
 .panel-header {
     display: flex;
     align-items: center;
-    cursor: pointer;
     font-weight: 400;
     font-size: 14px;
 }
@@ -94,4 +93,8 @@
 
 .panel-divider {
     border-bottom: 1px solid #cccccc;
+}
+
+.panel-header-expandable {
+    cursor: pointer;
 }
