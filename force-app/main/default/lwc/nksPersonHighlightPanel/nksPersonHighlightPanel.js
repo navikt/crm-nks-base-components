@@ -18,7 +18,7 @@ import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
 import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
-import getVeilederName from '@salesforce/apex/NKS_AktivitetsplanController.getEmployeeName';
+import getVeilederName from '@salesforce/apex/NKS_NOMController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 import getArbeidssoeker from '@salesforce/apex/NKS_ArbeidssoekerController.getArbeidssoeker';
 
@@ -105,6 +105,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
         if (data) {
+            console.log('Geir');
+            console.log(data);
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
         } else if (error) {
