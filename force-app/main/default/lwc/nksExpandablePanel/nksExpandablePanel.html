@@ -18,7 +18,7 @@
                             <h3>{title}</h3>
                         </template>
                         <template lwc:else>
-                            <div class="title-margin">
+                            <div>
                                 <slot name="title">
                                     <h3>{title}</h3>
                                 </slot>
@@ -38,7 +38,7 @@
 
                 <!-- Show Static Title if Not Expandable -->
                 <template lwc:else>
-                    <div class="title-margin">
+                    <div>
                         <slot name="title">
                             <h3>{title}</h3>
                         </slot>
