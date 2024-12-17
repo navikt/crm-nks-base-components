@@ -33,7 +33,14 @@ export default class NksExpandablePanel extends LightningElement {
     }
 
     get panelBodyClass() {
-        return 'panel-body' + (this.chevronLeft ? ' panel-body-left panel-body-small' : ' panel-body-medium');
+        return (
+            'panel-body' +
+            (this.chevronLeft ? ' panel-body-left panel-body-small' : ' panel-body-medium panel-body-min-height')
+        );
+    }
+
+    get panelSubtitleClass() {
+        return this.panelBodyClass + ' panel-body-min-height panel-body-center-text';
     }
 
     get cardBorderClass() {

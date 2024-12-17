@@ -59,6 +59,16 @@
     margin: 0.5rem 0 1rem 1rem;
 }
 
+.panel-body-min-height {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.panel-body-center-text {
+    display: flex;
+    align-items: center;
+}
+
 .custom-icon-chevron,
 .panel-header:hover .custom-icon-background {
     fill: #00459c;
@@ -87,10 +97,6 @@
     border-radius: 5px;
     overflow: hidden;
 }
-
-/* .title-margin {
-    margin-left: 0.5rem;
-} */
 
 .panel-divider {
     border-bottom: 1px solid #cccccc;
