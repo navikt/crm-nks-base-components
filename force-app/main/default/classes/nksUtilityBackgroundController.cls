@@ -12,7 +12,7 @@ public with sharing class nksUtilityBackgroundController {
                     WHERE Id = :recordId
                     LIMIT 1
                 ];
-                if (c.Origin == 'Phone') {
+                if (c.Origin.equals('Phone')) {
                     tabname = c.NKS_Puzzel_Queue_Name__c;
                 } else if (new List<String>{ 'STO', 'BTO' }.contains(c.Origin)) {
                     tabname = c.STO_Category__c;
