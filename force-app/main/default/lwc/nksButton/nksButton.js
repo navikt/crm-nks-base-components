@@ -20,11 +20,14 @@ export default class NksButton extends LightningElement {
     @api ariaExpanded = false;
     @api isLink = false;
     @api fullHeight = false;
+    @api standardLength = false;
 
     get buttonClass() {
         let buttonStyle = this.buttonStyling?.toLowerCase();
         const baseClass =
-            'slds-button slds-button_stretch button-spacing ' + (this.fullHeight ? 'button-full-height ' : '');
+            'slds-button  button-spacing ' +
+            (this.fullHeight ? 'button-full-height ' : '') +
+            (this.standardLength ? '' : 'slds-button_stretch ');
         const styleMap = {
             primary: 'slds-button_brand',
             secondary: 'slds-button_outline-brand',
