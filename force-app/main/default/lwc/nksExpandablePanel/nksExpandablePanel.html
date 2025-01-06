@@ -1,7 +1,6 @@
 <template>
     <div class={cardBorderClass}>
         <div class={containerStyle}>
-            <!-- Show Chevron and Title if Expandable -->
             <template lwc:if={isExpandable}>
                 <div class={panelHeaderStyle} onclick={toggleExpand}>
                     <template lwc:if={chevronLeft}>
@@ -35,7 +34,6 @@
                 </div>
             </template>
 
-            <!-- Show Static Title if Not Expandable -->
             <template lwc:else>
                 <div class={panelHeaderStyle}>
                     <slot name="title">
@@ -44,14 +42,12 @@
                 </div>
             </template>
 
-            <!-- Panel Body: Subtitle and Content (Conditionally Rendered) -->
             <template lwc:if={showSubtitle}>
                 <div class={panelSubtitleClass}>
                     <slot name="subtitle"></slot>
                 </div>
             </template>
 
-            <!-- Expandable Content: Rendered when Expanded -->
             <template lwc:if={isExpanded}>
                 <div class={panelBodyClass}>
                     <slot></slot>
