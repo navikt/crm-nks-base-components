@@ -8,7 +8,7 @@
         </lightning-layout-item>
 
         <lightning-layout-item size="12" class="custom-padding-top-large custom-padding-right-medium">
-            <c-nks-expandable-panel title="Kontorinformasjon for NKS" chevron-left="true" is-first="true">
+            <c-nks-expandable-panel title="Kontorinformasjon for NKS" is-expandable chevron-left is-first>
                 <p class="slds-text-title_bold custom-padding-bottom-x-small">Intern informasjon</p>
                 <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
                 <br />
@@ -65,7 +65,7 @@
                     </div>
                 </div>
             </c-nks-expandable-panel>
-            <c-nks-expandable-panel title="Kontaktdetaljer fra nav.no" chevron-left="true">
+            <c-nks-expandable-panel title="Kontaktdetaljer fra nav.no" is-expandable chevron-left>
                 <c-nks-nav-unit-contact-information
                     contact-information={contactInformationV2}
                     num-cols={numCols}
