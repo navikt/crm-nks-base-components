@@ -90,8 +90,8 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get buttonClass() {
-        return `slds-button slds-button_outline-brand slds-grid slds-grid_align-center custom-button${
-            this.channelName === CONSTANTS.CONVERSATION_NOTE ? ' responsive-button' : ''
+        return `slds-grid slds-grid_align-end slds-col_bump-left button-container${
+            this.showNotifications ? ' slds-var-p-right_medium' : ''
         }`;
     }
 
