@@ -5,12 +5,12 @@
                 <lightning-layout-item>
                     <slot name="backButton"></slot>
                 </lightning-layout-item>
-                <lightning-layout-item class="slds-grid slds-grid_align-end slds-col_bump-left button-container">
+                <lightning-layout-item class={buttonClass}>
                     <template for:each={flowLoop} for:item="flow">
                         <lightning-layout-item key={flow.developerName} data-expanded={flow.expanded}>
                             <c-nks-button
                                 button-label={flow.label}
-                                button-styling="secondary"
+                                button-styling={flow.buttonStyling}
                                 element-data-id={flow.developerName}
                                 aria-expanded={flow.expanded}
                                 onbuttonclick={toggleFlow}
@@ -34,9 +34,7 @@
             </template>
         </lightning-layout-item>
         <template lwc:if={showNotifications}>
-            <lightning-layout-item
-                class="slds-size_12-of-12 slds-var-p-top_x-small slds-var-p-right_small slds-var-p-left_medium"
-            >
+            <lightning-layout-item class="slds-size_12-of-12 slds-var-p-top_x-small slds-var-p-horizontal_medium">
                 <c-nks-notification-box></c-nks-notification-box>
             </lightning-layout-item>
         </template>
