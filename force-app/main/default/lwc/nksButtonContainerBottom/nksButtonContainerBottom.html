@@ -10,7 +10,7 @@
                         <lightning-layout-item key={flow.developerName} data-expanded={flow.expanded}>
                             <c-nks-button
                                 button-label={flow.label}
-                                button-styling="secondary"
+                                button-styling={flow.buttonStyling}
                                 element-data-id={flow.developerName}
                                 aria-expanded={flow.expanded}
                                 onbuttonclick={toggleFlow}

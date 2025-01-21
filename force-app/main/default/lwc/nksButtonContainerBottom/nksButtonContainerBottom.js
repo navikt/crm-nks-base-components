@@ -16,6 +16,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     @api channelName;
     @api flowNames;
     @api flowLabels;
+    @api buttonStylings;
     @api setBorders = false;
     @api showNotifications = false; // Show notifications if the component is used independently
 
@@ -63,6 +64,10 @@ export default class NksButtonContainerBottom extends LightningElement {
         return this.flowNames?.replace(/ /g, '').split(',') || [];
     }
 
+    get buttonStylingList() {
+        return this.buttonStylings?.replace(/ /g, '').split(',') || [];
+    }
+
     get showFlow() {
         return Boolean(this.activeFlow);
     }
@@ -99,7 +104,8 @@ export default class NksButtonContainerBottom extends LightningElement {
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,
             label: this.labelList ? this.labelList[index] : flowName,
-            expanded: (this.activeFlow === flowName).toString()
+            expanded: (this.activeFlow === flowName).toString(),
+            buttonStyling: this.buttonStylingList.length ? this.buttonStylingList[index] : 'secondary'
         }));
     }
 
