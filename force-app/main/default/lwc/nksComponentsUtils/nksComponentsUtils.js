@@ -78,10 +78,10 @@ export function resolve(path, obj) {
     }, obj || {});
 }
 
-export function handleCopy(event) {
-    const hiddenInput = document.createElement('input');
+export function handleAddressCopy(event) {
+    const hiddenInput = document.createElement('textarea');
     const eventValue = event.currentTarget.value;
-    hiddenInput.value = eventValue;
+    hiddenInput.value = eventValue.replace(/,\s*/g, '\n');
     document.body.appendChild(hiddenInput);
     hiddenInput.focus();
     hiddenInput.select();
