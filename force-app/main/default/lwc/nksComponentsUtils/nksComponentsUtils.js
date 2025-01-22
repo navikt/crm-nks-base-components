@@ -81,7 +81,7 @@ export function resolve(path, obj) {
 export function handleAddressCopy(event) {
     const hiddenInput = document.createElement('textarea');
     const eventValue = event.currentTarget.value;
-    hiddenInput.value = eventValue.replace(/,\s*/g, '\n').toUpperCase();
+    hiddenInput.value = eventValue.replace(/,\s*/g, '\n');
     document.body.appendChild(hiddenInput);
     hiddenInput.focus();
     hiddenInput.select();
