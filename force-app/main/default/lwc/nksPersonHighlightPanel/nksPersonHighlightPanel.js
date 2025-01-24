@@ -12,6 +12,8 @@ import AGE_FIELD from '@salesforce/schema/Person__c.CRM_Age__c';
 import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c';
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
+import LEGAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_LegalStatus__c';
+
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
@@ -32,7 +34,8 @@ const PERSON_FIELDS = [
     AGE_FIELD,
     CITIZENSHIP_FIELD,
     MARITAL_STATUS_FIELD,
-    WRITTEN_STANDARD_FIELD
+    WRITTEN_STANDARD_FIELD,
+    LEGAL_STATUS_FIELD
 ];
 
 export default class NksPersonHighlightPanel extends LightningElement {
@@ -301,7 +304,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 citizenship: this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD)),
                 maritalStatus: this.capitalizeFirstLetter(
                     this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
-                )
+                ),
+                legalStatus: getFieldValue(data, LEGAL_STATUS_FIELD)
             };
 
             this.oppfolgingAndMeldekortData.actorId = this.actorId;
