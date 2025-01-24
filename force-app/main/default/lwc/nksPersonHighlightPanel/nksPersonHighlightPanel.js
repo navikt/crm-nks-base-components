@@ -1,5 +1,5 @@
 import { LightningElement, api, track, wire } from 'lwc';
-import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
+import { getFieldValue, getFieldDisplayValue, getRecord } from 'lightning/uiRecordApi';
 import { resolve } from 'c/nksComponentsUtils';
 
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
@@ -305,7 +305,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 maritalStatus: this.capitalizeFirstLetter(
                     this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
                 ),
-                legalStatus: getFieldValue(data, LEGAL_STATUS_FIELD)
+                legalStatus: getFieldDisplayValue(data, LEGAL_STATUS_FIELD)
             };
 
             this.oppfolgingAndMeldekortData.actorId = this.actorId;

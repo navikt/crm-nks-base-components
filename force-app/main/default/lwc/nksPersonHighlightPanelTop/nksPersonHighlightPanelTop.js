@@ -78,11 +78,12 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedPersonInfo() {
+        const validLegalStatuses = ['Bosatt', 'Ikke Bosatt', 'Utflyttet'];
         return [
             this.personDetails?.age,
             this.personDetails?.citizenship,
             this.personDetails?.maritalStatus,
-            this.personDetails.legalStatus
+            validLegalStatuses.includes(this.personDetails?.legalStatus) ? this.personDetails.legalStatus : null
         ]
             .filter((x) => x != null)
             .join(' / ');
