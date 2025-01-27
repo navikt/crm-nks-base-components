@@ -125,11 +125,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                     this.isSandbox ? '-q2.intern.dev' : '.intern'
                 }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${this.personIdent}`;
             case 'DinUfore':
-                return `https://pensjon-pselv${
-                    this.isSandbox ? '-q1.nais.preprod.local' : '.nais.adeo.no'
-                }/pselv/publisering/uforetrygd.jsf?_brukerId=${this.personIdent}&context=ut&_loggedOnName=${
-                    this.navIdent
-                }`;
+                return `https://uforetrygd-selvbetjening-frontend-veileder.intern.${
+                    this.isSandbox ? 'dev.' : ''
+                }nav.no/uforetrygd/selvbetjening?pid=${this.personIdent}`;
             case 'Enslig':
                 return `https://ensligmorellerfar.intern.nav.no/oppgavebenk`;
             case 'Foreldrepenger':
