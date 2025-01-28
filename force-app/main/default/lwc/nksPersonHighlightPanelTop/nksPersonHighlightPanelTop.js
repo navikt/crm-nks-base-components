@@ -11,6 +11,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     @api veilederName;
     @api veilederIdent;
     @api relationshipField;
+    @api erNasjonalOppfolging;
 
     navUnit;
     formattedUnitLink;
@@ -90,7 +91,7 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
     }
 
     get formattedVeileder() {
-        if (!this.veilederName) {
+        if (!this.veilederName || this.erNasjonalOppfolging) {
             return undefined;
         }
         let veilederInfo = 'Veileder: ' + this.veilederName;
