@@ -80,6 +80,20 @@ export default class NksPersonHighlightPanel extends LightningElement {
         this.wireFields = [`${this.objectApiName}.Id`];
     }
 
+    isRendered = false;
+    renderedCallback() {
+        if (this.isRendered) {
+            return;
+        }
+        this.isRendered = true;
+    
+        // Force a reflow to avoid header sometimes not showing on chat
+        setTimeout(() => {
+            const element = this.refs.panelBackground;
+            void( element?.offsetHeight );
+        }, 100);
+    }
+
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
         if (data) {
@@ -108,8 +122,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @wire(getVeilederName, { navIdent: '$veilederIdent' })
     wiredName({ data, error }) {
         if (data) {
-            console.log('Geir');
-            console.log(data);
             this.veilederName = data;
             this.oppfolgingAndMeldekortData.veilederName = this.veilederName;
         } else if (error) {
