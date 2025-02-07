@@ -23,6 +23,10 @@
     flex-wrap: wrap;
 }
 
+.header {
+    color: white;
+}
+
 .sr-only {
     position: absolute;
     left: -100000px;
