@@ -36,6 +36,7 @@
     border: 2px white solid;
     padding-right: 1rem;
     padding-left: 1rem;
+    border-radius: 15px;
     font-size: 0.875rem;
     font-weight: normal;
 }
