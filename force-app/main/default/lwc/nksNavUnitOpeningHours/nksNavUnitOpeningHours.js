@@ -96,7 +96,17 @@ export default class NksNavUnitOpeningHours extends LightningElement {
         formatedOpeningHours.sort((a, b) => a.dayOfWeek - b.dayOfWeek);
 
         if (false === this._viewWeekDays) {
-            formatedOpeningHours.sort((a, b) => a.date < b.date);
+            formatedOpeningHours.sort((a, b) => (a.day < b.day ? -1 : 1));
+            const twoWeeks = new Date();
+            twoWeeks.setDate(twoWeeks.getDate() + 14);
+            formatedOpeningHours = formatedOpeningHours.filter((openingHour) => {
+                return new Date(openingHour.day) <= twoWeeks;
+            });
+            formatedOpeningHours.forEach((a) => {
+                const d = new Date(a.day);
+                const dag = d.toLocaleDateString('no-NB', { weekday: 'long', day: 'numeric', month: 'long' });
+                a.day = dag.charAt(0).toUpperCase() + dag.slice(1);
+            });
         }
 
         this.openingHours = formatedOpeningHours;
