@@ -1,33 +1,26 @@
 public with sharing class NKS_RecordPrintController {
     public Id recordId { get; set; }
-    public WrapperRecord wrapperRecord { get; set; }
-
-    public class WrapperRecord {
-        public String objectType { get; set; }
-        public Case caseRecord { get; set; }
-        public Thread__c threadRecord { get; set; }
-        public LiveChatTranscript chatRecord { get; set; }
-        public Conversation_Note__c noteRecord { get; set; }
-        public List<Message__c> childMessages { get; set; }
-    }
+    public String objectType { get; set; }
+    public Case caseRecord { get; set; }
+    public Thread__c threadRecord { get; set; }
+    public LiveChatTranscript chatRecord { get; set; }
+    public Conversation_Note__c convNoteRecord { get; set; }
+    public List<Message__c> messages { get; set; }
 
     public NKS_RecordPrintController() {
         recordId = ApexPages.currentPage().getParameters().get('id');
-        wrapperRecord = new WrapperRecord();
-
         if (recordId == null) {
             return;
         }
 
-        wrapperRecord.objectType = getObjectType(recordId);
-
-        if (wrapperRecord.objectType == 'Case') {
+        objectType = getObjectType(recordId);
+        if (objectType == 'Case') {
             fetchCaseData();
-        } else if (wrapperRecord.objectType == 'Thread__c') {
+        } else if (objectType == 'Thread__c') {
             fetchThreadData();
-        } else if (wrapperRecord.objectType == 'LiveChatTranscript') {
+        } else if (objectType == 'LiveChatTranscript') {
             fetchLiveChatData();
-        } else if (wrapperRecord.objectType == 'Conversation_Note__c') {
+        } else if (objectType == 'Conversation_Note__c') {
             fetchConversationNoteData();
         }
     }
@@ -45,8 +38,8 @@ public with sharing class NKS_RecordPrintController {
         ];
 
         if (thread != null) {
-            wrapperRecord.threadRecord = thread;
-            wrapperRecord.childMessages = [
+            threadRecord = thread;
+            messages = [
                 SELECT Id, CRM_Message_Text__c 
                 FROM Message__c 
                 WHERE CRM_Thread__c = :thread.Id
@@ -55,12 +48,12 @@ public with sharing class NKS_RecordPrintController {
     }
 
     private void fetchThreadData() {
-        wrapperRecord.threadRecord = [
+        threadRecord = [
             SELECT Id, CRM_Theme_Group_Name__c 
             FROM Thread__c 
             WHERE Id = :recordId
         ];
-        wrapperRecord.childMessages = [
+        messages = [
             SELECT Id, CRM_Message_Text__c 
             FROM Message__c 
             WHERE CRM_Thread__c = :recordId
@@ -68,7 +61,7 @@ public with sharing class NKS_RecordPrintController {
     }
 
     private void fetchLiveChatData() {
-        wrapperRecord.chatRecord = [
+        chatRecord = [
             SELECT Id, NKS_Chat_Queue__c, Body 
             FROM LiveChatTranscript 
             WHERE Id = :recordId
@@ -76,7 +69,7 @@ public with sharing class NKS_RecordPrintController {
     }
 
     private void fetchConversationNoteData() {
-        wrapperRecord.noteRecord = [
+        convNoteRecord = [
             SELECT Id, CRM_Conversation_Note__c 
             FROM Conversation_Note__c 
             WHERE Id = :recordId
