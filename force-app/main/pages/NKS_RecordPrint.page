@@ -1,0 +1,34 @@
+
+<!-- TODO: Remember to set VF page access -->
+ <!-- TODO: Add more data and formatting --> 
+<apex:page controller="NKS_RecordPrintController">
+    <apex:outputPanel rendered="{!NOT(ISNULL(wrapperRecord))}">
+        <h1>{!wrapperRecord.objectType} detaljer</h1>
+
+        <apex:outputPanel rendered="{!wrapperRecord.objectType == 'Case'}">
+        <!-- TODO: Add STO Category from Case? --> 
+            <p><b>Tema:</b> {!wrapperRecord.threadRecord.CRM_Theme_Group_Name__c}</p>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!wrapperRecord.objectType == 'Thread__c'}">
+            <p><b>Tema:</b> {!wrapperRecord.threadRecord.CRM_Theme_Group_Name__c}</p>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!wrapperRecord.objectType == 'LiveChatTranscript'}">
+            <p><b>Tema:</b> {!wrapperRecord.chatRecord.NKS_Chat_Queue__c}</p>
+            <p><b>Chat:</b> {!wrapperRecord.chatRecord.Body}</p>
+        </apex:outputPanel>
+        
+        <apex:outputPanel rendered="{!wrapperRecord.objectType == 'Conversation_Note__c'}">
+            <p><b>Tema:</b> {!wrapperRecord.noteRecord.CRM_Theme_Group_Name__c}</p>
+            <p><b>Samtalereferat:</b> {!wrapperRecord.noteRecord.CRM_Conversation_Note__c}</p>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!NOT(ISNULL(wrapperRecord.childMessages))}">
+            <h2>Meldinger</h2>
+            <apex:repeat value="{!wrapperRecord.childMessages}" var="msg">
+                <p>{!msg.CRM_Message_Text__c}</p>
+            </apex:repeat>
+        </apex:outputPanel>
+    </apex:outputPanel>
+</apex:page>
