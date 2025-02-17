@@ -417,6 +417,7 @@ public class UTIL_TestDataFactory {
         }
     }
 
+    //Må skrive om testene til å passe for MessagingSessiong
     public class LiveChatTranscriptDefaults implements FieldDefaults {
         public Map<String, Object> getFieldDefaults() {
             return getFieldDefaults(false);
@@ -551,23 +552,33 @@ public class UTIL_TestDataFactory {
         }
         public Map<String, Object> getFieldDefaults(Boolean bulkify) {
             return new Map<String, Object>{
-                'MessagingEndUserId' => 'MessagingEndUser', 'Status' => 'New', 'MessagingChannelId' => 'geirArne'
+                'MessagingEndUserId' => 'MessagingEndUser',
+                'Status' => 'New',
+                'MessagingChannelId' => 'geirArne'
             };
         }
         public Map<String, String> getDmlFields() {
-            return new Map<String, String>{ 'MessagingEndUserId' => 'MessagingEndUser', 'MessagingChannelId' => 'MessagingChannel'};
+            return new Map<String, String>{
+                'MessagingEndUserId' => 'MessagingEndUser',
+                'MessagingChannelId' => 'MessagingChannel'
+            };
         }
     }
-    
+
     public class MessagingEndUserDefaults implements FieldDefaults {
         public Map<String, Object> getFieldDefaults() {
             return getFieldDefaults(false);
         }
         public Map<String, Object> getFieldDefaults(Boolean bulkify) {
-            return new Map<String, Object>{'MessageType' => 'EmbeddedMessaging', 'Name' => 'Guest', 'MessagingPlatformKey' => generateRandomString(20), 'MessagingChannelId' => 'geirArne' };
+            return new Map<String, Object>{
+                'MessageType' => 'EmbeddedMessaging',
+                'Name' => 'Guest',
+                'MessagingPlatformKey' => generateRandomString(20),
+                'MessagingChannelId' => 'geirArne'
+            };
         }
         public Map<String, String> getDmlFields() {
-            return new Map<String, String>{'MessagingChannelId' => 'MessagingChannel'};
+            return new Map<String, String>{ 'MessagingChannelId' => 'MessagingChannel' };
             //No dml fields
         }
     }
@@ -578,11 +589,11 @@ public class UTIL_TestDataFactory {
         }
         public Map<String, Object> getFieldDefaults(Boolean bulkify) {
             return new Map<String, Object>{
-            'MasterLabel' => 'TestChannel',
-            'DeveloperName' => 'TestChannel',
-            'IsActive' => true,
-            'MessageType' => 'Text',
-            'MessagingPlatformKey' => 'TestChannel'
+                'MasterLabel' => 'TestChannel',
+                'DeveloperName' => 'TestChannel',
+                'IsActive' => true,
+                'MessageType' => 'Text',
+                'MessagingPlatformKey' => 'TestChannel'
             };
         }
         public Map<String, String> getDmlFields() {

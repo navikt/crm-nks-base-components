@@ -1,5 +1,6 @@
 @isTest
 public with sharing class nksUtilityBackgroundControllerTest {
+    //Må skrive om testene til å passe for MessagingSessiong
     @TestSetup
     static void makeData() {
         UTIL_TestDataFactory.createRecord(new LiveChatTranscript());
