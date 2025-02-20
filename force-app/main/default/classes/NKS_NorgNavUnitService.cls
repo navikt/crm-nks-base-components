@@ -98,6 +98,26 @@ public with sharing class NKS_NorgNavUnitService {
         return response;
     }
 
+    public List<NavUnitResponse> getNavUnitListFromUnitNumbers(List<String> unitNumbers) {
+        List<NavUnitResponse> responseList = new List<NavUnitResponse>();
+        NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null);
+
+        for(String unitNr : unitNumbers) {
+            NavUnitResponse response = new NavUnitResponse();
+            response.errorMessage = resp.errorMessage;
+            response.success = resp.success;
+            // response.unit = (null != resp.units && false == resp.units.isEmpty()) ? resp.units[0] : null;
+            for(NKS_NavUnit nu : resp.units) {
+                if(nu.enhetNr == unitNr) {
+                    response.unit = nu;
+                }
+            }
+            responseList.add(response);
+        }
+
+        return responseList;
+    }
+
     /**
      * @Description Get a filtered list of all units
      * @author Tor Håkon Sigurdsen | 30-11-2020
@@ -333,13 +353,13 @@ public with sharing class NKS_NorgNavUnitService {
             this.errorMessage = null;
         }
     }
-
+    
     public class NavUnitResponse {
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public Boolean success;
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public NKS_NavUnit unit;
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public String errorMessage;
 
         public NavUnitResponse() {

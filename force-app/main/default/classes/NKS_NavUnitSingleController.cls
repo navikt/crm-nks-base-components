@@ -28,6 +28,13 @@ public with sharing class NKS_NavUnitSingleController {
         return null;
     }
 
+    @InvocableMethod(label='Fetch Nav Unit' category='Nav Unit')
+    public static List<NKS_NorgNavUnitService.NavUnitResponse> findUnits(
+        List<String> navUnitNumber
+    ) {
+        return service.getNavUnitListFromUnitNumbers(navUnitNumber);
+    }
+
     @AuraEnabled(cacheable=true)
     public static NKS_NorgNavUnitService.NavUnitContactInformationResponse getContactInformation(String unitNumber) {
         return service.getNavUnitContactInformation(unitNumber);
