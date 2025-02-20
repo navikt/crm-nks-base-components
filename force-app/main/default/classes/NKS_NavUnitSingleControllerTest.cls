@@ -102,6 +102,90 @@ private with sharing class NKS_NavUnitSingleControllerTest {
     }
 
     @IsTest
+    static void findUnits_Sucess() {
+        String unitJSON =
+            '[{' +
+            '    "enhetId": 100000048,' +
+            '    "navn": "NAV TEST",' +
+            '    "enhetNr": "1234",' +
+            '    "antallRessurser": 1,' +
+            '    "status": "Aktiv",' +
+            '    "orgNivaa": "EN",' +
+            '    "type": "LOKAL",' +
+            '    "organisasjonsnummer": "999999999",' +
+            '    "underEtableringDato": "1970-01-01",' +
+            '    "aktiveringsdato": "1970-01-01",' +
+            '    "underAvviklingDato": null,' +
+            '    "nedleggelsesdato": null,' +
+            '    "oppgavebehandler": true,' +
+            '    "versjon": 37,' +
+            '    "sosialeTjenester": "sosialeTjenester",' +
+            '    "kanalstrategi": "kanalstrategi",' +
+            '    "orgNrTilKommunaltNavKontor": "999999999"' +
+            '},' +
+            '{' +
+            '    "enhetId": 100000043,' +
+            '    "navn": "NAV IT TEST",' +
+            '    "enhetNr": "2990",' +
+            '    "antallRessurser": 1,' +
+            '    "status": "Aktiv",' +
+            '    "orgNivaa": "EN",' +
+            '    "type": "LOKAL",' +
+            '    "organisasjonsnummer": "999999999",' +
+            '    "underEtableringDato": "1970-01-01",' +
+            '    "aktiveringsdato": "1970-01-01",' +
+            '    "underAvviklingDato": null,' +
+            '    "nedleggelsesdato": null,' +
+            '    "oppgavebehandler": true,' +
+            '    "versjon": 37,' +
+            '    "sosialeTjenester": "sosialeTjenester",' +
+            '    "kanalstrategi": "kanalstrategi",' +
+            '    "orgNrTilKommunaltNavKontor": "999999999"' +
+            '},' +
+            '{' +
+            '    "enhetId": 100000046,' +
+            '    "navn": "NAV MAX",' +
+            '    "enhetNr": "9999",' +
+            '    "antallRessurser": 1,' +
+            '    "status": "Aktiv",' +
+            '    "orgNivaa": "EN",' +
+            '    "type": "LOKAL",' +
+            '    "organisasjonsnummer": "999999999",' +
+            '    "underEtableringDato": "1970-01-01",' +
+            '    "aktiveringsdato": "1970-01-01",' +
+            '    "underAvviklingDato": null,' +
+            '    "nedleggelsesdato": null,' +
+            '    "oppgavebehandler": true,' +
+            '    "versjon": 37,' +
+            '    "sosialeTjenester": "sosialeTjenester",' +
+            '    "kanalstrategi": "kanalstrategi",' +
+            '    "orgNrTilKommunaltNavKontor": "999999999"' +
+            '}]';
+
+        Test.setMock(HttpCalloutMock.class, new SingleRequestMock(200, 'OK', unitJSON, null));
+
+        List<NKS_NorgNavUnitService.NavUnitResponse> result;
+
+        Test.startTest();
+        result = NKS_NavUnitSingleController.findUnits(new List<String>{'1234', '9999', '2990', '4321'});
+        Test.stopTest();
+
+        System.assertEquals(true, result[0].success, 'Expected success');
+        System.assertEquals(true, String.isBlank(result[0].errorMessage), 'Expected blank errorMessage');
+        System.assertEquals('1234', result[0].unit.enhetNr, 'Expected the same unit number as in the mock');
+
+        System.assertEquals(true, result[1].success, 'Expected success');
+        System.assertEquals(true, String.isBlank(result[1].errorMessage), 'Expected blank errorMessage');
+        System.assertEquals('9999', result[1].unit.enhetNr, 'Expected the same unit number as in the mock');
+
+        System.assertEquals(true, result[2].success, 'Expected success');
+        System.assertEquals(true, String.isBlank(result[2].errorMessage), 'Expected blank errorMessage');
+        System.assertEquals('2990', result[2].unit.enhetNr, 'Expected the same unit number as in the mock');
+
+        Assert.isNull(result[3].unit, 'Expected null');
+    }
+
+    @IsTest
     static void getContactInformation_Success() {
         String unitJSON =
             '{' +
