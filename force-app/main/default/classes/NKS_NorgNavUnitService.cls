@@ -89,7 +89,7 @@ public with sharing class NKS_NorgNavUnitService {
 
     public NavUnitResponse getNavUnitFromUnitNumber(String unitNumber) {
         NavUnitResponse response = new NavUnitResponse();
-        NavUnitsResponse resp = getNavUnitFilteredList(null, new List<String>{ unitNumber }, null);
+        NavUnitsResponse resp = getNavUnitFilteredList(null, new List<String>{ unitNumber }, null, false);
 
         response.errorMessage = resp.errorMessage;
         response.success = resp.success;
@@ -98,9 +98,9 @@ public with sharing class NKS_NorgNavUnitService {
         return response;
     }
 
-    public List<NavUnitResponse> getNavUnitListFromUnitNumbers(List<String> unitNumbers) {
+    public List<NavUnitResponse> getNavUnitListFromUnitNumbers(List<String> unitNumbers, Boolean systemContext) {
         List<NavUnitResponse> responseList = new List<NavUnitResponse>();
-        NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null);
+        NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null, systemContext);
 
         for(String unitNr : unitNumbers) {
             NavUnitResponse response = new NavUnitResponse();
@@ -224,7 +224,8 @@ public with sharing class NKS_NorgNavUnitService {
     public NavUnitsResponse getNavUnitFilteredList(
         List<String> unitStatuses,
         List<String> unitNumbers,
-        String taskProcessingFilter
+        String taskProcessingFilter,
+        Boolean systemContext
     ) {
         NavUnitsResponse resp = new NavUnitsResponse();
 
@@ -241,6 +242,9 @@ public with sharing class NKS_NorgNavUnitService {
         }
 
         ApiController apiCtrl = new ApiController();
+        if(systemContext) {
+            apiCtrl.setSystemContext();
+        }
         apiCtrl.initRequest(API_CONFIG_NAME, 'GET_UNITS_FILTERED_LIST');
         apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
         apiCtrl.setUrlParams(urlParamMap);

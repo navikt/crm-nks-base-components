@@ -32,7 +32,7 @@ public with sharing class NKS_NavUnitSingleController {
     public static List<NKS_NorgNavUnitService.NavUnitResponse> findUnits(
         List<String> navUnitNumber
     ) {
-        return service.getNavUnitListFromUnitNumbers(navUnitNumber);
+        return service.getNavUnitListFromUnitNumbers(navUnitNumber, true);
     }
 
     @AuraEnabled(cacheable=true)
