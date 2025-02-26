@@ -103,8 +103,8 @@ public with sharing class NKS_NorgNavUnitService {
         NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null, systemContext);
 
         Map<String, NKS_NavUnit> unitMap = new Map<String, NKS_NavUnit>();
-        for(NKS_NavUnit nu : resp.units) {
-            unitMap.put(nu.enhetNr, nu);
+        for(NKS_NavUnit unit : resp.units) {
+            unitMap.put(unit.enhetNr, unit);
         }
 
         for(String unitNr : unitNumbers) {
