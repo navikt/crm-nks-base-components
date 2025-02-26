@@ -102,16 +102,16 @@ public with sharing class NKS_NorgNavUnitService {
         List<NavUnitResponse> responseList = new List<NavUnitResponse>();
         NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null, systemContext);
 
+        Map<String, NKS_NavUnit> unitMap = new Map<String, NKS_NavUnit>();
+        for(NKS_NavUnit nu : resp.units) {
+            unitMap.put(nu.enhetNr, nu);
+        }
+
         for(String unitNr : unitNumbers) {
             NavUnitResponse response = new NavUnitResponse();
             response.errorMessage = resp.errorMessage;
             response.success = resp.success;
-            // response.unit = (null != resp.units && false == resp.units.isEmpty()) ? resp.units[0] : null;
-            for(NKS_NavUnit nu : resp.units) {
-                if(nu.enhetNr == unitNr) {
-                    response.unit = nu;
-                }
-            }
+            response.unit = unitMap.get(unitNr);
             responseList.add(response);
         }
 
