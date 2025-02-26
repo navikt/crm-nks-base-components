@@ -4,6 +4,10 @@
     float: right;
 }
 
+.copy-icon:active {
+    --slds-s-button-shadow-active: none;
+}
+
 .custom-padding-around-small {
     padding: 0.5rem;
 }
