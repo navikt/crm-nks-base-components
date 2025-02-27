@@ -254,7 +254,7 @@ private with sharing class NKS_NorgNavUnitService_Test {
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
-        result = service.getNavUnitFilteredList(new List<String>{ '1234' }, new List<String>{ '1234' }, 'Test');
+        result = service.getNavUnitFilteredList(new List<String>{ '1234' }, new List<String>{ '1234' }, 'Test', false);
         Test.stopTest();
 
         System.assertEquals(true, result.success, 'Expected to get a success');
@@ -273,7 +273,7 @@ private with sharing class NKS_NorgNavUnitService_Test {
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
-        result = service.getNavUnitFilteredList(null, null, '');
+        result = service.getNavUnitFilteredList(null, null, '', false);
         Test.stopTest();
 
         System.assertEquals(false, result.success, 'Expected to get a failure');
