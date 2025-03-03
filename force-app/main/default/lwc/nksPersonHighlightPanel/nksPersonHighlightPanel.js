@@ -1,6 +1,7 @@
 import { LightningElement, api, track, wire } from 'lwc';
 import { getFieldValue, getFieldDisplayValue, getRecord } from 'lightning/uiRecordApi';
 import { resolve } from 'c/nksComponentsUtils';
+import { subscribe, unsubscribe } from 'lightning/empApi';
 
 import PERSON_ACTORID_FIELD from '@salesforce/schema/Person__c.INT_ActorId__c';
 import PERSON_FIRST_NAME from '@salesforce/schema/Person__c.INT_FirstName__c';
@@ -13,7 +14,7 @@ import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c'
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 import LEGAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_LegalStatus__c';
-
+import AUTH_STATUS_FIELD from '@salesforce/schema/LiveChatTranscript.CRM_Authentication_Status__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
@@ -62,7 +63,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     fullName;
     firstName;
     personIdent;
-
     badges;
     dateOfDeath;
     badgeContent;
@@ -70,28 +70,24 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessageList = {};
     errorMessages;
     erNasjonalOppfolging = false;
-
     oppfolgingAndMeldekortData = {};
     personDetails = {};
-
     uuAlertText = '';
+    authStatus;
+    subscription = {};
 
     connectedCallback() {
-        this.wireFields = [`${this.objectApiName}.Id`];
+        this.wireFields =
+            this.objectApiName === 'LiveChatTranscript' ? [AUTH_STATUS_FIELD] : [`${this.objectApiName}.Id`];
+        if (this.subscriptionNeeded) {
+            this.handleSubscribe();
+        }
     }
 
-    isRendered = false;
-    renderedCallback() {
-        if (this.isRendered) {
-            return;
+    disconnectedCallback() {
+        if (this.subscription) {
+            this.handleUnsubscribe();
         }
-        this.isRendered = true;
-    
-        // Force a reflow to avoid header sometimes not showing on chat
-        setTimeout(() => {
-            const element = this.refs.panelBackground;
-            void( element?.offsetHeight );
-        }, 100);
     }
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
@@ -220,6 +216,77 @@ export default class NksPersonHighlightPanel extends LightningElement {
         }
     }
 
+    @wire(getRecord, {
+        recordId: '$personId',
+        fields: PERSON_FIELDS
+    })
+    wiredPersonInfo({ error, data }) {
+        this.loadingStates.getRecordPerson = !(error || data);
+        if (data) {
+            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
+            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
+            this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
+            this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
+            this.personDetails = {
+                personId: this.personId,
+                firstName: this.firstName,
+                personIdent: this.personIdent,
+                actorId: this.actorId,
+                fullName: this.fullName,
+                gender: getFieldValue(data, GENDER_FIELD),
+                isDeceased: getFieldValue(data, IS_DECEASED_FIELD),
+                age: getFieldValue(data, AGE_FIELD),
+                writtenStandard: getFieldValue(data, WRITTEN_STANDARD_FIELD),
+                citizenship: this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD)),
+                maritalStatus: this.capitalizeFirstLetter(
+                    this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
+                ),
+                legalStatus: getFieldDisplayValue(data, LEGAL_STATUS_FIELD)
+            };
+
+            this.oppfolgingAndMeldekortData.actorId = this.actorId;
+            this.oppfolgingAndMeldekortData.firstName = this.firstName;
+            this.oppfolgingAndMeldekortData.name = this.personIdent;
+
+            this.handleBackgroundColor();
+        } else if (error) {
+            this.addErrorMessage('getRecord', error);
+            console.error(error);
+            this.handleBackgroundColor();
+        }
+    }
+
+    @wire(getRecord, {
+        recordId: '$recordId',
+        fields: '$wireFields'
+    })
+    wiredRecordInfo({ error, data }) {
+        if (data) {
+            if (this.relationshipField && this.objectApiName) {
+                this.getRelatedRecordId(this.relationshipField, this.objectApiName);
+            }
+            this.authStatus = getFieldValue(data, AUTH_STATUS_FIELD);
+            if (this.subscriptionNeeded) {
+                this.handleSubscribe();
+            }
+        }
+        if (error) {
+            this.addErrorMessage('wiredRecordInfo', error);
+            console.error(error);
+        }
+    }
+
+    @wire(getArbeidssoeker, { identnr: '$personIdent' })
+    wiredArbeidssoeker({ data, error }) {
+        if (data) {
+            this.arbeidssoekerPerioder = JSON.parse(data);
+        }
+        if (error) {
+            this.addErrorMessage('getArbeidssoeker', error);
+            console.error(error);
+        }
+    }
+
     setWiredPersonAccessBadge() {
         const { data, error } = this.wiredPersonAccessBadge;
 
@@ -290,73 +357,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 this.addErrorMessage('getRelatedRecord', error);
                 console.error(error);
             });
-    }
-
-    @wire(getRecord, {
-        recordId: '$personId',
-        fields: PERSON_FIELDS
-    })
-    wiredPersonInfo({ error, data }) {
-        this.loadingStates.getRecordPerson = !(error || data);
-        if (data) {
-            this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
-            this.fullName = getFieldValue(data, FULL_NAME_FIELD);
-            this.firstName = getFieldValue(data, PERSON_FIRST_NAME);
-            this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
-            this.personDetails = {
-                personId: this.personId,
-                firstName: this.firstName,
-                personIdent: this.personIdent,
-                actorId: this.actorId,
-                fullName: this.fullName,
-                gender: getFieldValue(data, GENDER_FIELD),
-                isDeceased: getFieldValue(data, IS_DECEASED_FIELD),
-                age: getFieldValue(data, AGE_FIELD),
-                writtenStandard: getFieldValue(data, WRITTEN_STANDARD_FIELD),
-                citizenship: this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD)),
-                maritalStatus: this.capitalizeFirstLetter(
-                    this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
-                ),
-                legalStatus: getFieldDisplayValue(data, LEGAL_STATUS_FIELD)
-            };
-
-            this.oppfolgingAndMeldekortData.actorId = this.actorId;
-            this.oppfolgingAndMeldekortData.firstName = this.firstName;
-            this.oppfolgingAndMeldekortData.name = this.personIdent;
-
-            this.handleBackgroundColor();
-        } else if (error) {
-            this.addErrorMessage('getRecord', error);
-            console.error(error);
-            this.handleBackgroundColor();
-        }
-    }
-
-    @wire(getRecord, {
-        recordId: '$recordId',
-        fields: '$wireFields'
-    })
-    wiredRecordInfo({ error, data }) {
-        if (data) {
-            if (this.relationshipField && this.objectApiName) {
-                this.getRelatedRecordId(this.relationshipField, this.objectApiName);
-            }
-        }
-        if (error) {
-            this.addErrorMessage('wiredRecordInfo', error);
-            console.error(error);
-        }
-    }
-
-    @wire(getArbeidssoeker, { identnr: '$personIdent' })
-    wiredArbeidssoeker({ data, error }) {
-        if (data) {
-            this.arbeidssoekerPerioder = JSON.parse(data);
-        }
-        if (error) {
-            this.addErrorMessage('getArbeidssoeker', error);
-            console.error(error);
-        }
     }
 
     handleBackgroundColor() {
@@ -443,6 +443,46 @@ export default class NksPersonHighlightPanel extends LightningElement {
         });
     }
 
+    handleSubscribe() {
+        const messageCallback = (response) => {
+            try {
+                const { recordIds: eventRecordIds, changedFields } = response.data.payload.ChangeEventHeader;
+                if (
+                    eventRecordIds &&
+                    changedFields &&
+                    eventRecordIds.includes(this.recordId) &&
+                    changedFields.includes('CRM_Authentication_Status__c')
+                ) {
+                    this.authStatus = response.data.payload.CRM_Authentication_Status__c;
+                }
+            } catch (error) {
+                console.error('Error processing message callback: ', error);
+            }
+        };
+
+        subscribe('/data/LiveChatTranscriptChangeEvent', -1, messageCallback)
+            .then((response) => {
+                console.log('Subscription request sent to: ', JSON.stringify(response.channel));
+                this.subscription = response;
+            })
+            .catch((error) => {
+                console.error('Failed to subscribe:', error);
+            });
+    }
+
+    handleUnsubscribe() {
+        if (this.subscription) {
+            unsubscribe(this.subscription, (response) => {
+                console.log('Successfully unsubscribed: ', JSON.stringify(response));
+                this.subscription = null;
+            }).catch((error) => {
+                console.error('Failed to unsubscribe:', error);
+            });
+        } else {
+            console.warn('No active subscription to unsubscribe');
+        }
+    }
+
     get isLoading() {
         // eslint-disable-next-line @salesforce/aura/ecma-intrinsics, compat/compat
         return Object.values(this.loadingStates).some((isLoading) => isLoading);
@@ -462,5 +502,17 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get xMarkIconSrc() {
         return NAV_ICONS + '/xMarkIcon.svg#xMarkIcon';
+    }
+
+    get subscriptionNeeded() {
+        return this.authStatus !== 'Completed' && !this.isSubscribed;
+    }
+
+    get isSubscribed() {
+        return !!this.subscription;
+    }
+
+    get isAuthenticated() {
+        return this.objectApiName === 'LiveChatTranscript' ? this.authStatus === 'Completed' : true;
     }
 }
