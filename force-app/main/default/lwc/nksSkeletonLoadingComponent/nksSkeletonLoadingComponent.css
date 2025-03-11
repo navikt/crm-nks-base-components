@@ -7,13 +7,22 @@
     display: inline-block;
 }
 
+.icon-anon {
+    width: 3rem;
+    height: 3rem;
+    background-color: #ecebea;
+    border-radius: 0.25rem;
+    margin-right: 0.75rem;
+    display: inline-block;
+}
+
 .icon-round-large {
     width: 3rem;
     height: 3rem;
     border-radius: 50%;
 }
 .text-body-top {
-    height: 5.5rem;
+    min-height: 5.5rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -21,7 +30,7 @@
     width: 100%;
 }
 .text-body-mid {
-    height: 3rem;
+    min-height: 2.5rem;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -60,8 +69,6 @@
     animation: shine-lines 1.5s infinite linear;
 }
 .card {
-    border: 1px solid #f3f2f2;
-    border-radius: 0.25rem;
     width: 100%;
 }
 .flex-grid {
@@ -74,13 +81,52 @@
     padding-left: 1rem;
 }
 
-.boarder {
-    border-top: 0.125rem solid #f3f2f2;
+.border {
+    border-top: 0.0625rem solid #f3f2f2;
 }
 
 .margin-area {
     min-width: 5.3rem;
     max-width: 6rem;
+}
+
+.flex-grid-unknown {
+    display: flex;
+    background-color: #cbcfd5;
+}
+
+.text-body-mid-unknown {
+    min-height: 2.5rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    background-color: #b9bcbf;;
+}
+
+.text-body-bottom-unknown {
+    min-height: 2.5rem;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    background-color: #cbcfd5;
+}
+
+.border-unknown {
+    border-top: 0.0625rem solid #eeeded;
+}
+
+h1 {
+    font-size: 1.75rem; 
+    padding-left: 1rem;
+}
+
+.xMarkIcon {
+    padding-top: 0.6rem;
+    position: absolute;
+    right: 0;
+    cursor: pointer;
 }
 
 @keyframes shine-lines {
