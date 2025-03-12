@@ -2,7 +2,9 @@ import { LightningElement, api } from 'lwc';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 export default class SkeletonLoadingComponent extends LightningElement {
-    @api personId = '123'; // Default to true to show loading, will be overwritten once parent is done with wires
+    // Default to true to show loading, will be overwritten once parent is done with wires
+    // Will be set to null from resolve in nksPersonHighlightPanel if not found
+    @api personId = '123';
 
     get isPersonIdSet() {
         console.log(this.personId);
@@ -13,5 +15,3 @@ export default class SkeletonLoadingComponent extends LightningElement {
         return NAV_ICONS + '/' + 'confidentialCircleFilled' + '.svg#' + 'confidentialCircleFilled';
     }
 }
-// TODO: Test with chats
-// TODO: Test with Puzzel no person id
