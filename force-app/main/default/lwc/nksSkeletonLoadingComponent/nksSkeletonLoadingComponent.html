@@ -20,27 +20,27 @@
         </lightning-layout>
     </template>
     <!-- PersonId not found -->
-    <template lwc:else> 
-            <lightning-layout>
-                <div class="card">
-                    <div class="flex-grid-unknown flex-v-center">
-                        <lightning-layout-item
-                            class="custom-padding-around-small custom-grid-vertical-align-center unselectable"
-                            aria-hidden="true"
-                        >
-                            <c-nks-custom-svg size="large" src={unknownIcon} alt-text="Ukjent"></c-nks-custom-svg>
-                        </lightning-layout-item>
-                        <div class="text-body-top">
-                            <h1>Mangler tilknytning til bruker</h1>
-                        </div>
-                    </div>
-                    <div class="text-body-mid-unknown border-unknown">
-                        <div class="margin-area"></div>
-                    </div>
-                    <div class="text-body-bottom-unknown">
-                        <div class="margin-area"></div>
+    <template lwc:else>
+        <lightning-layout>
+            <div class="card">
+                <div class="flex-grid-unknown flex-v-center">
+                    <lightning-layout-item
+                        class="custom-padding-around-small custom-grid-vertical-align-center unselectable"
+                        aria-hidden="true"
+                    >
+                        <c-nks-custom-svg size="large" src={unknownIcon} alt-text="Ukjent"></c-nks-custom-svg>
+                    </lightning-layout-item>
+                    <div class="text-body-top">
+                        <h1>Mangler tilknytning til bruker</h1>
                     </div>
                 </div>
-            </lightning-layout>
+                <div class="text-body-mid-unknown border-unknown">
+                    <div class="margin-area"></div>
+                </div>
+                <div class="text-body-bottom-unknown">
+                    <div class="margin-area"></div>
+                </div>
+            </div>
+        </lightning-layout>
     </template>
 </template>
