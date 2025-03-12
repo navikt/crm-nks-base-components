@@ -12,6 +12,6 @@ export default class SkeletonLoadingComponent extends LightningElement {
     }
 
     get unknownIcon() {
-        return NAV_ICONS + '/' + 'confidentialCircleFilled' + '.svg#' + 'confidentialCircleFilled';
+        return NAV_ICONS + '/confidentialCircleFilled.svg#confidentialCircleFilled';
     }
 }
