@@ -7,7 +7,6 @@ export default class SkeletonLoadingComponent extends LightningElement {
     @api personId = '123';
 
     get isPersonIdSet() {
-        console.log(this.personId);
         return this.personId !== null;
     }
 
