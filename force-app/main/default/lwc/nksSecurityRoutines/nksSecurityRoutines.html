@@ -1,5 +1,9 @@
 <template>
-    <a class="slds-button slds-button_destructive" onclick={handleSecurity} style="width: 100%; display: grid"
-        >{openSecurityRutines}</a
-    >
+    <c-nks-button
+        button-styling="danger"
+        button-label={openSecurityRoutines}
+        is-link="true"
+        onclick={handleSecurity}
+        onkeydown={handleKeyDown}
+    ></c-nks-button>
 </template>

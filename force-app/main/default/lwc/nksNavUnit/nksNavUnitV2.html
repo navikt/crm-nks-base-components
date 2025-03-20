@@ -1,0 +1,78 @@
+<template>
+    <lightning-layout
+        multiple-rows="true"
+        class="custom-padding-bottom-medium custom-padding-right-small custom-padding-left-large"
+    >
+        <lightning-layout-item class="custom-padding-right-large slds-text-title_bold">
+            {getUnitNameAndNumber}
+        </lightning-layout-item>
+
+        <lightning-layout-item size="12" class="custom-padding-top-large custom-padding-right-medium">
+            <c-nks-expandable-panel title="Kontorinformasjon for NKS" is-expandable chevron-left is-first>
+                <p class="slds-text-title_bold custom-padding-bottom-x-small">Intern informasjon</p>
+                <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
+                <br />
+                <p class="slds-text-title_bold">Offentlig informasjon</p>
+                <div class="custom-padding-bottom-medium">
+                    <p>Offentlige vakttelefoner:</p>
+                    <div lwc:if={publikumskanaler}>
+                        <template for:each={publikumskanaler} for:item="kanal">
+                            <p key={kanal.beskrivelse}>
+                                {kanal.beskrivelse} : <span style="font-weight: bold">{kanal.telefon}</span>
+                            </p>
+                        </template>
+                    </div>
+                    <div lwc:else>
+                        <p>Ingen vakttelefon</p>
+                    </div>
+                </div>
+                <div class="custom-padding-bottom-medium">
+                    <p class="slds-text-title_bold">Tilleggstjenester</p>
+                    <div lwc:if={tjenester}>
+                        <ul class="slds-list_dotted">
+                            <template for:each={tjenester} for:item="tjeneste">
+                                <li lwc:if={tjeneste.type} key={tjeneste.type}>{tjeneste.type}</li>
+                                <li lwc:else key={tjeneste.typeMapValue}>{tjeneste.typeMapValue}</li>
+                            </template>
+                        </ul>
+                    </div>
+                    <div lwc:else>
+                        <p>Kun de obligatoriske oppgavene etter sosialtjenesteloven</p>
+                    </div>
+                    <div lwc:if={ytterligereInformasjon}>
+                        <p>{ytterligereInformasjon}</p>
+                    </div>
+                </div>
+                <div class="custom-padding-bottom-medium">
+                    <p class="slds-text-title_bold">Papirsøknad</p>
+                    <p>{papirsoeknadInformasjon}</p>
+                </div>
+                <div class="custom-padding-bottom-medium">
+                    <p class="slds-text-title_bold">Utbetaling</p>
+                    <p>{informasjonUtbetalinger}</p>
+                </div>
+                <div class="custom-padding-bottom-medium">
+                    <p class="slds-text-title_bold">Lenker:</p>
+                    <div lwc:if={digitaleSoeknader}>
+                        <template for:each={digitaleSoeknader} for:item="link">
+                            <a href={link.lenke} target="_blank" key={link.lenke} style="display: block"
+                                >{link.lenketekst}</a
+                            >
+                        </template>
+                    </div>
+                    <div lwc:else>
+                        <p>Ingen informasjon</p>
+                    </div>
+                </div>
+            </c-nks-expandable-panel>
+            <c-nks-expandable-panel title="Kontaktdetaljer fra nav.no" is-expandable chevron-left>
+                <c-nks-nav-unit-contact-information
+                    contact-information={contactInformationV2}
+                    num-cols={numCols}
+                    use-new-design
+                >
+                </c-nks-nav-unit-contact-information>
+            </c-nks-expandable-panel>
+        </lightning-layout-item>
+    </lightning-layout>
+</template>

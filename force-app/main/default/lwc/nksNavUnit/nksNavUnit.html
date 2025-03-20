@@ -2,7 +2,7 @@
     <lightning-layout multiple-rows="true">
         <lightning-layout-item size={columnWidth} class="slds-var-p-right_medium">
             <div class="slds-form-element slds-form-element_readonly">
-                <span class="slds-form-element__label">NAV-kontor</span>
+                <span class="slds-form-element__label">Nav-kontor</span>
                 <div class="slds-form-element__control">
                     <div class="slds-form-element__static">{navUnit.navn}</div>
                 </div>
@@ -30,8 +30,21 @@
                         Offentlig informasjon
                     </h2>
                     <div class="slds-p-bottom_medium">
+                        <h3 class="slds-text-heading_small slds-text-title_bold">Offentlige vakttelefoner:</h3>
+                        <div lwc:if={publikumskanaler}>
+                            <template for:each={publikumskanaler} for:item="kanal">
+                                <p key={kanal.beskrivelse}>
+                                    {kanal.beskrivelse} : <span style="font-weight: bold">{kanal.telefon}</span>
+                                </p>
+                            </template>
+                        </div>
+                        <div lwc:else>
+                            <p>Ingen vakttelefon</p>
+                        </div>
+                    </div>
+                    <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Tilleggstjenester</h3>
-                        <div if:true={tjenester}>
+                        <div lwc:if={tjenester}>
                             <ul class="slds-list_dotted">
                                 <template for:each={tjenester} for:item="tjeneste">
                                     <li lwc:if={tjeneste.type} key={tjeneste.type}>{tjeneste.type}</li>
@@ -39,10 +52,10 @@
                                 </template>
                             </ul>
                         </div>
-                        <div if:false={tjenester}>
+                        <div lwc:else>
                             <p>Kun de obligatoriske oppgavene etter sosialtjenesteloven</p>
                         </div>
-                        <div if:true={ytterligereInformasjon}>
+                        <div lwc:if={ytterligereInformasjon}>
                             <p>{ytterligereInformasjon}</p>
                         </div>
                     </div>
@@ -56,20 +69,20 @@
                     </div>
                     <div class="slds-p-bottom_medium">
                         <h3 class="slds-text-heading_small slds-text-title_bold">Lenker:</h3>
-                        <div if:true={digitaleSoeknader}>
+                        <div lwc:if={digitaleSoeknader}>
                             <template for:each={digitaleSoeknader} for:item="link">
                                 <a href={link.lenke} target="_blank" key={link.lenke} style="display: block"
                                     >{link.lenketekst}</a
                                 >
                             </template>
                         </div>
-                        <div if:false={digitaleSoeknader}>
+                        <div lwc:else>
                             <p>Ingen informasjon</p>
                         </div>
                     </div>
                 </lightning-accordion-section>
                 <lightning-accordion-section name="CONTACT_DETAILS" label="Kontaktdetaljer fra nav.no">
-                    <c-nks-nav-unit-contact-information contact-information={contactInformation} num-cols={numCols}>
+                    <c-nks-nav-unit-contact-information contact-information={contactInformationV2} num-cols={numCols}>
                     </c-nks-nav-unit-contact-information>
                 </lightning-accordion-section>
             </lightning-accordion>

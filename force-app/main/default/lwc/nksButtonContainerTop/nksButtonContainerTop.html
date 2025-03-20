@@ -3,13 +3,17 @@
         <lightning-layout-item class="slds-size_12-of-12">
             <lightning-layout>
                 <lightning-layout-item class="slds-size_6-of-12 slds-var-p-right_medium">
-                    <button class={flowButtonClass} onclick={toggleFlow} aria-expanded={buttonExpanded}>
-                        {flowButtonLabel}
-                    </button>
+                    <c-nks-button
+                        button-label={flowButtonLabel}
+                        class={flowButtonStyling}
+                        aria-expanded={buttonExpanded}
+                        onclick={toggleFlow}
+                        full-height
+                    ></c-nks-button>
                 </lightning-layout-item>
                 <lightning-layout-item class="slds-size_6-of-12">
                     <c-nks-security-routines
-                        article-id="Felles-Trussel-om-selvmord-selvskading"
+                        article-id="Felles-Trussel-trakassering-og-sjikane,Felles-Trussel-om-selvmord-selvskading"
                     ></c-nks-security-routines>
                 </lightning-layout-item>
             </lightning-layout>

@@ -1,12 +1,19 @@
 import { LightningElement, api, track } from 'lwc';
+import nksNavUnitHTML from './nksNavUnit.html';
+import nksNavUnitV2HTML from './nksNavUnitV2.html';
 export default class NksNavUnit extends LightningElement {
     @api navUnit; // The nav unit
     @api contactInformation; // The contact information of the NAV Unit
     @api contactInformationV2; // Contact information from V2 of the api (more organized)
     @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
     @api numCols = 2; // Number of columns for the displayed fields
+    @api useNewDesign = false;
 
     @track activeSections = []; // The active sections on component load
+
+    render() {
+        return this.useNewDesign ? nksNavUnitV2HTML : nksNavUnitHTML;
+    }
 
     connectedCallback() {
         if (this.allSectionsOpenOnLoad === 'true' || this.allSectionsOpenOnLoad === true) {
@@ -44,5 +51,17 @@ export default class NksNavUnit extends LightningElement {
         const digitaleSoeknader = this.contactInformationV2?.brukerkontakt?.sosialhjelp?.digitaleSoeknader;
         if (digitaleSoeknader == null || digitaleSoeknader.length === 0) return null;
         return digitaleSoeknader;
+    }
+
+    get publikumskanaler() {
+        const publikumskanaler = this.contactInformationV2?.brukerkontakt?.publikumskanaler?.filter(
+            (kanal) => kanal.telefon != null && kanal.telefon !== ''
+        );
+        if (publikumskanaler == null || publikumskanaler.length === 0) return null;
+        return publikumskanaler;
+    }
+
+    get getUnitNameAndNumber() {
+        return this.navUnit.enhetNr + ' ' + this.navUnit.navn;
     }
 }

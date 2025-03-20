@@ -28,14 +28,24 @@
                             <th data-label="Dag" scope="row">
                                 <div class="slds-truncate" title={openingHour.day}>{openingHour.day}</div>
                             </th>
-                            <td data-label="Åpent">
-                                <div class="slds-truncate" title={openingHour.status}>{openingHour.status}</div>
-                            </td>
-                            <td data-label="Åpningstid">
-                                <div class="slds-truncate" title={openingHour.openingHours}>
-                                    {openingHour.openingHours}
-                                </div>
-                            </td>
+                            <template lwc:if={openingHour.kunTimeavtale}>
+                                <td data-label="KunTimeavtale">
+                                    <div class="slds-truncate" title="Kun timeavtale">Kun timeavtale</div>
+                                </td>
+                                <td data-label="Åpningstid">
+                                    <div class="slds-truncate" title={openingHour.openingHours}></div>
+                                </td>
+                            </template>
+                            <template lwc:else>
+                                <td data-label="Åpent">
+                                    <div class="slds-truncate" title={openingHour.status}>{openingHour.status}</div>
+                                </td>
+                                <td data-label="Åpningstid">
+                                    <div class="slds-truncate" title={openingHour.openingHours}>
+                                        {openingHour.openingHours}
+                                    </div>
+                                </td>
+                            </template>
                             <td class="slds-cell-wrap" data-label="Kommentar">
                                 <div title={openingHour.comments}>{openingHour.comments}</div>
                             </td>

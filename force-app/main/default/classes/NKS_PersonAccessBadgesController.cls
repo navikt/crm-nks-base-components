@@ -18,7 +18,7 @@ public without sharing class NKS_PersonAccessBadgesController {
         List<AccessBadge> accessBadgeList = new List<AccessBadge>();
         // Add INT_IsNavEmployee__c
         if (person.INT_IsNavEmployee__c) {
-            accessBadgeList.add(new AccessBadge('isNavEmployee', 'Skjermet person (NAV Ansatt)'));
+            accessBadgeList.add(new AccessBadge('isNavEmployee', 'Skjermet person (Nav Ansatt)'));
         }
 
         // Add INT_Confidential__c
