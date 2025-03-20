@@ -1,33 +1,65 @@
-
 <!-- TODO: Remember to set VF page access in permission set -->
 <!-- TODO: Add more fields/data to show -->
 <!-- TODO: Formatting/design - see Modia for example or ask Sara K -->
-<apex:page controller="NKS_RecordPrintController">
+<apex:page renderAs="pdf" controller="NKS_RecordPrintController">
     <apex:outputPanel rendered="{!NOT(ISNULL(objectType))}">
+        <div class="header">
+            <div>{!NOW()}</div>
+            <apex:image
+                url="{!URLFOR($Resource.stoLogos,
+                'navLogo.png')}"
+            />
+            <p>utskriftsdato her</p>
+            <p>bruker sitt fødselsnummer</p>
+        </div>
         <h1>{!objectType} detaljer</h1>
 
         <apex:outputPanel rendered="{!objectType == 'Case'}">
-            <p><b>Tema:</b> {!wrapperRecord.mainRecord['CRM_Theme_Group_Name__c']}</p>
-        </apex:outputPanel>
-        
-        <apex:outputPanel rendered="{!objectType == 'Thread__c'}">
-            <p><b>Tema:</b> {!wrapperRecord.mainRecord['CRM_Theme_Group_Name__c']}</p>
-        </apex:outputPanel>
-        
-        <apex:outputPanel rendered="{!objectType == 'LiveChatTranscript'}">
-            <p><b>Tema:</b> {!wrapperRecord.mainRecord['NKS_Chat_Queue__c']}</p>
-            <p><b>Chat:</b> {!wrapperRecord.mainRecord['Body']}</p>
-        </apex:outputPanel>
-        
-        <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
-            <p><b>Tema:</b> {!wrapperRecord.mainRecord['CRM_Theme_Group_Name__c']}</p>
-            <p><b>Samtalereferat:</b> {!wrapperRecord.mainRecord['CRM_Conversation_Note__c']}</p>
+            <p><b>Tema:</b> {!mainRecord['CRM_Theme_Group_Name__c']}</p>
         </apex:outputPanel>
 
-        <apex:outputPanel rendered="{!NOT(ISNULL(wrapperRecord.messages))}">
+        <apex:outputPanel rendered="{!objectType == 'Thread__c'}">
+            <p><b>Journalstatus:</b> {!mainRecord['CRM_Journal_Status__c']}</p>
+            <p>{!mainRecord['Name']}</p>
+            <p><b>Tema:</b> {!mainRecord['CRM_Theme_Group_Name__c']}</p>
+            <p><b>STO kategori:</b> {!mainRecord['STO_Category__c']}</p>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
+            <p><b>Tema:</b> {!mainRecord['CRM_Theme_Group_Name__c']}</p>
+            <p><b>Dato opprettet:</b> {!mainRecord['CRM_Date_Time_Registered__c']}</p>
+            <p><b>Nav enhet:</b> {!mainRecord['CRM_Created_By_NAV_Unit__c']}</p>
+            <p><b>Journal:</b> {!mainRecord['CRM_Journal_Status__c']}</p>
+            <p><b>Referat:</b> {!mainRecord['CRM_Conversation_Note__c']}</p>
+            <p>Dette er en test</p>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!NOT(ISNULL(messages))}">
             <h2>Meldinger</h2>
-            <apex:repeat value="{!wrapperRecord.messages}" var="msg">
-                <p>{!msg['CRM_Message_Text__c']}</p>
+            <apex:repeat value="{!messages}" var="msg">
+            <br />
+                <table>
+                    <tr>
+                        <td>skrevet av: </td>
+                        <td>fødselsnummer</td>
+                    </tr>
+                    <tr>
+                        <td>kanal: xxxx</td>
+                        <td>mottatt/sendt: {!msg['CRM_Sent_date__c']}</td>
+                    </tr>
+                    <tr>
+                        <td>type: samtaleøæøåæøå</td>
+                        <td>lest: {!msg['CRM_Read__c']}</td>
+                    </tr>
+                    <tr>
+                        <td>Innhold:</td>
+                    </tr>
+                    <tr>
+                        <td>{!msg['CRM_Message_Text__c']}</td>
+                        <td>what is: : CRM_Account__c : {!mainRecord['CRM_Account__c']}</td>
+                    </tr>
+                </table>
+                <hr />
             </apex:repeat>
         </apex:outputPanel>
     </apex:outputPanel>
