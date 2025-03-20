@@ -1,14 +1,15 @@
 import { LightningElement, api, track } from 'lwc';
+import nksNavUnitContactInformationV2HTML from './nksNavUnitContactInformationV2.html';
+import nksNavUnitContactInformationHTML from './nksNavUnitContactInformation.html';
 
 export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
+    @api useNewDesign = false;
     @track _contactInformation;
     @track _visitorLocations = [];
-    @track _visitorChannels;
     _visitorLocationsLength = 0;
     hasContactInformation = false;
     hasVisitorLocations = false;
-    hasVisitorChannels = false;
 
     @api
     set contactInformation(value) {
@@ -16,12 +17,17 @@ export default class NksNavUnitContactInformation extends LightningElement {
             this._contactInformation = value;
             this.hasContactInformation = true;
 
-            if (value.publikumsmottak && value.publikumsmottak.length) {
+            const publikumsmottak = value.brukerkontakt?.publikumsmottak ?? [];
+            if (publikumsmottak.length) {
                 this.hasVisitorLocations = true;
-                this._visitorLocations = value.publikumsmottak;
-                this._visitorLocationsLength = value.publikumsmottak.length;
+                this._visitorLocations = publikumsmottak;
+                this._visitorLocationsLength = publikumsmottak.length;
             }
         }
+    }
+
+    render() {
+        return this.useNewDesign ? nksNavUnitContactInformationV2HTML : nksNavUnitContactInformationHTML;
     }
 
     get columnWidth() {
@@ -38,15 +44,21 @@ export default class NksNavUnitContactInformation extends LightningElement {
         return this._visitorLocations;
     }
 
-    get visitorChannels() {
-        return this._visitorChannels;
-    }
-
     get postalAddress() {
-        return this.contactInformation.postadresse ? this.contactInformation.postadresse.concatenatedAddress : '';
+        const address = this.contactInformation.postadresse;
+        if (!address) return '';
+
+        const { postboksnummer, postnummer, poststed } = address;
+
+        return `Postboks ${postboksnummer}, ${postnummer} ${poststed}`;
     }
 
     get visitingAddress() {
-        return this.contactInformation.besoeksadresse ? this.contactInformation.besoeksadresse.concatenatedAddress : '';
+        const address = this.contactInformation.besoeksadresse;
+        if (!address) return '';
+
+        const { gatenavn, husnummer, postnummer, poststed } = address;
+
+        return `${gatenavn} ${husnummer}, ${postnummer} ${poststed}`;
     }
 }

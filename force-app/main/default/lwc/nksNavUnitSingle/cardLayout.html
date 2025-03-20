@@ -1,10 +1,10 @@
 <template>
-    <lightning-card title="NAV-kontor" icon-name="custom:custom61">
+    <lightning-card title="Nav-kontor" icon-name="custom:custom61">
         <div class="slds-is-relative">
             <!-- SPINNER -->
             <template if:false={isLoaded}>
                 <div>
-                    <lightning-spinner alternative-text="Laster NAV enhet" size="medium"></lightning-spinner>
+                    <lightning-spinner alternative-text="Laster Nav enhet" size="medium"></lightning-spinner>
                 </div>
             </template>
 
@@ -32,6 +32,7 @@
                             contact-information-v2={contactInformationV2}
                             all-sections-open-on-load={allSectionsOpenOnLoad}
                             num-cols={numCols}
+                            use-new-design={useNewDesign}
                         ></c-nks-nav-unit>
                     </div>
                 </template>

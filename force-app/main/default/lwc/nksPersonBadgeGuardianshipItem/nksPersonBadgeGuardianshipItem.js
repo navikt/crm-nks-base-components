@@ -5,11 +5,11 @@ export default class NksPersonBadgeGuardianshipItem extends LightningElement {
     get motpart() {
         let motpartList = [];
 
-        if (this.guardianship?.navn?.fullName) {
-            motpartList.push(this.guardianship.navn.fullName);
+        if (this.guardianship?.actualNavn?.fullName) {
+            motpartList.push(this.guardianship.actualNavn.fullName);
         }
-        if (this.guardianship.motpartsPersonident) {
-            motpartList.push(this.guardianship.motpartsPersonident);
+        if (this.guardianship.actualMotpartsPersonident) {
+            motpartList.push(this.guardianship.actualMotpartsPersonident);
         }
 
         return motpartList.join(' - ');

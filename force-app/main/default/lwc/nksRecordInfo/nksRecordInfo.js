@@ -12,7 +12,7 @@ import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messa
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
 import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
 import NAME from '@salesforce/schema/Person__c.Name';
-
+import { resolve } from 'c/nksComponentsUtils';
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
     @api viewedRecordId; // Id of the record to display information for
@@ -119,7 +119,7 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             objectApiName: objectApiName
         })
             .then((record) => {
-                this.viewedRecordId = this.resolve(relationshipField, record);
+                this.viewedRecordId = resolve(relationshipField, record);
                 // personId
                 this.personId = this.viewedObjectApiName === 'Person__c' ? this.viewedRecordId : '';
             })
@@ -290,15 +290,5 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     refreshKrrInfo() {
         this.refreshRecord();
         publish(this.messageContext, krrUpdateChannel, { updated: true });
-    }
-
-    resolve(path, obj) {
-        if (typeof path !== 'string') {
-            throw new Error('Path must be a string');
-        }
-        
-        return path.split('.').reduce(function (prev, curr) {
-            return prev ? prev[curr] : null;
-        }, obj || {});
     }
 }
