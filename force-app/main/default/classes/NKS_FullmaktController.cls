@@ -57,7 +57,7 @@ public with sharing class NKS_FullmaktController {
 
         Set<Omraade> omraader = extractOmraaderFromOmraadeList(historikkData);
         Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(omraader);
-
+    
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
         for (HistorikkWrapper historikkResponse : historikkData) {
             HistorikkEndringer sisteEndring = historikkResponse.sisteEndring;
@@ -75,7 +75,7 @@ public with sharing class NKS_FullmaktController {
             }
         }
         return historikkList;
-    }
+    }    
 
     @AuraEnabled(cacheable=true)
     public static List<Fullmaktsgiver> getFullmaktsgiver(Id recordId, String objectApiName) {
@@ -127,7 +127,7 @@ public with sharing class NKS_FullmaktController {
 
             if (data instanceof HistorikkWrapper) {
                 HistorikkEndringer sisteEndring = ((HistorikkWrapper) data).sisteEndring;
-                omraadeList = sisteEndring != null ? parseHistorikkOmraadeIntoList(sisteEndring.omraade) : null;
+                omraadeList = sisteEndring != null ? sisteEndring.omraader : null;
             } else if (data instanceof FullmaktsgiverWrapper) {
                 omraadeList = ((FullmaktsgiverWrapper) data).omraade;
             } else {
@@ -165,24 +165,6 @@ public with sharing class NKS_FullmaktController {
         return omraadeNameByOmraadeTema;
     }
 
-    private static String setHistorikkOmraadeString(
-        List<Omraade> omraader,
-        Map<String, String> omraadeNameByOmraadeTema
-    ) {
-        if (omraader == null || omraader.isEmpty()) {
-            return '';
-        }
-        List<String> omdTemaList = new List<String>();
-        for (Omraade omd : omraader) {
-            String temaName = omraadeNameByOmraadeTema.get(omd.tema);
-            omdTemaList.add(temaName != null ? temaName : omd.tema);
-        }
-        if (omdTemaList[0].equalsIgnoreCase('*')) {
-            return 'Gjelder alle ytelser';
-        }
-        return String.join(omdTemaList, ', ');
-    }
-
     private static List<Omraade> setFullmaktOmraadeList(
         List<Omraade> omraader,
         Map<String, String> omraadeNameByOmraadeTema
@@ -200,28 +182,6 @@ public with sharing class NKS_FullmaktController {
             omraaderWithHandlinger.add(omd);
         }
         return omraaderWithHandlinger;
-    }
-
-    // omraade response in history can be both array, string and semicolon separated string
-    private static List<Omraade> parseHistorikkOmraadeIntoList(String omraadeStr) {
-        List<Omraade> omraadeList = new List<Omraade>();
-        if (String.isBlank(omraadeStr)) {
-            return omraadeList;
-        }
-        if (isJsonArray(omraadeStr)) {
-            omraadeList = (List<Omraade>) JSON.deserialize(omraadeStr, List<Omraade>.class);
-        } else if (omraadeStr.contains(';')) {
-            for (String tema : omraadeStr.split(';')) {
-                Omraade omraade = new Omraade();
-                omraade.tema = tema;
-                omraadeList.add(omraade);
-            }
-        } else {
-            Omraade omraade = new Omraade();
-            omraade.tema = omraadeStr;
-            omraadeList.add(omraade);
-        }
-        return omraadeList;
     }
 
     @TestVisible
@@ -320,7 +280,7 @@ public with sharing class NKS_FullmaktController {
     public class HistorikkEndringer {
         public String fullmaktsgiver;
         public String fullmektig;
-        public String omraade;
+        public List<Omraade> omraader;
         public Date gyldigFraOgMed;
         public Date gyldigTilOgMed;
         public String fullmaktsgiverNavn;
@@ -334,7 +294,7 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public String fullmektig;
         @AuraEnabled
-        public String omraade;
+        public List<Omraade> omraader;
         @AuraEnabled
         public String gyldigFraOgMed;
         @AuraEnabled
@@ -356,19 +316,13 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public String status {
             get {
-                if (opphoert) {
-                    return 'Avsluttet';
-                }
-                return 'Utløpt';
+                return opphoert ? 'Avsluttet' : 'Utløpt';
             }
         }
-
+    
         public FullmaktsgiverHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omraadeNameByOmraadeTema) {
             this.fullmektig = sisteEndring.fullmektig;
-            this.omraade = setHistorikkOmraadeString(
-                parseHistorikkOmraadeIntoList(sisteEndring.omraade),
-                omraadeNameByOmraadeTema
-            );
+            this.omraader = setFullmaktOmraadeList(sisteEndring.omraader, omraadeNameByOmraadeTema);
             this.gyldigFraOgMed = getGyldigFraOgMed(sisteEndring);
             this.gyldigTilOgMed = getGyldigTilOgMed(sisteEndring);
             this.fullmektigsNavn = sisteEndring.fullmektigsNavn;
