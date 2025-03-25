@@ -57,7 +57,7 @@ public with sharing class NKS_FullmaktController {
 
         Set<Omraade> omraader = extractOmraaderFromOmraadeList(historikkData);
         Map<String, String> omraadeNameByOmraadeTema = getOmraadeNamesFromCommonCodes(omraader);
-    
+
         List<FullmaktsgiverHistorikk> historikkList = new List<FullmaktsgiverHistorikk>();
         for (HistorikkWrapper historikkResponse : historikkData) {
             HistorikkEndringer sisteEndring = historikkResponse.sisteEndring;
@@ -75,7 +75,7 @@ public with sharing class NKS_FullmaktController {
             }
         }
         return historikkList;
-    }    
+    }
 
     @AuraEnabled(cacheable=true)
     public static List<Fullmaktsgiver> getFullmaktsgiver(Id recordId, String objectApiName) {
@@ -319,7 +319,7 @@ public with sharing class NKS_FullmaktController {
                 return opphoert ? 'Avsluttet' : 'Utløpt';
             }
         }
-    
+
         public FullmaktsgiverHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omraadeNameByOmraadeTema) {
             this.fullmektig = sisteEndring.fullmektig;
             this.omraader = setFullmaktOmraadeList(sisteEndring.omraader, omraadeNameByOmraadeTema);
