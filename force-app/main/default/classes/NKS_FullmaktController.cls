@@ -37,7 +37,6 @@ public with sharing class NKS_FullmaktController {
                     resp.getBody(),
                     List<HistorikkWrapper>.class
                 );
-
                 return processHistorikkData(historikkData);
             } else {
                 logError(resp, 'Error retrieving FullmaktsgiverHistorikk');
@@ -91,7 +90,6 @@ public with sharing class NKS_FullmaktController {
                     resp.getBody(),
                     List<FullmaktsgiverWrapper>.class
                 );
-
                 return processFullmaktsgiverData(fullmaktsgiverData);
             } else {
                 logError(resp, 'Error retrieving Fullmaktsgiver');
@@ -127,7 +125,7 @@ public with sharing class NKS_FullmaktController {
 
             if (data instanceof HistorikkWrapper) {
                 HistorikkEndringer sisteEndring = ((HistorikkWrapper) data).sisteEndring;
-                omraadeList = sisteEndring != null ? sisteEndring.omraader : null;
+                omraadeList = sisteEndring != null ? sisteEndring.omraade : null;
             } else if (data instanceof FullmaktsgiverWrapper) {
                 omraadeList = ((FullmaktsgiverWrapper) data).omraade;
             } else {
@@ -222,20 +220,6 @@ public with sharing class NKS_FullmaktController {
         return d == null ? null : DateTime.newInstance(d, Time.newInstance(0, 0, 0, 0)).format('dd.MM.yyyy');
     }
 
-    private static Boolean isJsonArray(String jsonString) {
-        try {
-            JSONParser parser = JSON.createParser(jsonString);
-            while (parser.nextToken() != null) {
-                if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
-                    return true;
-                }
-            }
-        } catch (JSONException e) {
-            return false;
-        }
-        return false;
-    }
-
     private static void logError(HttpResponse resp, String message) {
         logger.error(
             message +
@@ -260,10 +244,41 @@ public with sharing class NKS_FullmaktController {
         logger.publish();
     }
 
+    @TestVisible
+    private static List<OmraadeGroup> getFormattedOmraadeList(List<Omraade> omraader) {
+        List<OmraadeGroup> formattedList = new List<OmraadeGroup>();
+        if (omraader != null) {
+            Set<String> allThemes = new Set<String>();
+            Map<String, Omraade> omraadeMap = new Map<String, Omraade>();
+            for (Omraade omder : omraader) {
+                allThemes.add(omder.temaKode);
+                omraadeMap.put(omder.temaKode, omder);
+            }
+            for (String themeGroup : fullmaktThemesByGroups.keySet()) {
+                Set<String> themesInThemeGroup = fullmaktThemesByGroups.get(themeGroup);
+                List<String> tempList;
+                // Helse is a special case where we never want to say "Gjelder alle ytelser"
+                if (themeGroup != 'Helse' && allThemes.containsAll(themesInThemeGroup)) {
+                    tempList = new List<String>{ 'Gjelder alle ytelser' };
+                } else {
+                    tempList = new List<String>();
+                    for (String th : allThemes) {
+                        if (themesInThemeGroup.contains(th)) {
+                            tempList.add(omraadeMap.get(th).tema);
+                        }
+                    }
+                }
+                if (!tempList.isEmpty()) {
+                    formattedList.add(new OmraadeGroup(themeGroup, tempList));
+                }
+            }
+        }
+        return formattedList;
+    }
+
     //
     // WRAPPERS
     //
-
     public class HistorikkWrapper {
         public String fullmaktId;
         public List<HistorikkEndringer> fullmaktEndringsloggDetails;
@@ -280,7 +295,7 @@ public with sharing class NKS_FullmaktController {
     public class HistorikkEndringer {
         public String fullmaktsgiver;
         public String fullmektig;
-        public List<Omraade> omraader;
+        public List<Omraade> omraade;
         public Date gyldigFraOgMed;
         public Date gyldigTilOgMed;
         public String fullmaktsgiverNavn;
@@ -295,6 +310,12 @@ public with sharing class NKS_FullmaktController {
         public String fullmektig;
         @AuraEnabled
         public List<Omraade> omraader;
+        @AuraEnabled
+        public List<OmraadeGroup> formattedOmraadeListByThemeGroup {
+            get {
+                return getFormattedOmraadeList(omraader);
+            }
+        }
         @AuraEnabled
         public String gyldigFraOgMed;
         @AuraEnabled
@@ -322,7 +343,7 @@ public with sharing class NKS_FullmaktController {
 
         public FullmaktsgiverHistorikk(HistorikkEndringer sisteEndring, Map<String, String> omraadeNameByOmraadeTema) {
             this.fullmektig = sisteEndring.fullmektig;
-            this.omraader = setFullmaktOmraadeList(sisteEndring.omraader, omraadeNameByOmraadeTema);
+            this.omraader = setFullmaktOmraadeList(sisteEndring.omraade, omraadeNameByOmraadeTema);
             this.gyldigFraOgMed = getGyldigFraOgMed(sisteEndring);
             this.gyldigTilOgMed = getGyldigTilOgMed(sisteEndring);
             this.fullmektigsNavn = sisteEndring.fullmektigsNavn;
@@ -355,34 +376,7 @@ public with sharing class NKS_FullmaktController {
         @AuraEnabled
         public List<OmraadeGroup> formattedOmraadeListByThemeGroup {
             get {
-                List<OmraadeGroup> formattedList = new List<OmraadeGroup>();
-                if (omraader != null) {
-                    Set<String> allThemes = new Set<String>();
-                    Map<String, Omraade> omraadeMap = new Map<String, Omraade>();
-                    for (Omraade omder : omraader) {
-                        allThemes.add(omder.temaKode);
-                        omraadeMap.put(omder.temaKode, omder);
-                    }
-                    for (String themeGroup : fullmaktThemesByGroups.keySet()) {
-                        Set<String> themesInThemeGroup = fullmaktThemesByGroups.get(themeGroup);
-                        List<String> tempList;
-                        // Helse is a special case where we never want to say "Gjelder alle ytelser"
-                        if (themeGroup != 'Helse' && allThemes.containsAll(themesInThemeGroup)) {
-                            tempList = new List<String>{ 'Gjelder alle ytelser' };
-                        } else {
-                            tempList = new List<String>();
-                            for (String th : allThemes) {
-                                if (themesInThemeGroup.contains(th)) {
-                                    tempList.add(omraadeMap.get(th).tema);
-                                }
-                            }
-                        }
-                        if (!tempList.isEmpty()) {
-                            formattedList.add(new OmraadeGroup(themeGroup, tempList));
-                        }
-                    }
-                }
-                return formattedList;
+                return getFormattedOmraadeList(omraader);
             }
         }
         @AuraEnabled
@@ -424,7 +418,7 @@ public with sharing class NKS_FullmaktController {
 
         public OmraadeGroup(String themeGroup, List<String> temaKoder) {
             this.themeGroup = themeGroup;
-            this.temaKoder = temakoder;
+            this.temaKoder = temaKoder;
         }
     }
 
