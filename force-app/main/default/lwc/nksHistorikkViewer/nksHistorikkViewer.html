@@ -34,7 +34,11 @@
                                 </div>
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
-                                <div class="slds-line-clamp" title={fullmakt.omraade}>{fullmakt.omraade}</div>
+                                <template for:each={fullmakt.formattedOmraadeListByThemeGroup} for:item="omraade">
+                                    <div key={omraade.themeGroup} class="slds-line-clamp" title={omraade.temaString}>
+                                        <p><strong>{omraade.themeGroup}</strong>: {omraade.temaString}</p>
+                                    </div>
+                                </template>
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
                                 <div class="slds-line-clamp" title={fullmakt.status}>{fullmakt.status}</div>
