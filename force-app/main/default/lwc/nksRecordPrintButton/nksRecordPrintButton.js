@@ -16,7 +16,7 @@ export default class NksRecordPrintButton extends NavigationMixin(LightningEleme
             attributes: {
                 url: `/apex/NKS_RecordPrint?id=${this.recordId}`
             }
-        }).then(url => {
+        }).then((url) => {
             console.log('Opening URL:', url);
             window.open(url, '_self');
         });
