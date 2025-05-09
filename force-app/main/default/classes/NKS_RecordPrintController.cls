@@ -65,12 +65,13 @@ public with sharing class NKS_RecordPrintController {
                 CRM_Conversation_Note__c,
                 CRM_Theme_Group_Name__c,
                 CRM_Theme_Name__c,
-                CRM_Date_Time_Registered__c,
-                CRM_Created_By_NAV_Unit__c,
-                CRM_Journal_Status__c,
                 CRM_Account__c,
                 CRM_Account__r.INT_PersonIdent__c,
-                CRM_Account__r.Name
+                CRM_Journal_Status__c,
+                CRM_Communication_Channel__c,
+                CRM_Date_Time_Registered__c,
+                CRM_Created_By_Ident__c,
+                CRM_Created_By_NAV_Unit__c
             FROM Conversation_Note__c
             WHERE Id = :recordId
         ];
@@ -78,6 +79,8 @@ public with sharing class NKS_RecordPrintController {
         mainRecord = note;
     }
 
+
+    
     public class MessageWrapper {
         public Message__c message { get; set; }
         public String messageFrom { get; set; }
@@ -93,8 +96,8 @@ public with sharing class NKS_RecordPrintController {
 
         private String setMessageFrom(Message__c msg) {
             return (msg.CRM_External_Message__c
-                    ? ((Thread__c) mainRecord).CRM_Account__r.INT_PersonIdent__c ?? ''
-                    : message.CRM_From_Ident__c ?? '');
+                    ? ((Thread__c) mainRecord).CRM_Account__r.INT_PersonIdent__c + ' (Bruker)' ?? ''
+                    : message.CRM_From_Ident__c + ' (Veileder)' ?? '');
         }
 
         private String setMessageRead(Message__c msg) {

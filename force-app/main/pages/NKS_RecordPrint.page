@@ -2,46 +2,83 @@
 <!--- TODO: Add more fields/data to show -->
 <!--- TODO: Formatting/design - see Modia for example or ask Sara K -->
 <apex:page renderAs="pdf" controller="NKS_RecordPrintController">
-<apex:stylesheet value="{!URLFOR($Resource.NKS_RecordPrintCss)}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.NKS_RecordPrintCss)}" />
 
     <apex:outputPanel rendered="{!NOT(ISNULL(objectType))}">
         <div class="header">
-            <apex:image
-                id="navLogo"
-                url="{!URLFOR($Resource.stoLogos,
-                'navLogo.png')}"
-            />
-            <p id="userIdent"><b>Fødselsnummer: </b> {!mainRecord['CRM_Account__r.INT_personIdent__c']}</p>
-            <p><b>Type:</b> {!mainRecord['CRM_Thread_Type__c']}</p>
-            <apex:outputText rendered="{!NOT(ISNULL(mainRecord['STO_Category__c']))}">  
-                <p><b>Tema:</b> {!mainRecord['STO_Category__c']}</p>
-            </apex:outputText>
-            <p><b>Journalstatus:</b> {!mainRecord['CRM_Journal_Status__c']}</p>            
+            <apex:image id="navLogo" url="{!URLFOR($Resource.stoLogos,
+                'navLogo.png')}" />
+            <p id="userIdent">
+                <b>Fødselsnummer: </b> {!mainRecord['CRM_Account__r.INT_personIdent__c']}</p>
+
+            <apex:outputPanel rendered="{!objectType == 'Thread__c'}">
+                <p>
+                    <b>Type:</b> {!mainRecord['CRM_Thread_Type__c']}</p>
+                <apex:outputText rendered="{!NOT(ISNULL(mainRecord['STO_Category__c']))}">
+                    <p>
+                        <b>Tema:</b> {!mainRecord['STO_Category__c']}</p>
+                </apex:outputText>
+                <p>
+                    <b>Journalstatus:</b> {!mainRecord['CRM_Journal_Status__c']}</p>
+            </apex:outputPanel>
+
+            <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
+            </apex:outputPanel>
         </div>
 
         <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
-        </apex:outputPanel>
-
-        <apex:outputPanel rendered="{!objectType == 'Thread__c'}">
-        </apex:outputPanel>
-
-       <apex:outputPanel rendered="{!NOT(ISNULL(wrapperMessages))}">
-            <h2>Meldinger</h2>
-            <apex:repeat value="{!wrapperMessages}" var="msg">
+            <h2>Samtalereferat {!mainRecord['CRM_Communication_Channel__c']} - {!mainRecord['CRM_Theme_Group_Name__c']}</h2>
             <div class="message-container">
                 <div class="message-info-left">
-                    <p><b>Skrevet av: </b>{!msg['messageFrom']}</p>
+                    <p>
+                        <b>Registrert: </b> {!mainRecord['CRM_Date_Time_Registered__c']}</p>
+                    <p>
+                        <b>Journalføring status: </b> {!mainRecord['CRM_Journal_Status__c']} </p>
+                    <p>
+                        <b>Opprettet av: </b> {!mainRecord['CRM_Created_By_Ident__c']} </p>
                 </div>
+
                 <div class="message-info-right">
-                    <p><b>Mottatt/Sendt:</b> {!msg.message['CRM_Sent_date__c']} </p>
-                    <p>{!msg['messageRead']}</p>
+                    <p>
+                        <b>Temagruppe: </b> {!mainRecord['CRM_Theme_Group_Name__c']}</p>
+                    <p>
+                        <b>Tema: </b> {!mainRecord['CRM_Theme_Name__c']}</p>
+                    <p>
+                        <b>Opprettet av enhet: </b> {!mainRecord['CRM_Created_By_NAV_Unit__c']}</p>
                 </div>
             </div>
             <div class="message-content">
-                <p><b>Innhold:</b></p>
-                <p>{!msg.message['CRM_Message_Text__c']}</p>
+                <p>
+                    <b>Innhold:</b>
+                </p>
+                <p>{!mainRecord['CRM_Conversation_Note__c']}</p>
             </div>
-            </apex:repeat>
+        </apex:outputPanel>
+
+        <apex:outputPanel rendered="{!objectType == 'Thread__c'}">
+            <apex:outputPanel rendered="{!NOT(ISNULL(wrapperMessages))}">
+                <h2>Meldinger</h2>
+                <apex:repeat value="{!wrapperMessages}" var="msg">
+                    <div class="message-container">
+                        <div class="message-info-left">
+                            <p>
+                                <b>Skrevet av: </b>{!msg['messageFrom']}</p>
+                        </div>
+                        <div class="message-info-right">
+                            <p>
+                                <b>Mottatt/Sendt:</b> {!msg.message['CRM_Sent_date__c']} </p>
+                            <p>{!msg['messageRead']}</p>
+                        </div>
+                    </div>
+                    <div class="message-content">
+                        <p>
+                            <b>Innhold:</b>
+                        </p>
+                        <p>{!msg.message['CRM_Message_Text__c']}</p>
+                    </div>
+                    <hr />
+                </apex:repeat>
+            </apex:outputPanel>
         </apex:outputPanel>
     </apex:outputPanel>
 </apex:page>
