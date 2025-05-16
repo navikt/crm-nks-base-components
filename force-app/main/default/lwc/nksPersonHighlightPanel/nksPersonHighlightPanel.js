@@ -139,8 +139,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     clickable: true,
                     tabindex: '0',
                     badgeContent: 'NOE',
-                    badgeContentType: 'NOE',
-                    badgeInfo: 'warning'
+                    badgeContentType: 'NOE'
                 });
             }
             badges = [...badges, ...data.badges];
@@ -152,8 +151,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
-                    badgeContentType: 'historicalPowerOfAttorney',
-                    badgeInfo: 'default'
+                    badgeContentType: 'historicalPowerOfAttorney'
                 });
             }
             this.badges = badges;
