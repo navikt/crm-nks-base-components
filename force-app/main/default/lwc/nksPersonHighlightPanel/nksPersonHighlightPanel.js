@@ -135,11 +135,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'NOE',
                     label: 'NOE',
-                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                    styling: 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: 'NOE',
-                    badgeContentType: 'NOE'
+                    badgeContentType: 'NOE',
+                    badgeInfo: 'warning'
                 });
             }
             badges = [...badges, ...data.badges];
@@ -147,11 +148,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historiske fullmakter',
-                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer greyBadge',
+                    styling: 'slds-badge_inverse slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
-                    badgeContentType: 'historicalPowerOfAttorney'
+                    badgeContentType: 'historicalPowerOfAttorney',
+                    badgeInfo: 'default'
                 });
             }
             this.badges = badges;
