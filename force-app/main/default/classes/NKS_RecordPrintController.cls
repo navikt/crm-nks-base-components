@@ -3,6 +3,7 @@ public with sharing class NKS_RecordPrintController {
     public String objectType { get; set; }
     public SObject mainRecord { get; set; }
     public List<MessageWrapper> wrapperMessages { get; set; }
+    public ConversationNoteWrapper convoWrapper { get; set; }
 
     public NKS_RecordPrintController() {
         wrapperMessages = new List<MessageWrapper>();
@@ -77,21 +78,43 @@ public with sharing class NKS_RecordPrintController {
         ];
 
         mainRecord = note;
+        convoWrapper = new ConversationNoteWrapper(mainRecord); 
     }
 
 
+
+    public class ConversationNoteWrapper {
+        public SObject mainRecord { get; set; }
+        public String createdDate { get; set; }
+
+        public ConversationNoteWrapper(SObject mainRecord) {
+            this.mainRecord = mainRecord;
+            this.createdDate = dateTimeFormatter((Datetime)mainRecord.get('CRM_Date_Time_Registered__c'));
+        }
+
+        private String dateTimeFormatter(Datetime dt) {
+            return dt.format();
+        }
+
+    }
     
     public class MessageWrapper {
         public Message__c message { get; set; }
         public String messageFrom { get; set; }
         public String messageRead { get; set; }
         public SObject mainRecord { get; set; }
+        public String createdDate { get; set; }
 
         public MessageWrapper(Message__c message, SObject mainRecord) {
             this.message = message;
             this.mainRecord = mainRecord;
             this.messageFrom = setMessageFrom(message);
             this.messageRead = setMessageRead(message);
+            this.createdDate = dateTimeFormatter((Datetime)message.get('CRM_Sent_date__c'));
+        }
+
+        private String dateTimeFormatter(Datetime dt) {
+            return dt.format();
         }
 
         private String setMessageFrom(Message__c msg) {

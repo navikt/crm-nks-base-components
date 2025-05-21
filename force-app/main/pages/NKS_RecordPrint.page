@@ -27,31 +27,31 @@
         </div>
 
         <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
-            <h2>Samtalereferat {!mainRecord['CRM_Communication_Channel__c']} - {!mainRecord['CRM_Theme_Group_Name__c']}</h2>
+            <h2>Samtalereferat {!convoWrapper.mainRecord['CRM_Communication_Channel__c']} - {!convoWrapper.mainRecord['CRM_Theme_Group_Name__c']}</h2>
             <div class="message-container">
                 <div class="message-info-left">
                     <p>
-                        <b>Registrert: </b> {!mainRecord['CRM_Date_Time_Registered__c']}</p>
+                        <b>Registrert: </b> {!convoWrapper.createdDate}</p>
                     <p>
-                        <b>Journalføring status: </b> {!mainRecord['CRM_Journal_Status__c']} </p>
+                        <b>Journalføring status: </b> {!convoWrapper.mainRecord['CRM_Journal_Status__c']} </p>
                     <p>
-                        <b>Opprettet av: </b> {!mainRecord['CRM_Created_By_Ident__c']} </p>
+                        <b>Opprettet av: </b> {!convoWrapper.mainRecord['CRM_Created_By_Ident__c']} </p>
                 </div>
 
                 <div class="message-info-right">
                     <p>
-                        <b>Temagruppe: </b> {!mainRecord['CRM_Theme_Group_Name__c']}</p>
+                        <b>Temagruppe: </b> {!convoWrapper.mainRecord['CRM_Theme_Group_Name__c']}</p>
                     <p>
-                        <b>Tema: </b> {!mainRecord['CRM_Theme_Name__c']}</p>
+                        <b>Tema: </b> {!convoWrapper.mainRecord['CRM_Theme_Name__c']}</p>
                     <p>
-                        <b>Opprettet av enhet: </b> {!mainRecord['CRM_Created_By_NAV_Unit__c']}</p>
+                        <b>Opprettet av enhet: </b> {!convoWrapper.mainRecord['CRM_Created_By_NAV_Unit__c']}</p>
                 </div>
             </div>
             <div class="message-content">
                 <p>
                     <b>Innhold:</b>
                 </p>
-                <p>{!mainRecord['CRM_Conversation_Note__c']}</p>
+                <p>{!convoWrapper.mainRecord['CRM_Conversation_Note__c']}</p>
             </div>
         </apex:outputPanel>
 
@@ -66,7 +66,7 @@
                         </div>
                         <div class="message-info-right">
                             <p>
-                                <b>Mottatt/Sendt:</b> {!msg.message['CRM_Sent_date__c']} </p>
+                                <b>Mottatt/Sendt:</b> {!msg.createdDate} </p>
                             <p>{!msg['messageRead']}</p>
                         </div>
                     </div>
