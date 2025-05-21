@@ -16,7 +16,7 @@
     </template>
     <div class="gender-wrapper">
         <template lwc:if={isLoading}>
-            <c-nks-skeleton-loading-component></c-nks-skeleton-loading-component>
+            <c-nks-skeleton-loading-component person-id={personId}></c-nks-skeleton-loading-component>
         </template>
         <template lwc:else>
             <lightning-layout class="panelBackground" lwc:ref="panelBackground">

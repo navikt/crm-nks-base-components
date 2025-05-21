@@ -89,13 +89,33 @@ public with sharing class NKS_NorgNavUnitService {
 
     public NavUnitResponse getNavUnitFromUnitNumber(String unitNumber) {
         NavUnitResponse response = new NavUnitResponse();
-        NavUnitsResponse resp = getNavUnitFilteredList(null, new List<String>{ unitNumber }, null);
+        NavUnitsResponse resp = getNavUnitFilteredList(null, new List<String>{ unitNumber }, null, false);
 
         response.errorMessage = resp.errorMessage;
         response.success = resp.success;
         response.unit = (null != resp.units && false == resp.units.isEmpty()) ? resp.units[0] : null;
 
         return response;
+    }
+
+    public List<NavUnitResponse> getNavUnitListFromUnitNumbers(List<String> unitNumbers, Boolean systemContext) {
+        List<NavUnitResponse> responseList = new List<NavUnitResponse>();
+        NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null, systemContext);
+
+        Map<String, NKS_NavUnit> unitMap = new Map<String, NKS_NavUnit>();
+        for(NKS_NavUnit unit : resp.units) {
+            unitMap.put(unit.enhetNr, unit);
+        }
+
+        for(String unitNr : unitNumbers) {
+            NavUnitResponse response = new NavUnitResponse();
+            response.errorMessage = resp.errorMessage;
+            response.success = resp.success;
+            response.unit = unitMap.get(unitNr);
+            responseList.add(response);
+        }
+
+        return responseList;
     }
 
     /**
@@ -204,7 +224,8 @@ public with sharing class NKS_NorgNavUnitService {
     public NavUnitsResponse getNavUnitFilteredList(
         List<String> unitStatuses,
         List<String> unitNumbers,
-        String taskProcessingFilter
+        String taskProcessingFilter,
+        Boolean systemContext
     ) {
         NavUnitsResponse resp = new NavUnitsResponse();
 
@@ -221,6 +242,9 @@ public with sharing class NKS_NorgNavUnitService {
         }
 
         ApiController apiCtrl = new ApiController();
+        if(systemContext) {
+            apiCtrl.setSystemContext();
+        }
         apiCtrl.initRequest(API_CONFIG_NAME, 'GET_UNITS_FILTERED_LIST');
         apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
         apiCtrl.setUrlParams(urlParamMap);
@@ -333,13 +357,13 @@ public with sharing class NKS_NorgNavUnitService {
             this.errorMessage = null;
         }
     }
-
+    
     public class NavUnitResponse {
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public Boolean success;
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public NKS_NavUnit unit;
-        @AuraEnabled
+        @AuraEnabled @invocableVariable
         public String errorMessage;
 
         public NavUnitResponse() {
