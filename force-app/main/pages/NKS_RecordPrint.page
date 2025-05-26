@@ -27,13 +27,13 @@
         </div>
 
         <apex:outputPanel rendered="{!objectType == 'Conversation_Note__c'}">
-            <h2>Samtalereferat {!convoWrapper.mainRecord['CRM_Communication_Channel__c']} - {!convoWrapper.mainRecord['CRM_Theme_Group_Name__c']}</h2>
+            <h2>Samtalereferat {!convoWrapper.comChannelNorwegian} - {!convoWrapper.mainRecord['CRM_Theme_Group_Name__c']}</h2>
             <div class="message-container">
                 <div class="message-info-left">
                     <p>
                         <b>Registrert: </b> {!convoWrapper.createdDate}</p>
                     <p>
-                        <b>Journalføring status: </b> {!convoWrapper.mainRecord['CRM_Journal_Status__c']} </p>
+                        <b>Journalføring status: </b> {!convoWrapper.journalStatusNorwegian} </p>
                     <p>
                         <b>Opprettet av: </b> {!convoWrapper.mainRecord['CRM_Created_By_Ident__c']} </p>
                 </div>

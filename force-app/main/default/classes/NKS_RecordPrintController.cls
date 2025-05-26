@@ -86,18 +86,34 @@ public with sharing class NKS_RecordPrintController {
     public class ConversationNoteWrapper {
         public SObject mainRecord { get; set; }
         public String createdDate { get; set; }
+        public String comChannelNorwegian { get; set; }
+        public String journalStatusNorwegian { get; set; }
 
         public ConversationNoteWrapper(SObject mainRecord) {
             this.mainRecord = mainRecord;
             this.createdDate = dateTimeFormatter((Datetime)mainRecord.get('CRM_Date_Time_Registered__c'));
+            this.comChannelNorwegian = translationService((String)mainRecord.get('CRM_Communication_Channel__c'), '');
+            this.journalStatusNorwegian = translationService('', (String)mainRecord.get('CRM_Journal_Status__c'));
         }
 
         private String dateTimeFormatter(Datetime dt) {
             return dt.format();
         }
 
+        private String translationService(String communicationChannel, String journalStatus){
+            Map<String, String> communicationChannelMap = new Map<String, String>{'Phone' => 'Telefon', 'Meeting' => 'Møte'};
+            Map<String, String> journalStatusMap = new Map<String, String>{'Not Journaled' => 'Ikke journalført', 'Journal Error' => 'Journalføring feilet', 'Journal Completed' => 'Journalført', 'Journal Started' => 'Journalført'};
+            
+            if (!String.isBlank(communicationChannel)){
+                return communicationChannelMap.get(communicationChannel) ?? communicationChannel;
+            } else if (!String.isBlank(journalStatus)) {
+                return journalStatusMap.get(journalStatus) ?? journalStatus;
+            } 
+
+            return '';
+        }
     }
-    
+
     public class MessageWrapper {
         public Message__c message { get; set; }
         public String messageFrom { get; set; }
@@ -113,7 +129,7 @@ public with sharing class NKS_RecordPrintController {
             this.createdDate = dateTimeFormatter((Datetime)message.get('CRM_Sent_date__c'));
         }
 
-        private String dateTimeFormatter(Datetime dt) {
+        public String dateTimeFormatter(Datetime dt) {
             return dt.format();
         }
 
