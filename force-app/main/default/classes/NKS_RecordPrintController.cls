@@ -2,12 +2,10 @@ public with sharing class NKS_RecordPrintController {
     public Id recordId { get; set; }
     public String objectType { get; set; }
     public RecordPrintWrapper convoWrapper { get; set; }
-    public RecordPrintWrapper threadWrapper {get; set; }
-    public List<RecordPrintWrapper> wrapperMessages { get; set; }
-    public String personIdent {get; set; }
+    public RecordPrintWrapper threadWrapper { get; set; }
+    public String personIdent { get; set; }
 
     public NKS_RecordPrintController() {
-        wrapperMessages = new List<RecordPrintWrapper>();
         recordId = ApexPages.currentPage().getParameters().get('id');
         if (recordId == null) {
             return;
@@ -42,7 +40,6 @@ public with sharing class NKS_RecordPrintController {
         ];
 
         personIdent = thread.CRM_Account__r.INT_PersonIdent__c;
-        threadWrapper = new RecordPrintWrapper(thread, null);
 
         List<Message__c> threadMessages = [
             SELECT
@@ -57,9 +54,11 @@ public with sharing class NKS_RecordPrintController {
             WHERE CRM_Thread__c = :recordId
         ];
 
+        List<MessageWrapper> messages = new List<MessageWrapper>();
         for (Message__c message : threadMessages) {
-            wrapperMessages.add(new RecordPrintWrapper(thread, message));
+            messages.add(new MessageWrapper(message, personIdent));
         }
+        threadWrapper = new RecordPrintWrapper(thread, messages);
     }
 
     private void fetchConversationNoteData() {
@@ -92,20 +91,16 @@ public with sharing class NKS_RecordPrintController {
         public String comChannelNorwegian { get; set; }
 
         // Thread fields
-        public Message__c message { get; set; }
+        public List<MessageWrapper> messages { get; set; }
         public String messageFrom { get; set; }
         public String messageRead { get; set; }
 
         // Thread constructor
-        public RecordPrintWrapper (sObject mainRecord, Message__c message) {
+        public RecordPrintWrapper (sObject mainRecord, List<MessageWrapper> messages) {
             this.mainRecord = mainRecord;
-            this.createdDate = dateTimeFormatter(message?.CRM_Sent_date__c);
-            this.message = message;
-            this.messageFrom = setMessageFrom(message);
-            this.messageRead = setMessageRead(message);
+            this.messages = messages;
             this.journalStatusNorwegian = translateJournalStatus((String)mainRecord.get('CRM_Journal_Status__c'));
         }
-
 
         // Conversation Note constructor
         public RecordPrintWrapper (sObject mainRecord) {
@@ -119,7 +114,6 @@ public with sharing class NKS_RecordPrintController {
             return dt?.format();
         }
 
-        // TODO: Split in two - one for communicationChannelMap and one for journalStatusMap
         private String translateJournalStatus(String journalStatus){
             Map<String, String> journalStatusMap = new Map<String, String>{'Not Journaled' => 'Ikke journalført', 'Journal Error' => 'Journalføring feilet', 'Journal Completed' => 'Journalført', 'Journal Started' => 'Journalført'};
 
@@ -139,14 +133,29 @@ public with sharing class NKS_RecordPrintController {
 
             return '';
         }
+    }
+
+    public class MessageWrapper {
+        public Message__c message { get; set; }
+        public String createdDate { get; set; }
+        public String messageFrom { get; set; }
+        public String messageRead { get; set; }
+        public String personIdent { get; set; }
+
+        public MessageWrapper(Message__c message, String personIdent) {
+            this.message = message;
+            this.personIdent = personIdent;
+            this.createdDate = message?.CRM_Sent_date__c != null ? message.CRM_Sent_date__c.format() : '';
+            this.messageFrom = setMessageFrom(message);
+            this.messageRead = setMessageRead(message);
+        }
 
         private String setMessageFrom(Message__c msg) {
             if (msg == null) {
                 return '';
             }
             if (msg.CRM_External_Message__c) {
-                String ident = ((Thread__c) mainRecord).CRM_Account__r?.INT_PersonIdent__c;
-                return (ident != null ? ident : 'Ukjent') + ' (Bruker)';
+                return (personIdent != null ? personIdent : 'Ukjent') + ' (Bruker)';
             } else {
                 return (msg.CRM_From_Ident__c != null ? msg.CRM_From_Ident__c : 'Ukjent') + ' (Veileder)';
             }
