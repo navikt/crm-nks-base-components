@@ -685,7 +685,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String label;
         @AuraEnabled
-        public String styling; // First class should be the badge type so headerLine is set correctly. e.g. slds-theme_error
+        public String styling; // Should contain a slds theme so headerLine is set correctly. e.g. slds-theme_error
         @AuraEnabled
         public String iconName;
         @AuraEnabled
