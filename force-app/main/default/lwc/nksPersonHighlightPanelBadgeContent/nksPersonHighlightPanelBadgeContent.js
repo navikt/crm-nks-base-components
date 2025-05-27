@@ -87,7 +87,7 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
     }
 
     get headerLineStyling() {
-        const headerStyle = this.badgeStyling?.startsWith('slds-theme') ? this.badgeStyling?.split(' ')[0] : '';
+        const headerStyle = this.badgeStyling?.split(' ').find(a => a.startsWith('slds-theme'));
         return 'headerLine ' + headerStyle;
     }
 }
