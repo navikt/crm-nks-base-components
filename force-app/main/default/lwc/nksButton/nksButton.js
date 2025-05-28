@@ -31,7 +31,7 @@ export default class NksButton extends LightningElement {
         const styleMap = {
             primary: 'slds-button_brand',
             secondary: 'slds-button_outline-brand',
-            danger: 'slds-button_text-destructive'
+            danger: 'slds-button_destructive'
         };
         return baseClass + (styleMap[buttonStyle] || 'slds-button_brand');
     }
