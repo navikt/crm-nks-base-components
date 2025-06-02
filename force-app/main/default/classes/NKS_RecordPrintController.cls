@@ -49,7 +49,7 @@ public with sharing class NKS_RecordPrintController {
                 CRM_Read__c,
                 CRM_Read_Datetime__c,
                 CRM_From_First_Name__c,
-                CRM_From_Ident__c
+                CRM_From_Ident_Formula__c
             FROM Message__c
             WHERE CRM_Thread__c = :recordId
         ];
@@ -157,7 +157,7 @@ public with sharing class NKS_RecordPrintController {
             if (msg.CRM_External_Message__c) {
                 return (personIdent != null ? personIdent : 'Ukjent') + ' (Bruker)';
             } else {
-                return (msg.CRM_From_Ident__c != null ? msg.CRM_From_Ident__c : 'Ukjent') + ' (Veileder)';
+                return (msg.CRM_From_Ident_Formula__c != null ? msg.CRM_From_Ident_Formula__c : 'Ukjent') + ' (Veileder)';
             }
         }
 
