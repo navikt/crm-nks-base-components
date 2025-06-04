@@ -110,7 +110,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     toggleFlow(event) {
-        const flowName = event.detail?.dataId;
+        const flowName = event.currentTarget.getAttribute('element-data-id');
         if (!flowName) return;
         if (this.activeFlow === flowName) {
             this.activeFlow = '';
