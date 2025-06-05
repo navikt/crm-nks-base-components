@@ -15,8 +15,6 @@
                     <p>
                         <b>Tema:</b> {!threadWrapper.mainRecord['STO_Category__c']}</p>
                 </apex:outputText>
-                <p>
-                    <b>Journalstatus:</b> {!threadWrapper.journalStatusNorwegian}</p>
             </apex:outputPanel>
         </div>
 
@@ -54,9 +52,9 @@
                     <p>
                         <b>Registrert: </b> {!convoWrapper.createdDate}</p>
                     <p>
-                        <b>Journalføring status: </b> {!convoWrapper.journalStatusNorwegian} </p>
-                    <p>
                         <b>Opprettet av: </b> {!convoWrapper.mainRecord['CRM_Created_By_Ident__c']} </p>
+                    <p>
+                        <b>Opprettet av enhet: </b> {!convoWrapper.mainRecord['CRM_Created_By_NAV_Unit__c']} {!navUnitName}</p>
                 </div>
 
                 <div class="message-info-right">
@@ -64,8 +62,6 @@
                         <b>Temagruppe: </b> {!convoWrapper.mainRecord['CRM_Theme_Group_Name__c']}</p>
                     <p>
                         <b>Tema: </b> {!convoWrapper.mainRecord['CRM_Theme_Name__c']}</p>
-                    <p>
-                        <b>Opprettet av enhet: </b> {!convoWrapper.mainRecord['CRM_Created_By_NAV_Unit__c']} {!navUnitName}</p>
                 </div>
             </div>
             <div class="message-content">

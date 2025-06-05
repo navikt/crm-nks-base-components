@@ -33,7 +33,6 @@ public with sharing class NKS_RecordPrintController {
                 STO_Category__c,
                 CRM_Thread_Type__c,
                 Name,
-                CRM_Journal_Status__c,
                 CRM_Account__r.INT_PersonIdent__c,
                 CRM_Account__r.Name
             FROM Thread__c
@@ -70,7 +69,6 @@ public with sharing class NKS_RecordPrintController {
                 CRM_Theme_Name__c,
                 CRM_Account__c,
                 CRM_Account__r.INT_PersonIdent__c,
-                CRM_Journal_Status__c,
                 CRM_Communication_Channel__c,
                 CRM_Date_Time_Registered__c,
                 CRM_Created_By_Ident__c,
@@ -92,7 +90,6 @@ public with sharing class NKS_RecordPrintController {
     public class RecordPrintWrapper {
         public SObject mainRecord { get; set; }
         public String createdDate { get; set; }
-        public String journalStatusNorwegian { get; set; }
 
         // Conversation Note fields
         public String comChannelNorwegian { get; set; }
@@ -106,7 +103,6 @@ public with sharing class NKS_RecordPrintController {
         public RecordPrintWrapper (sObject mainRecord, List<MessageWrapper> messages) {
             this.mainRecord = mainRecord;
             this.messages = messages;
-            this.journalStatusNorwegian = translateJournalStatus((String)mainRecord.get('CRM_Journal_Status__c'));
         }
 
         // Conversation Note constructor
@@ -114,22 +110,12 @@ public with sharing class NKS_RecordPrintController {
             this.mainRecord = mainRecord;
             this.createdDate = dateTimeFormatter((Datetime)mainRecord.get('CRM_Date_Time_Registered__c'));
             this.comChannelNorwegian = translateCommunicationChannel((String)mainRecord.get('CRM_Communication_Channel__c'));
-            this.journalStatusNorwegian = translateJournalStatus((String)mainRecord.get('CRM_Journal_Status__c'));
         }
 
         private String dateTimeFormatter(Datetime dt) {
             return dt?.format();
         }
 
-        private String translateJournalStatus(String journalStatus){
-            Map<String, String> journalStatusMap = new Map<String, String>{'Not Journaled' => 'Ikke journalført', 'Journal Error' => 'Journalføring feilet', 'Journal Completed' => 'Journalført', 'Journal Started' => 'Journalført'};
-
-            if (!String.isBlank(journalStatus)){
-                return journalStatusMap.get(journalStatus) ?? journalStatus;
-            } 
-
-            return '';
-        }
 
         private String translateCommunicationChannel(String communicationChannel){
             Map<String, String> communicationChannelMap = new Map<String, String>{'Phone' => 'telefon', 'Meeting' => 'møte'};
