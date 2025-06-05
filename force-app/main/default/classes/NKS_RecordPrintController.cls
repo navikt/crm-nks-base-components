@@ -4,12 +4,13 @@ public with sharing class NKS_RecordPrintController {
     public RecordPrintWrapper convoWrapper { get; set; }
     public RecordPrintWrapper threadWrapper { get; set; }
     public String personIdent { get; set; }
+    public String navUnitName { get; set; }
 
     public NKS_RecordPrintController() {
         recordId = ApexPages.currentPage().getParameters().get('id');
         if (recordId == null) {
             return;
-        }
+        } 
 
         objectType = getObjectType(recordId);
         if (objectType == 'Thread__c') {
@@ -78,6 +79,12 @@ public with sharing class NKS_RecordPrintController {
             WHERE Id = :recordId
         ];
 
+        NavUnit__c getUnitName = [ 
+            SELECT Name FROM NavUnit__c WHERE INT_UnitNumber__c = :cnote.CRM_Created_By_NAV_Unit__c
+        ];
+
+        navUnitName = getUnitName.Name;
+
         personIdent = cnote.CRM_Account__r.INT_PersonIdent__c;
         convoWrapper = new RecordPrintWrapper(cnote); 
     }
@@ -125,7 +132,7 @@ public with sharing class NKS_RecordPrintController {
         }
 
         private String translateCommunicationChannel(String communicationChannel){
-            Map<String, String> communicationChannelMap = new Map<String, String>{'Phone' => 'Telefon', 'Meeting' => 'Møte'};
+            Map<String, String> communicationChannelMap = new Map<String, String>{'Phone' => 'telefon', 'Meeting' => 'møte'};
             
             if (!String.isBlank(communicationChannel)){
                 return communicationChannelMap.get(communicationChannel) ?? communicationChannel;

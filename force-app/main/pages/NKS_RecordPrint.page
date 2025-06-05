@@ -65,7 +65,7 @@
                     <p>
                         <b>Tema: </b> {!convoWrapper.mainRecord['CRM_Theme_Name__c']}</p>
                     <p>
-                        <b>Opprettet av enhet: </b> {!convoWrapper.mainRecord['CRM_Created_By_NAV_Unit__c']}</p>
+                        <b>Opprettet av enhet: </b> {!convoWrapper.mainRecord['CRM_Created_By_NAV_Unit__c']} {!navUnitName}</p>
                 </div>
             </div>
             <div class="message-content">
