@@ -9,7 +9,7 @@
                     <template for:each={flowLoop} for:item="flow">
                         <lightning-layout-item key={flow.developerName} data-expanded={flow.expanded}>
                             <button
-                                class="slds-button slds-button_stretch slds-button_outline-brand button-spacing button-heights"
+                                class={flow.buttonStyling}
                                 type="button"
                                 title={flow.label}
                                 onclick={toggleFlow}
