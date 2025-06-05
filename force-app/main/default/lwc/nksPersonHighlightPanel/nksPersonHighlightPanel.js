@@ -147,7 +147,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historiske fullmakter',
-                    styling: 'slds-theme_shade slds-badge_inverse slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
+                    styling: 'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
