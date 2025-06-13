@@ -5,6 +5,7 @@
         <div class="header">
             <apex:image id="navLogo" url="{!URLFOR($Resource.stoLogos,
                 'navLogo.png')}" />
+            <p>{!accountName}</p>
             <p id="userIdent">
                 <b>Fødselsnummer: </b> {!personIdent}</p>
 

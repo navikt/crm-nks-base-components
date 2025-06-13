@@ -5,6 +5,7 @@ public with sharing class NKS_RecordPrintController {
     public RecordPrintWrapper threadWrapper { get; set; }
     public String personIdent { get; set; }
     public String navUnitName { get; set; }
+    public String accountName { get; set; }
 
     public NKS_RecordPrintController() {
         recordId = ApexPages.currentPage().getParameters().get('id');
@@ -40,6 +41,7 @@ public with sharing class NKS_RecordPrintController {
         ];
 
         personIdent = thread.CRM_Account__r.INT_PersonIdent__c;
+        accountName = thread.CRM_Account__r.Name;
 
         List<Message__c> threadMessages = [
             SELECT
@@ -69,6 +71,7 @@ public with sharing class NKS_RecordPrintController {
                 CRM_Theme_Name__c,
                 CRM_Account__c,
                 CRM_Account__r.INT_PersonIdent__c,
+                CRM_Account__r.Name,
                 CRM_Communication_Channel__c,
                 CRM_Date_Time_Registered__c,
                 CRM_Created_By_Ident__c,
@@ -84,6 +87,7 @@ public with sharing class NKS_RecordPrintController {
         navUnitName = getUnitName.Name;
 
         personIdent = cnote.CRM_Account__r.INT_PersonIdent__c;
+        accountName = cnote.CRM_Account__r.Name;
         convoWrapper = new RecordPrintWrapper(cnote); 
     }
 
