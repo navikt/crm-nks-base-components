@@ -1,8 +1,8 @@
 <template>
     <div class="slds-m-left_x-small backgroundStyling" lwc:if={showBadge}>
-        <div class="headerLine"></div>
+        <div class={headerLineStyling}></div>
         <div class="slds-m-around_medium">
-            <p><Strong>Historiske Fullmakter</Strong></p>
+            <p><Strong>Historiske fullmakter</Strong></p>
             <div class="flexWithGap">
                 <template for:each={badgeData} for:item="fullmakt">
                     <div key={fullmakt}>
