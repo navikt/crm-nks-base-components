@@ -30,7 +30,6 @@ public with sharing class NKS_RecordPrintController {
             SELECT
                 Id,
                 CRM_Theme_Group_Name__c,
-                CRM_Conversation_Summary__c,
                 STO_Category__c,
                 CRM_Thread_Type__c,
                 Name,
