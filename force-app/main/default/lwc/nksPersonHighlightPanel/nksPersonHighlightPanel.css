@@ -29,47 +29,12 @@
     position: relative;
 }
 
-.greenBadge,
-.yellowBadge,
-.redBadge,
-.greyBadge {
-    border: 2px white solid;
-    padding-right: 1rem;
-    padding-left: 1rem;
-    border-radius: 15px;
+lightning-badge {
     font-size: 0.875rem;
-    font-weight: normal;
-}
-
-.greenBadge {
-    background-color: #66c786 !important;
-}
-.yellowBadge {
-    background-color: #ffaa33 !important;
-    color: black !important;
-}
-.redBadge {
-    background-color: #ad0000 !important;
-}
-.greyBadge {
-    background-color: #c6c6c6 !important;
 }
 
 .nowrap-selector {
     flex-wrap: wrap;
-}
-
-.greenBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
-    --badge-line: #66c786;
-}
-.yellowBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
-    --badge-line: #ffaa33;
-}
-.redBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
-    --badge-line: #ad0000;
-}
-.greyBadge + lightning-layout-item c-nks-person-highlight-panel-badge-content {
-    --badge-line: #c6c6c6;
 }
 
 .custom-padding-left {
