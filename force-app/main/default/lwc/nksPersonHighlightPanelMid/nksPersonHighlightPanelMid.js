@@ -5,7 +5,6 @@ import { trackAmplitudeEvent } from 'c/amplitude';
 export default class NksPersonHighlightPanelMid extends NavigationMixin(LightningElement) {
     @api personData;
     @api fullName;
-    @api recordId;
 
     get links() {
         return [
