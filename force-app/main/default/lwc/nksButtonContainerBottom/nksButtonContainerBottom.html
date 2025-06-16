@@ -22,15 +22,13 @@
                 </lightning-layout-item>
             </lightning-layout>
         </lightning-layout-item>
-        <lightning-layout-item size="12" class="slds-var-m-top_xx-small">
+        <lightning-layout-item size="12">
             <template lwc:if={showFlow}>
-                <lightning-card>
-                    <lightning-flow
-                        flow-api-name={activeFlow}
-                        flow-input-variables={inputVariables}
-                        onstatuschange={handleStatusChange}
-                    ></lightning-flow>
-                </lightning-card>
+                <lightning-flow
+                    flow-api-name={activeFlow}
+                    flow-input-variables={inputVariables}
+                    onstatuschange={handleStatusChange}
+                ></lightning-flow>
             </template>
         </lightning-layout-item>
         <template lwc:if={showNotifications}>
