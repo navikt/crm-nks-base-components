@@ -34,7 +34,7 @@ creatingScratchOrg () {
     if [[ -n $npm_config_org_duration ]]; then
         days=$npm_config_org_duration
     else
-        days=30
+        days=7
     fi
 
     echo "Scratch org duration: $days days"
