@@ -24,6 +24,48 @@ public with sharing class NKS_FullmaktController {
     };
 
     @AuraEnabled(cacheable=true)
+    public static FullmaktsgiverAlle getAllFullmaktsgiver(Id recordId, String objectApiName){
+        String personIdent = fetchPersonIdent(recordId, objectApiName);
+        if (personIdent == null) {
+            return null;
+        }
+        try {
+            HttpResponse resp = FullmaktService.getAllFullmakter(personIdent);
+            if (resp.getStatusCode() == 200) {
+                List<FullmaktsGiverAllWrapper> data = (List<FullmaktsGiverAllWrapper>) JSON.deserialize(resp.getBody(), List<FullmaktsGiverAllWrapper>.class); 
+                
+                return processData(data);
+            } else {
+                logError(resp, 'Error retrieving Fullmakts data');
+                throw new FullmaktException();
+            }
+        } catch (Exception e) {
+            logError('Exception occurred while retrieving Fullmakts data: ' + e.getMessage());
+            throw new FullmaktException(e.getMessage());
+        }
+    }
+
+    private static FullmaktsgiverAlle processData(List<FullmaktsGiverAllWrapper> fullmaktData) {
+        FullmaktsGiverAlle fmAlle = new FullmaktsgiverAlle();
+        fmAlle.aktive = new List<FullmaktsgiverV2>();
+        fmAlle.historiske = new List<FullmaktsgiverV2>();
+        Set<String> themeCodes = new Set<String>();
+        for( FullmaktsGiverAllWrapper f : fullmaktData){
+            if(f.skriverettigheter.isEmpty()) {
+                continue;
+            }
+            themeCodes.addAll(f.skriverettigheter);
+            if(f.gyldigTilOgMed == null || f.gyldigTilOgMed > System.today()) {
+                fmAlle.aktive.add(new FullmaktsgiverV2(f));
+            } else {
+                fmAlle.historiske.add(new FullmaktsgiverV2(f));
+            }
+        }
+        Map<String, String> themeNamesByThemeCode = getOmraadeNamesFromCommonCodes(themeCodes);
+        return null;
+    }
+
+    @AuraEnabled(cacheable=true)
     public static List<FullmaktsgiverHistorikk> getHistorikk(Id recordId, String objectApiName) {
         String personIdent = fetchPersonIdent(recordId, objectApiName);
         if (personIdent == null) {
@@ -161,6 +203,22 @@ public with sharing class NKS_FullmaktController {
             omraadeNameByOmraadeTema.put(oCode.CRM_Code__c, oCode.Name);
         }
         return omraadeNameByOmraadeTema;
+    }
+
+    private static Map<String, String> getOmraadeNamesFromCommonCodes(Set<String> themeList) {
+        if (themeList.isEmpty()) {
+            return new Map<String, String>();
+        }
+
+        Map<String, String> themeNamesByThemeCode = new Map<String, String>();
+        for (Common_Code__c code : [
+            SELECT Name, CRM_Code__c
+            FROM Common_Code__c
+            WHERE CRM_Code__c IN :themeList AND CRM_Code_Set__c = 'Tema'
+        ]) {
+            themeNamesByThemeCode.put(code.CRM_Code__c, code.Name);
+        }
+        return themeNamesByThemeCode;
     }
 
     private static List<Omraade> setFullmaktOmraadeList(
@@ -364,6 +422,16 @@ public with sharing class NKS_FullmaktController {
         public String kilde;
     }
 
+    public class FullmaktsGiverAllWrapper {
+        public String fullmaktId;
+        public String fullmaktsgiver;
+        public String fullmektig;
+        public Date gyldigFraOgMed;
+        public Date gyldigTilOgMed;
+        List<String> leserettigheter;
+        List<String> skriverettigheter;
+    }
+
     public virtual class Fullmaktsgiver {
         @AuraEnabled
         public String motpartsRolle;
@@ -423,5 +491,58 @@ public with sharing class NKS_FullmaktController {
     }
 
     public class FullmaktException extends Exception {
+    }
+
+    public class FullmaktsgiverV2 {
+        @AuraEnabled
+        public String fullmektig;
+        @AuraEnabled
+        public Date gyldigFraOgMed;
+        @AuraEnabled
+        public Date gyldigTilOgMed;
+        @AuraEnabled
+        public String periode {
+            get {
+                if (gyldigFraOgMed != null && gyldigTilOgMed != null)
+                    return gyldigFraOgMed + ' - ' + gyldigTilOgMed;
+                if (gyldigFraOgMed != null)
+                    return gyldigFraOgMed + ' - Tidsubegrenset';
+                return '';
+            }
+        }
+        @AuraEnabled
+        public List<Theme> themes;
+        @AuraEnabled
+        public List<ThemeGroup> formattedOmraadeListByThemeGroup {
+            get {
+                // return getFormattedOmraadeList(omraader);
+                return null;
+            }
+        }
+
+        public FullmaktsgiverV2(FullmaktsGiverAllWrapper fmGiverWrapper) {
+            this.fullmektig = fmGiverWrapper.fullmektig; 
+            this.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed; 
+            this.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
+        }
+
+    }
+    
+    public class Theme {
+        public String themeCode;
+        public String themeName;
+        @AuraEnabled
+        public String theme { get {
+            return themeName ?? themecode;
+        }}
+    }
+
+    public class ThemeGroup {
+
+    }
+
+    public class FullmaktsgiverAlle {
+        public List<FullmaktsgiverV2> aktive;
+        public List<FullmaktsgiverV2> historiske;
     }
 }

@@ -200,4 +200,60 @@ public with sharing class NKS_FullmaktControllerTest {
         NKS_FullmaktController.logError('test err message');
         Test.stopTest();
     }
+
+    @IsTest
+    static void testGetAllFullmaktsgiver(){
+        ApiMock.setTestMock(FullmaktService.services.GET_ALL_FULLMAKTSGIVER.name(), 200, 'OK');
+
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        Test.startTest();
+        NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(c.Id, 'case');
+        Test.stopTest();
+        
+        Assert.isNotNull(fullmakter);
+        Assert.isNotNull(fullmakter.aktive);
+        Assert.isNotNull(fullmakter.historiske);
+        Assert.areNotEqual(0, fullmakter.aktive.size());
+        Assert.areNotEqual(0, fullmakter.historiske.size());
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverNoIdent(){
+        Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
+        Test.startTest();
+        NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(a.Id, 'account');
+        Test.stopTest();
+
+        Assert.isNull(fullmakter);
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverErrorHandling(){
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        ApiMock.setTestMock(FullmaktService.services.GET_ALL_FULLMAKTSGIVER.name(), 500, 'Error');
+
+        Boolean exceptionOccured = false;
+        Test.startTest();
+        try {
+            NKS_FullmaktController.getAllFullmaktsgiver(
+                c.Id,
+                'Case'
+            );
+            exceptionOccured = false;
+        } catch (Exception e) {
+            exceptionOccured = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(exceptionOccured);
+    }
+
 }
