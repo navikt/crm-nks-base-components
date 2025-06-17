@@ -218,7 +218,9 @@ public with sharing class NKS_FullmaktControllerTest {
         Assert.isNotNull(fullmakter.aktive);
         Assert.isNotNull(fullmakter.historiske);
         Assert.areNotEqual(0, fullmakter.aktive.size());
+        Assert.areEqual(2, fullmakter.aktive.size());
         Assert.areNotEqual(0, fullmakter.historiske.size());
+        Assert.areEqual(1, fullmakter.historiske.size());
     }
 
     @IsTest
@@ -254,6 +256,38 @@ public with sharing class NKS_FullmaktControllerTest {
         Test.stopTest();
 
         Assert.isTrue(exceptionOccured);
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverThemeHandling(){
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new SingleRequestMock(
+                200,
+                'OK',
+                '[{ "fullmaktId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "fullmaktsgiver": "12345678910", "fullmektig": "12345678910", "gyldigFraOgMed": "2025-06-17", "gyldigTilOgMed": null, "leserettigheter": [ "DAG", "FOS", "PEN" ], "skriverettigheter": [ "BIL", "HEL", "HJE", "SAK", "SER" ], "endringslogg": [ { "endringId": 9007199254740991, "registrert": "2025-06-17T08:59:19.868Z", "registrertAv": "string", "kilde": "BRUKER", "hendelse": "OPPRETTELSE_AV_BRUKER", "gyldigFraOgMed": "2025-06-17", "gyldigTilOgMed": null, "leserettigheter": [ "DAG", "FOS", "PEN" ], "skriverettigheter": [ "BIL", "HEL", "HJE", "SAK", "SER" ] } ] }]',
+                null
+            )
+        );
+
+        Test.startTest();
+            NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(
+                c.Id,
+                'Case'
+            );
+        Test.stopTest();
+
+        Assert.areEqual('Hjelpemidler', fullmakter.aktive[0].themeGroup[0].name);
+        Assert.areEqual('Gjelder alle ytelser', fullmakter.aktive[0].themeGroup[0].displayValue);
+        Assert.areEqual('Øvrig', fullmakter.aktive[0].themeGroup[1].name);
+        Assert.areEqual('SAK, SER', fullmakter.aktive[0].themeGroup[1].displayValue);
+        
     }
 
 }
