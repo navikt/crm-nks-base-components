@@ -18,5 +18,4 @@
 .headerLine {
     width: 100%;
     height: 0.5rem;
-    background: var(--badge-line, #ad0000);
 }

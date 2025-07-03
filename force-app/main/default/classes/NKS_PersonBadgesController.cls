@@ -181,7 +181,7 @@ public with sharing class NKS_PersonBadgesController {
                         new Badge(
                                 'securityMeasures',
                                 person.NKS_NumberOfSecurityMeasures__c + ' sikkerhetstiltak',
-                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer redBadge',
+                                'slds-theme_error slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                                 '',
                                 '',
                                 true
@@ -216,7 +216,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                             'spokenLanguageIntepreter',
                             getFieldLabel('INT_SpokenLanguageIntepreter__c'),
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                             '',
                             '',
                             true
@@ -238,7 +238,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                             'isDeceased',
                             getFieldLabel('INT_IsDeceased__c'),
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                             '',
                             '',
                             true
@@ -287,7 +287,7 @@ public with sharing class NKS_PersonBadgesController {
                         new Badge(
                                 'powerOfAttorney',
                                 'Fullmakt',
-                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                                 '',
                                 '',
                                 true
@@ -342,7 +342,7 @@ public with sharing class NKS_PersonBadgesController {
                     new Badge(
                             'guardianshipOrFuturePowerOfAttorney',
                             'Vergemål',
-                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                             '',
                             '',
                             true
@@ -590,7 +590,7 @@ public with sharing class NKS_PersonBadgesController {
                 new Badge(
                         'openSTO',
                         String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
-                        'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
+                        'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                         '',
                         '',
                         true
@@ -635,7 +635,7 @@ public with sharing class NKS_PersonBadgesController {
                 new Badge(
                     'openSTO',
                     String.valueOf(count) + (count == 1 ? ' åpen STO' : ' åpne STO-er'),
-                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer greenBadge',
+                    'slds-theme_success slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     '',
                     '',
                     true,
@@ -685,7 +685,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String label;
         @AuraEnabled
-        public String styling;
+        public String styling; // Should contain a slds theme so headerLine is set correctly. e.g. slds-theme_error
         @AuraEnabled
         public String iconName;
         @AuraEnabled
@@ -717,7 +717,7 @@ public with sharing class NKS_PersonBadgesController {
             this(
                 name,
                 label,
-                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small yellowBadge',
+                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small',
                 '',
                 '',
                 false
