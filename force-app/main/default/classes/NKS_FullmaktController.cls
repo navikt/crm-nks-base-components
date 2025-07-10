@@ -47,8 +47,8 @@ public with sharing class NKS_FullmaktController {
 
     private static FullmaktsgiverAlle processData(List<FullmaktsGiverAllWrapper> fullmaktData) {
         FullmaktsGiverAlle fmAlle = new FullmaktsgiverAlle();
-        fmAlle.aktive = new List<FullmaktsgiverV2>();
-        fmAlle.historiske = new List<FullmaktsgiverV2>();
+        fmAlle.active = new List<FullmaktsgiverV2>();
+        fmAlle.historical = new List<FullmaktsgiverV2>();
         
         Map<String, Theme> themeByThemeCode = new Map<String, Theme>();
         for( FullmaktsGiverAllWrapper fullmakt : fullmaktData){
@@ -58,9 +58,9 @@ public with sharing class NKS_FullmaktController {
            List<ThemeGroup> fullmaktThemeGroups = extractThemeGroupFromFullmakt(fullmakt, themeByThemeCode);
 
             if(fullmakt.gyldigTilOgMed == null || fullmakt.gyldigTilOgMed > System.today()) {
-                fmAlle.aktive.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
+                fmAlle.active.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
             } else {
-                fmAlle.historiske.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
+                fmAlle.historical.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
             }
         }
         populateThemeNamesFromCommonCodes(themeByThemeCode.values());
@@ -554,7 +554,7 @@ public with sharing class NKS_FullmaktController {
     public class FullmaktException extends Exception {
     }
 
-    public class FullmaktsgiverV2 {
+    public virtual class FullmaktsgiverV2 {
         private final List<String> opphoertList = new List<String>{'OPPHOER_AV_BRUKER','OPPHOER_AV_NAV'};
 
         @AuraEnabled
@@ -585,6 +585,8 @@ public with sharing class NKS_FullmaktController {
             this.status = opphoertList.contains(fmGiverWrapper.endringslogg[0]?.hendelse) ? 'Avsluttet': 'Utløpt';
             this.themeGroup = themeGroups;
         }
+        public FullmaktsgiverV2() {
+        }
 
     }
     
@@ -602,6 +604,7 @@ public with sharing class NKS_FullmaktController {
     }
 
     public class ThemeGroup {
+        @AuraEnabled
         public String name;
         public Set<Theme> themes;
         @AuraEnabled
@@ -625,7 +628,7 @@ public with sharing class NKS_FullmaktController {
     }
 
     public class FullmaktsgiverAlle {
-        public List<FullmaktsgiverV2> aktive;
-        public List<FullmaktsgiverV2> historiske;
+        public List<FullmaktsgiverV2> active;
+        public List<FullmaktsgiverV2> historical;
     }
 }

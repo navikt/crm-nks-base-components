@@ -215,12 +215,12 @@ public with sharing class NKS_FullmaktControllerTest {
         Test.stopTest();
         
         Assert.isNotNull(fullmakter);
-        Assert.isNotNull(fullmakter.aktive);
-        Assert.isNotNull(fullmakter.historiske);
-        Assert.areNotEqual(0, fullmakter.aktive.size());
-        Assert.areEqual(2, fullmakter.aktive.size());
-        Assert.areNotEqual(0, fullmakter.historiske.size());
-        Assert.areEqual(1, fullmakter.historiske.size());
+        Assert.isNotNull(fullmakter.active);
+        Assert.isNotNull(fullmakter.historical);
+        Assert.areNotEqual(0, fullmakter.active.size());
+        Assert.areEqual(2, fullmakter.active.size());
+        Assert.areNotEqual(0, fullmakter.historical.size());
+        Assert.areEqual(1, fullmakter.historical.size());
     }
 
     @IsTest
@@ -283,10 +283,10 @@ public with sharing class NKS_FullmaktControllerTest {
             );
         Test.stopTest();
 
-        Assert.areEqual('Hjelpemidler', fullmakter.aktive[0].themeGroup[0].name);
-        Assert.areEqual('Gjelder alle ytelser', fullmakter.aktive[0].themeGroup[0].displayValue);
-        Assert.areEqual('Øvrig', fullmakter.aktive[0].themeGroup[1].name);
-        Assert.areEqual('SAK, SER', fullmakter.aktive[0].themeGroup[1].displayValue);
+        Assert.areEqual('Hjelpemidler', fullmakter.active[0].themeGroup[0].name);
+        Assert.areEqual('Gjelder alle ytelser', fullmakter.active[0].themeGroup[0].displayValue);
+        Assert.areEqual('Øvrig', fullmakter.active[0].themeGroup[1].name);
+        Assert.areEqual('SAK, SER', fullmakter.active[0].themeGroup[1].displayValue);
         
     }
 

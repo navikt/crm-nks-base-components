@@ -143,17 +143,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 });
             }
             badges = [...badges, ...data.badges];
-            if (historikkData && historikkData.length > 0) {
-                badges.push({
-                    name: 'historicalGuardianship',
-                    label: 'Historiske fullmakter',
-                    styling: 'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
-                    clickable: true,
-                    tabindex: '0',
-                    badgeContent: historikkData,
-                    badgeContentType: 'historicalPowerOfAttorney'
-                });
-            }
             this.badges = badges;
 
             // this.entitlements = data.entitlements;
