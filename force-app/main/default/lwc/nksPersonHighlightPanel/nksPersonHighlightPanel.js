@@ -17,7 +17,6 @@ import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
 import getPersonBadgesAndInfo from '@salesforce/apex/NKS_PersonBadgesController.getPersonBadgesAndInfo';
 import getPersonAccessBadges from '@salesforce/apex/NKS_PersonAccessBadgesController.getPersonAccessBadges';
-import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
 import getVeilederName from '@salesforce/apex/NKS_NOMController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
@@ -45,7 +44,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     @track loadingStates = {
         getPersonBadgesAndInfo: true,
         getPersonAccessBadges: true,
-        getHistorikk: true,
         getRecordPerson: true
     };
 
@@ -53,7 +51,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
     personId;
     wireFields;
     wiredBadge;
-    historikkWiredData;
     isLoaded;
     actorId;
     veilederName;
@@ -125,9 +122,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
     }
 
     setWiredBadge() {
-        if (this.wiredBadge == null || this.historikkWiredData == null) return;
+        if (this.wiredBadge == null) return;
         const { data, error } = this.wiredBadge;
-        const { data: historikkData } = this.historikkWiredData;
 
         if (data) {
             let badges = [];
@@ -171,23 +167,6 @@ export default class NksPersonHighlightPanel extends LightningElement {
             console.error('There was problem to fetch data from wire-function: ' + error);
         } finally {
             this.loadingStates.getPersonAccessBadges = false;
-        }
-    }
-
-    @wire(getHistorikk, {
-        recordId: '$recordId',
-        objectApiName: '$objectApiName'
-    })
-    wiredHistorikk(value) {
-        this.historikkWiredData = value;
-        const { data, error } = this.historikkWiredData;
-        // data is null if there is no historic data
-        this.loadingStates.getHistorikk = !(error || data || data === null);
-        if (data) {
-            this.setWiredBadge();
-        } else if (error) {
-            this.addErrorMessage('getHistorikk', error);
-            console.error(error);
         }
     }
 
