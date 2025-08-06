@@ -276,10 +276,11 @@ public with sharing class NKS_NorgNavUnitService {
                 resp.success = false;
             }
         } catch (Exception e) {
-            logger.exception(ex, null, CRM_ApplicationDomain.Domain.NKS);
             resp.units = new List<NKS_NavUnit>();
             resp.success = false;
             resp.errorMessage = 'getNavUnitFilteredList error: ' + e.getMessage();
+            LoggerUtility logger = new LoggerUtility();
+            logger.exception(e, null, CRM_ApplicationDomain.Domain.NKS);
             logger.publish();
         }
     
