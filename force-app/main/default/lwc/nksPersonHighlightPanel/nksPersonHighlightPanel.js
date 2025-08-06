@@ -135,7 +135,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'NOE',
                     label: 'NOE',
-                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer yellowBadge',
+                    styling: 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: 'NOE',
@@ -147,7 +147,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 badges.push({
                     name: 'historicalGuardianship',
                     label: 'Historiske fullmakter',
-                    styling: 'slds-m-left_x-small slds-m-vertical_xx-small pointer greyBadge',
+                    styling: 'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
