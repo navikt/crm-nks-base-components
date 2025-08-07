@@ -3,15 +3,12 @@
 import { LightningElement, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
-import updateKrrInfo from '@salesforce/apex/NKS_KrrInformationController.updateKrrInformation';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getRecord } from 'lightning/uiRecordApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
-import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
-import NAME from '@salesforce/schema/Person__c.Name';
 import { resolve } from 'c/nksComponentsUtils';
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
@@ -24,13 +21,12 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api iconName; // Name of the icon to display on the format required from the icon-name attribute in lighning:card
     @api numCols = 2; // Number of columns for the displayed fields
     @api hideLabels = false; // Boolean to determine if labels is to be displayed
-    _showLink = false; // Boolean to determine if action slot is to be displayed
     @api wireFields;
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
     @api copyFields;
-    @api showKrrInfo = false;
 
+    _showLink = false; // Boolean to determine if action slot is to be displayed
     showSpinner = false;
     subscription;
     hasListeners;
@@ -236,45 +232,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
-    @wire(getRecord, {
-        recordId: '$personId',
-        fields: [NAME]
-    })
-    wiredRecord({ error, data }) {
-        if (error) {
-            console.log(error);
-        } else if (data) {
-            let personIdent = getFieldValue(data, NAME);
-            if (
-                this.showKrrInfo &&
-                this.viewedObjectApiName === 'Person__c' &&
-                personIdent !== '' &&
-                personIdent !== null
-            ) {
-                this.updateKrrInformation(personIdent);
-            }
-        }
-    }
-
-    updateKrrInformation(personIdent) {
-        if (this.updated === false) {
-            this.isLoading = true;
-            updateKrrInfo({ personIdent: personIdent })
-                .then(() => {
-                    this.refreshKrrInfo();
-                    console.log('Successfully updated krr information');
-                })
-                .catch((error) => {
-                    //Update failed
-                    console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                    this.updated = true;
-                });
-        }
-    }
-
     //Supports refreshing the record
     refreshRecord() {
         this.showSpinner = true;
@@ -285,10 +242,5 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             .finally(() => {
                 this.showSpinner = false;
             });
-    }
-
-    refreshKrrInfo() {
-        this.refreshRecord();
-        publish(this.messageContext, krrUpdateChannel, { updated: true });
     }
 }
