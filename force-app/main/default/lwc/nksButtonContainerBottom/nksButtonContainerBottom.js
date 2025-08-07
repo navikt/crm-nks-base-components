@@ -101,16 +101,17 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     updateFlowLoop() {
+        let baseClasses = 'slds-button slds-button_stretch button-spacing button-heights ';
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,
             label: this.labelList ? this.labelList[index] : flowName,
             expanded: (this.activeFlow === flowName).toString(),
-            buttonStyling: this.buttonStylingList.length ? this.buttonStylingList[index] : 'secondary'
+            buttonStyling: baseClasses + (this.buttonStylingList.length ? this.buttonStylingList[index] : 'slds-button_outline-brand')
         }));
     }
 
     toggleFlow(event) {
-        const flowName = event.detail?.dataId;
+        const flowName = event.currentTarget?.dataset?.id;
         if (!flowName) return;
         if (this.activeFlow === flowName) {
             this.activeFlow = '';

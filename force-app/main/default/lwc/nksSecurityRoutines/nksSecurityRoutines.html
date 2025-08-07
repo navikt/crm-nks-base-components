@@ -1,9 +1,12 @@
 <template>
-    <c-nks-button
-        button-styling="danger"
-        button-label={openSecurityRoutines}
-        is-link="true"
+    <a
+        class="slds-button slds-button_stretch slds-button_destructive slds-text-align_center button-spacing button-heights"
+        type="button"
+        title={openSecurityRoutines}
         onclick={handleSecurity}
+        aria-expanded={buttonExpanded}
         onkeydown={handleKeyDown}
-    ></c-nks-button>
+    >
+        {openSecurityRoutines}
+    </a>
 </template>
