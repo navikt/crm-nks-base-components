@@ -103,8 +103,10 @@ public with sharing class NKS_NorgNavUnitService {
         NavUnitsResponse resp = getNavUnitFilteredList(null, unitNumbers, null, systemContext);
 
         Map<String, NKS_NavUnit> unitMap = new Map<String, NKS_NavUnit>();
-        for(NKS_NavUnit unit : resp.units) {
-            unitMap.put(unit.enhetNr, unit);
+        if (resp.units != null) {
+            for(NKS_NavUnit unit : resp.units) {
+                unitMap.put(unit.enhetNr, unit);
+            }
         }
 
         for(String unitNr : unitNumbers) {
@@ -241,36 +243,47 @@ public with sharing class NKS_NorgNavUnitService {
             urlParamMap.put('oppgavebehandlerFilter', taskProcessingFilter);
         }
 
-        ApiController apiCtrl = new ApiController();
-        if(systemContext) {
-            apiCtrl.setSystemContext();
-        }
-        apiCtrl.initRequest(API_CONFIG_NAME, 'GET_UNITS_FILTERED_LIST');
-        apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
-        apiCtrl.setUrlParams(urlParamMap);
-
-        apiCtrl.doCallout();
-
-        Integer statusCode = apiCtrl.getResponse().getStatusCode();
-
-        if (statusCode == 200) {
-            resp.success = true;
-
-            String bodyString = apiCtrl.getResponse().getBody();
-
-            if (String.isNotBlank(bodyString)) {
-                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-                resp.units = (List<NKS_NavUnit>) JSON.deserialize(bodyString, List<NKS_NavUnit>.class);
+        try {
+            ApiController apiCtrl = new ApiController();
+            if (systemContext) {
+                apiCtrl.setSystemContext();
             }
-        } else {
-            String errorRef = logError(
-                apiCtrl.getResponse(),
-                'Error from NKS_NorgNavUnitService.getNavUnitFilteredList. Params: ' + urlParamMap
-            );
-            resp.errorMessage = 'Kunne ikke hente enheten. Referanse til feil: ' + errorRef;
-            resp.success = false;
-        }
+            apiCtrl.initRequest(API_CONFIG_NAME, 'GET_UNITS_FILTERED_LIST');
+            apiCtrl.addServiceAuthHeader(SERVICE_AUTH_HEADER);
+            apiCtrl.setUrlParams(urlParamMap);
 
+            apiCtrl.doCallout();
+
+            HttpResponse response = apiCtrl.getResponse();
+            Integer statusCode = response.getStatusCode();
+
+            if (statusCode == 200) {
+                resp.success = true;
+
+                String bodyString = response.getBody();
+
+                if (String.isNotBlank(bodyString)) {
+                    bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
+                    List<NKS_NavUnit> deserializedUnits = (List<NKS_NavUnit>) JSON.deserialize(bodyString, List<NKS_NavUnit>.class);
+                    resp.units = deserializedUnits != null ? deserializedUnits : new List<NKS_NavUnit>();
+                }
+            } else {
+                String errorRef = logError(
+                    response,
+                    'Error from NKS_NorgNavUnitService.getNavUnitFilteredList. Params: ' + urlParamMap
+                );
+                resp.errorMessage = 'Kunne ikke hente enheten. Referanse til feil: ' + errorRef;
+                resp.success = false;
+            }
+        } catch (Exception e) {
+            resp.units = new List<NKS_NavUnit>();
+            resp.success = false;
+            resp.errorMessage = 'getNavUnitFilteredList error: ' + e.getMessage();
+            LoggerUtility logger = new LoggerUtility();
+            logger.exception(e, null, CRM_ApplicationDomain.Domain.NKS);
+            logger.publish();
+        }
+    
         return resp;
     }
 
