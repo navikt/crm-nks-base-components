@@ -32,26 +32,34 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         }
     }
 
-    getFormattedLink() {
+    async getFormattedLink() {
         if (!this.navUnit) {
             return;
         }
-        getNavLinks().then((list) => {
+
+        try {
+            const list = await getNavLinks();
+            if (!Array.isArray(list)) throw new Error('Nav links returned invalid data');
+
             const onlineCheck = list.find((unit) => unit.enhetNr === this.navUnit.unitNr);
             if (onlineCheck) {
                 this.formattedUnitLink = 'https://www.nav.no' + onlineCheck.path;
                 return;
             }
+
             this.formattedUnitLink = `https://www.nav.no/kontor/${this.navUnit.navn
                 .replace(/\.\s/g, '.')
                 .replace(/[\s/]/g, '-')
                 .normalize('NFD')
                 .replace(/[\u0300-\u036f]/g, '')}`;
-        });
+        } catch (error) {
+            console.error('Failed to format Nav link:', error);
+            this.formattedUnitLink = 'https://www.nav.no'; // fallback safe link
+        }
+        
     }
 
     handleCopy(event) {
-        // fjernes?
         const hiddenInput = document.createElement('input');
         const eventValue = event.currentTarget.value;
         hiddenInput.value = eventValue;

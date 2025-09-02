@@ -51,10 +51,8 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     shownBadge;
     personId;
-    wireFields;
     wiredBadge;
     historikkWiredData;
-    isLoaded;
     actorId;
     veilederName;
     veilederIdent;
@@ -73,7 +71,14 @@ export default class NksPersonHighlightPanel extends LightningElement {
     uuAlertText = '';
 
     connectedCallback() {
-        this.wireFields = [`${this.objectApiName}.Id`];
+        // Listen for global uncaught errors in case component crashes during lifecycle to try to find out why header sometimes does not render
+        window.addEventListener('error', (event) => {
+            console.error('Uncaught error in NksPersonHighlightPanel:', event.error);
+        });
+    }
+
+    errorCallback(error, stack) {
+        console.error('Error caught by errorCallback in parent nksPersonHighlightPanel: ', error, stack);
     }
 
     @wire(getVeilederIdent, { actorId: '$actorId' })
@@ -444,5 +449,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
 
     get xMarkIconSrc() {
         return NAV_ICONS + '/xMarkIcon.svg#xMarkIcon';
+    }
+
+    get wireFields() {
+        return this.objectApiName ? [`${this.objectApiName}.Id`] : [];
     }
 }
