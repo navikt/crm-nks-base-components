@@ -8,29 +8,29 @@
                 <lightning-layout-item class={buttonClass}>
                     <template for:each={flowLoop} for:item="flow">
                         <lightning-layout-item key={flow.developerName} data-expanded={flow.expanded}>
-                            <c-nks-button
-                                button-label={flow.label}
-                                button-styling={flow.buttonStyling}
-                                element-data-id={flow.developerName}
+                            <button
+                                class={flow.buttonStyling}
+                                type="button"
+                                title={flow.label}
+                                onclick={toggleFlow}
                                 aria-expanded={flow.expanded}
-                                onbuttonclick={toggleFlow}
-                                full-height
-                            ></c-nks-button>
+                                data-id={flow.developerName}
+                            >
+                                {flow.label}
+                            </button>
                         </lightning-layout-item>
                     </template>
                     <slot name="navigationButton"></slot>
                 </lightning-layout-item>
             </lightning-layout>
         </lightning-layout-item>
-        <lightning-layout-item size="12" class="slds-var-m-top_xx-small">
+        <lightning-layout-item size="12">
             <template lwc:if={showFlow}>
-                <lightning-card>
-                    <lightning-flow
-                        flow-api-name={activeFlow}
-                        flow-input-variables={inputVariables}
-                        onstatuschange={handleStatusChange}
-                    ></lightning-flow>
-                </lightning-card>
+                <lightning-flow
+                    flow-api-name={activeFlow}
+                    flow-input-variables={inputVariables}
+                    onstatuschange={handleStatusChange}
+                ></lightning-flow>
             </template>
         </lightning-layout-item>
         <template lwc:if={showNotifications}>
