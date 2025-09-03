@@ -121,6 +121,8 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public List<PowerOfAttorney> powerOfAttorneys;
         @AuraEnabled
+        public List<HistoricalPowerOfAttorney> historicalPowerOfAttorneys;
+        @AuraEnabled
         public List<String> errors;
         @AuraEnabled
         public Date dateOfDeath;
@@ -137,6 +139,7 @@ public with sharing class NKS_PersonBadgesController {
             this.spokenLanguagesIntepreter = new List<String>();
             this.guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
             this.powerOfAttorneys = new List<PowerOfAttorney>();
+            this.historicalPowerOfAttorneys = new List<HistoricalPowerOfAttorney>();
             this.errors = new List<String>();
             this.personIdentNameMap = new Map<String, String>();
             // this.entitlements = new List<String>();
@@ -147,19 +150,30 @@ public with sharing class NKS_PersonBadgesController {
                 //Get field set for use later in the class
                 this.fieldSet = Schema.SObjectType.Person__c.fields.getMap().keySet();
                 setBadgeData();
+
+                moveHistoricalLast();
             }
         }
 
         private void setBadgeData() {
             setSecurityMeasures();
             setIsDeceased();
-            setPowerOfAttorney();
+            setPowerOfAttorneyAndHistoricalPowerOfAttorney();
             setGuardianshipOrFuturePowerOfAttorney();
             setSpokenLanguagesIntepreter();
             setDegreeOfHearingAndVisualImpairment();
             setPersonName();
             setKrrReservation();
             // setEntitlements();
+        }
+
+        private void moveHistoricalLast() {
+            for(Integer i = 0; i < this.badges.size(); i++) {
+				if(this.badges[i].name == 'historicalPowerOfAttorney') {
+                    this.badges.add(this.badges.remove(i));
+                    break;
+				}
+            }
         }
 
         private void setSecurityMeasures() {
@@ -248,42 +262,76 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
-        private void setPowerOfAttorney() {
+        private void setPowerOfAttorneyAndHistoricalPowerOfAttorney() {
             try {
-                List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere = (List<NKS_FullmaktController.Fullmaktsgiver>) NKS_FullmaktController.getFullmaktsgiver(
+                NKS_FullmaktController.FullmaktsgiverAlle fullmaktsgivere = NKS_FullmaktController.getAllFullmaktsgiver(
                     person.Id,
                     'Person__c'
                 );
-                filterFullmaktOmraade(fullmaktsgivere);
+                // filterFullmaktOmraade(fullmaktsgivere);
+                
 
-                if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
+                if (fullmaktsgivere == null)
                     return;
+                createPowerOfAttorneyBadge(fullmaktsgivere.active);
+                createHistoricalPowerOfAttorneyBadge(fullmaktsgivere.historical);
 
-                Date today = Date.today();
-                for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
-                    NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
+                // Date today = Date.today();
+                // for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
+                //     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
 
-                    if (
-                        fullmaktsgiver.gyldigFraOgMed <= today &&
-                        (fullmaktsgiver.gyldigTilOgMed >= today ||
-                        fullmaktsgiver.gyldigTilOgMed == null)
-                    ) {
-                        PowerOfAttorney poa = new PowerOfAttorney();
-                        poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
-                        poa.omraader = fullmaktsgiver.omraader;
-                        poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
-                        poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
-                        poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
-                        poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
+                //     if (
+                //         fullmaktsgiver.gyldigFraOgMed <= today &&
+                //         (fullmaktsgiver.gyldigTilOgMed >= today ||
+                //         fullmaktsgiver.gyldigTilOgMed == null)
+                //     ) {
+                //         PowerOfAttorney poa = new PowerOfAttorney();
+                //         poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
+                //         poa.omraader = fullmaktsgiver.omraader;
+                //         poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
+                //         poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
+                //         poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
+                //         poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
 
-                        poa.id = String.valueOf(i);
-                        personIdentNameMap.put(poa.motpartsPersonident, '');
-                        powerOfAttorneys.add(poa);
-                    }
+                //         poa.id = String.valueOf(i);
+                //         personIdentNameMap.put(poa.motpartsPersonident, '');
+                //         powerOfAttorneys.add(poa);
+                //     }
+                // }
+
+                // if (!powerOfAttorneys.isEmpty()) {
+                //     badges.add(
+                //         new Badge(
+                //                 'powerOfAttorney',
+                //                 'Fullmakt',
+                //                 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
+                //                 '',
+                //                 '',
+                //                 true
+                //             )
+                //             .setBadgeContent(powerOfAttorneys)
+                //     );
+                // }
+            } catch (Exception e) {
+                errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
+            }
+        }
+
+        private void createPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> active) {
+            try {                
+                if(active.isEmpty()) {
+                    return;
                 }
 
-                if (!powerOfAttorneys.isEmpty()) {
-                    badges.add(
+                for (Integer i = 0; i < active.size(); i++) {
+                    PowerOfAttorney poa = new PowerOfAttorney(active[i]);
+
+                    poa.id = String.valueOf(i);
+                    personIdentNameMap.put(poa.fullmektig, '');
+                    powerOfAttorneys.add(poa);
+                }
+
+                badges.add(
                         new Badge(
                                 'powerOfAttorney',
                                 'Fullmakt',
@@ -294,10 +342,39 @@ public with sharing class NKS_PersonBadgesController {
                             )
                             .setBadgeContent(powerOfAttorneys)
                     );
-                }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
+        }
+
+        private void createHistoricalPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> historic) {
+        try {
+            if(historic.isEmpty()) {
+                return;
+            }
+
+            for (Integer i = 0; i < historic.size(); i++) {
+                HistoricalPowerOfAttorney poa = new HistoricalPowerOfAttorney(historic[i]);
+
+                poa.id = String.valueOf(i);
+                personIdentNameMap.put(poa.fullmektig, '');
+                historicalPowerOfAttorneys.add(poa);
+            }
+
+            badges.add(
+                new Badge(
+                        'historicalPowerOfAttorney',
+                        'Historisk Fullmakt',
+                        'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
+                        '',
+                        '',
+                        true
+                    )
+                    .setBadgeContent(historicalPowerOfAttorneys)
+            );
+        } catch (Exception e) {
+            errors.add('Feil ved uthenting av historiske fullmakts detaljer:\n' + e.getMessage());
+        }
         }
 
         private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere) {
@@ -664,10 +741,17 @@ public with sharing class NKS_PersonBadgesController {
                 }
             }
 
-            for (PowerOfAttorney poa : powerOfAttorneys) {
-                String name = personIdentNameMap.get(poa.motpartsPersonident);
+            for (PowerOfAttorney activePoa : powerOfAttorneys) {
+                String name = personIdentNameMap.get(activePoa.fullmektig);
                 if (String.isNotBlank(name)) {
-                    poa.motpartsNavn = name;
+                    activePoa.fullmektigNavn = name;
+                }
+            }
+
+            for (HistoricalPowerOfAttorney historicPoa : historicalPowerOfAttorneys) {
+                String name = personIdentNameMap.get(historicPoa.fullmektig);
+                if (String.isNotBlank(name)) {
+                    historicPoa.fullmektigNavn = name;
                 }
             }
         }
@@ -804,7 +888,33 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class PowerOfAttorney extends NKS_FullmaktController.Fullmaktsgiver implements BadgeContent {
+    public class PowerOfAttorney extends NKS_FullmaktController.FullmaktsgiverV2 implements BadgeContent {
+        @AuraEnabled
+        public String id;
+        @AuraEnabled
+        public String fullmektigNavn;
+
+        public PowerOfAttorney(NKS_FullmaktController.FullmaktsgiverV2 fg) {
+            this.fullmektig = fg.fullmektig;
+            this.gyldigFraOgMed = fg.gyldigFraOgMed;
+            this.gyldigTilOgMed = fg.gyldigTilOgMed;
+            this.status = fg.status;
+            this.themeGroup = fg.themeGroup;
+        }
+    }
+    public class HistoricalPowerOfAttorney extends NKS_FullmaktController.FullmaktsgiverV2 implements BadgeContent {
+        @AuraEnabled
+        public String id;
+        @AuraEnabled
+        public String fullmektigNavn;
+
+        public HistoricalPowerOfAttorney(NKS_FullmaktController.FullmaktsgiverV2 fg) {
+            this.fullmektig = fg.fullmektig;
+            this.gyldigFraOgMed = fg.gyldigFraOgMed;
+            this.gyldigTilOgMed = fg.gyldigTilOgMed;
+            this.status = fg.status;
+            this.themeGroup = fg.themeGroup;
+        }
     }
 
     public class Navn {

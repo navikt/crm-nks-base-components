@@ -24,6 +24,104 @@ public with sharing class NKS_FullmaktController {
     };
 
     @AuraEnabled(cacheable=true)
+    public static FullmaktsgiverAlle getAllFullmaktsgiver(Id recordId, String objectApiName){
+        String personIdent = fetchPersonIdent(recordId, objectApiName);
+        if (personIdent == null) {
+            return null;
+        }
+        try {
+            HttpResponse resp = FullmaktService.getAllFullmakter(personIdent);
+            if (resp.getStatusCode() == 200) {
+                List<FullmaktsGiverAllWrapper> data = (List<FullmaktsGiverAllWrapper>) JSON.deserialize(resp.getBody(), List<FullmaktsGiverAllWrapper>.class); 
+                
+                return processData(data);
+            } else {
+                logError(resp, 'Error retrieving Fullmakts data');
+                throw new FullmaktException();
+            }
+        } catch (Exception e) {
+            logError('Exception occurred while retrieving Fullmakts data: ' + e.getMessage());
+            throw new FullmaktException(e.getMessage());
+        }
+    }
+
+    private static FullmaktsgiverAlle processData(List<FullmaktsGiverAllWrapper> fullmaktData) {
+        FullmaktsGiverAlle fmAlle = new FullmaktsgiverAlle();
+        fmAlle.active = new List<FullmaktsgiverV2>();
+        fmAlle.historical = new List<FullmaktsgiverV2>();
+        
+        Map<String, Theme> themeByThemeCode = new Map<String, Theme>();
+        for( FullmaktsGiverAllWrapper fullmakt : fullmaktData){
+            if(fullmakt.skriverettigheter.isEmpty()) {
+                continue;
+            }
+           List<ThemeGroup> fullmaktThemeGroups = extractThemeGroupFromFullmakt(fullmakt, themeByThemeCode);
+
+            if(fullmakt.gyldigTilOgMed == null || fullmakt.gyldigTilOgMed > System.today()) {
+                fmAlle.active.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
+            } else {
+                fmAlle.historical.add(new FullmaktsgiverV2(fullmakt, fullmaktThemeGroups));
+            }
+        }
+        populateThemeNamesFromCommonCodes(themeByThemeCode.values());
+        return fmAlle;
+    }
+
+    private static List<ThemeGroup> extractThemeGroupFromFullmakt(FullmaktsGiverAllWrapper fullmakt, Map<String, Theme> themeByThemeCode) {
+        Map<String, ThemeGroup> fullmaktThemeGroup = new Map<String, ThemeGroup>();
+        for(String themeCode : fullmakt.skriverettigheter) {
+            for(String themeGroupKey : fullmaktThemesByGroups.keySet()) {
+                Set<String> codesInThemeGroup = fullmaktThemesByGroups.get(themeGroupKey);
+                if(codesInThemeGroup.contains(themeCode)) {
+                    Theme currentTheme;
+                    if(themeByThemeCode.containsKey(themeCode)) {
+                        currentTheme = themeByThemeCode.get(themeCode);
+                    } else {
+                        currentTheme = new Theme(themeCode);
+                        themeByThemeCode.put(themeCode, currentTheme);
+                    }
+
+                    if(fullmaktThemeGroup.containsKey(themeGroupKey)) {
+                        fullmaktThemeGroup.get(themeGroupKey).themes.add(currentTheme);
+                    } else {
+                        fullmaktThemeGroup.put(themeGroupKey, new ThemeGroup(themeGroupKey, new Set<Theme>{ currentTheme }));
+                    }
+                    break;
+                }
+            }
+        }
+        return fullmaktThemeGroup.values();
+    }
+
+    private static void populateThemeNamesFromCommonCodes(List<Theme> themes) {
+        if (themes.isEmpty()) {
+            return;
+        }
+        Set<String> themeCodes = new Set<String>();
+        for (Theme theme : themes) {
+            themeCodes.add(theme.themeCode);
+        }
+
+        List<Common_Code__c> themeNames = [
+            SELECT Name, CRM_Code__c
+            FROM Common_Code__c
+            WHERE CRM_Code__c IN :themeCodes AND CRM_Code_Set__c = 'Tema'
+        ];
+        
+        Map<String, String> themeNameByThemeCode = new Map<String, String>();
+        for(Common_Code__c commonCode : themeNames) {
+            themeNameByThemeCode.put(commonCode.CRM_Code__c, commonCode.Name);
+        }
+
+        for (Theme iterationTheme : themes) {
+            String themeName = themeNameByThemeCode.get(iterationTheme.themeCode);
+            if(themeName != null) {
+                iterationTheme.themeName = themeName;
+            }
+        }
+    }
+
+    @AuraEnabled(cacheable=true)
     public static List<FullmaktsgiverHistorikk> getHistorikk(Id recordId, String objectApiName) {
         String personIdent = fetchPersonIdent(recordId, objectApiName);
         if (personIdent == null) {
@@ -161,6 +259,22 @@ public with sharing class NKS_FullmaktController {
             omraadeNameByOmraadeTema.put(oCode.CRM_Code__c, oCode.Name);
         }
         return omraadeNameByOmraadeTema;
+    }
+
+    private static Map<String, String> getOmraadeNamesFromCommonCodes(Set<String> themeList) {
+        if (themeList.isEmpty()) {
+            return new Map<String, String>();
+        }
+
+        Map<String, String> themeNamesByThemeCode = new Map<String, String>();
+        for (Common_Code__c code : [
+            SELECT Name, CRM_Code__c
+            FROM Common_Code__c
+            WHERE CRM_Code__c IN :themeList AND CRM_Code_Set__c = 'Tema'
+        ]) {
+            themeNamesByThemeCode.put(code.CRM_Code__c, code.Name);
+        }
+        return themeNamesByThemeCode;
     }
 
     private static List<Omraade> setFullmaktOmraadeList(
@@ -364,6 +478,21 @@ public with sharing class NKS_FullmaktController {
         public String kilde;
     }
 
+    public class FullmaktsGiverAllWrapper {
+        public String fullmaktId;
+        public String fullmaktsgiver;
+        public String fullmektig;
+        public Date gyldigFraOgMed;
+        public Date gyldigTilOgMed;
+        public List<String> leserettigheter;
+        public List<String> skriverettigheter;
+        public List<EndringslogWrapper> endringslogg;
+    }
+
+    public class EndringslogWrapper {
+        public String hendelse;
+    }
+
     public virtual class Fullmaktsgiver {
         @AuraEnabled
         public String motpartsRolle;
@@ -423,5 +552,83 @@ public with sharing class NKS_FullmaktController {
     }
 
     public class FullmaktException extends Exception {
+    }
+
+    public virtual class FullmaktsgiverV2 {
+        private final List<String> opphoertList = new List<String>{'OPPHOER_AV_BRUKER','OPPHOER_AV_NAV'};
+
+        @AuraEnabled
+        public String fullmektig;
+        @AuraEnabled
+        public Date gyldigFraOgMed;
+        @AuraEnabled
+        public Date gyldigTilOgMed;
+        @AuraEnabled
+        public String periode {
+            get {
+                if (gyldigFraOgMed != null && gyldigTilOgMed != null)
+                    return gyldigFraOgMed.format() + ' - ' + gyldigTilOgMed.format();
+                if (gyldigFraOgMed != null)
+                    return gyldigFraOgMed.format() + ' - Tidsubegrenset';
+                return '';
+            }
+        }
+        @AuraEnabled
+        public List<ThemeGroup> themeGroup;
+        @AuraEnabled
+        public String status;
+
+        public FullmaktsgiverV2(FullmaktsGiverAllWrapper fmGiverWrapper, List<ThemeGroup> themeGroups) {
+            this.fullmektig = fmGiverWrapper.fullmektig; 
+            this.gyldigFraOgMed = fmGiverWrapper.gyldigFraOgMed; 
+            this.gyldigTilOgMed = fmGiverWrapper.gyldigTilOgMed;
+            this.status = opphoertList.contains(fmGiverWrapper.endringslogg[0]?.hendelse) ? 'Avsluttet': 'Utløpt';
+            this.themeGroup = themeGroups;
+        }
+        public FullmaktsgiverV2() {
+        }
+
+    }
+    
+    public class Theme {
+        public String themeCode;
+        public String themeName;
+        @AuraEnabled
+        public String theme { get {
+            return themeName ?? themecode;
+        }}
+
+        public Theme(String themeCode) {
+            this.themeCode = themeCode;
+        }
+    }
+
+    public class ThemeGroup {
+        @AuraEnabled
+        public String name;
+        public Set<Theme> themes;
+        @AuraEnabled
+        public String displayValue {
+            get {
+                Set<String> tempList = new Set<String>();
+                String returnString = '';
+                for (Theme theme : themes) {
+                    tempList.add(theme?.themeCode);
+                    returnString += theme.theme + ', ';
+                }
+                if(name == 'Helse') return returnString.removeEnd(', ');
+                return fullmaktThemesByGroups.get(name).equals(tempList) ? 'Gjelder alle ytelser' : returnString.removeEnd(', ');
+            }
+        }
+
+        public ThemeGroup(String name, Set<Theme> themes) {
+            this.name = name;
+            this.themes = themes;
+        }
+    }
+
+    public class FullmaktsgiverAlle {
+        public List<FullmaktsgiverV2> active;
+        public List<FullmaktsgiverV2> historical;
     }
 }
