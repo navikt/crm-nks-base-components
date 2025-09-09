@@ -30,13 +30,14 @@
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
                                 <div class="slds-line-clamp" title={fullmakt.fullmektigsNavn}>
-                                    {fullmakt.fullmektigsNavn}
+                                    <p lwc:if={fullmakt.fullmektigNavn}>{fullmakt.fullmektigNavn}</p>
+                                    <p lwc:else>{fullmakt.fullmektig}</p>
                                 </div>
                             </td>
                             <td data-label="UniqueName" class="slds-cell-wrap">
-                                <template for:each={fullmakt.formattedOmraadeListByThemeGroup} for:item="omraade">
-                                    <div key={omraade.themeGroup} class="slds-line-clamp" title={omraade.temaString}>
-                                        <p><strong>{omraade.themeGroup}</strong>: {omraade.temaString}</p>
+                                <template for:each={fullmakt.themeGroup} for:item="themeGroup">
+                                    <div key={themeGroup.name} class="slds-line-clamp" title={themeGroup.name}>
+                                        <p><strong>{themeGroup.name}</strong>: {themeGroup.displayValue}</p>
                                     </div>
                                 </template>
                             </td>

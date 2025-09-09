@@ -168,8 +168,8 @@ private with sharing class NKS_PersonBadgesController_Test {
         Test.stopTest();
 
         Assert.areEqual(0, result.guardianships.size(), 'Expected 0 guardianship');
-        Assert.areEqual(1, result.errors.size(), 'Expected 1 error');
-        Assert.areEqual(2, result.badges.size(), 'Expected 2 guardianship badge');
+        Assert.areEqual(2, result.errors.size(), 'Expected 2 error');
+        Assert.areEqual(1, result.badges.size(), 'Expected 1 guardianship badge');
     }
 
     @IsTest

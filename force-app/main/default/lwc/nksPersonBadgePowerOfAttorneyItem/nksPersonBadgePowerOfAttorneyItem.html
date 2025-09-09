@@ -1,5 +1,5 @@
 <template>
-    <div>{powerOfAttorney.motpartsRolle}: {powerOfAttorney.motpartsNavn} ({powerOfAttorney.motpartsPersonident})</div>
+    <div><p>Fullmektig: {powerOfAttorney.fullmektigNavn} {powerOfAttorney.fullmektig}</p></div>
     <p>
         Gyldig:&nbsp;
         <lightning-formatted-date-time
@@ -24,8 +24,10 @@
     </p>
     <div class="slds-p-top_x-small">
         <p>Områder:</p>
-        <template for:each={powerOfAttorney.formattedOmraadeListByThemeGroup} for:item="omraade">
-            <p key={omraade.themeGroup}><strong>{omraade.themeGroup}</strong>: {omraade.temaString}</p>
+        <template for:each={powerOfAttorney.themeGroup} for:item="themeGroup">
+            <div key={themeGroup.name} class="slds-line-clamp" title={themeGroup.name}>
+                <p><strong>{themeGroup.name}</strong>: {themeGroup.displayValue}</p>
+            </div>
         </template>
     </div>
 </template>

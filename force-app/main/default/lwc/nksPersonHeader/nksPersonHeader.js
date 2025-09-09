@@ -10,7 +10,6 @@ import CITIZENSHIP_FIELD from '@salesforce/schema/Person__c.INT_Citizenships__c'
 import MARITAL_STATUS_FIELD from '@salesforce/schema/Person__c.INT_MaritalStatus__c';
 import WRITTEN_STANDARD_FIELD from '@salesforce/schema/Person__c.INT_KrrWrittenStandard__c';
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
-import getFullmaktsgiverHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
 import getVeilederName from '@salesforce/apex/NKS_NOMController.getEmployeeName';
@@ -259,37 +258,6 @@ export default class NksPersonHeader extends LightningElement {
         }
         if (error) {
             console.log(`error: ${error}`);
-        }
-    }
-
-    /*
-     * To change the button color on click
-     */
-    handleFullmaktData() {
-        if (!this.btnClick) {
-            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-            this.btnClick = true;
-            this.customclass = 'blue-icon';
-        } else if (this.btnClick) {
-            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-            this.btnClick = false;
-            this.customclass = 'grey-icon';
-        }
-    }
-
-    @wire(getFullmaktsgiverHistorikk, {
-        recordId: '$recordId',
-        objectApiName: '$objectApiName'
-    })
-    wiredHistorikk({ error, data }) {
-        if (data) {
-            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-            this.fullmaktHistData = data;
-            // eslint-disable-next-line @lwc/lwc/no-api-reassignments
-            this.btnShowFullmakt = this.fullmaktHistData.length > 0;
-        }
-        if (error) {
-            console.log(error);
         }
     }
 

@@ -168,11 +168,11 @@ public with sharing class NKS_PersonBadgesController {
         }
 
         private void moveHistoricalLast() {
-            for(Integer i = 0; i < this.badges.size(); i++) {
-				if(this.badges[i].name == 'historicalPowerOfAttorney') {
+            for (Integer i = 0; i < this.badges.size(); i++) {
+                if (this.badges[i].name == 'historicalPowerOfAttorney') {
                     this.badges.add(this.badges.remove(i));
                     break;
-				}
+                }
             }
         }
 
@@ -268,58 +268,18 @@ public with sharing class NKS_PersonBadgesController {
                     person.Id,
                     'Person__c'
                 );
-                // filterFullmaktOmraade(fullmaktsgivere);
-                
-
                 if (fullmaktsgivere == null)
                     return;
                 createPowerOfAttorneyBadge(fullmaktsgivere.active);
                 createHistoricalPowerOfAttorneyBadge(fullmaktsgivere.historical);
-
-                // Date today = Date.today();
-                // for (Integer i = 0; i < fullmaktsgivere.size(); i++) {
-                //     NKS_FullmaktController.Fullmaktsgiver fullmaktsgiver = fullmaktsgivere[i];
-
-                //     if (
-                //         fullmaktsgiver.gyldigFraOgMed <= today &&
-                //         (fullmaktsgiver.gyldigTilOgMed >= today ||
-                //         fullmaktsgiver.gyldigTilOgMed == null)
-                //     ) {
-                //         PowerOfAttorney poa = new PowerOfAttorney();
-                //         poa.motpartsPersonident = fullmaktsgiver.motpartsPersonident;
-                //         poa.omraader = fullmaktsgiver.omraader;
-                //         poa.gyldigFraOgMed = fullmaktsgiver.gyldigFraOgMed;
-                //         poa.gyldigTilOgMed = fullmaktsgiver.gyldigTilOgMed;
-                //         poa.motpartsNavn = fullmaktsgiver.motpartsNavn;
-                //         poa.motpartsRolle = fullmaktsgiver.motpartsRolle;
-
-                //         poa.id = String.valueOf(i);
-                //         personIdentNameMap.put(poa.motpartsPersonident, '');
-                //         powerOfAttorneys.add(poa);
-                //     }
-                // }
-
-                // if (!powerOfAttorneys.isEmpty()) {
-                //     badges.add(
-                //         new Badge(
-                //                 'powerOfAttorney',
-                //                 'Fullmakt',
-                //                 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
-                //                 '',
-                //                 '',
-                //                 true
-                //             )
-                //             .setBadgeContent(powerOfAttorneys)
-                //     );
-                // }
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
         }
 
         private void createPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> active) {
-            try {                
-                if(active.isEmpty()) {
+            try {
+                if (active.isEmpty()) {
                     return;
                 }
 
@@ -332,67 +292,48 @@ public with sharing class NKS_PersonBadgesController {
                 }
 
                 badges.add(
-                        new Badge(
-                                'powerOfAttorney',
-                                'Fullmakt',
-                                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
-                                '',
-                                '',
-                                true
-                            )
-                            .setBadgeContent(powerOfAttorneys)
-                    );
+                    new Badge(
+                            'powerOfAttorney',
+                            'Fullmakt',
+                            'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(powerOfAttorneys)
+                );
             } catch (Exception e) {
                 errors.add('Feil ved uthenting av fullmakts detaljer:\n' + e.getMessage());
             }
         }
 
         private void createHistoricalPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> historic) {
-        try {
-            if(historic.isEmpty()) {
-                return;
-            }
-
-            for (Integer i = 0; i < historic.size(); i++) {
-                HistoricalPowerOfAttorney poa = new HistoricalPowerOfAttorney(historic[i]);
-
-                poa.id = String.valueOf(i);
-                personIdentNameMap.put(poa.fullmektig, '');
-                historicalPowerOfAttorneys.add(poa);
-            }
-
-            badges.add(
-                new Badge(
-                        'historicalPowerOfAttorney',
-                        'Historisk Fullmakt',
-                        'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
-                        '',
-                        '',
-                        true
-                    )
-                    .setBadgeContent(historicalPowerOfAttorneys)
-            );
-        } catch (Exception e) {
-            errors.add('Feil ved uthenting av historiske fullmakts detaljer:\n' + e.getMessage());
-        }
-        }
-
-        private void filterFullmaktOmraade(List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsgivere) {
-            if (fullmaktsgivere == null || fullmaktsgivere.isEmpty())
-                return;
-
-            for (Integer i = (fullmaktsgivere.size() - 1); i >= 0; i--) {
-                NKS_FullmaktController.Fullmaktsgiver fullmakt = fullmaktsgivere[i];
-                for (Integer j = (fullmakt.omraader.size() - 1); j >= 0; j--) {
-                    NKS_FullmaktController.Omraade omraade = fullmakt.omraader[j];
-                    if (omraade.handling.contains('KOMMUNISER') || omraade.handling.contains('SKRIV')) {
-                        continue;
-                    }
-                    fullmakt.omraader.remove(j);
+            try {
+                if (historic.isEmpty()) {
+                    return;
                 }
-                if (fullmakt.omraader == null || fullmakt.omraader.isEmpty()) {
-                    fullmaktsgivere.remove(i);
+
+                for (Integer i = 0; i < historic.size(); i++) {
+                    HistoricalPowerOfAttorney poa = new HistoricalPowerOfAttorney(historic[i]);
+
+                    poa.id = String.valueOf(i);
+                    personIdentNameMap.put(poa.fullmektig, '');
+                    historicalPowerOfAttorneys.add(poa);
                 }
+
+                badges.add(
+                    new Badge(
+                            'historicalPowerOfAttorney',
+                            'Historisk Fullmakt',
+                            'slds-theme_shade slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
+                            '',
+                            '',
+                            true
+                        )
+                        .setBadgeContent(historicalPowerOfAttorneys)
+                );
+            } catch (Exception e) {
+                errors.add('Feil ved uthenting av historiske fullmakts detaljer:\n' + e.getMessage());
             }
         }
 
@@ -798,14 +739,7 @@ public with sharing class NKS_PersonBadgesController {
          *
          */
         public Badge(String name, String label) {
-            this(
-                name,
-                label,
-                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small',
-                '',
-                '',
-                false
-            );
+            this(name, label, 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small', '', '', false);
         }
 
         /**
@@ -978,7 +912,9 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public String omfangetErInnenPersonligOmraadeTxt {
             get {
-                Boolean actualOmfangetErInnenPersonligOmraade = vergeEllerFullmektig != null ? vergeEllerFullmektig.omfangetErInnenPersonligOmraade : omfangetErInnenPersonligOmraade;
+                Boolean actualOmfangetErInnenPersonligOmraade = vergeEllerFullmektig != null
+                    ? vergeEllerFullmektig.omfangetErInnenPersonligOmraade
+                    : omfangetErInnenPersonligOmraade;
                 return true == actualOmfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
             }
         }
@@ -989,7 +925,7 @@ public with sharing class NKS_PersonBadgesController {
                 return vergeEllerFullmektig != null ? vergeEllerFullmektig.navn : navn;
             }
             set {
-                if(vergeEllerFullmektig != null){
+                if (vergeEllerFullmektig != null) {
                     vergeEllerFullmektig.navn = value;
                 } else {
                     navn = value;
@@ -1052,7 +988,6 @@ public with sharing class NKS_PersonBadgesController {
                 };
             }
         }
-
     }
 
     public class VergeEllerFullmektig {
