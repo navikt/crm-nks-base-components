@@ -201,6 +201,19 @@
                     </lightning-layout-item>
                 </template>
 
+                <!-- HISTORICALPOWER OF ATTORNEY -->
+                <template if:true={showHistoricalPowerOfAttorney}>
+                    <lightning-layout-item size="12" class="lds-box slds-box_x-small">
+                        <lightning-layout class="slds-has-top-magnet">
+                            <lightning-layout-item size="12">
+                                <c-nks-historikk-viewer
+                                    fullmakt-data={historicalPowerOfAttorneys}
+                                ></c-nks-historikk-viewer>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-layout-item>
+                </template>
+
                 <!-- GUARDIANSHIP OR FUTURE POWER OF ATTORNEY -->
                 <template if:true={showGuardianship}>
                     <lightning-layout-item
