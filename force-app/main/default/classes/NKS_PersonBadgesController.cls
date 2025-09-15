@@ -279,7 +279,7 @@ public with sharing class NKS_PersonBadgesController {
 
         private void createPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> active) {
             try {
-                if (active.isEmpty()) {
+                if (active == null || active.isEmpty()) {
                     return;
                 }
 
@@ -309,7 +309,7 @@ public with sharing class NKS_PersonBadgesController {
 
         private void createHistoricalPowerOfAttorneyBadge(List<NKS_FullmaktController.FullmaktsgiverV2> historic) {
             try {
-                if (historic.isEmpty()) {
+                if (historic == null || historic.isEmpty()) {
                     return;
                 }
 

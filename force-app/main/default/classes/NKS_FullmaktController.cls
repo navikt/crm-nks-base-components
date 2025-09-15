@@ -52,7 +52,7 @@ public with sharing class NKS_FullmaktController {
         
         Map<String, Theme> themeByThemeCode = new Map<String, Theme>();
         for( FullmaktsGiverAllWrapper fullmakt : fullmaktData){
-            if(fullmakt.skriverettigheter.isEmpty()) {
+            if(fullmakt.skriverettigheter == null || fullmakt.skriverettigheter.isEmpty()) {
                 continue;
             }
            List<ThemeGroup> fullmaktThemeGroups = extractThemeGroupFromFullmakt(fullmakt, themeByThemeCode);
@@ -94,7 +94,7 @@ public with sharing class NKS_FullmaktController {
     }
 
     private static void populateThemeNamesFromCommonCodes(List<Theme> themes) {
-        if (themes.isEmpty()) {
+        if (themes == null || themes.isEmpty()) {
             return;
         }
         Set<String> themeCodes = new Set<String>();
@@ -203,7 +203,7 @@ public with sharing class NKS_FullmaktController {
             get {
                 if (gyldigFraOgMed != null && gyldigTilOgMed != null)
                     return gyldigFraOgMed.format() + ' - ' + gyldigTilOgMed.format();
-                if (gyldigTilOgMed != null)
+                if (gyldigFraOgMed != null && gyldigTilOgMed == null)
                     return gyldigFraOgMed.format() + ' - Tidsubegrenset';
                 return '';
             }
@@ -230,7 +230,7 @@ public with sharing class NKS_FullmaktController {
         public String themeName;
         @AuraEnabled
         public String theme { get {
-            return themeName ?? themecode;
+            return themeName ?? themeCode;
         }}
 
         public Theme(String themeCode) {
