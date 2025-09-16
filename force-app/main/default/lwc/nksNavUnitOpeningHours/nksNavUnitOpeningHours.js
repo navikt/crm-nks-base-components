@@ -1,10 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
-import nksNavUnitOpeningHoursV2HTML from './nksNavUnitOpeningHoursV2.html';
-import nksNavUnitOpeningHoursHTML from './nksNavUnitOpeningHours.html';
 
 export default class NksNavUnitOpeningHours extends LightningElement {
     @api title;
-    @api useNewDesign = false;
     @track openingHours = [];
     columns = ['Dag', 'Åpent', 'Åpningstid', 'Kommentar'];
 
@@ -35,10 +32,6 @@ export default class NksNavUnitOpeningHours extends LightningElement {
 
     get hasOpeningHours() {
         return this.openingHours && 0 < this.openingHours.length;
-    }
-
-    render() {
-        return this.useNewDesign ? nksNavUnitOpeningHoursV2HTML : nksNavUnitOpeningHoursHTML;
     }
 
     setOpeningHours() {

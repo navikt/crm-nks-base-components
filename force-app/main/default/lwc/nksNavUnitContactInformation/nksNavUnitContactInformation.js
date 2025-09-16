@@ -1,12 +1,10 @@
-import { LightningElement, api, track } from 'lwc';
-import nksNavUnitContactInformationV2HTML from './nksNavUnitContactInformationV2.html';
-import nksNavUnitContactInformationHTML from './nksNavUnitContactInformation.html';
+import { LightningElement, api } from 'lwc';
 
 export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
-    @api useNewDesign = false;
-    @track _contactInformation;
-    @track _visitorLocations = [];
+
+     _contactInformation;
+     _visitorLocations = [];
     _visitorLocationsLength = 0;
     hasContactInformation = false;
     hasVisitorLocations = false;

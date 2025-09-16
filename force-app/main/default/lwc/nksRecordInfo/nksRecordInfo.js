@@ -3,15 +3,12 @@
 import { LightningElement, api, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelatedRecord';
-import updateKrrInfo from '@salesforce/apex/NKS_KrrInformationController.updateKrrInformation';
 import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
 import { getObjectInfo } from 'lightning/uiObjectInfoApi';
 import { refreshApex } from '@salesforce/apex';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { subscribe, unsubscribe, publish, MessageContext } from 'lightning/messageService';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
 import nksRefreshRecord from '@salesforce/messageChannel/nksRefreshRecord__c';
-import krrUpdateChannel from '@salesforce/messageChannel/krrUpdate__c';
-import NAME from '@salesforce/schema/Person__c.Name';
 import { resolve } from 'c/nksComponentsUtils';
 export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api recordId; // Id from record page (From UiRecordAPI)
@@ -24,19 +21,33 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api iconName; // Name of the icon to display on the format required from the icon-name attribute in lighning:card
     @api numCols = 2; // Number of columns for the displayed fields
     @api hideLabels = false; // Boolean to determine if labels is to be displayed
-    _showLink = false; // Boolean to determine if action slot is to be displayed
     @api wireFields;
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
     @api copyFields;
-    @api showKrrInfo = false;
+    @api showKrrInfo = false; // deprecated
 
+    _showLink = false;
     showSpinner = false;
     subscription;
     hasListeners;
     isLoading = false;
     updated = false;
     personId;
+
+      connectedCallback() {
+        this.subscribeToMessageChannel();
+        this.viewedObjectApiName = this.viewedObjectApiName == null ? this.objectApiName : this.viewedObjectApiName;
+        if (this.relationshipField != null && this.relationshipField !== '') {
+            this.getRelatedRecordId(this.relationshipField, this.objectApiName);
+        }
+        this.viewedRecordId = this.viewedRecordId ? this.viewedRecordId : this.recordId;
+        this.wireFields = [this.viewedObjectApiName + '.Id'];
+        this.fieldList.forEach((e) => {
+            this.wireFields.push(this.viewedObjectApiName + '.' + e.fieldName);
+        }, this);
+        this.parentWireFields = [this.objectApiName + '.Id'];
+    }
 
     renderedCallback() {
         if (this.hasListeners || this.copyFieldsNr.length === 0 || !this.viewedObjectApiName || !this.wireRecord)
@@ -62,8 +73,26 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     disconnectedCallback() {
         this.unsubscribeToMessageChannel();
     }
+  
+    @wire(MessageContext)
+    messageContext;
 
-    //Lightning message service subscribe
+    @wire(getObjectInfo, {
+        objectApiName: '$viewedObjectApiName'
+    })
+    wireObjectInfo;
+
+    @wire(getRecord, {
+        recordId: '$viewedRecordId',
+        fields: '$wireFields'
+    })
+    wireRecord;
+
+    @wire(getRecord, {
+        recordId: '$recordId',
+        fields: '$parentWireFields'
+    })
+
     subscribeToMessageChannel() {
         if (!this.subscription) {
             this.subscription = subscribe(this.messageContext, nksRefreshRecord, (message) => {
@@ -79,37 +108,9 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
-    //Lightning message service unsubsubscribe
     unsubscribeToMessageChannel() {
         unsubscribe(this.subscription);
         this.subscription = null;
-    }
-
-    connectedCallback() {
-        this.subscribeToMessageChannel();
-        this.viewedObjectApiName = this.viewedObjectApiName == null ? this.objectApiName : this.viewedObjectApiName;
-        if (this.relationshipField != null && this.relationshipField !== '') {
-            this.getRelatedRecordId(this.relationshipField, this.objectApiName);
-        }
-        this.viewedRecordId = this.viewedRecordId ? this.viewedRecordId : this.recordId;
-        this.wireFields = [this.viewedObjectApiName + '.Id'];
-        this.fieldList.forEach((e) => {
-            this.wireFields.push(this.viewedObjectApiName + '.' + e.fieldName);
-        }, this);
-        this.parentWireFields = [this.objectApiName + '.Id'];
-    }
-
-    @api
-    set showLink(value) {
-        if (value === 'TRUE' || value === 'true' || value === true) {
-            this._showLink = true;
-        } else {
-            this._showLink = false;
-        }
-    }
-
-    get showLink() {
-        return this._showLink;
     }
 
     getRelatedRecordId(relationshipField, objectApiName) {
@@ -126,42 +127,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             .catch((error) => {
                 console.log(error);
             });
-    }
-
-    get columnWidth() {
-        return 12 / this.numCols;
-    }
-
-    get recordIdSet() {
-        return this.viewedRecordId != null;
-    }
-
-    get fieldList() {
-        let fieldList = (this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : []).map(
-            (e, i) => {
-                return {
-                    fieldName: e,
-                    copyButton: this.copyFieldsNr.includes(i),
-                    buttonName: this.viewedObjectApiName + '_' + e + '_copyButton',
-                    buttonTip:
-                        this.wireObjectInfo.data && this.wireObjectInfo.data.fields[e]
-                            ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label
-                            : ''
-                };
-            }
-        );
-        return fieldList;
-    }
-
-    get copyFieldsNr() {
-        let copyFieldsNr =
-            this.copyFields != null
-                ? this.copyFields
-                      .replace(/\s/g, '')
-                      .split(',')
-                      .map((e) => parseInt(e, 10) - 1)
-                : [];
-        return copyFieldsNr;
     }
 
     handleCopy(field) {
@@ -211,24 +176,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         });
     }
 
-    @wire(MessageContext)
-    messageContext;
-
-    @wire(getObjectInfo, {
-        objectApiName: '$viewedObjectApiName'
-    })
-    wireObjectInfo;
-
-    @wire(getRecord, {
-        recordId: '$viewedRecordId',
-        fields: '$wireFields'
-    })
-    wireRecord;
-
-    @wire(getRecord, {
-        recordId: '$recordId',
-        fields: '$parentWireFields'
-    })
     dewireParent() {
         //If the parent is updated, the relation might have changed and component is reinitialized
         if (this.relationshipField) {
@@ -236,46 +183,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
         }
     }
 
-    @wire(getRecord, {
-        recordId: '$personId',
-        fields: [NAME]
-    })
-    wiredRecord({ error, data }) {
-        if (error) {
-            console.log(error);
-        } else if (data) {
-            let personIdent = getFieldValue(data, NAME);
-            if (
-                this.showKrrInfo &&
-                this.viewedObjectApiName === 'Person__c' &&
-                personIdent !== '' &&
-                personIdent !== null
-            ) {
-                this.updateKrrInformation(personIdent);
-            }
-        }
-    }
-
-    updateKrrInformation(personIdent) {
-        if (this.updated === false) {
-            this.isLoading = true;
-            updateKrrInfo({ personIdent: personIdent })
-                .then(() => {
-                    this.refreshKrrInfo();
-                    console.log('Successfully updated krr information');
-                })
-                .catch((error) => {
-                    //Update failed
-                    console.log('Krr informaion update failed:  ' + JSON.stringify(error, null, 2));
-                })
-                .finally(() => {
-                    this.isLoading = false;
-                    this.updated = true;
-                });
-        }
-    }
-
-    //Supports refreshing the record
     refreshRecord() {
         this.showSpinner = true;
         refreshApex(this.wireRecord)
@@ -287,8 +194,53 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
             });
     }
 
-    refreshKrrInfo() {
-        this.refreshRecord();
-        publish(this.messageContext, krrUpdateChannel, { updated: true });
+       @api
+    set showLink(value) {
+        if (value === 'TRUE' || value === 'true' || value === true) {
+            this._showLink = true;
+        } else {
+            this._showLink = false;
+        }
     }
+
+    get showLink() {
+        return this._showLink;
+    }
+
+    get columnWidth() {
+        return 12 / this.numCols;
+    }
+
+    get recordIdSet() {
+        return this.viewedRecordId != null;
+    }
+
+    get fieldList() {
+        let fieldList = (this.displayedFields != null ? this.displayedFields.replace(/\s/g, '').split(',') : []).map(
+            (e, i) => {
+                return {
+                    fieldName: e,
+                    copyButton: this.copyFieldsNr.includes(i),
+                    buttonName: this.viewedObjectApiName + '_' + e + '_copyButton',
+                    buttonTip:
+                        this.wireObjectInfo.data && this.wireObjectInfo.data.fields[e]
+                            ? 'Kopier ' + this.wireObjectInfo.data.fields[e].label
+                            : ''
+                };
+            }
+        );
+        return fieldList;
+    }
+
+    get copyFieldsNr() {
+        let copyFieldsNr =
+            this.copyFields != null
+                ? this.copyFields
+                      .replace(/\s/g, '')
+                      .split(',')
+                      .map((e) => parseInt(e, 10) - 1)
+                : [];
+        return copyFieldsNr;
+    }
+
 }
