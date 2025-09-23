@@ -157,7 +157,7 @@ private with sharing class NKS_PersonBadgesController_Test {
     @IsTest
     static void setBadgeData_GuardianshipOrFuturePowerOfAttorneyError() {
         ApiMock.setTestMock('GET_FULLMAKTSGIVER', 200, 'ok');
-        String jsonString = '{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01234567890","embete":"fylkesmannenITromsOgFinnmark"}]';
+        String jsonString = '[{"type":"midlertidigForVoksen","omfangetErInnenPersonligOmraade":true,"omfang":"personligeOgOekonomiskeInteresser","navn":null,"motpartsPersonident":"01234567890","embete":"fylkesmannenITromsOgFinnmark"}]';
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '12345678901'];
         p.INT_GuardianshipOrFuturePowerOfAttorney__c = jsonString;
         update p;
