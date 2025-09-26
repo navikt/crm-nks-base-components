@@ -1,7 +1,7 @@
 <template>
     <lightning-layout multiple-rows="true">
         <!-- LOKASJONSNAVN -->
-        <template if:true={locationName}>
+        <template lwc:if={locationName}>
             <lightning-layout-item size="12">
                 <div class="slds-text-title_bold" style="font-size: 16px">{locationName}</div>
             </lightning-layout-item>
@@ -13,14 +13,13 @@
             <p>{visitingAddress}</p>
         </lightning-layout-item>
 
-        <template if:true={hasOpeningHours}>
+        <template lwc:if={hasOpeningHours}>
             <!-- SPESIELLE ÅPNINGSTIDER -->
             <lightning-layout-item size="12" class="slds-var-p-top_x-small">
                 <c-nks-nav-unit-opening-hours
                     title="Spesielle åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="false"
-                    use-new-design
                 >
                 </c-nks-nav-unit-opening-hours>
             </lightning-layout-item>
@@ -31,7 +30,6 @@
                     title="Åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="true"
-                    use-new-design
                 >
                 </c-nks-nav-unit-opening-hours>
             </lightning-layout-item>

@@ -49,13 +49,6 @@
                 label="Use box layout"
                 description="Check to use box layout"
             />
-            <property
-                name="useNewDesign"
-                type="Boolean"
-                default="false"
-                label="Use new design"
-                description="Check to use card layout"
-            />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

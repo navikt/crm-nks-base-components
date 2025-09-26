@@ -77,12 +77,6 @@
                 type="Boolean"
                 default="false"
             />
-            <property
-                name="showKrrInfo"
-                label="Show KRR Information"
-                type="Boolean"
-                default="false"
-            />
             <supportedFormFactors>
                 <supportedFormFactor type="Small" />
                 <supportedFormFactor type="Large" />

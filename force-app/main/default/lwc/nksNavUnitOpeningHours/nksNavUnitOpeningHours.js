@@ -1,10 +1,10 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class NksNavUnitOpeningHours extends LightningElement {
     @api title;
-    @track openingHours = [];
-    columns = ['Dag', 'Åpent', 'Åpningstid', 'Kommentar'];
 
+    openingHours = [];
+    columns = ['Dag', 'Åpent', 'Åpningstid', 'Kommentar'];
     _norgOpeningHours;
     _viewWeekDays = false;
 

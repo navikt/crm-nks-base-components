@@ -25,7 +25,6 @@ export default class NksRecordInfo extends NavigationMixin(LightningElement) {
     @api parentWireFields;
     @api enableRefresh = false; // Enable a visual refresh button to help solve issues related to NKS-1086
     @api copyFields;
-    @api showKrrInfo = false; // deprecated
 
     _showLink = false;
     showSpinner = false;

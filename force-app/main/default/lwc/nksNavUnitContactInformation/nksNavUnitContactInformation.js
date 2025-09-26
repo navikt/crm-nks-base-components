@@ -24,10 +24,6 @@ export default class NksNavUnitContactInformation extends LightningElement {
         }
     }
 
-    render() {
-        return this.useNewDesign ? nksNavUnitContactInformationV2HTML : nksNavUnitContactInformationHTML;
-    }
-
     get columnWidth() {
         return 12 / this.numCols;
     }
