@@ -18,7 +18,7 @@ const templates = {
     GuardianshipOrFuturePowerOfAttorney: guardianships,
     PowerOfAttorney: powerOfAttorneys,
     IsDeceased: dateOfDeath,
-    historicalPowerOfAttorney: historicalPowerOfAttorney,
+    HistoricalPowerOfAttorney: historicalPowerOfAttorney,
     OpenSTO: openSTO,
     NOE: NOE
 };
@@ -87,7 +87,7 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
     }
 
     get headerLineStyling() {
-        const headerStyle = this.badgeStyling?.split(' ').find(a => a.startsWith('slds-theme'));
+        const headerStyle = this.badgeStyling?.split(' ').find((a) => a.startsWith('slds-theme'));
         return 'headerLine ' + headerStyle;
     }
 }
