@@ -1,6 +1,6 @@
 import { api } from 'lwc';
 import LightningModal from 'lightning/modal';
-//import bobLogo from '@salesforce/resourceUrl/bobLogo';
+import bobLogo from '@salesforce/resourceUrl/bobLogo';
 import { createRecord } from 'lightning/uiRecordApi';
 import REPORTING_OBJECT from '@salesforce/schema/ReportingData__c';
 import CRM_CATEGORY_FIELD from '@salesforce/schema/ReportingData__c.CRM_Category__c';
@@ -8,7 +8,7 @@ import NKS_RELATED_FIELD from '@salesforce/schema/ReportingData__c.NKS_Related_R
 
 export default class BobUsageModal extends LightningModal {
     @api recordId;
-    bobLogo = 'bobLogo';
+    bobLogo = bobLogo;
 
     handleButtonClick(event) {
         if (event.target.dataset.answer === 'yes') {
