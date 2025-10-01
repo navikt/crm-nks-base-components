@@ -31,10 +31,14 @@
         helper.removeTabInfo(closedTabId);
     },
 
-    onBobMessage: function (event, helper) {
-        let params = event.getParams();
-        if (params.recordId) {
-            helper.setShowBobOnClose(params.recordId);
+    onBobMessage: function (component, event, helper) {
+        try {
+            let params = event.getParams();
+            if (params.recordId) {
+                helper.setShowBobOnClose(params.recordId);
+            }
+        } catch (error) {
+            console.error('Error handling Bob message:', error);
         }
     }
 });
