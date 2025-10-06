@@ -5,40 +5,36 @@
 
         workspaceAPI
             .getTabInfo({ tabId })
-            .then((tabInfo) => helper.saveCaseTabInfo(tabId, tabInfo))
+            .then((tabInfo) => {
+                if (tabInfo && tabInfo.recordId) {
+                    helper.checkCaseStatus(component, tabInfo.recordId, (status) => {
+                        if (status !== 'Closed') {
+                            helper.saveCaseTabInfo(tabId, tabInfo);
+                        }
+                    });
+                }
+            })
             .catch((error) => {
-                console.error('Error getting tabInfo for tabId:', tabId, error);
+                console.error('Error fetching tab info:', error);
             });
     },
 
     onTabClosed: function (component, event, helper) {
         const closedTabId = event.getParam('tabId');
         const launcher = component.find('launcher');
-
         const info = helper.getTabInfo(closedTabId);
 
-        if (
-            info &&
-            info.recordId &&
-            !info.isSubtab &&
-            info.showBobOnClose &&
-            launcher &&
-            typeof launcher.openModal === 'function'
-        ) {
-            launcher.openModal(info.recordId);
+        if (info && info.recordId && launcher && typeof launcher.openModal === 'function') {
+            helper.checkCaseStatus(component, info.recordId, (status) => {
+                if (status === 'Closed' || status === 'On Hold') {
+                    try {
+                        launcher.openModal(info.recordId);
+                    } catch (error) {
+                        console.error('Failed to open modal', error);
+                    }
+                }
+            });
         }
-
         helper.removeTabInfo(closedTabId);
-    },
-
-    onBobMessage: function (component, event, helper) {
-        try {
-            let params = event.getParams();
-            if (params.recordId) {
-                helper.setShowBobOnClose(params.recordId);
-            }
-        } catch (error) {
-            console.error('Error handling Bob message:', error);
-        }
     }
 });

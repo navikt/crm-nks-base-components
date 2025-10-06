@@ -12,13 +12,12 @@
     },
 
     saveCaseTabInfo: function (tabId, tabInfo) {
-        console.log(JSON.stringify(tabInfo));
         const objectApiName =
             tabInfo.pageReference && tabInfo.pageReference.attributes && tabInfo.pageReference.attributes.objectApiName
                 ? tabInfo.pageReference.attributes.objectApiName
                 : null;
 
-        if (objectApiName !== 'Case') {
+        if (objectApiName !== 'Case' || !!tabInfo.isSubtab) {
             return;
         }
 
@@ -29,9 +28,7 @@
             null;
 
         map[tabId] = {
-            isSubtab: !!tabInfo.isSubtab,
-            recordId: recordId,
-            showBobOnClose: true
+            recordId: recordId
         };
 
         this.setMap(map);
@@ -50,13 +47,20 @@
         }
     },
 
-    setShowBobOnClose: function (recordId) {
-        const map = this.getMap();
-        Object.keys(map).forEach((tabId) => {
-            if (map[tabId].recordId === recordId) {
-                map[tabId].showBobOnClose = false;
+    checkCaseStatus: function (component, caseId, callback) {
+        var action = component.get('c.getCaseStatus');
+        action.setParams({ caseId: caseId });
+
+        action.setCallback(this, function (response) {
+            const state = response.getState();
+            if (state === 'SUCCESS') {
+                const status = response.getReturnValue();
+                if (callback) callback(status);
+            } else if (state === 'ERROR') {
+                console.error('Error fetching case status:', response.getError());
             }
         });
-        this.setMap(map);
+
+        $A.enqueueAction(action);
     }
 });
