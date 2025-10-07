@@ -1,0 +1,120 @@
+<template>
+    <template lwc:if={recordIdSet}>
+        <div class="slds-var-p-top_xx-small slds-var-p-bottom_xx-small">
+            <lightning-record-view-form record-id={viewedRecordId} object-api-name={viewedObjectApiName}>
+                <lightning-card title={cardLabel} icon-name={iconName}>
+                    <lightning-button-icon
+                        alternative-text="Oppdater"
+                        icon-name="utility:refresh"
+                        lwc:if={enableRefresh}
+                        onclick={refreshRecord}
+                        slot="actions"
+                    ></lightning-button-icon>
+                    <lightning-spinner lwc:if={showSpinner} title="Loading" size="medium"> </lightning-spinner>
+                    <div class="slds-var-p-horizontal_small">
+                        <lightning-layout multiple-rows="true">
+                            <template iterator:it={fieldList}>
+                                <template lwc:if={it.first}>
+                                    <lightning-layout-item
+                                        key={it.value.fieldName}
+                                        size={columnWidth}
+                                        class="slds-var-p-right_medium field-position"
+                                    >
+                                        <template lwc:if={showLink}>
+                                            <template lwc:if={hideLabels}>
+                                                <lightning-output-field
+                                                    class="slds-border_bottom text-link"
+                                                    field-class="slds-text-link"
+                                                    field-name={it.value.fieldName}
+                                                    onclick={navigateToRecord}
+                                                    tabindex="0"
+                                                    role="link"
+                                                    variant="label-hidden"
+                                                >
+                                                </lightning-output-field>
+                                            </template>
+                                            <template lwc:else>
+                                                <lightning-output-field
+                                                    class="slds-border_bottom text-link"
+                                                    field-class="slds-text-link"
+                                                    field-name={it.value.fieldName}
+                                                    onclick={navigateToRecord}
+                                                    tabindex="0"
+                                                    role="link"
+                                                >
+                                                </lightning-output-field>
+                                            </template>
+                                        </template>
+                                        <template lwc:else>
+                                            <template lwc:if={hideLabels}>
+                                                <lightning-output-field
+                                                    variant="label-hidden"
+                                                    class="slds-border_bottom"
+                                                    field-name={it.value.fieldName}
+                                                >
+                                                </lightning-output-field>
+                                            </template>
+                                            <template lwc:else>
+                                                <lightning-output-field
+                                                    class="slds-border_bottom"
+                                                    field-name={it.value.fieldName}
+                                                >
+                                                </lightning-output-field>
+                                            </template>
+                                        </template>
+                                        <div lwc:if={it.value.copyButton} class={it.value.buttonName}>
+                                            <lightning-button-icon
+                                                class="copy-icon"
+                                                icon-name="utility:copy"
+                                                variant="bare"
+                                                alternative-text={it.value.buttonTip}
+                                                title={it.value.buttonTip}
+                                                data-field={it.value.fieldName}
+                                                onclick={handleCopy}
+                                            ></lightning-button-icon>
+                                        </div>
+                                    </lightning-layout-item>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-layout-item
+                                        key={it.value.fieldName}
+                                        size={columnWidth}
+                                        class="slds-var-p-right_medium field-position"
+                                    >
+                                        <template lwc:if={hideLabels}>
+                                            <lightning-output-field
+                                                variant="label-hidden"
+                                                class="slds-border_bottom"
+                                                field-name={it.value.fieldName}
+                                            >
+                                            </lightning-output-field>
+                                        </template>
+                                        <template lwc:else>
+                                            <lightning-output-field
+                                                class="slds-border_bottom"
+                                                field-name={it.value.fieldName}
+                                            >
+                                            </lightning-output-field>
+                                        </template>
+
+                                        <div lwc:if={it.value.copyButton} class={it.value.buttonName}>
+                                            <lightning-button-icon
+                                                class="copy-icon"
+                                                icon-name="utility:copy"
+                                                variant="bare"
+                                                alternative-text={it.value.buttonTip}
+                                                title={it.value.buttonTip}
+                                                data-field={it.value.fieldName}
+                                                onclick={handleCopy}
+                                            ></lightning-button-icon>
+                                        </div>
+                                    </lightning-layout-item>
+                                </template>
+                            </template>
+                        </lightning-layout>
+                    </div>
+                </lightning-card>
+            </lightning-record-view-form>
+        </div>
+    </template>
+</template>
