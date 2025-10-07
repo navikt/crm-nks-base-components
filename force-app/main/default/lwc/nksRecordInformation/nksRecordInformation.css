@@ -1,0 +1,13 @@
+.text-link {
+    cursor: pointer;
+}
+
+.field-position {
+    position: relative;
+}
+
+.copy-icon {
+    position: absolute;
+    right: 20px;
+    bottom: 15px;
+}
