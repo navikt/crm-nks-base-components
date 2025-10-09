@@ -4,6 +4,7 @@
             <div key={notification.id} class="navds-stack navds-vstack navds-stack-gap navds-stack-direction">
                 <template lwc:if={notification.isWarning}>
                     <div
+                        role="alert"
                         data-color="warning"
                         data-variant="warning"
                         class="navds-alert navds-alert--warning navds-alert--medium"
@@ -38,6 +39,7 @@
                 </template>
                 <template lwc:else>
                     <div
+                        role="alert"
                         data-color="success"
                         data-variant="success"
                         class="navds-alert navds-alert--success navds-alert--medium"
