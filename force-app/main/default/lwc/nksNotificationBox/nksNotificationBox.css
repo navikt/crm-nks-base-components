@@ -1,4 +1,12 @@
-/* Styling is all stolen from aksel alert komponent */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.title {
+    font-weight: bold;
+}
 
 * {
     --a-spacing-05: 0.125rem;
@@ -7,38 +15,74 @@
     --a-spacing-3: 0.75rem;
     --a-spacing-2: 0.5rem;
     --a-spacing-1: 0.25rem;
+
+    --a-orange-900: #523300;
+    --a-orange-800: #7d4c00;
+    --a-orange-700: #a86400;
+    --a-orange-600: #c77300;
+    --a-orange-500: #ff9100;
+    --a-orange-400: #fa3;
+    --a-orange-300: #ffc166;
+    --a-orange-200: #ffd799;
+    --a-orange-100: #ffeccc;
+    --a-orange-50: #fff9f0;
+
+    --a-green-900: #003b0f;
+    --a-green-800: #005519;
+    --a-green-700: #006a23;
+    --a-green-600: #007c2e;
     --a-green-500: #06893a;
+    --a-green-400: #33aa5f;
+    --a-green-300: #66c786;
+    --a-green-200: #99dead;
     --a-green-100: #ccf1d6;
+    --a-green-50: #f3fcf5;
+
+    --a-red-900: #260000;
+    --a-red-800: #5c0000;
+    --a-red-700: #8c0000;
+    --a-red-600: #ad0000;
     --a-red-500: #c30000;
+    --a-red-400: #de2e2e;
+    --a-red-300: #f25c5c;
+    --a-red-200: #f68282;
     --a-red-100: #ffc2c2;
-    --a-blue-800: #00347d;
-    --a-blue-200: #99c3ff;
-    --a-grayalpha-700: rgba(1, 11, 24, 0.68);
-    --a-grayalpha-200: rgba(17, 41, 64, 0.13);
-    --a-gray-900: #23262a;
+    --a-red-50: #ffe6e6;
+
     --a-white: #fff;
+
     --a-border-radius-medium: 4px;
+
     --a-font-line-height-xlarge: 1.75rem;
+
     --a-text-on-neutral: var(--a-white);
     --a-text-default: var(--a-gray-900);
+
+    --a-surface-warning: var(--a-orange-500);
+    --a-surface-warning-moderate: var(--a-orange-200);
+    --a-surface-warning-subtle: var(--a-orange-100);
+    --a-surface-danger: var(--a-red-500);
+    --a-surface-danger-moderate: var(--a-red-200);
     --a-surface-danger-subtle: var(--a-red-100);
+    --a-surface-success: var(--a-green-500);
+    --a-surface-success-moderate: var(--a-green-200);
     --a-surface-success-subtle: var(--a-green-100);
-    --a-surface-neutral-active: var(--a-gray-900);
-    --a-surface-neutral-subtle-hover: var(--a-grayalpha-200);
-    --a-surface-default: var(--a-white);
+    --a-surface-warning-subtle-hover: var(--a-orange-200);
+    --a-surface-danger-active: var(--a-red-700);
+    --a-surface-danger-hover: var(--a-red-600);
+    --a-surface-danger-subtle-hover: var(--a-red-200);
+    --a-surface-success-hover: var(--a-green-600);
+    --a-surface-success-subtle-hover: var(--a-green-200);
+
+    --a-icon-warning: var(--a-orange-600);
     --a-icon-danger: var(--a-red-500);
     --a-icon-success: var(--a-green-500);
-    --a-border-focus: var(--a-blue-800);
-    --a-border-focus-on-inverted: var(--a-blue-200);
-    --a-border-success: var(--a-green-500);
-    --a-border-danger: var(--a-red-500);
-    --a-border-strong: var(--a-grayalpha-700);
-    --a-shadow-focus: 0 0 0 3px var(--a-border-focus);
-}
 
-.navds-alert--success {
-    background-color: var(--ac-alert-success-bg, var(--a-surface-success-subtle));
-    border-color: var(--ac-alert-success-border, var(--a-border-success));
+    --a-border-warning: var(--a-orange-600);
+    --a-border-danger: var(--a-red-500);
+    --a-border-success: var(--a-green-500);
+
+    --a-shadow-focus: 0 0 0 3px var(--a-border-focus);
 }
 
 .navds-alert {
@@ -49,8 +93,14 @@
     padding: var(--a-spacing-3);
 }
 
-.navds-alert--success > .navds-alert__icon {
-    color: var(--ac-alert-icon-success-color, var(--a-icon-success));
+.navds-alert--success {
+    background-color: var(--ac-alert-success-bg, var(--a-surface-success-subtle));
+    border-color: var(--ac-alert-success-border, var(--a-border-success));
+}
+
+.navds-alert--warning {
+    background-color: var(--ac-alert-warning-bg, var(--a-surface-warning-subtle));
+    border-color: var(--ac-alert-warning-border, var(--a-border-warning));
 }
 
 .navds-alert > .navds-alert__icon {
@@ -65,6 +115,10 @@
     max-width: 43.5rem;
 }
 
-.boldFont {
-    font-weight: bold;
+.navds-alert--success > .navds-alert__icon {
+    color: var(--ac-alert-icon-success-color, var(--a-icon-success));
+}
+
+.navds-alert--warning > .navds-alert__icon {
+    color: var(--ac-alert-icon-warning-color, var(--a-icon-warning));
 }

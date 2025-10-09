@@ -5,13 +5,14 @@ export default class NksNotificationBox extends LightningElement {
     count = 0;
 
     @api
-    addNotification(mainText, optionalText = null) {
+    addNotification(mainText, optionalText = null, isWarning = false) {
         this.count++;
         this.notificationList.push({
             id: String(this.count),
             text: mainText,
             time: this.getCurrentTime(),
-            optionalText: optionalText
+            optionalText: optionalText,
+            isWarning: isWarning
         });
     }
 
