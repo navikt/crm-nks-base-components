@@ -96,32 +96,7 @@
                         ></c-nks-person-badges>
                     </template>
                 </lightning-layout-item>
-                <lightning-layout-item class="slds-var-p-right_small" if:true={btnShowFullmakt}>
-                    <button
-                        class="slds-button slds-button_icon slds-float_right"
-                        onclick={handleFullmaktData}
-                        if:true={btnShowFullmakt}
-                        aria-expanded={btnClick}
-                    >
-                        <lightning-icon
-                            icon-name="utility:open_folder"
-                            class={customclass}
-                            alternative-text="Historiske fullmakter"
-                            title="Historiske fullmakter"
-                            size="x-small"
-                        ></lightning-icon>
-                    </button>
-                </lightning-layout-item>
             </lightning-layout>
-        </lightning-layout-item>
-
-        <lightning-layout-item size="12" class="card-color slds-box slds-box_x-small" if:true={btnClick}>
-            <lightning-layout class="slds-has-top-magnet">
-                <lightning-layout-item size="12">
-                    <c-nks-historikk-viewer fullmakt-data={fullmaktHistData}></c-nks-historikk-viewer>
-                </lightning-layout-item>
-            </lightning-layout>
-            <button class="close" onclick={handleFullmaktData}>Lukk</button>
         </lightning-layout-item>
     </lightning-layout>
 </template>
