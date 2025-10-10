@@ -1,27 +1,23 @@
 <template>
     <lightning-layout multiple-rows="true">
         <!-- LOKASJONSNAVN -->
-        <template if:true={locationName}>
+        <template lwc:if={locationName}>
             <lightning-layout-item size="12">
-                <div class="slds-text-heading_small">{locationName}</div>
+                <div class="slds-text-title_bold" style="font-size: 16px">{locationName}</div>
             </lightning-layout-item>
         </template>
 
         <!-- BESØKSADRESSE -->
-        <lightning-layout-item size="6">
-            <div class="slds-form-element slds-form-element_readonly">
-                <span class="slds-form-element__label">Besøksadresse</span>
-                <div class="slds-form-element__control">
-                    <div class="slds-form-element__static">{visitingAddress}</div>
-                </div>
-            </div>
+        <lightning-layout-item size="12">
+            <p class="slds-text-title_bold">Besøksadresse:</p>
+            <p>{visitingAddress}</p>
         </lightning-layout-item>
 
-        <template if:true={hasOpeningHours}>
+        <template lwc:if={hasOpeningHours}>
             <!-- SPESIELLE ÅPNINGSTIDER -->
-            <lightning-layout-item size="12" class="slds-p-top_small">
+            <lightning-layout-item size="12" class="slds-var-p-top_x-small">
                 <c-nks-nav-unit-opening-hours
-                    title="Spesielle åpningstider"
+                    title="Spesielle åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="false"
                 >
@@ -29,9 +25,9 @@
             </lightning-layout-item>
 
             <!-- ÅPNINGSTIDER -->
-            <lightning-layout-item size="12" class="slds-p-top_small">
+            <lightning-layout-item size="12" class="slds-var-p-top_small">
                 <c-nks-nav-unit-opening-hours
-                    title="Åpningstider"
+                    title="Åpningstider:"
                     norg-opening-hours={openingHours}
                     view-week-days="true"
                 >

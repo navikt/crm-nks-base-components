@@ -1,22 +1,16 @@
-import { LightningElement, api, track } from 'lwc';
-import nksNavUnitHTML from './nksNavUnit.html';
-import nksNavUnitV2HTML from './nksNavUnitV2.html';
+import { LightningElement, api } from 'lwc';
 export default class NksNavUnit extends LightningElement {
     @api navUnit; // The nav unit
     @api contactInformation; // The contact information of the NAV Unit
     @api contactInformationV2; // Contact information from V2 of the api (more organized)
     @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
     @api numCols = 2; // Number of columns for the displayed fields
-    @api useNewDesign = false;
 
-    @track activeSections = []; // The active sections on component load
+     activeSections = []; // The active sections on component load
 
-    render() {
-        return this.useNewDesign ? nksNavUnitV2HTML : nksNavUnitHTML;
-    }
 
     connectedCallback() {
-        if (this.allSectionsOpenOnLoad === 'true' || this.allSectionsOpenOnLoad === true) {
+        if (this.allSectionsOpenOnLoad) {
             this.activeSections = ['UNIT_SERVICES', 'CONTACT_DETAILS'];
         }
     }
