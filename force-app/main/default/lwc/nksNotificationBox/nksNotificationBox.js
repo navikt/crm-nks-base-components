@@ -1,7 +1,7 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, track } from 'lwc';
 
 export default class NksNotificationBox extends LightningElement {
-    notificationList = [];
+    @track notificationList = [];
     count = 0;
 
     @api
