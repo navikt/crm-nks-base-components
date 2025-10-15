@@ -15,8 +15,8 @@ export function getOutputVariableValue(outputVariables, variableName) {
     return outputVariables.find((element) => element.name === variableName && element.value !== null)?.value;
 }
 
-function addNotification(notificationBoxTemplate, message, optionalText = '') {
-    notificationBoxTemplate.addNotification(message, optionalText);
+function addNotification(notificationBoxTemplate, message, optionalText = '', isWarning = false) {
+    notificationBoxTemplate.addNotification(message, optionalText, isWarning);
 }
 
 export async function handleShowNotifications(
@@ -46,7 +46,7 @@ export async function handleShowNotifications(
             if (navTaskSaved) {
                 addNotification(
                     notificationBoxTemplate,
-                    'Oppgaven er lagret, og blir sendt når samtalereferat er opprettet.'
+                    'Oppgaven er lagret, og blir sendt når samtalereferat er opprettet.', null, true
                 );
             } else {
                 const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
