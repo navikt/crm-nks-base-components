@@ -25,6 +25,7 @@ export default class NksPersonBadges extends LightningElement {
     @track interpreterSpokenLanguages = [];
     @track guardianships = [];
     @track powerOfAttorneys = [];
+    historicalPowerOfAttorneys = [];
     // @track entitlements = [];
     @track errorMessages = [];
 
@@ -103,6 +104,10 @@ export default class NksPersonBadges extends LightningElement {
         return 'powerOfAttorney' === this.infoPanelToShow && 0 < this.powerOfAttorneys.length;
     }
 
+    get showHistoricalPowerOfAttorney() {
+        return 'historicalPowerOfAttorney' === this.infoPanelToShow && 0 < this.historicalPowerOfAttorneys.length;
+    }
+
     // get showEntitlements() {
     //     return 'entitlements' === this.infoPanelToShow && 0 < this.entitlements.length;
     // }
@@ -174,6 +179,7 @@ export default class NksPersonBadges extends LightningElement {
             this.interpreterSpokenLanguages = data.spokenLanguagesIntepreter;
             this.guardianships = data.guardianships;
             this.powerOfAttorneys = data.powerOfAttorneys;
+            this.historicalPowerOfAttorneys = data.historicalPowerOfAttorneys;
             // this.entitlements = data.entitlements;
             this.errorMessages = data.errors;
             this.dateOfDeath = data.dateOfDeath;
