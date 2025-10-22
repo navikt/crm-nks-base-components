@@ -1,6 +1,6 @@
 import { api } from 'lwc';
 import LightningModal from 'lightning/modal';
-import bobLogo from '@salesforce/resourceUrl/bobLogo';
+import bobLogo from '@salesforce/resourceUrl/bobModalLogo';
 import { createRecord } from 'lightning/uiRecordApi';
 import REPORTING_OBJECT from '@salesforce/schema/ReportingData__c';
 import CRM_CATEGORY_FIELD from '@salesforce/schema/ReportingData__c.CRM_Category__c';
