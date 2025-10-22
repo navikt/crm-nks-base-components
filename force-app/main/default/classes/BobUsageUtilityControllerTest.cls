@@ -2,27 +2,57 @@
 public class BobUsageUtilityControllerTest {
     @TestSetup
     static void makeData() {
-        UTIL_TestDataFactory.createRecord(new Case(Origin = 'STO', STO_Category__c = 'Arbeid'), true);
+        UTIL_TestDataFactory.createRecord(new Case(Origin = 'STO', STO_Category__c = 'Arbeid', Status = 'New'), true);
+        UTIL_TestDataFactory.createRecord(new LiveChatTranscript(Status = 'Completed'));
     }
 
     @IsTest
-    public static void getCaseStatusTest() {
-        Case c = [SELECT Id FROM Case LIMIT 1];
+    static void caseStatusTest() {
+        Case c = [SELECT Id, Status FROM Case LIMIT 1];
 
         Test.startTest();
-        String status = BobUsageUtilityController.getCaseStatus(c.Id);
+        String status = BobUsageUtilityController.getStatus(c.Id);
         Test.stopTest();
 
         Assert.areEqual('New', status);
     }
 
     @IsTest
-    public static void getCaseStatusIdNullTest() {
+    static void liveChatTranscriptStatusTest() {
+        LiveChatTranscript chat = [SELECT Id, Status FROM LiveChatTranscript LIMIT 1];
+
+        Test.startTest();
+        String status = BobUsageUtilityController.getStatus(chat.Id);
+        Test.stopTest();
+
+        Assert.areEqual('Completed', status);
+    }
+
+    @IsTest
+    static void nullRecordIdTest() {
         Exception ex;
 
         Test.startTest();
         try {
-            BobUsageUtilityController.getCaseStatus(null);
+            BobUsageUtilityController.getStatus(null);
+        } catch (Exception e) {
+            ex = e;
+        }
+        Test.stopTest();
+
+        Assert.isNotNull(ex);
+    }
+
+    @IsTest
+    static void unsupportedObjectTypeTest() {
+        Account acc = new Account(Name = 'Test');
+        insert acc;
+
+        Exception ex;
+
+        Test.startTest();
+        try {
+            BobUsageUtilityController.getStatus(acc.Id);
         } catch (Exception e) {
             ex = e;
         }

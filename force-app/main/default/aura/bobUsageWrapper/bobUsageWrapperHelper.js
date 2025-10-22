@@ -11,16 +11,7 @@
         sessionStorage.setItem('tabInfoMap', JSON.stringify(map));
     },
 
-    saveCaseTabInfo: function (tabId, tabInfo) {
-        const objectApiName =
-            tabInfo.pageReference && tabInfo.pageReference.attributes && tabInfo.pageReference.attributes.objectApiName
-                ? tabInfo.pageReference.attributes.objectApiName
-                : null;
-
-        if (objectApiName !== 'Case' || !!tabInfo.isSubtab) {
-            return;
-        }
-
+    saveTabInfo: function (tabId, tabInfo, objectApiName) {
         const map = this.getMap();
         const recordId =
             tabInfo.recordId ||
@@ -28,9 +19,9 @@
             null;
 
         map[tabId] = {
-            recordId: recordId
+            recordId: recordId,
+            objectApiName: objectApiName
         };
-
         this.setMap(map);
     },
 
@@ -47,9 +38,9 @@
         }
     },
 
-    checkCaseStatus: function (component, caseId, callback) {
-        var action = component.get('c.getCaseStatus');
-        action.setParams({ caseId: caseId });
+    getRecordStatus: function (component, recordId, callback) {
+        var action = component.get('c.getStatus');
+        action.setParams({ recordId: recordId });
 
         action.setCallback(this, function (response) {
             const state = response.getState();
