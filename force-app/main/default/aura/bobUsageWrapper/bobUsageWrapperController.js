@@ -17,7 +17,13 @@
                         return;
                     }
                     helper.getRecordStatus(component, tabInfo.recordId, (status) => {
-                        if (status !== 'Closed' && status !== 'Completed') {
+                        if (
+                            status !== 'Closed' &&
+                            status !== 'On Hold' &&
+                            status !== 'Completed' &&
+                            status !== 'Missed' &&
+                            status !== 'Blocked'
+                        ) {
                             helper.saveTabInfo(tabId, tabInfo, objectApiName);
                         }
                     });
@@ -35,11 +41,7 @@
 
         if (info && info.recordId && launcher && typeof launcher.openModal === 'function') {
             helper.getRecordStatus(component, info.recordId, (status) => {
-                if (
-                    status === 'Closed' ||
-                    status === 'On Hold' ||
-                    (info.objectApiName === 'LiveChatTranscript' && status === 'InProgress')
-                ) {
+                if (status === 'Closed' || status === 'On Hold' || info.objectApiName === 'LiveChatTranscript') {
                     try {
                         launcher.openModal(info.recordId);
                     } catch (error) {
