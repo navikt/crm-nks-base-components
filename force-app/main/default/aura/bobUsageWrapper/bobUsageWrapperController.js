@@ -7,9 +7,24 @@
             .getTabInfo({ tabId })
             .then((tabInfo) => {
                 if (tabInfo && tabInfo.recordId) {
-                    helper.checkCaseStatus(component, tabInfo.recordId, (status) => {
-                        if (status !== 'Closed') {
-                            helper.saveCaseTabInfo(tabId, tabInfo);
+                    const objectApiName =
+                        tabInfo.pageReference &&
+                        tabInfo.pageReference.attributes &&
+                        tabInfo.pageReference.attributes.objectApiName
+                            ? tabInfo.pageReference.attributes.objectApiName
+                            : null;
+                    if ((objectApiName !== 'Case' && objectApiName !== 'LiveChatTranscript') || !!tabInfo.isSubtab) {
+                        return;
+                    }
+                    helper.getRecordStatus(component, tabInfo.recordId, (status) => {
+                        if (
+                            status !== 'Closed' &&
+                            status !== 'On Hold' &&
+                            status !== 'Completed' &&
+                            status !== 'Missed' &&
+                            status !== 'Blocked'
+                        ) {
+                            helper.saveTabInfo(tabId, tabInfo, objectApiName);
                         }
                     });
                 }
@@ -25,8 +40,8 @@
         const info = helper.getTabInfo(closedTabId);
 
         if (info && info.recordId && launcher && typeof launcher.openModal === 'function') {
-            helper.checkCaseStatus(component, info.recordId, (status) => {
-                if (status === 'Closed' || status === 'On Hold') {
+            helper.getRecordStatus(component, info.recordId, (status) => {
+                if (status === 'Closed' || status === 'On Hold' || info.objectApiName === 'LiveChatTranscript') {
                     try {
                         launcher.openModal(info.recordId);
                     } catch (error) {
