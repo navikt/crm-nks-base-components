@@ -13,10 +13,55 @@ export default class NksNavUnit extends LightningElement {
         if (this.allSectionsOpenOnLoad) {
             this.activeSections = ['UNIT_SERVICES', 'CONTACT_DETAILS'];
         }
+        console.log('Nav Unit sosialeTjenester:', JSON.stringify(this.navUnit.sosialeTjenester));
     }
 
     get columnWidth() {
         return 12 / this.numCols;
+    }
+
+    get sosialeTjenesterSegments() {
+        const text = this.navUnit?.sosialeTjenester || '';
+        if (!text) return [];
+
+        const regex = /\b(\d{8})\b/g;
+        const segments = [];
+        let lastIndex = 0;
+        let match;
+        let id = 0;
+
+        while ((match = regex.exec(text)) !== null) {
+            const matchIndex = match.index;
+
+            // Push text before match (if any)
+            if (matchIndex > lastIndex) {
+                segments.push({
+                    id: `t-${id++}`,
+                    text: text.slice(lastIndex, matchIndex),
+                    bold: false
+                });
+            }
+            // Match found, push bold segment
+            segments.push({
+                id: `b-${id++}`,
+                text: match[1],
+                bold: true
+            });
+
+            // Start next iteration after the current match
+            lastIndex = regex.lastIndex;
+        }
+
+        // Push rest of text
+        if (lastIndex < text.length) {
+            segments.push({
+                id: `t-${id++}`,
+                text: text.slice(lastIndex),
+                bold: false
+            });
+        }
+
+        return segments;
     }
 
     get tjenester() {
