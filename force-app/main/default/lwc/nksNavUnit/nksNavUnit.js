@@ -13,7 +13,6 @@ export default class NksNavUnit extends LightningElement {
         if (this.allSectionsOpenOnLoad) {
             this.activeSections = ['UNIT_SERVICES', 'CONTACT_DETAILS'];
         }
-        console.log('Nav Unit sosialeTjenester:', JSON.stringify(this.navUnit.sosialeTjenester));
     }
 
     get columnWidth() {
