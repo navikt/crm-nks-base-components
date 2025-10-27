@@ -13,7 +13,6 @@ export default class NksNavUnitSingle extends LightningElement {
     @api objectApiName;
     @api relationField;
     @api type; // If based on person location or unit
-    @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
     @api numCols = 2; // Number of columns for the displayed fields
     @api cardLayout = false; // If true, use the card layout, if not use box layout
     @api boxLayout = false;
