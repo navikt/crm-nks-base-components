@@ -172,6 +172,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.addErrorMessage('setWiredBadge', error);
             console.error(error);
         }
+        console.log(JSON.stringify(this.badges));
     }
 
     @wire(getPersonAccessBadges, {
