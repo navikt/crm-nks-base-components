@@ -26,11 +26,6 @@
                 label="Type"
             />
             <property
-                name="allSectionsOpenOnLoad"
-                type="Boolean"
-                label="All sections open by default"
-            />
-            <property
                 name="numCols"
                 type="Integer"
                 default="2"

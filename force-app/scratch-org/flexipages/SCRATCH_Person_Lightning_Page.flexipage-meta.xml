@@ -69,7 +69,8 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>displayedFields</name>
-                    <value>NKS_Full_Name__c,Name,INT_Sex__c,INT_LegalStatus__c,INT_Citizenships__c,INT_BankAccountNumber__c,INT_BankAccountNumberLastModified__c</value>
+                    <value>
+                        NKS_Full_Name__c,Name,INT_Sex__c,INT_LegalStatus__c,INT_Citizenships__c,INT_BankAccountNumber__c,INT_BankAccountNumberLastModified__c</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableRefresh</name>
@@ -114,7 +115,9 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>displayedFields</name>
-                    <value>INT_Phone1__c, INT_ResidentialAddress__c,INT_Phone2__c,INT_ResidentialZipCode__c,NKS_County__c, INT_ResidentialPlace__c</value>
+                    <value>INT_Phone1__c,
+                        INT_ResidentialAddress__c,INT_Phone2__c,INT_ResidentialZipCode__c,NKS_County__c,
+                        INT_ResidentialPlace__c</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableRefresh</name>
@@ -159,7 +162,8 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>displayedFields</name>
-                    <value>INT_TemporaryAddress__c, INT_TemporaryZipCode__c, 	INT_TemporaryCountryCode__c, INT_TemporaryMunicipalityNumber__c</value>
+                    <value>INT_TemporaryAddress__c, INT_TemporaryZipCode__c,
+                        INT_TemporaryCountryCode__c, INT_TemporaryMunicipalityNumber__c</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableRefresh</name>
@@ -204,7 +208,8 @@
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>displayedFields</name>
-                    <value>INT_MovedFromCountry__c, INT_MovedFromPlace__c,INT_MovedToCountry__c,INT_MovedToPlace__c</value>
+                    <value>INT_MovedFromCountry__c,
+                        INT_MovedFromPlace__c,INT_MovedToCountry__c,INT_MovedToPlace__c</value>
                 </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>enableRefresh</name>
@@ -240,10 +245,6 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>allSectionsOpenOnLoad</name>
-                    <value>false</value>
-                </componentInstanceProperties>
                 <componentInstanceProperties>
                     <name>boxLayout</name>
                     <value>false</value>

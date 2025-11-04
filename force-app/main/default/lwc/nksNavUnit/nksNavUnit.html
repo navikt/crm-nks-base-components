@@ -3,14 +3,25 @@
         multiple-rows="true"
         class="custom-padding-bottom-medium custom-padding-right-small custom-padding-left-large"
     >
-        <lightning-layout-item class="custom-padding-right-large slds-text-title_bold">
+        <lightning-layout-item class="custom-padding-right-large slds-text-title_bold custom-font-color">
             {getUnitNameAndNumber}
         </lightning-layout-item>
 
         <lightning-layout-item size="12" class="custom-padding-top-large custom-padding-right-medium">
             <c-nks-expandable-panel title="Kontorinformasjon for NKS" is-expandable chevron-left is-first>
                 <p class="slds-text-title_bold custom-padding-bottom-x-small">Intern informasjon</p>
-                <p style="white-space: pre-line">{navUnit.sosialeTjenester}</p>
+                <p style="white-space: pre-line">
+                    <template for:each={sosialeTjenesterSegments} for:item="seg">
+                        <span key={seg.id}>
+                            <template lwc:if={seg.bold}>
+                                <strong>{seg.text}</strong>
+                            </template>
+                            <template lwc:else>
+                                {seg.text}
+                            </template>
+                        </span>
+                    </template>
+                </p>
                 <br />
                 <p class="slds-text-title_bold">Offentlig informasjon</p>
                 <div class="custom-padding-bottom-medium">
@@ -18,7 +29,7 @@
                     <div lwc:if={publikumskanaler}>
                         <template for:each={publikumskanaler} for:item="kanal">
                             <p key={kanal.beskrivelse}>
-                                {kanal.beskrivelse} : <span style="font-weight: bold">{kanal.telefon}</span>
+                                {kanal.beskrivelse}: {kanal.telefon}
                             </p>
                         </template>
                     </div>

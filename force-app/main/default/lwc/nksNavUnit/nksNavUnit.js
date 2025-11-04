@@ -3,20 +3,54 @@ export default class NksNavUnit extends LightningElement {
     @api navUnit; // The nav unit
     @api contactInformation; // The contact information of the NAV Unit
     @api contactInformationV2; // Contact information from V2 of the api (more organized)
-    @api allSectionsOpenOnLoad = false; // If all sections should be open when the component loads
     @api numCols = 2; // Number of columns for the displayed fields
-
-     activeSections = []; // The active sections on component load
-
-
-    connectedCallback() {
-        if (this.allSectionsOpenOnLoad) {
-            this.activeSections = ['UNIT_SERVICES', 'CONTACT_DETAILS'];
-        }
-    }
 
     get columnWidth() {
         return 12 / this.numCols;
+    }
+
+    get sosialeTjenesterSegments() {
+        const text = this.navUnit?.sosialeTjenester || '';
+        if (!text) return [];
+
+        const regex = /\b(\d{8})\b/g;
+        const segments = [];
+        let lastIndex = 0;
+        let match;
+        let id = 0;
+
+        while ((match = regex.exec(text)) !== null) {
+            const matchIndex = match.index;
+
+            // Push text before match (if any)
+            if (matchIndex > lastIndex) {
+                segments.push({
+                    id: `t-${id++}`,
+                    text: text.slice(lastIndex, matchIndex),
+                    bold: false
+                });
+            }
+            // Match found, push bold segment
+            segments.push({
+                id: `b-${id++}`,
+                text: match[1],
+                bold: true
+            });
+
+            // Start next iteration after the current match
+            lastIndex = regex.lastIndex;
+        }
+
+        // Push rest of text
+        if (lastIndex < text.length) {
+            segments.push({
+                id: `t-${id++}`,
+                text: text.slice(lastIndex),
+                bold: false
+            });
+        }
+
+        return segments;
     }
 
     get tjenester() {

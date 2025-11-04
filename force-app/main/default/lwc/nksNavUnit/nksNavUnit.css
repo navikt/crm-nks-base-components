@@ -25,3 +25,7 @@
 .custom-padding-bottom-medium {
     padding-bottom: 1rem;
 }
+
+p, strong, .custom-font-color, li {
+    color: black;
+}
