@@ -80,7 +80,7 @@ export default class NksPersonBadges extends LightningElement {
             }
         });
         badgeInfo.push(stoList.length > 0 ? { name: 'Åpne Skriv til oss', list: stoList } : {});
-        badgeInfo.push(btoList.length > 0 ? { name: 'Åpne Meld i fra om endring', list: btoList } : {});
+        badgeInfo.push(btoList.length > 0 ? { name: 'Åpne Meld fra om endring', list: btoList } : {});
         return badgeInfo;
     }
 

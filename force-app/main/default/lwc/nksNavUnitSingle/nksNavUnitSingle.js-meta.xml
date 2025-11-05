@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>62.0</apiVersion>
+    <apiVersion>64.0</apiVersion>
     <isExposed>true</isExposed>
 
     <masterLabel>Nav Unit Single</masterLabel>
@@ -26,11 +26,6 @@
                 label="Type"
             />
             <property
-                name="allSectionsOpenOnLoad"
-                type="Boolean"
-                label="All sections open by default"
-            />
-            <property
                 name="numCols"
                 type="Integer"
                 default="2"
@@ -48,13 +43,6 @@
                 type="Boolean"
                 label="Use box layout"
                 description="Check to use box layout"
-            />
-            <property
-                name="useNewDesign"
-                type="Boolean"
-                default="false"
-                label="Use new design"
-                description="Check to use card layout"
             />
         </targetConfig>
     </targetConfigs>

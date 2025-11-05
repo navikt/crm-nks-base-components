@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>59.0</apiVersion>
+    <apiVersion>64.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>NKS Button Container Bottom</masterLabel>
     <targets>
@@ -12,7 +12,7 @@
                 description="The variable is used to differentiate between channels. Select between Chat, Conversation note or STO."
                 label="Channel name" type="String" default="Chat" />
             <property name="flowNames" label="Flow developernames, seperated by commas"
-                type="String" default="NKS_Chat_Journal_Thread_v_2, NKS_Chat_Send_NAV_Task_v_2" />
+                type="String" default="NKS_Chat_Journal_Thread, NKS_Chat_Send_NAV_Task" />
             <property name="flowLabels" label="Label names for buttons, also seperated by commans"
                 type="String" default="NKS_Journal, NKS_Create_NAV_Task" />
             <property name="setBorders" label="Set top and bottom borders" type="Boolean"

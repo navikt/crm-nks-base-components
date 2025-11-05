@@ -1,16 +1,9 @@
 <template>
     <lightning-card title="Nav-kontor" icon-name="custom:custom61">
         <div class="slds-is-relative">
-            <!-- SPINNER -->
-            <template if:false={isLoaded}>
-                <div>
-                    <lightning-spinner alternative-text="Laster Nav enhet" size="medium"></lightning-spinner>
-                </div>
-            </template>
-
-            <template if:true={isLoaded}>
+            <template lwc:if={isLoaded}>
                 <!-- ERROR MESSAGE -->
-                <template if:true={isError}>
+                <template lwc:if={isError}>
                     <div class="slds-text-color_error slds-p-left_x-small slds-theme_default">
                         <lightning-icon
                             alternative-text="Feilmelding"
@@ -24,18 +17,22 @@
                 </template>
 
                 <!-- NAV UNIT -->
-                <template if:true={navUnit}>
+                <template lwc:if={navUnit}>
                     <div class="slds-p-horizontal_small">
                         <c-nks-nav-unit
                             nav-unit={navUnit}
                             contact-information={contactInformation}
                             contact-information-v2={contactInformationV2}
-                            all-sections-open-on-load={allSectionsOpenOnLoad}
                             num-cols={numCols}
-                            use-new-design={useNewDesign}
                         ></c-nks-nav-unit>
                     </div>
                 </template>
+            </template>
+             <!-- SPINNER -->
+            <template lwc:else>
+                <div>
+                    <lightning-spinner alternative-text="Laster Nav enhet" size="medium"></lightning-spinner>
+                </div>
             </template>
         </div>
     </lightning-card>
