@@ -7,12 +7,13 @@
                 <template for:each={badgeData} for:item="fullmakt">
                     <div key={fullmakt}>
                         <p><Strong>Periode:</Strong> {fullmakt.periode}</p>
-                        <p><Strong>Navn:</Strong> {fullmakt.fullmektigsNavn}</p>
+                        <p lwc:if={fullmakt.fullmektigNavn}><Strong>Navn:</Strong> {fullmakt.fullmektigNavn}</p>
+                        <p lwc:else><Strong>Fnr:</Strong> {fullmakt.fullmektig}</p>
                         <p><Strong>Status:</Strong> {fullmakt.status}</p>
                         <p>Områder:</p>
-                        <template for:each={fullmakt.formattedOmraadeListByThemeGroup} for:item="omraade">
-                            <div key={omraade.themeGroup} class="slds-line-clamp" title={omraade.temaString}>
-                                <p><strong>{omraade.themeGroup}</strong>: {omraade.temaString}</p>
+                        <template for:each={fullmakt.themeGroup} for:item="themeGroup">
+                            <div key={themeGroup.name} class="slds-line-clamp" title={themeGroup.name}>
+                                <p><strong>{themeGroup.name}</strong>: {themeGroup.displayValue}</p>
                             </div>
                         </template>
                     </div>

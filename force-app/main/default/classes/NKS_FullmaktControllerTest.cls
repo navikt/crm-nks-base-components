@@ -19,145 +19,6 @@ public with sharing class NKS_FullmaktControllerTest {
     }
 
     @IsTest
-    static void getFullmaktsgiverHistorikkTest() {
-        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
-        Case c = (Case) UTIL_TestDataFactory.createRecord(
-            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
-            true
-        );
-        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER_HISTORIKK.name(), 200, 'OK');
-
-        Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
-            c.Id,
-            'Case'
-        );
-        Test.stopTest();
-
-        Assert.isNotNull(historikk);
-        Assert.areNotEqual(0, historikk.size());
-    }
-
-    @IsTest
-    static void getFullmaktsgiverHistorikkNoPersonIdentTest() {
-        Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
-        Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
-            a.Id,
-            'Account'
-        );
-        Test.stopTest();
-
-        Assert.isNull(historikk);
-    }
-
-    @IsTest
-    static void getFullmaktsgiverTest() {
-        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
-        Case c = (Case) UTIL_TestDataFactory.createRecord(
-            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
-            true
-        );
-        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER.name(), 200, 'OK');
-
-        Test.startTest();
-        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
-            c.Id,
-            'Case'
-        );
-        Test.stopTest();
-
-        Assert.isNotNull(fullmaktsGiver);
-        Assert.areNotEqual(0, fullmaktsGiver.size());
-    }
-
-    @IsTest
-    static void getFullmaktsgiverNoPersonIdentTest() {
-        Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
-
-        Test.startTest();
-        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
-            a.Id,
-            'Account'
-        );
-        Test.stopTest();
-
-        Assert.isNull(fullmaktsGiver);
-    }
-
-    @IsTest
-    static void testGetFullmaktsgiverHistorikkErrorHandling() {
-        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
-        Case c = (Case) UTIL_TestDataFactory.createRecord(
-            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
-            true
-        );
-        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER_HISTORIKK.name(), 500, 'Error');
-
-        Boolean exceptionOccured = false;
-        Test.startTest();
-        try {
-            List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
-                c.Id,
-                'Case'
-            );
-            exceptionOccured = false;
-        } catch (Exception e) {
-            exceptionOccured = true;
-        }
-        Test.stopTest();
-
-        Assert.isTrue(exceptionOccured);
-    }
-
-    @IsTest
-    static void testGetFullmaktsgiverErrorHandling() {
-        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
-        Case c = (Case) UTIL_TestDataFactory.createRecord(
-            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
-            true
-        );
-        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER.name(), 500, 'Error');
-
-        Boolean exceptionOccured = false;
-        Test.startTest();
-        try {
-            List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
-                c.Id,
-                'Case'
-            );
-            exceptionOccured = false;
-        } catch (Exception e) {
-            exceptionOccured = true;
-        }
-        Test.stopTest();
-
-        Assert.isTrue(exceptionOccured);
-    }
-
-    @IsTest
-    static void testGetFullmaktsgiverHistorikkDataNullInput() {
-        Test.startTest();
-        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.processHistorikkData(
-            null
-        );
-        Test.stopTest();
-
-        Assert.isNull(historikk);
-    }
-
-    @IsTest
-    static void testGetFullmaktsgiverDataNullInput() {
-        Test.startTest();
-        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.processFullmaktsgiverData(
-            null
-        );
-        Test.stopTest();
-
-        Assert.isNull(fullmaktsGiver);
-    }
-
-    @IsTest
     static void testCheckAccessAndGetPersonIdentWithCase() {
         Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
         Case c = (Case) UTIL_TestDataFactory.createRecord(
@@ -199,5 +60,96 @@ public with sharing class NKS_FullmaktControllerTest {
         Test.startTest();
         NKS_FullmaktController.logError('test err message');
         Test.stopTest();
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiver() {
+        ApiMock.setTestMock(FullmaktService.services.GET_ALL_FULLMAKTSGIVER.name(), 200, 'OK');
+
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        Test.startTest();
+        NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(
+            c.Id,
+            'case'
+        );
+        Test.stopTest();
+
+        Assert.isNotNull(fullmakter);
+        Assert.isNotNull(fullmakter.active);
+        Assert.isNotNull(fullmakter.historical);
+        Assert.areNotEqual(0, fullmakter.active.size());
+        Assert.areEqual(2, fullmakter.active.size());
+        Assert.areNotEqual(0, fullmakter.historical.size());
+        Assert.areEqual(1, fullmakter.historical.size());
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverNoIdent() {
+        Account a = [SELECT Id FROM Account WHERE Name = 'Fake Person'];
+        Test.startTest();
+        NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(
+            a.Id,
+            'account'
+        );
+        Test.stopTest();
+
+        Assert.isNull(fullmakter);
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverErrorHandling() {
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        ApiMock.setTestMock(FullmaktService.services.GET_ALL_FULLMAKTSGIVER.name(), 500, 'Error');
+
+        Boolean exceptionOccured = false;
+        Test.startTest();
+        try {
+            NKS_FullmaktController.getAllFullmaktsgiver(c.Id, 'Case');
+            exceptionOccured = false;
+        } catch (Exception e) {
+            exceptionOccured = true;
+        }
+        Test.stopTest();
+
+        Assert.isTrue(exceptionOccured);
+    }
+
+    @IsTest
+    static void testGetAllFullmaktsgiverThemeHandling() {
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+
+        Test.setMock(
+            HttpCalloutMock.class,
+            new SingleRequestMock(
+                200,
+                'OK',
+                '[{ "fullmaktId": "3fa85f64-5717-4562-b3fc-2c963f66afa6", "fullmaktsgiver": "12345678910", "fullmektig": "12345678910", "gyldigFraOgMed": "2025-06-17", "gyldigTilOgMed": null, "leserettigheter": [ "DAG", "FOS", "PEN" ], "skriverettigheter": [ "BIL", "HEL", "HJE", "SAK", "SER" ], "endringslogg": [ { "endringId": 9007199254740991, "registrert": "2025-06-17T08:59:19.868Z", "registrertAv": "string", "kilde": "BRUKER", "hendelse": "OPPRETTELSE_AV_BRUKER", "gyldigFraOgMed": "2025-06-17", "gyldigTilOgMed": null, "leserettigheter": [ "DAG", "FOS", "PEN" ], "skriverettigheter": [ "BIL", "HEL", "HJE", "SAK", "SER" ] } ] }]',
+                null
+            )
+        );
+
+        Test.startTest();
+        NKS_FullmaktController.FullmaktsgiverAlle fullmakter = NKS_FullmaktController.getAllFullmaktsgiver(
+            c.Id,
+            'Case'
+        );
+        Test.stopTest();
+
+        Assert.areEqual('Hjelpemidler', fullmakter.active[0].themeGroup[0].name);
+        Assert.areEqual('Gjelder alle ytelser', fullmakter.active[0].themeGroup[0].displayValue);
+        Assert.areEqual('Øvrig', fullmakter.active[0].themeGroup[1].name);
+        Assert.areEqual('SAK, SER', fullmakter.active[0].themeGroup[1].displayValue);
     }
 }
