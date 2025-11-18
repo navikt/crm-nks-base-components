@@ -101,6 +101,9 @@ lightning-badge {
 
 .fagsystemer-wrapper {
     margin: -1.25rem -1rem; /* Compensate for unneeded padding in child cmp */
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
 }
 
 .unselectable {
