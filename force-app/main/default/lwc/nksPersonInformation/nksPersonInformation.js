@@ -1,4 +1,5 @@
-import { LightningElement, api, wire } from 'lwc';
+import { LightningElement, api, wire, } from 'lwc';
+import { refreshApex } from '@salesforce/apex';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
 
@@ -126,6 +127,10 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         ];
     }
 
+    get personIdentNotNull() {
+        return this.personIdent != null && this.personIdent !== '';
+    }
+
     @wire(getVeilederIdent, { actorId: '$actorId' })
     wireVeilIdentInfo({ data, error }) {
         if (data) {
@@ -167,6 +172,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     })
     wiredRecordInfo({ error, data }) {
         if (data) {
+            const oldPersonIdent = this.personIdent;
             this.fullName = getFieldValue(data, FULL_NAME_FIELD);
             this.personIdent = getFieldValue(data, PERSON_IDENT_FIELD);
             this.actorId = getFieldValue(data, PERSON_ACTORID_FIELD);
@@ -192,19 +198,46 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
             } else {
                 this.maritalStatus = '';
             }
+
+            if (!oldPersonIdent && this.personIdentNotNull) {
+                this.refreshAllWiredData();
+                this.loadArbeidssoekerData();
+                this.loadNavUnitData();
+            }
         }
         if (error) {
             console.error(error);
         }
     }
 
-    @wire(getArbeidssoeker, { identnr: '$personIdent' })
-    wiredArbeidssoeker({ data, error }) {
-        if (data) {
-            this.arbeidssoekerPerioder = JSON.parse(data);
+    async loadArbeidssoekerData() {       
+        try {
+            const result = await getArbeidssoeker({ identnr: this.personIdent });
+            if (result) {
+                this.arbeidssoekerPerioder = JSON.parse(result);
+            }
+        } catch (error) {
+            console.error('Error loading arbeidssoeker data:', error);
         }
-        if (error) {
-            console.error(error);
+    }
+
+    async loadNavUnitData() {        
+        try {
+            const result = await getNavUnit({
+                field: 'Account.CRM_Person__c',
+                parentObject: this.objectApiName,
+                parentRecordId: this.recordId,
+                type: 'PERSON_LOCATION'
+            });
+            
+            if (result && result.unit) {
+                this.navUnit = result.unit;
+                this.getFormattedLink();
+            } else if (result && result.errorMessage) {
+                console.error('Nav unit error:', result.errorMessage);
+            }
+        } catch (error) {
+            console.error('Error loading nav unit data:', error);
         }
     }
 
@@ -214,8 +247,9 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         parentRecordId: '$recordId',
         filterOpenSTO: true
     })
-    wiredBadgeInfo(value) {
-        this.wiredBadge = value;
+    wiredBadgeInfo(result) {
+        this._wiredBadgeResult = result;
+        this.wiredBadge = result;
         this.setWiredBadge();
     }
 
@@ -265,8 +299,9 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         parentObject: '$objectApiName',
         parentRecordId: '$recordId'
     })
-    wiredPersonBadgeInfo(value) {
-        this.wiredPersonAccessBadge = value;
+    wiredPersonBadgeInfo(result) {
+        this._wiredPersonAccessBadgeResult = result;
+        this.wiredPersonAccessBadge = result;
         try {
             this.setWiredPersonAccessBadge();
         } catch (error) {
@@ -291,31 +326,15 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
             recordId: '$recordId',
             objectApiName: '$objectApiName'
         })
-    wiredHistorikk(value) {
-        this.historikkWiredData = value;
+    wiredHistorikk(result) {
+        this._wiredHistorikkResult = result;
+        this.historikkWiredData = result;
         const { data, error } = this.historikkWiredData;
-        
-        // Always call setWiredBadge, even if data is null (no historic data)
+  
         this.setWiredBadge();
         
         if (error) {
             console.error(error);
-        }
-    }
-
-    @wire(getNavUnit, {
-            field: 'Account.CRM_Person__c',
-            parentObject: '$objectApiName',
-            parentRecordId: '$recordId',
-            type: 'PERSON_LOCATION'
-        })
-    wiredData(result) {
-        const { data, error } = result;
-        if (data) {
-            this.navUnit = data.unit;
-            this.getFormattedLink();
-        } else if (error) {
-            console.error(`Error retrieving nav unit: ${error}`);
         }
     }
     
@@ -342,6 +361,20 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         } catch (error) {
             console.error('Failed to format Nav link:', error);
             this.formattedUnitLink = 'https://www.nav.no'; // fallback safe link
+        }
+    }
+
+    // When the personIdent changes from null to a value, some wire adapters don't automatically re-execute with the new parameters.
+    async refreshAllWiredData() {       
+        try {
+            const refreshPromises = [
+                this._wiredBadgeResult && refreshApex(this._wiredBadgeResult),
+                this._wiredPersonAccessBadgeResult && refreshApex(this._wiredPersonAccessBadgeResult),
+                this._wiredHistorikkResult && refreshApex(this._wiredHistorikkResult)
+            ];
+            await Promise.all(refreshPromises);
+        } catch (error) {
+            console.error('Error refreshing wire adapters:', error);
         }
     }
 
@@ -386,7 +419,6 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
 
     onClickHandler(event) {
         const selectedBadge = event.target.dataset.id;
-        // Use the badge-wrapper class to be more specific
         const cmp = this.template.querySelector(
             `.badge-wrapper[data-id="${selectedBadge}"] c-nks-person-highlight-panel-badge-content`
         );
