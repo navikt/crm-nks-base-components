@@ -198,6 +198,12 @@ public with sharing class NKS_FullmaktController {
             return [SELECT CRM_Person__c FROM Account WHERE Id = :recordId].CRM_Person__c;
         } else if (objectApiName == 'Person__c') {
             return recordId;
+        } else if (objectApiName == 'LiveChatTranscript') {
+            return [
+                SELECT Account.CRM_Person__c
+                FROM LiveChatTranscript
+                WHERE Id = :recordId
+            ].Account.CRM_Person__c;
         }
         return null;
     }

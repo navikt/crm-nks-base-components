@@ -11,3 +11,12 @@
     right: 20px;
     bottom: 15px;
 }
+
+.slds-wrap {
+    align-items: end;
+}
+
+lightning-output-field {
+    display: flex !important;
+    align-items: flex-end !important;
+}
