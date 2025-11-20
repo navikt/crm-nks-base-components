@@ -1,0 +1,114 @@
+.person-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.info-section {
+    flex: 0 0 auto;
+    margin-right: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.info-content {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.info-text {
+    margin-right: 0.25rem;
+}
+
+.sr-only {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.relativePosition {
+    position: relative;
+    --secondaryBackgroundColor: white;
+    --primaryBackgroundColor: white;
+    --borderColor: #cccccc;
+    color: black;
+}
+
+.badges-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.badge-wrapper {
+    position: relative;
+    flex: 0 0 auto;
+    min-width: 0;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+h1 {
+    font-size: 1rem;
+    color: black;
+}
+
+.header-class {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.header-info {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 0.5rem;
+    font-style: italic;
+    color: black;
+}
+
+.content-container {
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+    color: black;
+}
+
+.copy-button {
+    margin-bottom: 0.2rem;
+}
+
+lightning-badge {
+    margin-left: unset !important;
+}
+
+.links-container {
+    display: flex;
+    flex-direction: row;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    font-size: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.fagsystemer-wrapper {
+    margin: -1.25rem -1rem; /* Compensate for unneeded padding in child cmp */
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+}
+
+.unselectable {
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
+}
