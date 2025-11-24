@@ -131,27 +131,31 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         return this.personIdent != null && this.personIdent !== '';
     }
 
-    @wire(getVeilederIdent, { actorId: '$actorId' })
-    wireVeilIdentInfo({ data, error }) {
-        if (data) {
-            this.veilederIdent = data.primaerVeileder;
-            this.underOppfolging = data.underOppfolging;
+    async getVeilederIdent() {       
+        try {
+            const result = await getVeilederIdent({ actorId: this.actorId });
+            if (result) {
+                this.veilederIdent = result.primaerVeileder;
+                this.underOppfolging = result.underOppfolging;
 
-            if (data.underOppfolging && data.OppfolgingsEnhet.enhetId === '4154') {
-                this.erNasjonalOppfolging = true;
-                this.setWiredBadge();
+                if (result.underOppfolging && result.OppfolgingsEnhet.enhetId === '4154') {
+                    this.erNasjonalOppfolging = true;
+                    this.setWiredBadge();
+                }
             }
-        } else if (error) {
+        } catch (error) {
             console.error(error);
         }
     }
-    
-    @wire(getVeilederName, { navIdent: '$veilederIdent' })
-    wiredName({ data, error }) {
-        if (data) {
-            this.veilederName = data;
-        } else if (error) {
-            console.error('Error occurred: ', JSON.stringify(error, null, 2));
+
+    async getVeilederName() {       
+        try {
+            const result = await getVeilederName({ navIdent: this.veilederIdent });
+            if (result) {
+                this.veilederName = result;
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -203,6 +207,8 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
                 this.refreshAllWiredData();
                 this.loadArbeidssoekerData();
                 this.loadNavUnitData();
+                this.getVeilederIdent();
+                this.getVeilederName();
             }
         }
         if (error) {
