@@ -8,7 +8,18 @@
                 >
                     <c-nks-custom-svg size="large" src={genderIconSrc} alt-text={genderText}></c-nks-custom-svg>
                 </lightning-layout-item>
-                <h1><template if:true={fullName}> {fullName} </template></h1>
+                <div lwc:if={formattedFullName} class="name-container">
+                    <h1>{formattedFullName}</h1>
+                    <lightning-button-icon
+                        value={formattedFullName}
+                        class="copy-button name-copy-button"
+                        icon-name="utility:copy"
+                        variant="bare"
+                        onclick={handleCopy}
+                        alternative-text="Kopier navn"
+                        title="Kopier navn"
+                    ></lightning-button-icon>
+                </div>
                 <p class="sr-only unselectable">{genderText}</p>
             </div>
 

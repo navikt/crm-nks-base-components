@@ -68,6 +68,16 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     erNasjonalOppfolging = false;
     uuAlertText = '';
 
+    get formattedFullName() {
+        if (!this.fullName) return '';
+        
+        return this.fullName
+            .toLowerCase()
+            .split(' ')
+            .map(word => this.capitalizeFirstLetter(word))
+            .join(' ');
+    }
+
     get genderIcon() {
         if (!this.fullName) return GENDER_ICONS.default;
         return GENDER_ICONS[this.gender] || GENDER_ICONS.default;
