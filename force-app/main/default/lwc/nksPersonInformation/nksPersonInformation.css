@@ -112,3 +112,12 @@ lightning-badge {
     -ms-user-select: none; /* IE10+/Edge */
     user-select: none; /* Standard */
 }
+
+.name-container {
+    display: flex;
+    align-items: center;
+}
+
+.name-copy-button {
+    margin-left: 0.25rem;
+}
