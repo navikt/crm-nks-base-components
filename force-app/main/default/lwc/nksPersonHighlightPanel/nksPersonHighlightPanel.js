@@ -148,6 +148,16 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 });
             }
             badges = [...badges, ...data.badges];
+
+            if (this.isArbeidssoeker) {
+                badges.push({
+                    name: 'arbeidssoeker',
+                    label: 'Arbeidssøker',
+                    styling: 'slds-theme_warning slds-m-left_x-small slds-badge',
+                    clickable: false
+                });
+            }
+
             if (historikkData && historikkData.length > 0) {
                 badges.push({
                     name: 'historicalGuardianship',
@@ -159,6 +169,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     badgeContentType: 'historicalPowerOfAttorney'
                 });
             }
+
             this.badges = badges;
 
             // this.entitlements = data.entitlements;
@@ -267,6 +278,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     wiredArbeidssoeker({ data, error }) {
         if (data) {
             this.arbeidssoekerPerioder = JSON.parse(data);
+            this.setWiredBadge();
         }
         if (error) {
             this.addErrorMessage('getArbeidssoeker', error);
