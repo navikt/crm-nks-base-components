@@ -1,9 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>50.0</apiVersion>
     <isExposed>true</isExposed>
     <masterLabel>NKS Person Badges</masterLabel>
-    <description>Component that display important information about the person as badges.</description>
+    <description
+    >Component that display important information about the person as badges.</description>
 
     <targets>
         <target>lightning__RecordPage</target>
@@ -11,8 +12,7 @@
 
     <targetConfigs>
         <targetConfig targets="lightning__RecordPage">
-            <!-- <property name="componentTitle" label="List title" type="String" default="
-            sikkerhetstiltak er knyttet til denne brukeren." /> -->
+            <!-- <property name="componentTitle" label="List title" type="String" default=" sikkerhetstiltak er knyttet til denne brukeren." /> -->
             <property
                 name="personRelationField"
                 label="Person Relation Field"
