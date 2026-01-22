@@ -207,6 +207,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
     handlePesysClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
+            console.log();
             getEncryptedPensjonLink({ personIdent: this.personIdent })
                 .then((encryptedIdent) => {
                     if (!encryptedIdent) {
