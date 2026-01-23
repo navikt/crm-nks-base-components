@@ -7,15 +7,7 @@ public class NKS_KrrInformationController_Test {
 
     @isTest
     static void testKrrUpdate() {
-        Test.setMock(
-            HttpCalloutMock.class,
-            new SingleRequestMock(
-                200,
-                'OK',
-                '{\"personer\":{\"additionalProp1\":{\"personident\":\"01048800153\",\"aktiv\":true,\"kanVarsles\":true,\"reservert\":true,\"spraak\":\"string\",\"spraakOppdatert\":\"2022-10-17T10:12:25.864Z\",\"epostadresse\":\"01048800153-test@minid.norge.no\",\"epostadresseOppdatert\":\"2022-10-17T10:12:25.864Z\",\"epostadresseVerifisert\":\"2022-10-17T10:12:25.864Z\",\"mobiltelefonnummer\":\"+4799999999\",\"mobiltelefonnummerOppdatert\":\"2022-10-17T10:12:25.864Z\",\"mobiltelefonnummerVerifisert\":\"2022-10-17T10:12:25.864Z\",\"sikkerDigitalPostkasse\":{\"adresse\":\"string\",\"leverandoerAdresse\":\"string\",\"leverandoerSertifikat\":\"string\"}}}}',
-                null
-            )
-        );
+        ApiMock.setTestMock('POST_KRR_QUERY', 200, 'OK');
 
         Test.startTest();
         NKS_KrrInformationController.updateKrrInformation('01048800153');
