@@ -2,6 +2,7 @@ import { LightningElement, api, wire } from 'lwc';
 import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
 import getFagsoneIpAndOrgType from '@salesforce/apex/NKS_FagsystemController.getFagsoneIpAndOrgType';
 import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
+import getEncryptedPensjonLink from '@salesforce/apex/NKS_FagsystemController.postPensjonPidEncrypt';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publishToAmplitude } from 'c/amplitude';
 
@@ -12,6 +13,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     @api hasPersonId;
     @api filterList = [];
     @api fullName;
+    @api personIdent;
 
     personInfo;
     fagsystemLinks = [];
@@ -21,16 +23,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     wiredRecordData;
     actorId;
     navIdent;
-    _personIdent;
-
-    @api
-    get personIdent() {
-        return this._personIdent;
-    }
-
-    set personIdent(value) {
-        this._personIdent = value;
-    }
 
     @wire(getFagsoneIpAndOrgType)
     wiredGetFagsoneIpAndOrgType({ error, data }) {
@@ -63,7 +55,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
     loadData() {
         this.navIdent = this.wiredRecordData?.navIdent;
-        this._personIdent = this.wiredRecordData?.personIdent;
+        this.personIdent = this.wiredRecordData?.personIdent;
         this.actorId = this.wiredRecordData?.actorId;
         this.filterLinks();
     }
@@ -82,7 +74,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             {
                 name: 'DinPensjon',
                 label: 'Din Pensjon',
-                field: this.generateUrl('DinPensjon'),
+                field: null,
+                eventFunc: this.handleDinPensjonClickOrKey,
+                title: 'Din Pensjon',
                 show: this.personIdent
             },
             {
@@ -91,7 +85,13 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 field: this.generateUrl('DinUfore'),
                 show: this.personIdent && this.navIdent
             },
-            { name: 'Pesys', field: this.generateUrl('Pesys'), show: this.personIdent },
+            {
+                name: 'Pesys',
+                field: null,
+                eventFunc: this.handlePesysClickOrKey,
+                title: 'Pesys',
+                show: this.personIdent
+            },
             { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
             { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
@@ -120,10 +120,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 return `https://veilarbpersonflate${this.isSandbox ? '.dev' : ''}.intern.nav.no/${this.personIdent}`;
             case 'Barnetrygd':
                 return `https://barnetrygd.intern.nav.no/oppgaver`;
-            case 'DinPensjon':
-                return `https://pensjon-selvbetjening-dinpensjon-frontend-veileder${
-                    this.isSandbox ? '-q2.intern.dev' : '.intern'
-                }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${this.personIdent}`;
             case 'DinUfore':
                 return `https://uforetrygd-selvbetjening-frontend-veileder.intern.${
                     this.isSandbox ? 'dev.' : ''
@@ -142,8 +138,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
             case 'Modia':
                 return `https://modiapersonoversikt.intern${this.isSandbox ? '.dev' : ''}.nav.no/person/${this.personIdent}`;
-            case 'Pesys':
-                return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
             case 'Speil':
                 return `https://syfomodiaperson${this.isSandbox ? '.dev' : ''}.intern.nav.no/sykefravaer/personsok`;
             default:
@@ -170,6 +164,75 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                     console.error('An error occured while retrieving AA-reg link: ', error);
                     // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
+                });
+
+            this.handleClick(e);
+        }
+    }
+
+    handleDinPensjonClickOrKey(e) {
+        if (e.type === 'click' || e.key === 'Enter') {
+            getEncryptedPensjonLink({ personIdent: this.personIdent })
+                .then((encryptedIdent) => {
+                    if (!encryptedIdent) {
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Klarte ikke å åpne Din Pensjon',
+                                message: 'Vennligst prøv på nytt eller naviger direkte',
+                                variant: 'error'
+                            })
+                        );
+                        return;
+                    }
+                    const url = `https://pensjon-selvbetjening-dinpensjon-frontend-veileder${
+                        this.isSandbox ? '-q2.intern.dev' : '.intern'
+                    }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${encryptedIdent}`;
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
+                    window.open(url);
+                })
+                .catch((error) => {
+                    console.error('An error occured while encrypting Din Pensjon link: ', error);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Klarte ikke å åpne Din Pensjon',
+                            message: 'Vennligst prøv på nytt eller naviger direkte',
+                            variant: 'error'
+                        })
+                    );
+                });
+
+            this.handleClick(e);
+        }
+    }
+
+    handlePesysClickOrKey(e) {
+        if (e.type === 'click' || e.key === 'Enter') {
+            console.log();
+            getEncryptedPensjonLink({ personIdent: this.personIdent })
+                .then((encryptedIdent) => {
+                    if (!encryptedIdent) {
+                        this.dispatchEvent(
+                            new ShowToastEvent({
+                                title: 'Klarte ikke å åpne Pesys',
+                                message: 'Vennligst prøv på nytt eller naviger direkte',
+                                variant: 'error'
+                            })
+                        );
+                        return;
+                    }
+                    const url = `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${encryptedIdent}`;
+                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
+                    window.open(url);
+                })
+                .catch((error) => {
+                    console.error('An error occured while encrypting Pesys link: ', error);
+                    this.dispatchEvent(
+                        new ShowToastEvent({
+                            title: 'Klarte ikke å åpne Pesys',
+                            message: 'Vennligst prøv på nytt eller naviger direkte',
+                            variant: 'error'
+                        })
+                    );
                 });
 
             this.handleClick(e);
@@ -208,6 +271,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     }
 
     handleClick(event) {
-        publishToAmplitude('Fagsystemer', { type: `${event.target.innerText}` });
+        //publishToAmplitude('Fagsystemer', { type: `${event.target.innerText}` });
     }
 }
