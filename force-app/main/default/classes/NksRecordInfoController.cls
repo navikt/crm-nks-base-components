@@ -50,14 +50,15 @@ public class NksRecordInfoController {
         try {
             return Database.query(query);
         } catch (Exception e) {
-            logger.exception(
-                e,
+            logger.error(
                 'NksRecordInfoController query failed. Query: ' + query + 
                 ' | parentId: ' + parentId + 
                 ' | queryFields: ' + queryFields + 
                 ' | objectApiName: ' + objectApiName + 
                 ' | relationshipField: ' + relationshipField + 
-                ' | ordering: ' + ordering,
+                ' | ordering: ' + ordering + 
+                ' | Exception: ' + e.getMessage(),
+                null,
                 CRM_ApplicationDomain.Domain.NKS
             );
             logger.publish();
