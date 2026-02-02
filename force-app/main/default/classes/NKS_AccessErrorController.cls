@@ -60,12 +60,12 @@ public without sharing class NKS_AccessErrorController {
 
     private static Boolean hasAccess(Id recordId) {
         List<UserRecordAccess> result = [
-            SELECT RecordID, HasReadAccess
+            SELECT HasReadAccess
             FROM UserRecordAccess
             WHERE UserId = :UserInfo.getUserId() AND RecordID = :recordId
         ];
 
-        return result.isEmpty() ? false : result[0].HasReadAccess;
+        return !result.isEmpty() && result[0].HasReadAccess;
     }
 
     private static Boolean accountNameSetToNotAvailable(Person__c person) {

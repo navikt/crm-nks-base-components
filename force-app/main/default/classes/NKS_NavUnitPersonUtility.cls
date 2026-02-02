@@ -205,10 +205,11 @@ public with sharing class NKS_NavUnitPersonUtility {
      */
     private Boolean hasReadAccessToUser(String personId) {
         UserRecordAccess access = [
-            SELECT RecordId, HasReadAccess
+            SELECT HasReadAccess
             FROM UserRecordAccess
             WHERE UserId = :UserInfo.getUserId() AND RecordId = :personId
         ];
-        return access.HasReadAccess;
+        
+        return !access.isEmpty() && access[0].HasReadAccess;
     }
 }
