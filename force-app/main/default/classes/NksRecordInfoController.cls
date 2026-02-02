@@ -1,4 +1,5 @@
 public class NksRecordInfoController {
+    private static LoggerUtility logger = new LoggerUtility('NksRecordInfoController');
     /**
      * @description
      * @author Stian Ruud Schikora | 09-14-2020
@@ -45,6 +46,23 @@ public class NksRecordInfoController {
         } else {
             query += ' ORDER BY Id';
         }
-        return Database.query(query);
+        
+        try {
+            return Database.query(query);
+        } catch (Exception e) {
+            logger.error(
+                'NksRecordInfoController query failed. Query: ' + query + 
+                ' | parentId: ' + parentId + 
+                ' | queryFields: ' + queryFields + 
+                ' | objectApiName: ' + objectApiName + 
+                ' | relationshipField: ' + relationshipField + 
+                ' | ordering: ' + ordering + 
+                ' | Exception: ' + e.getMessage(),
+                null,
+                CRM_ApplicationDomain.Domain.NKS
+            );
+            logger.publish();
+            throw e;
+        }
     }
 }
