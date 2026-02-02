@@ -608,7 +608,7 @@ public with sharing class NKS_PersonBadgesController {
 
         public void setOpenSTO(String caseId) {
             Case c = [
-                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                SELECT Id, AccountId
                 FROM Case
                 WHERE Id = :caseId
                 LIMIT 1
