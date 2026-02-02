@@ -207,8 +207,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
 
     handlePesysClickOrKey(e) {
         if (e.type === 'click' || e.key === 'Enter') {
-            // TODO: Waiting for Pensjon to enable decrypt on their side before re-enabling this
-           /* getEncryptedPensjonLink({ personIdent: this.personIdent })
+            getEncryptedPensjonLink({ personIdent: this.personIdent })
                 .then((encryptedIdent) => {
                     if (!encryptedIdent) {
                         this.dispatchEvent(
@@ -234,10 +233,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                         })
                     );
                 });
-            */
-            const url = `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${this.personIdent}`;
-            // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open    
-            window.open(url);
             this.handleClick(e);
         }
     }
