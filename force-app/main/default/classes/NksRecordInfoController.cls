@@ -52,22 +52,6 @@ public class NksRecordInfoController {
             query += ' ORDER BY Id';
         }
         
-        try {
-            return Database.query(query);
-        } catch (Exception e) {
-            logger.error(
-                'NksRecordInfoController query failed. Query: ' + query + 
-                ' | parentId: ' + parentId + 
-                ' | queryFields: ' + queryFields + 
-                ' | objectApiName: ' + objectApiName + 
-                ' | relationshipField: ' + relationshipField + 
-                ' | ordering: ' + ordering + 
-                ' | Exception: ' + e.getMessage(),
-                null,
-                CRM_ApplicationDomain.Domain.NKS
-            );
-            logger.publish();
-            throw e;
-        }
+        return Database.query(query);
     }
 }
