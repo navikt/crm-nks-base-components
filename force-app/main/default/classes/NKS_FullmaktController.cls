@@ -133,9 +133,7 @@ public with sharing class NKS_FullmaktController {
             }
 
             if (omraadeList != null) {
-                for (Omraade omd : omraadeList) {
-                    omraader.add(omd);
-                }
+                omraader.addAll(omraadeList);
             }
         }
         return omraader;
