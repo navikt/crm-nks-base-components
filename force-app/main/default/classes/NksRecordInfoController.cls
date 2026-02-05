@@ -31,6 +31,11 @@ public class NksRecordInfoController {
         string relationshipField,
         string ordering
     ) {
+
+        if (queryFields == null) {
+            queryFields = 'Id';
+        }
+        
         String query =
             'SELECT ' +
             queryFields +
