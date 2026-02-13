@@ -521,25 +521,32 @@ public with sharing class NKS_PersonBadgesController {
             List<Id> originSkillsIds
         ) {
             List<Id> casesInQueueList = new List<Id>();
+            
+            // Pre-query SkillRequirement once for each filter and store RelatedRecordIds
+            Set<Id> skillRequirementRelatedIds = new Set<Id>();
+            Set<Id> skillRequirementExcludedIds = new Set<Id>();
+            
+            for (SkillRequirement sr : [SELECT RelatedRecordId FROM SkillRequirement WHERE SkillId IN :skillIds]) {
+                skillRequirementRelatedIds.add(sr.RelatedRecordId);
+            }
+            
+            for (SkillRequirement sr : [
+                SELECT RelatedRecordId 
+                FROM SkillRequirement 
+                WHERE (SkillId NOT IN :userConfidentialSkillIds AND SkillId IN :confidentialitySkillsIds) 
+                    OR (SkillId NOT IN :userOriginSkillIds AND SkillId IN :originSkillsIds)
+            ]) {
+                skillRequirementExcludedIds.add(sr.RelatedRecordId);
+            }
+            
+            // Use the pre-queried sets to avoid redundant subqueries
             for (PendingServiceRouting psr : [
                 SELECT WorkItemId
                 FROM PendingServiceRouting
                 WHERE
                     WorkItem.AccountId = :currentCase.AccountId
-                    AND Id IN (
-                        SELECT RelatedRecordId
-                        FROM SkillRequirement
-                        WHERE SkillId IN :skillIds
-                    )
-                    AND Id NOT IN (
-                        SELECT RelatedRecordId
-                        FROM SkillRequirement
-                        WHERE
-                            (SkillId NOT IN :userConfidentialSkillIds
-                            AND SkillId IN :confidentialitySkillsIds)
-                            OR (SkillId NOT IN :userOriginSkillIds
-                            AND SkillId IN :originSkillsIds)
-                    )
+                    AND Id IN :skillRequirementRelatedIds
+                    AND Id NOT IN :skillRequirementExcludedIds
                     AND ServiceChannel.DeveloperName = 'Skriv_til_oss'
                     AND IsReadyForRouting = TRUE
                     AND IsPushed = FALSE
@@ -601,7 +608,7 @@ public with sharing class NKS_PersonBadgesController {
 
         public void setOpenSTO(String caseId) {
             Case c = [
-                SELECT Id, RecordType.DeveloperName, AccountId, STO_Category__c, NKS_Theme_Group__r.Name
+                SELECT Id, AccountId
                 FROM Case
                 WHERE Id = :caseId
                 LIMIT 1
