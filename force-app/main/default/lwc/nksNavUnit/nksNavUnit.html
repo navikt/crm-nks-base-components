@@ -14,11 +14,14 @@
                     <template for:each={sosialeTjenesterSegments} for:item="seg">
                         <span key={seg.id}>
                             <template lwc:if={seg.bold}>
-                                <strong>{seg.text}</strong>
+                                <template lwc:if={seg.underline}>
+                                    <strong><u>{seg.text}</u></strong>
+                                </template>
+                                <template lwc:else>
+                                    <strong>{seg.text}</strong>
+                                </template>
                             </template>
-                            <template lwc:else>
-                                {seg.text}
-                            </template>
+                            <template lwc:else> {seg.text} </template>
                         </span>
                     </template>
                 </p>
@@ -28,9 +31,7 @@
                     <p>Offentlige vakttelefoner:</p>
                     <div lwc:if={publikumskanaler}>
                         <template for:each={publikumskanaler} for:item="kanal">
-                            <p key={kanal.beskrivelse}>
-                                {kanal.beskrivelse}: {kanal.telefon}
-                            </p>
+                            <p key={kanal.beskrivelse}>{kanal.beskrivelse}: {kanal.telefon}</p>
                         </template>
                     </div>
                     <div lwc:else>
@@ -77,10 +78,7 @@
                 </div>
             </c-nks-expandable-panel>
             <c-nks-expandable-panel title="Kontaktdetaljer fra nav.no" is-expandable chevron-left>
-                <c-nks-nav-unit-contact-information
-                    contact-information={contactInformationV2}
-                    num-cols={numCols}
-                >
+                <c-nks-nav-unit-contact-information contact-information={contactInformationV2} num-cols={numCols}>
                 </c-nks-nav-unit-contact-information>
             </c-nks-expandable-panel>
         </lightning-layout-item>
