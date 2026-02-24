@@ -56,7 +56,6 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
             console.error('Failed to format Nav link:', error);
             this.formattedUnitLink = 'https://www.nav.no'; // fallback safe link
         }
-        
     }
 
     handleCopy(event) {
@@ -126,7 +125,16 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         if (!this.personDetails?.fullName) {
             return 'Skjermet person';
         }
-        return this.personDetails?.isDeceased ? this.personDetails?.fullName + ' (død)' : this.personDetails?.fullName;
+
+        const capitalizeWords = (name) => {
+            return name
+                .split(' ')
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+        };
+
+        const formattedName = capitalizeWords(this.personDetails.fullName);
+        return this.personDetails?.isDeceased ? formattedName + ' (død)' : formattedName;
     }
 
     get formattedWrittenStandard() {
