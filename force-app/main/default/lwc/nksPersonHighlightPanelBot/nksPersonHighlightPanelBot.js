@@ -170,7 +170,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                     window.open('https://arbeid-og-inntekt.nais.adeo.no/');
                 });
 
-            this.handleClick(e);
+            //this.handleClick(e);
         }
     }
 
@@ -250,7 +250,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 window.open(url);
             })
             .catch(errorMethod);
-        this.handleClick(e);
+        //this.handleClick(e);
     }
 
     /*handleSosialModiaClickOrKey(e) {
