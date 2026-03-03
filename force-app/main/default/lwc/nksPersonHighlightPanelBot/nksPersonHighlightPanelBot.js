@@ -82,7 +82,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             {
                 name: 'DinUfore',
                 label: 'Din Uføretrygd',
-                field: this.generateUrl('DinUfore'),
+                eventFunc: this.handleDinUføretrygdClickOrKey,
+                field: null,
+                title: 'Din Uføretrygd',
                 show: this.personIdent && this.navIdent
             },
             {
@@ -120,10 +122,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 return `https://veilarbpersonflate${this.isSandbox ? '.dev' : ''}.intern.nav.no/${this.personIdent}`;
             case 'Barnetrygd':
                 return `https://barnetrygd.intern.nav.no/oppgaver`;
-            case 'DinUfore':
-                return `https://uforetrygd-selvbetjening-frontend-veileder.intern.${
-                    this.isSandbox ? 'dev.' : ''
-                }nav.no/uforetrygd/selvbetjening?pid=${this.personIdent}`;
             case 'Enslig':
                 return `https://ensligmorellerfar.intern.nav.no/oppgavebenk`;
             case 'Foreldrepenger':
@@ -137,7 +135,9 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             case 'K9':
                 return `https://k9.intern.nav.no/k9/web/aktoer/${this.actorId}`;
             case 'Modia':
-                return `https://modiapersonoversikt.intern${this.isSandbox ? '.dev' : ''}.nav.no/person/${this.personIdent}`;
+                return `https://modiapersonoversikt.intern${this.isSandbox ? '.dev' : ''}.nav.no/person/${
+                    this.personIdent
+                }`;
             case 'Speil':
                 return `https://syfomodiaperson${this.isSandbox ? '.dev' : ''}.intern.nav.no/sykefravaer/personsok`;
             default:
@@ -145,8 +145,12 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         }
     }
 
+    validKeyEvent(e) {
+        return e.type === 'click' || e.key === 'Enter';
+    }
+
     handleAAClickOrKey(e) {
-        if (e.type === 'click' || e.key === 'Enter') {
+        if (this.validKeyEvent(e)) {
             // eslint-disable-next-line @locker/locker/distorted-window-fetch
             fetch('https://arbeid-og-inntekt.nais.adeo.no/api/v2/redirect/sok/arbeidstaker', {
                 method: 'GET',
@@ -170,71 +174,83 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         }
     }
 
-    handleDinPensjonClickOrKey(e) {
-        if (e.type === 'click' || e.key === 'Enter') {
-            getEncryptedPensjonLink({ personIdent: this.personIdent })
-                .then((encryptedIdent) => {
-                    if (!encryptedIdent) {
-                        this.dispatchEvent(
-                            new ShowToastEvent({
-                                title: 'Klarte ikke å åpne Din Pensjon',
-                                message: 'Vennligst prøv på nytt eller naviger direkte',
-                                variant: 'error'
-                            })
-                        );
-                        return;
-                    }
-                    const url = `https://pensjon-selvbetjening-dinpensjon-frontend-veileder${
-                        this.isSandbox ? '-q2.intern.dev' : '.intern'
-                    }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${encryptedIdent}`;
-                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
-                    window.open(url);
+    handleDinUføretrygdClickOrKey(e) {
+        if (!this.validKeyEvent(e)) return;
+        const urlMethod = (encryptedIdent) => {
+            return `https://uforetrygd-selvbetjening-frontend-veileder.intern.${
+                this.isSandbox ? 'dev.' : ''
+            }nav.no/uforetrygd/selvbetjening?pid=${encryptedIdent}`;
+        };
+        const errorMethod = (error) => {
+            if (error) {
+                console.error('An error occured while encrypting Din Uføretrygd link: ', error);
+            }
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Klarte ikke å åpne Din Uføretrygd',
+                    message: 'Vennligst prøv på nytt eller naviger direkte',
+                    variant: 'error'
                 })
-                .catch((error) => {
-                    console.error('An error occured while encrypting Din Pensjon link: ', error);
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Klarte ikke å åpne Din Pensjon',
-                            message: 'Vennligst prøv på nytt eller naviger direkte',
-                            variant: 'error'
-                        })
-                    );
-                });
+            );
+        };
+        this.handleEncryptedPensjonLink(e, urlMethod, errorMethod);
+    }
 
-            this.handleClick(e);
-        }
+    handleDinPensjonClickOrKey(e) {
+        if (!this.validKeyEvent(e)) return;
+        const urlMethod = (encryptedIdent) => {
+            return `https://pensjon-selvbetjening-dinpensjon-frontend-veileder${
+                this.isSandbox ? '-q2.intern.dev' : '.intern'
+            }.nav.no/pensjon/selvbetjening/dinpensjon?pid=${encryptedIdent}`;
+        };
+        const errorMethod = (error) => {
+            if (error) {
+                console.error('An error occured while encrypting Din Pensjon link: ', error);
+            }
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Klarte ikke å åpne Din Pensjon',
+                    message: 'Vennligst prøv på nytt eller naviger direkte',
+                    variant: 'error'
+                })
+            );
+        };
+        this.handleEncryptedPensjonLink(e, urlMethod, errorMethod);
     }
 
     handlePesysClickOrKey(e) {
-        if (e.type === 'click' || e.key === 'Enter') {
-            getEncryptedPensjonLink({ personIdent: this.personIdent })
-                .then((encryptedIdent) => {
-                    if (!encryptedIdent) {
-                        this.dispatchEvent(
-                            new ShowToastEvent({
-                                title: 'Klarte ikke å åpne Pesys',
-                                message: 'Vennligst prøv på nytt eller naviger direkte',
-                                variant: 'error'
-                            })
-                        );
-                        return;
-                    }
-                    const url = `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${encryptedIdent}`;
-                    // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
-                    window.open(url);
+        if (!this.validKeyEvent(e)) return;
+        const urlMethod = (encryptedIdent) => {
+            return `https://pensjon-psak.nais.adeo.no/psak/brukeroversikt/fnr=${encryptedIdent}`;
+        };
+        const errorMethod = (error) => {
+            if (error) {
+                console.error('An error occured while encrypting Pesys link: ', error);
+            }
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Klarte ikke å åpne Pesys',
+                    message: 'Vennligst prøv på nytt eller naviger direkte',
+                    variant: 'error'
                 })
-                .catch((error) => {
-                    console.error('An error occured while encrypting Pesys link: ', error);
-                    this.dispatchEvent(
-                        new ShowToastEvent({
-                            title: 'Klarte ikke å åpne Pesys',
-                            message: 'Vennligst prøv på nytt eller naviger direkte',
-                            variant: 'error'
-                        })
-                    );
-                });
-            this.handleClick(e);
-        }
+            );
+        };
+        this.handleEncryptedPensjonLink(e, urlMethod, errorMethod);
+    }
+
+    handleEncryptedPensjonLink(e, urlMethod, errorMethod) {
+        getEncryptedPensjonLink({ personIdent: this.personIdent })
+            .then((encryptedIdent) => {
+                if (!encryptedIdent) {
+                    errorMethod();
+                    return;
+                }
+                const url = urlMethod(encryptedIdent);
+                // eslint-disable-next-line @locker/locker/distorted-xml-http-request-window-open
+                window.open(url);
+            })
+            .catch(errorMethod);
+        this.handleClick(e);
     }
 
     /*handleSosialModiaClickOrKey(e) {
