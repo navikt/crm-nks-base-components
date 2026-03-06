@@ -22,6 +22,7 @@ import getRelatedRecord from '@salesforce/apex/NksRecordInfoController.getRelate
 import getVeilederName from '@salesforce/apex/NKS_NOMController.getEmployeeName';
 import getVeilederIdent from '@salesforce/apex/NKS_AktivitetsplanController.getOppfolgingsInfo';
 import getArbeidssoeker from '@salesforce/apex/NKS_ArbeidssoekerController.getArbeidssoeker';
+import getKrrInformation from '@salesforce/apex/NKS_KrrInformationController.getKrrInformation';
 
 const PERSON_FIELDS = [
     PERSON_FIRST_NAME,
@@ -250,6 +251,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.oppfolgingAndMeldekortData.firstName = this.firstName;
             this.oppfolgingAndMeldekortData.name = this.personIdent;
 
+            this.loadKrrData();
             this.handleBackgroundColor();
         } else if (error) {
             this.addErrorMessage('getRecord', error);
@@ -283,6 +285,18 @@ export default class NksPersonHighlightPanel extends LightningElement {
         if (error) {
             this.addErrorMessage('getArbeidssoeker', error);
             console.error(error);
+        }
+    }
+
+    // Override field value with fresh data from KRR and keep the field value as fallback if KRR call fails
+    async loadKrrData() {
+        try {
+            const result = await getKrrInformation({ personIdent: this.personIdent });
+            if (result && result.language) {
+                this.personDetails.writtenStandard = result.language;
+            }
+        } catch (error) {
+            console.error('Error loading KRR data:', error);
         }
     }
 
@@ -364,12 +378,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const className = !this.personDetails?.fullName
             ? 'confidentialBackground'
             : this.personDetails?.isDeceased
-            ? 'deadBackground'
-            : this.personDetails?.gender === 'Kvinne'
-            ? 'femaleBackground'
-            : this.personDetails?.gender === 'Mann'
-            ? 'maleBackground'
-            : 'unknownBackground';
+              ? 'deadBackground'
+              : this.personDetails?.gender === 'Kvinne'
+                ? 'femaleBackground'
+                : this.personDetails?.gender === 'Mann'
+                  ? 'maleBackground'
+                  : 'unknownBackground';
         genderWrapper.className = 'gender-wrapper ' + className;
     }
 
