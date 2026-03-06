@@ -15,7 +15,7 @@ public without sharing class NKS_KrrInformationController {
                 data.verified = sistVerifisertDato(personer[0]);
                 data.reservation = personer[0]?.reservert == null ? false : personer[0]?.reservert;
                 data.language = personer[0]?.spraak;
-                data.krrLastUpdated = Datetime.now();
+                data.lastUpdated = Datetime.now();
                 return data;
             }
             return null;
@@ -38,7 +38,7 @@ public without sharing class NKS_KrrInformationController {
         @AuraEnabled
         public String language;
         @AuraEnabled
-        public Datetime krrLastUpdated;
+        public Datetime lastUpdated;
     }
 
     private static Datetime sistVerifisertDato(KrrCalloutService.Person pers) {
