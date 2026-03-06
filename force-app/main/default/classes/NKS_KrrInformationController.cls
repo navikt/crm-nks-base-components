@@ -1,7 +1,7 @@
 public without sharing class NKS_KrrInformationController {
     static LoggerUtility logger = new LoggerUtility();
 
-    @AuraEnabled
+    @AuraEnabled(cacheable=true)
     public static KrrData getKrrInformation(String personIdent) {
         try {
             List<KrrCalloutService.Person> personer = KrrCalloutService.doPersonOppslag2(
