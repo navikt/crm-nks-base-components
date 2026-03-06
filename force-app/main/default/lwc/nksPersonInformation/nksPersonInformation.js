@@ -263,7 +263,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     async loadKrrData() {
         try {
             const result = await getKrrInformation({ personIdent: this.personIdent });
-            if (result && result.language) {
+            if (result?.language) {
                 this.writtenStandard = result.language;
             }
         } catch (error) {

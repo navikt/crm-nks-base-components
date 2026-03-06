@@ -292,7 +292,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     async loadKrrData() {
         try {
             const result = await getKrrInformation({ personIdent: this.personIdent });
-            if (result && result.language) {
+            if (result?.language) {
                 this.personDetails.writtenStandard = result.language;
             }
         } catch (error) {
