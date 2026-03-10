@@ -41,6 +41,7 @@ public without sharing class NKS_KrrInformationController {
         public Datetime lastUpdated;
     }
 
+    @TestVisible
     private static Datetime sistVerifisertDato(KrrCalloutService.Person pers) {
         Datetime emailVerifisertDato = pers?.epostadresseVerifisert;
         Datetime mobileVerifisertDato = pers?.mobiltelefonnummerVerifisert;
