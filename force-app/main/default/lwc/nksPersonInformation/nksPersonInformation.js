@@ -1,4 +1,4 @@
-import { LightningElement, api, wire, } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
 import { refreshApex } from '@salesforce/apex';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
@@ -24,17 +24,18 @@ import getArbeidssoeker from '@salesforce/apex/NKS_ArbeidssoekerController.getAr
 import getHistorikk from '@salesforce/apex/NKS_FullmaktController.getHistorikk';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
 import getNavLinks from '@salesforce/apex/NKS_NavUnitLinks.getNavLinks';
+import getKrrInformation from '@salesforce/apex/NKS_KrrInformationController.getKrrInformation';
 
 const GENDER_ICONS = {
-    'Mann': 'MaleCircleFilled',
-    'Kvinne': 'FemaleCircleFilled',
-    'Ukjent': 'UnknownCircleFilled',
+    Mann: 'MaleCircleFilled',
+    Kvinne: 'FemaleCircleFilled',
+    Ukjent: 'UnknownCircleFilled',
     default: 'confidentialCircleFilled'
 };
 
 const LANGUAGE_MAPPING = {
-    'nb': 'Bokmål',
-    'nn': 'Nynorsk'
+    nb: 'Bokmål',
+    nn: 'Nynorsk'
 };
 
 export default class NksPersonInformation extends NavigationMixin(LightningElement) {
@@ -70,11 +71,11 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
 
     get formattedFullName() {
         if (!this.fullName) return '';
-        
+
         return this.fullName
             .toLowerCase()
             .split(' ')
-            .map(word => this.capitalizeFirstLetter(word))
+            .map((word) => this.capitalizeFirstLetter(word))
             .join(' ');
     }
 
@@ -113,7 +114,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
 
     get formattedWrittenStandard() {
         if (!this.writtenStandard) return null;
-        
+
         const standard = LANGUAGE_MAPPING[this.writtenStandard.toLowerCase()];
         return standard ? `Målform: ${standard}` : null;
     }
@@ -141,7 +142,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         return this.personIdent != null && this.personIdent !== '';
     }
 
-    async getVeilederIdent() {       
+    async getVeilederIdent() {
         try {
             const result = await getVeilederIdent({ actorId: this.actorId });
             if (result) {
@@ -158,7 +159,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         }
     }
 
-    async getVeilederName() {       
+    async getVeilederName() {
         try {
             const result = await getVeilederName({ navIdent: this.veilederIdent });
             if (result) {
@@ -181,7 +182,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
             AGE_FIELD,
             CITIZENSHIP_FIELD,
             MARITAL_STATUS_FIELD,
-            WRITTEN_STANDARD_FIELD,
+            WRITTEN_STANDARD_FIELD
         ]
     })
     wiredRecordInfo({ error, data }) {
@@ -219,6 +220,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
                 this.loadNavUnitData();
                 this.getVeilederIdent();
                 this.getVeilederName();
+                this.loadKrrData();
             }
         }
         if (error) {
@@ -226,7 +228,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         }
     }
 
-    async loadArbeidssoekerData() {       
+    async loadArbeidssoekerData() {
         try {
             const result = await getArbeidssoeker({ identnr: this.personIdent });
             if (result) {
@@ -237,7 +239,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
         }
     }
 
-    async loadNavUnitData() {        
+    async loadNavUnitData() {
         try {
             const result = await getNavUnit({
                 field: 'Account.CRM_Person__c',
@@ -245,7 +247,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
                 parentRecordId: this.recordId,
                 type: 'PERSON_LOCATION'
             });
-            
+
             if (result && result.unit) {
                 this.navUnit = result.unit;
                 this.getFormattedLink();
@@ -254,6 +256,18 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
             }
         } catch (error) {
             console.error('Error loading nav unit data:', error);
+        }
+    }
+
+    // Override field value with fresh data from KRR and keep the field value as fallback if KRR call fails
+    async loadKrrData() {
+        try {
+            const result = await getKrrInformation({ personIdent: this.personIdent });
+            if (result?.language) {
+                this.writtenStandard = result.language;
+            }
+        } catch (error) {
+            console.error('Error loading KRR data:', error);
         }
     }
 
@@ -271,7 +285,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
 
     setWiredBadge() {
         if (this.wiredBadge == null) return;
-        
+
         const { data, error } = this.wiredBadge;
         const { data: historikkData } = this.historikkWiredData || {};
 
@@ -339,21 +353,21 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     }
 
     @wire(getHistorikk, {
-            recordId: '$recordId',
-            objectApiName: '$objectApiName'
-        })
+        recordId: '$recordId',
+        objectApiName: '$objectApiName'
+    })
     wiredHistorikk(result) {
         this._wiredHistorikkResult = result;
         this.historikkWiredData = result;
         const { data, error } = this.historikkWiredData;
-  
+
         this.setWiredBadge();
-        
+
         if (error) {
             console.error(error);
         }
     }
-    
+
     async getFormattedLink() {
         if (!this.navUnit) {
             return;
@@ -381,7 +395,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     }
 
     // When the personIdent changes from null to a value, some wire adapters don't automatically re-execute with the new parameters.
-    async refreshAllWiredData() {       
+    async refreshAllWiredData() {
         try {
             const refreshPromises = [
                 this._wiredBadgeResult && refreshApex(this._wiredBadgeResult),
