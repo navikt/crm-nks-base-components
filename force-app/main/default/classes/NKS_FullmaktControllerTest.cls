@@ -200,4 +200,62 @@ public with sharing class NKS_FullmaktControllerTest {
         NKS_FullmaktController.logError('test err message');
         Test.stopTest();
     }
+
+    @IsTest
+    static void getHistoricOmraadeListByThemeGroup() {
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER_HISTORIKK.name(), 200, 'OK');
+
+        List<NKS_FullmaktController.OmraadeGroup> expectedOmraadeGroup = new List<NKS_FullmaktController.OmraadeGroup>{
+            new NKS_FullmaktController.OmraadeGroup('Arbeid', new List<String>{'Gjelder alle ytelser'}),
+            new NKS_FullmaktController.OmraadeGroup('Helse', new List<String>{'SYK', 'SYM', 'UFO'})
+        };
+
+        String expectedPeriode = '31.05.2024- Tidsubegrenset';
+
+        Test.startTest();
+        List<NKS_FullmaktController.FullmaktsgiverHistorikk> historikk = NKS_FullmaktController.getHistorikk(
+            c.Id,
+            'Case'
+        );
+        List<NKS_FullmaktController.OmraadeGroup> a = historikk[0].formattedOmraadeListByThemeGroup;
+        String b = historikk[0].periode;
+        Test.stopTest();
+
+        Assert.isNotNull(historikk);
+        Assert.areNotEqual(0, historikk.size());
+        Assert.areEqual(JSON.serialize(expectedOmraadeGroup), JSON.serialize(a));
+        Assert.areEqual(expectedPeriode, b);
+    }
+
+    @IsTest
+    static void getFullmaktsgiverOmraadeListByThemeGroup() {
+        Person__c p = [SELECT Id, CRM_Account__c FROM Person__c WHERE Name = '01234567890'];
+        Case c = (Case) UTIL_TestDataFactory.createRecord(
+            new Case(AccountId = p.CRM_Account__c, STO_Category__c = 'Arbeid', Status = 'New'),
+            true
+        );
+        ApiMock.setTestMock(FullmaktService.services.GET_FULLMAKTSGIVER.name(), 200, 'OK');
+
+        List<NKS_FullmaktController.OmraadeGroup> expectedOmraadeGroup = new List<NKS_FullmaktController.OmraadeGroup>{
+            new NKS_FullmaktController.OmraadeGroup('Arbeid', new List<String>{'Gjelder alle ytelser'}),
+            new NKS_FullmaktController.OmraadeGroup('Helse', new List<String>{'SYK', 'SYM', 'UFO'})
+        };
+
+        Test.startTest();
+        List<NKS_FullmaktController.Fullmaktsgiver> fullmaktsGiver = NKS_FullmaktController.getFullmaktsgiver(
+            c.Id,
+            'Case'
+        );
+        List<NKS_FullmaktController.OmraadeGroup> a = fullmaktsGiver[0].formattedOmraadeListByThemeGroup;
+        Test.stopTest();
+
+        Assert.isNotNull(fullmaktsGiver);
+        Assert.areNotEqual(0, fullmaktsGiver.size());
+        Assert.areEqual(JSON.serialize(expectedOmraadeGroup), JSON.serialize(a));
+    }
 }
