@@ -13,7 +13,7 @@ export default class NksNavUnit extends LightningElement {
         const text = this.navUnit?.sosialeTjenester || '';
         if (!text) return [];
 
-        const regex = /\b(\d{8})\b/g;
+        const regex = /\b(\d{8}|spørreanrop)\b/gi;
         const segments = [];
         let lastIndex = 0;
         let match;
@@ -27,14 +27,17 @@ export default class NksNavUnit extends LightningElement {
                 segments.push({
                     id: `t-${id++}`,
                     text: text.slice(lastIndex, matchIndex),
-                    bold: false
+                    bold: false,
+                    underline: false
                 });
             }
-            // Match found, push bold segment
+            // Match found, push bold segment (and underline if it's "spørreanrop")
+            const isSporreanrop = match[1].toLowerCase() === 'spørreanrop';
             segments.push({
                 id: `b-${id++}`,
                 text: match[1],
-                bold: true
+                bold: true,
+                underline: isSporreanrop
             });
 
             // Start next iteration after the current match
@@ -46,7 +49,8 @@ export default class NksNavUnit extends LightningElement {
             segments.push({
                 id: `t-${id++}`,
                 text: text.slice(lastIndex),
-                bold: false
+                bold: false,
+                underline: false
             });
         }
 
