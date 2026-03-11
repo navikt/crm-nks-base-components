@@ -68,7 +68,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
     errorMessages;
     erNasjonalOppfolging = false;
     oppfolgingAndMeldekortData = {};
-    personDetails = {};
+    personDetails;
     uuAlertText = '';
 
     connectedCallback() {
