@@ -25,9 +25,6 @@ export default class NksChatPageTransparentContainer extends LightningElement {
     }
 
     async getFocusedTab(allTabsInfo) {
-        if (!this.isConsoleNavigation) {
-            return;
-        }
         try {
             let focusedTabInfo = await getFocusedTabInfo();
             const focusedTabObjectApiName = focusedTabInfo?.pageReference?.attributes?.objectApiName;
