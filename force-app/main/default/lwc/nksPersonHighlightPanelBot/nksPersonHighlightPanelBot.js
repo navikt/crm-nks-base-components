@@ -64,6 +64,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         let possibleLinks = [
             { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
             { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
+            { name: 'SPEIL', field: this.generateUrl('Speil'), show: true },
             {
                 name: 'AA-reg',
                 field: null,
@@ -99,8 +100,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
             { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
             { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
             { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
-            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false },
-            { name: 'Speil', field: this.generateUrl('Speil'), show: false }
+            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false }
         ];
 
         const listOfFilter =
@@ -139,7 +139,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                     this.personIdent
                 }`;
             case 'Speil':
-                return `https://syfomodiaperson${this.isSandbox ? '.dev' : ''}.intern.nav.no/sykefravaer/personsok`;
+                return 'https://speil.ansatt.nav.no/';
             default:
                 return null;
         }
