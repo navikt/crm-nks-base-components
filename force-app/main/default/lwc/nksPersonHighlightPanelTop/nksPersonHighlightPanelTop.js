@@ -121,6 +121,10 @@ export default class NksPersonHighlightPanelTop extends LightningElement {
         return this.navUnit ? this.navUnit.enhetNr + ' ' + this.navUnit.navn : '';
     }
 
+    get isSkjermet() {
+        return !this.personDetails?.fullName;
+    }
+
     get formattedFullName() {
         if (!this.personDetails?.fullName) {
             return 'Skjermet person';

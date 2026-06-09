@@ -13,16 +13,19 @@
             >
                 <h1 class="header">{formattedFullName}</h1>
                 <p class="sr-only unselectable">{genderText}</p>
-                <lightning-button-icon
-                    value={formattedFullName}
-                    icon-name="utility:copy"
-                    variant="bare-inverse"
-                    onclick={handleCopy}
-                    alternative-text="Kopier navn"
-                    title="Kopier navn"
-                    class="copy-icon"
-                >
-                </lightning-button-icon>
+                <template lwc:if={isSkjermet}></template>
+                <template lwc:else>
+                    <lightning-button-icon
+                        value={formattedFullName}
+                        icon-name="utility:copy"
+                        variant="bare-inverse"
+                        onclick={handleCopy}
+                        alternative-text="Kopier navn"
+                        title="Kopier navn"
+                        class="copy-icon"
+                    >
+                    </lightning-button-icon>
+                </template>
             </lightning-layout-item>
         </template>
 
