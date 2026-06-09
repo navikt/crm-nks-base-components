@@ -181,7 +181,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.setUuAlertText();
         }
         if (error) {
-            this.addErrorMessage('setWiredBadge', error);
+            if (!error.body?.message?.includes('List has no rows')) {
+                this.addErrorMessage('setWiredBadge', error);
+            }
             console.error(error);
         }
     }
@@ -254,7 +256,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.loadKrrData();
             this.handleBackgroundColor();
         } else if (error) {
-            this.addErrorMessage('getRecord', error);
+            if (error.status !== 404) {
+                this.addErrorMessage('getRecord', error);
+            }
             console.error(error);
             this.handleBackgroundColor();
         }
@@ -309,7 +313,9 @@ export default class NksPersonHighlightPanel extends LightningElement {
             this.personAccessBadges = data;
             this.setUuAlertText();
         } else if (error) {
-            this.addErrorMessage('setWiredPersonAccessBadge', error);
+            if (!error.body?.message?.includes('List has no rows')) {
+                this.addErrorMessage('setWiredPersonAccessBadge', error);
+            }
             console.error(error);
         }
     }

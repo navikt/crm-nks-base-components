@@ -1,5 +1,6 @@
 <template>
-    <div class="header-root"> <!-- Guarantee a persistent wrapper to avoid header collapse bug in pinned header template -->
+    <div class="header-root">
+        <!-- Guarantee a persistent wrapper to avoid header collapse bug in pinned header template -->
         <template lwc:if={errorMessages}>
             <template iterator:it={errorMessages}>
                 <div class="errorPanel highlightPanel" key={it.value.errorName}>
@@ -24,7 +25,7 @@
                     <div class={panelClass}>
                         <lightning-layout-item class="highlightPanelTop nowrap-selector">
                             <lightning-layout-item>
-                                <template lwc:if={personDetails}>
+                                <template lwc:if={personId}>
                                     <c-nks-person-highlight-panel-top
                                         er-nasjonal-oppfolging={erNasjonalOppfolging}
                                         veileder-name={veilederName}
@@ -100,7 +101,7 @@
                             </template>
                         </lightning-layout-item>
 
-                        <template lwc:if={fullName}>
+                        <template lwc:if={personId}>
                             <c-nks-person-highlight-panel-mid
                                 person-data={oppfolgingAndMeldekortData}
                                 full-name={fullName}
