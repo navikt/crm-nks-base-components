@@ -13,8 +13,8 @@
     <targetConfigs>
         <targetConfig
             targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage,lightningCommunity__Default">
-            <property name="staticResourceNames" type="String" label="GIF Sources"
-                description="Comma-separated list of static resource API names or external URLs" />
+            <property name="gifCount" type="string" label="GIF Count" default="2"
+                description="Number of GIFs to display" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
