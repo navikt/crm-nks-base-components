@@ -3,16 +3,16 @@ import { refreshApex } from '@salesforce/apex';
 import { getFieldValue, getRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
 
-import FULL_NAME_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.CRM_FullName__c';
-import PERSON_FIRST_NAME_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_FirstName__c';
-import PERSON_ID_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.Id';
-import PERSON_IDENT_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.Name';
-import PERSON_ACTORID_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_ActorId__c';
-import GENDER_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_Sex__c';
-import AGE_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.CRM_Age__c';
-import CITIZENSHIP_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_Citizenships__c';
-import MARITAL_STATUS_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_MaritalStatus__c';
-import WRITTEN_STANDARD_FIELD from '@salesforce/schema/LiveChatTranscript.Account.CRM_Person__r.INT_KrrWrittenStandard__c';
+import FULL_NAME_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.CRM_FullName__c';
+import PERSON_FIRST_NAME_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_FirstName__c';
+import PERSON_ID_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.Id';
+import PERSON_IDENT_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.Name';
+import PERSON_ACTORID_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_ActorId__c';
+import GENDER_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_Sex__c';
+import AGE_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.CRM_Age__c';
+import CITIZENSHIP_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_Citizenships__c';
+import MARITAL_STATUS_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_MaritalStatus__c';
+import WRITTEN_STANDARD_FIELD from '@salesforce/schema/MessagingSession.MessagingEndUser.Account.CRM_Person__r.INT_KrrWrittenStandard__c';
 
 import NAV_ICONS from '@salesforce/resourceUrl/NKS_navIcons';
 
@@ -68,6 +68,10 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     arbeidssoekerPerioder;
     erNasjonalOppfolging = false;
     uuAlertText = '';
+
+    get personCrmField() {
+        return 'MessagingEndUser.Account.CRM_Person__c';
+    }
 
     get formattedFullName() {
         if (!this.fullName) return '';
@@ -242,7 +246,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     async loadNavUnitData() {
         try {
             const result = await getNavUnit({
-                field: 'Account.CRM_Person__c',
+                field: this.personCrmField,
                 parentObject: this.objectApiName,
                 parentRecordId: this.recordId,
                 type: 'PERSON_LOCATION'
@@ -272,7 +276,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     }
 
     @wire(getPersonBadgesAndInfo, {
-        field: 'Account.CRM_Person__c',
+        field: '$personCrmField',
         parentObject: '$objectApiName',
         parentRecordId: '$recordId',
         filterOpenSTO: true
@@ -325,7 +329,7 @@ export default class NksPersonInformation extends NavigationMixin(LightningEleme
     }
 
     @wire(getPersonAccessBadges, {
-        field: 'Account.CRM_Person__c',
+        field: '$personCrmField',
         parentObject: '$objectApiName',
         parentRecordId: '$recordId'
     })
