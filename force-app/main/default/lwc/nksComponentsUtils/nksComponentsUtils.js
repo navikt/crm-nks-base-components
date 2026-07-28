@@ -3,7 +3,6 @@ import getCommonCode from '@salesforce/apex/NKS_ButtonContainerController.getCom
 async function callGetCommonCode(inputId) {
     try {
         const result = await getCommonCode({ id: inputId });
-        console.log('Result: ', result);
         return result;
     } catch (error) {
         console.error('Error calling getCommonCode():', error);
@@ -42,13 +41,15 @@ export async function handleShowNotifications(
                   ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                   : 'Henvendelsen er journalført';
             addNotification(notificationBoxTemplate, message, theme, 'success');
-        } else if (flowNameLower.includes('task')) {
+        } else if (flowNameLower === 'nks_case_send_nav_task') {
             addNotification(
                 notificationBoxTemplate,
                 'Oppgaven er lagret, og blir sendt når samtalereferat er opprettet.',
                 null,
                 'warning'
             );
+        } else if (flowNameLower.includes('task')) {
+            addNotification(notificationBoxTemplate, 'Oppgaven er opprettet', null, 'success');
         } else if (flowNameLower.includes('redact')) {
             addNotification(notificationBoxTemplate, 'Henvendelsen er sendt til sladding', null, 'success');
         } else if (flowNameLower.includes('reserve')) {
