@@ -9,7 +9,7 @@
                         <p><strong>Type:</strong> {guardianship.typeLabel}</p>
                         <p><strong>Verge:</strong> {guardianship.motpartLabel}</p>
                         <p><strong>Embete:</strong> {guardianship.embete}</p>
-                        <p>
+                        <p lwc:if={guardianship.folkeregistermetadata.gyldighetstidspunkt}>
                             <strong>Gyldig:</strong>&nbsp;
                             <lightning-formatted-date-time
                                 value={guardianship.folkeregistermetadata.gyldighetstidspunkt}
