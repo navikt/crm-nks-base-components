@@ -322,15 +322,16 @@ public with sharing class NKS_PersonBadgesController {
         private void setGuardianshipOrFuturePowerOfAttorney() {
             if (String.isNotBlank(person.INT_GuardianshipOrFuturePowerOfAttorney__c)) {
                 try {
-                    List<GuardianShipOrFuturePowerOfAttorney> guardianshipList = (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
+                    List<GuardianshipOrFuturePowerOfAttorney> guardianshipList = (List<GuardianshipOrFuturePowerOfAttorney>) JSON.deserialize(
                         person.INT_GuardianshipOrFuturePowerOfAttorney__c,
                         List<GuardianshipOrFuturePowerOfAttorney>.class
                     );
                     for (Integer i = 0; i < guardianshipList.size(); i++) {
-                        GuardianShipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
+                        GuardianshipOrFuturePowerOfAttorney guardianship = guardianshipList[i];
                         guardianship.id = String.valueOf(i);
-                        if (String.isNotBlank(guardianship.actualMotpartsPersonident)) {
-                            personIdentNameMap.put(guardianship.actualMotpartsPersonident, '');
+                        String motpartsPersonident = guardianship.vergeEllerFullmektig?.motpartsPersonident;
+                        if (String.isNotBlank(motpartsPersonident)) {
+                            personIdentNameMap.put(motpartsPersonident, '');
                         }
                         guardianships.add(guardianship);
                     }
@@ -521,24 +522,27 @@ public with sharing class NKS_PersonBadgesController {
             List<Id> originSkillsIds
         ) {
             List<Id> casesInQueueList = new List<Id>();
-            
+
             // Pre-query SkillRequirement once for each filter and store RelatedRecordIds
             Set<Id> skillRequirementRelatedIds = new Set<Id>();
             Set<Id> skillRequirementExcludedIds = new Set<Id>();
-            
+
             for (SkillRequirement sr : [SELECT RelatedRecordId FROM SkillRequirement WHERE SkillId IN :skillIds]) {
                 skillRequirementRelatedIds.add(sr.RelatedRecordId);
             }
-            
+
             for (SkillRequirement sr : [
-                SELECT RelatedRecordId 
-                FROM SkillRequirement 
-                WHERE (SkillId NOT IN :userConfidentialSkillIds AND SkillId IN :confidentialitySkillsIds) 
-                    OR (SkillId NOT IN :userOriginSkillIds AND SkillId IN :originSkillsIds)
+                SELECT RelatedRecordId
+                FROM SkillRequirement
+                WHERE
+                    (SkillId NOT IN :userConfidentialSkillIds
+                    AND SkillId IN :confidentialitySkillsIds)
+                    OR (SkillId NOT IN :userOriginSkillIds
+                    AND SkillId IN :originSkillsIds)
             ]) {
                 skillRequirementExcludedIds.add(sr.RelatedRecordId);
             }
-            
+
             // Use the pre-queried sets to avoid redundant subqueries
             for (PendingServiceRouting psr : [
                 SELECT WorkItemId
@@ -665,9 +669,9 @@ public with sharing class NKS_PersonBadgesController {
             }
 
             for (GuardianshipOrFuturePowerOfAttorney gofoa : guardianships) {
-                String name = personIdentNameMap.get(gofoa.actualMotpartsPersonident);
+                String name = personIdentNameMap.get(gofoa.vergeEllerFullmektig.motpartsPersonident);
                 if (String.isNotBlank(name)) {
-                    gofoa.actualNavn = new Navn(name);
+                    gofoa.vergeEllerFullmektig.navn = new Navn(name);
                 }
             }
 
@@ -721,14 +725,7 @@ public with sharing class NKS_PersonBadgesController {
          *
          */
         public Badge(String name, String label) {
-            this(
-                name,
-                label,
-                'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small',
-                '',
-                '',
-                false
-            );
+            this(name, label, 'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small', '', '', false);
         }
 
         /**
@@ -841,81 +838,6 @@ public with sharing class NKS_PersonBadgesController {
     }
 
     public class GuardianshipOrFuturePowerOfAttorney implements BadgeContent {
-        // Common between both old and new
-        @AuraEnabled
-        public String type;
-        @AuraEnabled
-        public String embete;
-        @AuraEnabled
-        public String id;
-
-        // Old format
-        @AuraEnabled
-        public Navn navn;
-        @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public String omfang;
-        @AuraEnabled
-        public Boolean omfangetErInnenPersonligOmraade;
-
-        // New format
-        @AuraEnabled
-        public VergeEllerFullmektig vergeEllerFullmektig;
-
-        @AuraEnabled
-        public String omfangLabel {
-            get {
-                String actualOmfang = vergeEllerFullmektig != null ? vergeEllerFullmektig.omfang : omfang;
-                String label = this.omfangMap.get(actualOmfang);
-                return String.isNotBlank(label) ? label : actualOmfang;
-            }
-        }
-
-        @AuraEnabled
-        public String omfangetErInnenPersonligOmraadeTxt {
-            get {
-                Boolean actualOmfangetErInnenPersonligOmraade = vergeEllerFullmektig != null ? vergeEllerFullmektig.omfangetErInnenPersonligOmraade : omfangetErInnenPersonligOmraade;
-                return true == actualOmfangetErInnenPersonligOmraade ? 'Ja' : 'Nei';
-            }
-        }
-
-        @AuraEnabled
-        public Navn actualNavn {
-            get {
-                return vergeEllerFullmektig != null ? vergeEllerFullmektig.navn : navn;
-            }
-            set {
-                if(vergeEllerFullmektig != null){
-                    vergeEllerFullmektig.navn = value;
-                } else {
-                    navn = value;
-                }
-            }
-        }
-
-        @AuraEnabled
-        public String actualMotpartsPersonident {
-            get {
-                return vergeEllerFullmektig != null ? vergeEllerFullmektig.motpartsPersonident : motpartsPersonident;
-            }
-        }
-
-        @AuraEnabled
-        public String motpartLabel {
-            get {
-                List<String> retString = new List<String>();
-                if (String.isNotEmpty(this.actualNavn?.fullName)) {
-                    retString.add(this.actualNavn.fullName);
-                }
-                if (String.isNotEmpty(this.actualMotpartsPersonIdent)) {
-                    retString.add(this.actualMotpartsPersonident);
-                }
-
-                return String.join(retString, ' - ');
-            }
-        }
-
         private Map<String, String> typeMap {
             get {
                 return new Map<String, String>{
@@ -931,14 +853,6 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
-        @AuraEnabled
-        public String typeLabel {
-            get {
-                String label = this.typeMap.get(this.type);
-                return String.isNotBlank(label) ? label : this.type;
-            }
-        }
-
         private Map<String, String> omfangMap {
             get {
                 return new Map<String, String>{
@@ -950,35 +864,106 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
+        @AuraEnabled
+        public String id;
+        @AuraEnabled
+        public String type;
+        @AuraEnabled
+        public String embete;
+        @AuraEnabled
+        public VergeEllerFullmektig vergeEllerFullmektig;
+        @AuraEnabled
+        public Folkeregistermetadata folkeregistermetadata;
+
+        @AuraEnabled
+        public String omfangLabel {
+            get {
+                String omfang = vergeEllerFullmektig?.omfang;
+                String label = omfangMap.get(omfang);
+                return String.isNotBlank(label) ? label : omfang;
+            }
+        }
+
+        @AuraEnabled
+        public String omfangetErInnenPersonligOmraadeTxt {
+            get {
+                return vergeEllerFullmektig?.omfangetErInnenPersonligOmraade == true ? 'Ja' : 'Nei';
+            }
+        }
+
+        @AuraEnabled
+        public String motpartLabel {
+            get {
+                if (vergeEllerFullmektig == null) {
+                    return '';
+                }
+
+                List<String> parts = new List<String>();
+
+                String fullName = vergeEllerFullmektig.navn?.fullName;
+                if (String.isNotBlank(fullName)) {
+                    parts.add(fullName);
+                }
+
+                String personident = vergeEllerFullmektig.motpartsPersonident;
+                if (String.isNotBlank(personident)) {
+                    parts.add(personident);
+                }
+
+                return String.join(parts, ' - ');
+            }
+        }
+
+        @AuraEnabled
+        public String typeLabel {
+            get {
+                String label = typeMap.get(type);
+                return String.isNotBlank(label) ? label : type;
+            }
+        }
     }
 
     public class VergeEllerFullmektig {
         @AuraEnabled
-        public String motpartsPersonident;
-        @AuraEnabled
-        public List<Tjenesteomraade> tjenesteomraade;
-        @AuraEnabled
         public Navn navn;
+        @AuraEnabled
+        public String motpartsPersonident;
         @AuraEnabled
         public String omfang;
         @AuraEnabled
         public Boolean omfangetErInnenPersonligOmraade;
+        @AuraEnabled
+        public List<Tjenesteomraade> tjenesteomraade;
 
         @AuraEnabled
         public String tjenesteomraadeLabel {
             get {
-                String label = '';
-                if (this.tjenesteomraade != null) {
-                    for (Tjenesteomraade omraade : this.tjenesteomraade) {
-                        if (omraade.tjenestevirksomhet == 'nav') {
-                            label +=
-                                omraade.tjenesteoppgave.replaceAll('([A-Z])', ' $1').toLowerCase().capitalize() + ', ';
-                        }
+                if (tjenesteomraade == null || tjenesteomraade.isEmpty()) {
+                    return '';
+                }
+
+                List<String> labels = new List<String>();
+
+                for (Tjenesteomraade omraade : tjenesteomraade) {
+                    if (
+                        omraade != null &&
+                        omraade.tjenestevirksomhet == 'nav' &&
+                        String.isNotBlank(omraade.tjenesteoppgave)
+                    ) {
+                        labels.add(omraade.tjenesteoppgave.replaceAll('([A-Z])', ' $1').toLowerCase().capitalize());
                     }
                 }
-                return label.removeEnd(', ');
+
+                return String.join(labels, ', ');
             }
         }
+    }
+
+    public class Folkeregistermetadata {
+        @AuraEnabled
+        public Datetime gyldighetstidspunkt;
+        @AuraEnabled
+        public Datetime opphoerstidspunkt;
     }
 
     public class SecurityMeasure implements BadgeContent {

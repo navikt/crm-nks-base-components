@@ -7,13 +7,28 @@
                 <template for:each={badgeData} for:item="guardianship">
                     <div key={guardianship}>
                         <p><strong>Type:</strong> {guardianship.typeLabel}</p>
-                        <p><strong>Motpart:</strong> {guardianship.motpartLabel}</p>
-                        <p><strong>Omfang:</strong> {guardianship.omfangLabel}</p>
-                        <p>
-                            <strong>Innen personlig område:</strong>
-                            {guardianship.omfangetErInnenPersonligOmraadeTxt}
-                        </p>
+                        <p><strong>Verge:</strong> {guardianship.motpartLabel}</p>
                         <p><strong>Embete:</strong> {guardianship.embete}</p>
+                        <p>
+                            <strong>Gyldig:</strong>&nbsp;
+                            <lightning-formatted-date-time
+                                value={guardianship.folkeregistermetadata.gyldighetstidspunkt}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            >
+                            </lightning-formatted-date-time>
+                            &nbsp;-&nbsp;
+                            <lightning-formatted-date-time
+                                value={guardianship.folkeregistermetadata.opphoerstidspunkt}
+                                year="numeric"
+                                month="numeric"
+                                day="numeric"
+                            ></lightning-formatted-date-time>
+                        </p>
+                        <p lwc:if={guardianship.vergeEllerFullmektig.tjenesteomraadeLabel}>
+                            <strong>Område:</strong> {guardianship.vergeEllerFullmektig.tjenesteomraadeLabel}
+                        </p>
                     </div>
                 </template>
             </div>
