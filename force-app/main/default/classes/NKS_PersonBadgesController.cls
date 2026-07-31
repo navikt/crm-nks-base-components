@@ -115,7 +115,7 @@ public with sharing class NKS_PersonBadgesController {
         @AuraEnabled
         public List<SecurityMeasure> securityMeasures;
         @AuraEnabled
-        public List<String> spokenLanguagesIntepreter;
+        public List<String> spokenLanguagesInterpreter;
         @AuraEnabled
         public List<GuardianshipOrFuturePowerOfAttorney> guardianships;
         @AuraEnabled
@@ -134,7 +134,7 @@ public with sharing class NKS_PersonBadgesController {
         public PersonBadgeData(Person__c person) {
             this.badges = new List<Badge>();
             this.securityMeasures = new List<SecurityMeasure>();
-            this.spokenLanguagesIntepreter = new List<String>();
+            this.spokenLanguagesInterpreter = new List<String>();
             this.guardianships = new List<GuardianshipOrFuturePowerOfAttorney>();
             this.powerOfAttorneys = new List<PowerOfAttorney>();
             this.errors = new List<String>();
@@ -155,7 +155,7 @@ public with sharing class NKS_PersonBadgesController {
             setIsDeceased();
             setPowerOfAttorney();
             setGuardianshipOrFuturePowerOfAttorney();
-            setSpokenLanguagesIntepreter();
+            setSpokenLanguagesInterpreter();
             setDegreeOfHearingAndVisualImpairment();
             setPersonName();
             setKrrReservation();
@@ -194,18 +194,18 @@ public with sharing class NKS_PersonBadgesController {
             }
         }
 
-        private void setSpokenLanguagesIntepreter() {
+        private void setSpokenLanguagesInterpreter() {
             if (String.isNotBlank(person.INT_SpokenLanguageIntepreter__c)) {
-                List<SpokenLanguagesIntepreter> languages = new List<SpokenLanguagesIntepreter>();
+                List<SpokenLanguagesInterpreter> languages = new List<SpokenLanguagesInterpreter>();
                 try {
                     for (String language : person.INT_SpokenLanguageIntepreter__c.split(';')) {
                         if (languageMap.containsKey(language)) {
                             String capCase = languageMap.get(language).toLowerCase().capitalize();
-                            spokenLanguagesIntepreter.add(capCase + ' (' + language + ')');
-                            languages.add(new SpokenLanguagesIntepreter(capCase + ' (' + language + ')'));
+                            spokenLanguagesInterpreter.add(capCase + ' (' + language + ')');
+                            languages.add(new SpokenLanguagesInterpreter(capCase + ' (' + language + ')'));
                         } else {
-                            spokenLanguagesIntepreter.add(language);
-                            languages.add(new SpokenLanguagesIntepreter(language));
+                            spokenLanguagesInterpreter.add(language);
+                            languages.add(new SpokenLanguagesInterpreter(language));
                         }
                     }
                 } catch (Exception e) {
@@ -214,7 +214,7 @@ public with sharing class NKS_PersonBadgesController {
 
                 badges.add(
                     new Badge(
-                            'spokenLanguageIntepreter',
+                            'spokenLanguageInterpreter',
                             getFieldLabel('INT_SpokenLanguageIntepreter__c'),
                             'slds-theme_warning slds-m-left_x-small slds-m-vertical_xx-small pointer slds-badge',
                             '',
@@ -799,11 +799,11 @@ public with sharing class NKS_PersonBadgesController {
         }
     }
 
-    public class SpokenLanguagesIntepreter implements BadgeContent {
+    public class SpokenLanguagesInterpreter implements BadgeContent {
         @AuraEnabled
         public String language;
 
-        public SpokenLanguagesIntepreter(String language) {
+        public SpokenLanguagesInterpreter(String language) {
             this.language = language;
         }
     }
