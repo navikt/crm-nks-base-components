@@ -167,7 +167,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
-                    badgeContentType: 'historicalPowerOfAttorney'
+                    badgeContentType: 'HistoricalPowerOfAttorney'
                 });
             }
 
@@ -384,12 +384,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const className = !this.personDetails?.fullName
             ? 'confidentialBackground'
             : this.personDetails?.isDeceased
-              ? 'deadBackground'
-              : this.personDetails?.gender === 'Kvinne'
-                ? 'femaleBackground'
-                : this.personDetails?.gender === 'Mann'
-                  ? 'maleBackground'
-                  : 'unknownBackground';
+            ? 'deadBackground'
+            : this.personDetails?.gender === 'Kvinne'
+            ? 'femaleBackground'
+            : this.personDetails?.gender === 'Mann'
+            ? 'maleBackground'
+            : 'unknownBackground';
         genderWrapper.className = 'gender-wrapper ' + className;
     }
 

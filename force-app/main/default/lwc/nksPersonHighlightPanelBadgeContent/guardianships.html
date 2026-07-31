@@ -4,27 +4,28 @@
         <div class="slds-m-around_medium">
             <p><strong>Vergemål</strong></p>
             <div class="flexWithGap">
-                <template for:each={badgeData} for:item="guardianship">
-                    <div key={guardianship}>
+                <template for:each={guardianships} for:item="guardianship">
+                    <div key={guardianship.id}>
                         <p><strong>Type:</strong> {guardianship.typeLabel}</p>
                         <p><strong>Verge:</strong> {guardianship.motpartLabel}</p>
                         <p><strong>Embete:</strong> {guardianship.embete}</p>
                         <p lwc:if={guardianship.folkeregistermetadata.gyldighetstidspunkt}>
-                            <strong>Gyldig:</strong>&nbsp;
+                            <strong>{guardianship.fromDateLabel}</strong>&nbsp;
                             <lightning-formatted-date-time
                                 value={guardianship.folkeregistermetadata.gyldighetstidspunkt}
                                 year="numeric"
                                 month="numeric"
                                 day="numeric"
-                            >
-                            </lightning-formatted-date-time>
-                            &nbsp;-&nbsp;
-                            <lightning-formatted-date-time
-                                value={guardianship.folkeregistermetadata.opphoerstidspunkt}
-                                year="numeric"
-                                month="numeric"
-                                day="numeric"
                             ></lightning-formatted-date-time>
+                            <span lwc:if={guardianship.folkeregistermetadata.opphoerstidspunkt}>
+                                &nbsp;-&nbsp;
+                                <lightning-formatted-date-time
+                                    value={guardianship.folkeregistermetadata.opphoerstidspunkt}
+                                    year="numeric"
+                                    month="numeric"
+                                    day="numeric"
+                                ></lightning-formatted-date-time>
+                            </span>
                         </p>
                         <p lwc:if={guardianship.vergeEllerFullmektig.tjenesteomraadeLabel}>
                             <strong>Område:</strong> {guardianship.vergeEllerFullmektig.tjenesteomraadeLabel}
