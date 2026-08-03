@@ -2,7 +2,7 @@
 import { LightningElement, api } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 import securityMeasures from './securityMeasures.html';
-import spokenLanguagesIntepreter from './spokenLanguagesIntepreter.html';
+import spokenLanguagesInterpreter from './spokenLanguagesInterpreter.html';
 import guardianships from './guardianships.html';
 import powerOfAttorneys from './powerOfAttorneys.html';
 import nksPersonHighlightPanelBadgeContent from './nksPersonHighlightPanelBadgeContent.html';
@@ -14,11 +14,11 @@ import sharedStyling from './sharedStyling.css';
 
 const templates = {
     SecurityMeasure: securityMeasures,
-    SpokenLanguagesIntepreter: spokenLanguagesIntepreter,
+    SpokenLanguagesInterpreter: spokenLanguagesInterpreter,
     GuardianshipOrFuturePowerOfAttorney: guardianships,
     PowerOfAttorney: powerOfAttorneys,
     IsDeceased: dateOfDeath,
-    historicalPowerOfAttorney: historicalPowerOfAttorney,
+    HistoricalPowerOfAttorney: historicalPowerOfAttorney,
     OpenSTO: openSTO,
     NOE: NOE
 };
@@ -33,17 +33,20 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
     // https://developer.salesforce.com/docs/platform/lwc/guide/create-components-css.html#assign-css-stylesheets-to-a-component
     static stylesheets = [sharedStyling];
 
+    _resizeHandler = null;
+
     render() {
-        //code
-        return templates[this.type] != null ? templates[this.type] : nksPersonHighlightPanelBadgeContent;
+        return templates[this.type] ?? nksPersonHighlightPanelBadgeContent;
     }
 
     connectedCallback() {
-        window.addEventListener('resize', this.calculateBadgeContent.bind(this));
+        this._resizeHandler = this.calculateBadgeContent.bind(this);
+        window.addEventListener('resize', this._resizeHandler);
     }
 
     disconnectedCallback() {
-        window.removeEventListener('resize', this.calculateBadgeContent.bind(this));
+        window.removeEventListener('resize', this._resizeHandler);
+        this._resizeHandler = null;
     }
 
     renderedCallback() {
@@ -87,7 +90,15 @@ export default class NksPersonHighlightPanelBadgeContent extends NavigationMixin
     }
 
     get headerLineStyling() {
-        const headerStyle = this.badgeStyling?.split(' ').find(a => a.startsWith('slds-theme'));
+        const headerStyle = this.badgeStyling?.split(' ').find((a) => a.startsWith('slds-theme'));
         return 'headerLine ' + headerStyle;
+    }
+
+    get guardianships() {
+        if (!Array.isArray(this.badgeData)) return [];
+        return this.badgeData.map((guardianship) => ({
+            ...guardianship,
+            fromDateLabel: guardianship.folkeregistermetadata?.opphoerstidspunkt ? 'Gyldig:' : 'Gyldig fra:'
+        }));
     }
 }
