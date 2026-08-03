@@ -3,8 +3,8 @@ import { LightningElement, api } from 'lwc';
 export default class NksNavUnitContactInformation extends LightningElement {
     @api numCols = 2;
 
-     _contactInformation;
-     _visitorLocations = [];
+    _contactInformation;
+    _visitorLocations = [];
     _visitorLocationsLength = 0;
     hasContactInformation = false;
     hasVisitorLocations = false;
@@ -42,17 +42,22 @@ export default class NksNavUnitContactInformation extends LightningElement {
         const address = this.contactInformation.postadresse;
         if (!address) return '';
 
-        const { postboksnummer, postnummer, poststed } = address;
+        if (address.type === 'stedsadresse') {
+            const { gatenavn, husnummer, husbokstav, postnummer, poststed } = address;
+            return `${gatenavn} ${husnummer}${husbokstav ?? ''}, ${postnummer} ${poststed}`;
+        }
 
-        return `Postboks ${postboksnummer}, ${postnummer} ${poststed}`;
+        const { postboksnummer, postnummer, poststed } = address;
+        if (!postnummer || !poststed) return '';
+
+        return `${postboksnummer ? 'Postboks ' + postboksnummer + ', ' : ''}${postnummer} ${poststed}`;
     }
 
     get visitingAddress() {
         const address = this.contactInformation.besoeksadresse;
         if (!address) return '';
 
-        const { gatenavn, husnummer, postnummer, poststed } = address;
-
-        return `${gatenavn} ${husnummer}, ${postnummer} ${poststed}`;
+        const { gatenavn, husnummer, husbokstav, postnummer, poststed } = address;
+        return `${gatenavn} ${husnummer}${husbokstav ?? ''}, ${postnummer} ${poststed}`;
     }
 }
