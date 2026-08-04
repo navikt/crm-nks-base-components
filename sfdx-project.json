@@ -9,7 +9,7 @@
             "dependencies": [
                 {
                     "package": "crm-platform-base",
-                    "versionNumber": "0.295.0.LATEST"
+                    "versionNumber": "0.307.0.LATEST"
                 },
                 {
                     "package": "crm-shared-flowComponents",
@@ -37,7 +37,7 @@
                 },
                 {
                     "package": "crm-platform-integration",
-                    "versionNumber": "0.168.0.LATEST"
+                    "versionNumber": "0.173.0.LATEST"
                 },
                 {
                     "package": "crm-platform-reporting",
@@ -45,7 +45,7 @@
                 },
                 {
                     "package": "crm-sf-saf",
-                    "versionNumber": "0.34.0.LATEST"
+                    "versionNumber": "0.42.0.LATEST"
                 },
                 {
                     "package": "crm-shared-user-notification",
@@ -57,7 +57,7 @@
                 },
                 {
                     "package": "crm-platform-oppgave",
-                    "versionNumber": "0.67.0.LATEST"
+                    "versionNumber": "0.80.0.LATEST"
                 },
                 {
                     "package": "crm-thread-view",
@@ -65,14 +65,14 @@
                 },
                 {
                     "package": "crm-nks-integration",
-                    "versionNumber": "0.108.0.LATEST"
+                    "versionNumber": "0.135.0.LATEST"
                 }
             ]
         }
     ],
     "namespace": "",
     "sfdcLoginUrl": "https://login.salesforce.com",
-    "sourceApiVersion": "59.0",
+    "sourceApiVersion": "67.0",
     "packageAliases": {
         "crm-nks-base-components": "0Ho7U000000000LSAQ",
         "crm-platform-base": "0Ho2o0000008ORmCAM",

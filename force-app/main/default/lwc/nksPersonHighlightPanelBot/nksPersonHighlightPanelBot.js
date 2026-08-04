@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { LightningElement, api, wire } from 'lwc';
 import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
 import getFagsoneIpAndOrgType from '@salesforce/apex/NKS_FagsystemController.getFagsoneIpAndOrgType';
@@ -5,6 +6,7 @@ import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModi
 import getEncryptedPensjonLink from '@salesforce/apex/NKS_FagsystemController.postPensjonPidEncrypt';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publishToAmplitude } from 'c/amplitude';
+import getUserSkills from '@salesforce/apex/NKS_Utils.getUserSkills';
 
 export default class NksPersonHighlightPanelBot extends LightningElement {
     @api recordId;
@@ -23,6 +25,17 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     wiredRecordData;
     actorId;
     navIdent;
+    userSkills = [];
+
+    @wire(getUserSkills)
+    wiredGetUserSkills({ error, data }) {
+        if (data) {
+            console.log('User skills: ', JSON.stringify(data));
+            this.userSkills = data;
+        } else if (error) {
+            console.error('Problem on getting user skills', JSON.stringify(error));
+        }
+    }
 
     @wire(getFagsoneIpAndOrgType)
     wiredGetFagsoneIpAndOrgType({ error, data }) {
@@ -61,16 +74,62 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     }
 
     filterLinks() {
-        let possibleLinks = [
-            { name: 'Modia', field: this.generateUrl('Modia'), show: this.personIdent },
-            { name: 'Gosys', field: this.generateUrl('Gosys'), show: this.personIdent },
-            { name: 'SPEIL', field: this.generateUrl('Speil'), show: true },
+        const skillSet = new Set(
+            (Array.isArray(this.userSkills) ? this.userSkills : [])
+                .map((s) => String(s).trim().toLowerCase())
+                .filter(Boolean)
+        );
+
+        const allowedBySkill = new Set(['modia', 'gosys']);
+
+        if (skillSet.has('internasjonal')) {
+            [
+                'modia',
+                'gosys',
+                'speil',
+                'aa-reg',
+                'dinpensjon',
+                'dinufore',
+                'pesys',
+                'foreldrepenger',
+                'k9',
+                'barnetrygd',
+                'enslig',
+                'kontantstøtte'
+            ].forEach((name) => allowedBySkill.add(name));
+        } else {
+            if (skillSet.has('arbeid')) allowedBySkill.add('aa-reg');
+            if (skillSet.has('helse')) allowedBySkill.add('speil');
+
+            if (skillSet.has('familie') || skillSet.has('pleiepenger')) {
+                ['enslig', 'kontantstøtte', 'barnetrygd', 'foreldrepenger', 'k9'].forEach((name) =>
+                    allowedBySkill.add(name)
+                );
+            }
+
+            if (skillSet.has('pensjon')) {
+                allowedBySkill.add('pesys');
+                allowedBySkill.add('dinpensjon');
+            }
+
+            if (skillSet.has('ufoeretrygd')) {
+                allowedBySkill.add('pesys');
+                allowedBySkill.add('dinufore');
+            }
+        }
+
+        const canSeeBySkill = (name) => allowedBySkill.has(String(name).toLowerCase());
+
+        const possibleLinks = [
+            { name: 'Modia', field: this.generateUrl('Modia'), show: !!this.personIdent && canSeeBySkill('Modia') },
+            { name: 'Gosys', field: this.generateUrl('Gosys'), show: !!this.personIdent && canSeeBySkill('Gosys') },
+            { name: 'SPEIL', field: this.generateUrl('Speil'), show: canSeeBySkill('SPEIL') },
             {
                 name: 'AA-reg',
                 field: null,
                 eventFunc: this.handleAAClickOrKey,
                 title: 'AA-register',
-                show: this.personIdent
+                show: !!this.personIdent && canSeeBySkill('AA-reg')
             },
             {
                 name: 'DinPensjon',
@@ -78,7 +137,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 field: null,
                 eventFunc: this.handleDinPensjonClickOrKey,
                 title: 'Din Pensjon',
-                show: this.personIdent
+                show: !!this.personIdent && canSeeBySkill('DinPensjon')
             },
             {
                 name: 'DinUfore',
@@ -86,40 +145,46 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 eventFunc: this.handleDinUføretrygdClickOrKey,
                 field: null,
                 title: 'Din Uføretrygd',
-                show: this.personIdent && this.navIdent
+                show: !!this.personIdent && !!this.navIdent && canSeeBySkill('DinUfore')
             },
             {
                 name: 'Pesys',
                 field: null,
                 eventFunc: this.handlePesysClickOrKey,
                 title: 'Pesys',
-                show: this.personIdent
+                show: !!this.personIdent && canSeeBySkill('Pesys')
             },
-            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: this.actorId },
-            { name: 'K9', field: this.generateUrl('K9'), show: this.actorId },
-            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
-            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
-            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true },
-            { name: 'Aktivitetsplan', field: this.generateUrl('Aktivitetsplan'), show: false }
+            {
+                name: 'Foreldrepenger',
+                field: this.generateUrl('Foreldrepenger'),
+                show: !!this.actorId && canSeeBySkill('Foreldrepenger')
+            },
+            { name: 'K9', field: this.generateUrl('K9'), show: !!this.actorId && canSeeBySkill('K9') },
+            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: canSeeBySkill('Barnetrygd') },
+            {
+                name: 'Enslig',
+                label: 'Enslig forsørger',
+                field: this.generateUrl('Enslig'),
+                show: canSeeBySkill('Enslig')
+            },
+            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: canSeeBySkill('Kontantstøtte') }
         ];
 
         const listOfFilter =
             typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
+
         this.fagsystemLinks = possibleLinks
-            .filter((link) => listOfFilter.length === 0 || listOfFilter.includes(link.name))
+            .filter((link) => (listOfFilter.length === 0 || listOfFilter.includes(link.name)) && link.show)
             .map((link, index) => ({
                 ...link,
                 id: index,
                 custom: link.field == null,
-                show: link.show,
                 name: link.label ?? link.name
             }));
     }
 
     generateUrl(fagsystem) {
         switch (fagsystem) {
-            case 'Aktivitetsplan':
-                return `https://veilarbpersonflate${this.isSandbox ? '.dev' : ''}.intern.nav.no/${this.personIdent}`;
             case 'Barnetrygd':
                 return `https://barnetrygd.intern.nav.no/oppgaver`;
             case 'Enslig':
