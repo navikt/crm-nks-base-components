@@ -30,7 +30,6 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     @wire(getUserSkills)
     wiredGetUserSkills({ error, data }) {
         if (data) {
-            console.log('User skills: ', JSON.stringify(data));
             this.userSkills = data;
         } else if (error) {
             console.error('Problem on getting user skills', JSON.stringify(error));
