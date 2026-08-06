@@ -32,5 +32,6 @@
     "scratch.default.permissionsets": [
         "Application_Logging",
         "NKS_Scratch_Permissions"
-    ]
+    ],
+    "xml.preferences.showSchemaDocumentationType": "none"
 }

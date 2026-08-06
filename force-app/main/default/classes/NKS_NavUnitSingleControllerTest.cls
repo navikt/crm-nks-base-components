@@ -44,9 +44,9 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         result = NKS_NavUnitSingleController.findUnit('Account.CRM_Person__c', 'Case', c.Id, 'PERSON_LOCATION');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('1234', result.unit.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result.success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('1234', result.unit.enhetNr, 'Expected the same unit number as in the mock');
     }
 
     @IsTest
@@ -85,9 +85,9 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         result = NKS_NavUnitSingleController.findUnit('INT_UnitNumber__c', 'NavUnit__c', unit.Id, 'UNIT_NUMBER');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('1234', result.unit.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result.success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('1234', result.unit.enhetNr, 'Expected the same unit number as in the mock');
     }
 
     @IsTest
@@ -98,7 +98,7 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         result = NKS_NavUnitSingleController.findUnit('INT_UnitNumber__c', 'NavUnit__c', '', 'TEST');
         Test.stopTest();
 
-        System.assertEquals(null, result, 'Expected NULL in response');
+        Assert.areEqual(null, result, 'Expected NULL in response');
     }
 
     @IsTest
@@ -167,20 +167,20 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         List<NKS_NorgNavUnitService.NavUnitResponse> result;
 
         Test.startTest();
-        result = NKS_NavUnitSingleController.findUnits(new List<String>{'1234', '9999', '2990', '4321'});
+        result = NKS_NavUnitSingleController.findUnits(new List<String>{ '1234', '9999', '2990', '4321' });
         Test.stopTest();
 
-        System.assertEquals(true, result[0].success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result[0].errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('1234', result[0].unit.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result[0].success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result[0].errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('1234', result[0].unit.enhetNr, 'Expected the same unit number as in the mock');
 
-        System.assertEquals(true, result[1].success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result[1].errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('9999', result[1].unit.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result[1].success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result[1].errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('9999', result[1].unit.enhetNr, 'Expected the same unit number as in the mock');
 
-        System.assertEquals(true, result[2].success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result[2].errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('2990', result[2].unit.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result[2].success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result[2].errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('2990', result[2].unit.enhetNr, 'Expected the same unit number as in the mock');
 
         Assert.isNull(result[3].unit, 'Expected null');
     }
@@ -221,9 +221,9 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         result = NKS_NavUnitSingleController.getContactInformation('1234');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('1234', result.contactInformation.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result.success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('1234', result.contactInformation.enhetNr, 'Expected the same unit number as in the mock');
     }
 
     @IsTest
@@ -233,24 +233,27 @@ private with sharing class NKS_NavUnitSingleControllerTest {
         NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
 
         Test.startTest();
-        result = NKS_NavUnitSingleController.getContactInformationV2('0314');
+        result = NKS_NavUnitSingleController.getContactInformationV2('0901');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected success');
-        System.assertEquals(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
-        System.assertEquals('0314', result.contactInformation.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual(true, result.success, 'Expected success');
+        Assert.areEqual(true, String.isBlank(result.errorMessage), 'Expected blank errorMessage');
+        Assert.areEqual('0901', result.contactInformation.enhetNr, 'Expected the same unit number as in the mock');
+        Assert.areEqual('Tjenngata', result.contactInformation.postadresse.gatenavn, 'Expected street name');
+        Assert.areEqual('9', result.contactInformation.postadresse.husnummer, 'Expected house number');
     }
 
     @IsTest
     static void getContactInformationV2_null() {
-        ApiMock.setTestMock('GET_KONTAKTINFORMASJON_V2', 200, 'OK');
-
         NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
 
         Test.startTest();
         result = NKS_NavUnitSingleController.getContactInformationV2(null);
         Test.stopTest();
 
-        System.assertEquals(null, result, 'Expected null');
+        Assert.areNotEqual(null, result, 'Expected response object');
+        Assert.areEqual(false, result.success, 'Expected failure');
+        Assert.areEqual('Enhetsnummer mangler.', result.errorMessage, 'Expected missing unit number message');
+        Assert.areEqual(null, result.contactInformation, 'Expected null contact information');
     }
 }
