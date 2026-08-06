@@ -100,7 +100,6 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         private String concatAddress() {
             return NKS_NavUnitContactInformationV2.combineStreetAndPostal(
                 new List<String>{
-                    adresseTilleggsnavn,
                     isPostboksadresse() ? 'Postboks' : null,
                     postboksnummer,
                     postboksanlegg,
@@ -163,7 +162,7 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         public String concatenatedAddress {
             get {
                 return NKS_NavUnitContactInformationV2.combineStreetAndPostal(
-                    new List<String>{ adresseTilleggsnavn, gatenavn, husnummer, husbokstav },
+                    new List<String>{ gatenavn, husnummer, husbokstav },
                     new List<String>{ postnummer, poststed }
                 );
             }
