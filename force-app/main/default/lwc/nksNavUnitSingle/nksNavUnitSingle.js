@@ -2,7 +2,6 @@ import { LightningElement, api, wire } from 'lwc';
 import { getRecord } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
 import getNavUnit from '@salesforce/apex/NKS_NavUnitSingleController.findUnit';
-import getContactInformation from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformation';
 import getContactInformationV2 from '@salesforce/apex/NKS_NavUnitSingleController.getContactInformationV2';
 import boxLayoutHTML from './boxLayout.html';
 import cardLayoutHTML from './cardLayout.html';
@@ -18,30 +17,25 @@ export default class NksNavUnitSingle extends LightningElement {
     @api boxLayout = false;
 
     navUnit;
-    contactInformation;
     contactInformationV2;
     unitNumber;
     wiredNavUnit;
-    wiredContactInformation;
+    wiredContactInformationV2;
     wireFields;
     errorMessage;
     isError = false;
     isLoaded = false;
-    noLayout = false;
 
     render() {
         if (this.cardLayout) {
             return cardLayoutHTML;
         }
+
         return this.boxLayout ? boxLayoutHTML : noLayoutHTML;
     }
 
     connectedCallback() {
         this.wireFields = [`${this.objectApiName}.Id`];
-
-        if (!this.cardLayout && !this.boxLayout) {
-            this.noLayout = true;
-        }
     }
 
     @wire(getRecord, {
@@ -49,21 +43,15 @@ export default class NksNavUnitSingle extends LightningElement {
         fields: '$wireFields'
     })
     wiredRecordInfo({ error, data }) {
-        if (data) {
-            if (this.wiredNavUnit?.data) {
-                this.isLoaded = false;
-                refreshApex(this.wiredNavUnit).then(() => {
-                    this.setWiredNavUnit();
-                });
-            }
+        if (data && this.wiredNavUnit?.data) {
+            this.isLoaded = false;
+            refreshApex(this.wiredNavUnit);
+            return;
         }
+
         if (error) {
             this.handleError(error);
         }
-    }
-
-    get fancyError() {
-        return JSON.stringify(this.errorMessage);
     }
 
     @wire(getNavUnit, {
@@ -78,47 +66,33 @@ export default class NksNavUnitSingle extends LightningElement {
     }
 
     setWiredNavUnit() {
-        const { data, error } = this.wiredNavUnit;
+        const { data, error } = this.wiredNavUnit || {};
+
         if (data) {
-            let newUnitNumber = data.unit?.enhetNr ? data.unit.enhetNr : null;
+            const newUnitNumber = data.unit?.enhetNr || null;
             this.unitNumber = newUnitNumber;
-            this.isLoaded = this.unitNumber === newUnitNumber;
-            this.isError = !data.success;
             this.navUnit = data.unit;
-            this.appendErrorMessage(data.errorMessage);
-        }
-        if (error) {
-            this.handleError(error);
-        }
-    }
-
-    @wire(getContactInformation, { unitNumber: '$unitNumber' }) wiredGetContactInformation(res) {
-        this.wiredContactInformation = res;
-        this.setWiredContactInformation();
-    }
-
-    setWiredContactInformation() {
-        const { data, error } = this.wiredContactInformation;
-        if (data) {
             this.isError = !data.success;
-            this.contactInformation = data.contactInformation;
             this.appendErrorMessage(data.errorMessage);
+            this.isLoaded = !newUnitNumber;
         } else if (error) {
             this.handleError(error);
         }
+    }
 
-        getContactInformationV2({ unitNumber: this.unitNumber })
-            .then((res) => {
-                if (res) {
-                    this.contactInformationV2 = res.contactInformation;
-                    this.appendErrorMessage(res.errorMessage);
-                    this.isError = this.isError || !res.success;
-                }
-                this.isLoaded = true;
-            })
-            .catch((err) => {
-                this.handleError(err);
-            });
+    @wire(getContactInformationV2, { unitNumber: '$unitNumber' })
+    wiredGetContactInformationV2(value) {
+        this.wiredContactInformationV2 = value;
+        const { data, error } = value || {};
+
+        if (data) {
+            this.contactInformationV2 = data.contactInformation;
+            this.isError = this.isError || !data.success;
+            this.appendErrorMessage(data.errorMessage);
+            this.isLoaded = true;
+        } else if (error) {
+            this.handleError(error);
+        }
     }
 
     appendErrorMessage(errorMessage) {
@@ -129,11 +103,15 @@ export default class NksNavUnitSingle extends LightningElement {
 
     handleError(error) {
         this.errorMessage = 'Unknown error';
-        if (Array.isArray(error.body)) {
+
+        if (Array.isArray(error?.body)) {
             this.errorMessage = error.body.map((e) => e.message).join(', ');
-        } else if (typeof error.body.message === 'string') {
+        } else if (typeof error?.body?.message === 'string') {
             this.errorMessage = error.body.message;
+        } else if (typeof error?.message === 'string') {
+            this.errorMessage = error.message;
         }
+
         this.isError = true;
         this.isLoaded = true;
     }

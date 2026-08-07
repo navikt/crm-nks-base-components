@@ -1,37 +1,54 @@
 public with sharing class NKS_NavUnit {
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String enhetId;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String navn;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String enhetNr;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Integer antallRessurser;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String status;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String orgNivaa;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String type;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String organisasjonsnummer;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Date underEtableringDato;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Date aktiveringsdato;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Date underAvviklingDato;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Date nedleggelsesdato;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Boolean oppgavebehandler;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public Integer versjon;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String sosialeTjenester;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String kanalstrategi;
-    @AuraEnabled @invocableVariable
+    @AuraEnabled
+    @invocableVariable
     public String orgNrTilKommunaltNavKontor;
 
     public NKS_NavUnit() {
