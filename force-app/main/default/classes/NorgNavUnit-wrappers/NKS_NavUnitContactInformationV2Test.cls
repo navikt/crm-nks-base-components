@@ -166,7 +166,7 @@ private class NKS_NavUnitContactInformationV2Test {
 
         Assert.areEqual(true, resp.success);
         Assert.areEqual(
-            'NAV Postboks 123 Sentrum, 4950 RISØR',
+            'Postboks 123 Sentrum, 4950 RISØR',
             resp.contactInformation.postadresse.concatenatedAddress
         );
     }
