@@ -49,7 +49,10 @@ export async function handleShowNotifications(
                 'warning'
             );
         } else if (flowNameLower.includes('task')) {
-            addNotification(notificationBoxTemplate, 'Oppgaven er opprettet', null, 'success');
+            const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
+            const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
+            const optionalText = `${theme}\xa0\xa0\xa0\xa0\xa0Sendt til: ${unitNumber} ${unitName}`;
+            addNotification(notificationBoxTemplate, 'Oppgaven er opprettet', optionalText, 'success');
         } else if (flowNameLower.includes('redact')) {
             addNotification(notificationBoxTemplate, 'Henvendelsen er sendt til sladding', null, 'success');
         } else if (flowNameLower.includes('reserve')) {
