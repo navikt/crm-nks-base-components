@@ -77,7 +77,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         Assert.areEqual(1, pbd.securityMeasures.size(), 'Expected one');
         Assert.areEqual(3, pbd.badges.size(), 'Expected three');
-        Assert.areEqual(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
+        Assert.areEqual(2, pbd.spokenLanguagesInterpreter.size(), 'Expected two');
         Test.stopTest();
     }
 
@@ -110,7 +110,7 @@ private with sharing class NKS_PersonBadgesController_Test {
 
         Assert.areEqual(1, pbd.securityMeasures.size(), 'Expected one');
         Assert.areEqual(5, pbd.badges.size(), 'Expected five');
-        Assert.areEqual(2, pbd.spokenLanguagesIntepreter.size(), 'Expected two');
+        Assert.areEqual(2, pbd.spokenLanguagesInterpreter.size(), 'Expected two');
     }
 
     @IsTest

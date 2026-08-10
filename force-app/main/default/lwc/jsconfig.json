@@ -5,11 +5,7 @@
         "target": "ESNext",
         "baseUrl": ".",
         "paths": {
-            "*": [
-                "*"
-            ],
             "c/*": [
-                "/*.js",
                 "*"
             ]
         }
