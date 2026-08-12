@@ -1,6 +1,6 @@
 import getCommonCode from '@salesforce/apex/NKS_ButtonContainerController.getCommonCodeName';
 
-async function callGetCommonCode(inputId) {
+export async function callGetCommonCode(inputId) {
     try {
         const result = await getCommonCode({ id: inputId });
         return result;
