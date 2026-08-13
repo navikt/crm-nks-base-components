@@ -17,6 +17,8 @@ export default class NksButtonContainerBottom extends LightningElement {
     @api flowNames;
     @api flowLabels;
     @api buttonStylings;
+    @api fullButtonWidth = false;
+    @api brandVariant = false;
     @api setBorders = false;
     @api showNotifications = false; // Show notifications if the component is used independently
 
@@ -65,7 +67,7 @@ export default class NksButtonContainerBottom extends LightningElement {
     }
 
     get buttonStylingList() {
-        return this.buttonStylings?.replace(/ /g, '').split(',') || [];
+        return this.buttonStylings ? this.buttonStylings.replace(/ /g, '').split(',') : [];
     }
 
     get showFlow() {
@@ -96,17 +98,19 @@ export default class NksButtonContainerBottom extends LightningElement {
 
     get buttonClass() {
         return `slds-grid slds-grid_align-end slds-col_bump-left button-container${
-            this.showNotifications ? ' slds-var-p-right_medium' : ''
-        }`;
+            this.fullButtonWidth ? ' button-container_stretch' : ''
+        }${this.showNotifications && !this.fullButtonWidth ? ' slds-var-p-right_medium' : ''}`;
     }
 
     updateFlowLoop() {
-        let baseClasses = 'slds-button slds-button_stretch button-spacing button-heights ';
+        const widthClass = this.fullButtonWidth ? 'slds-button_stretch' : 'slds-float_right';
+        const defaultVariant = this.brandVariant ? 'slds-button_brand' : 'slds-button_outline-brand';
+        let baseClasses = `slds-button ${widthClass} ${defaultVariant} button-spacing button-heights `;
         this.flowLoop = this.flowNameList?.map((flowName, index) => ({
             developerName: flowName,
             label: this.labelList ? this.labelList[index] : flowName,
             expanded: (this.activeFlow === flowName).toString(),
-            buttonStyling: baseClasses + (this.buttonStylingList.length ? this.buttonStylingList[index] : 'slds-button_outline-brand')
+            buttonStyling: baseClasses + (this.buttonStylingList.length ? this.buttonStylingList[index] : '')
         }));
     }
 
@@ -118,6 +122,7 @@ export default class NksButtonContainerBottom extends LightningElement {
             this.updateFlowLoop();
             return;
         }
+        this.notificationBoxTemplate?.clearNotifications();
         if (this.showFlow) {
             this.swapActiveFlow(flowName);
             return;
