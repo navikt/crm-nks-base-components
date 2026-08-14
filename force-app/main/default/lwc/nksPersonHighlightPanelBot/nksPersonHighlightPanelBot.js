@@ -2,7 +2,6 @@
 import { LightningElement, api, wire } from 'lwc';
 import getData from '@salesforce/apex/NKS_FagsystemController.getFagsystemData';
 import getFagsoneIpAndOrgType from '@salesforce/apex/NKS_FagsystemController.getFagsoneIpAndOrgType';
-import getModiaSosialLink from '@salesforce/apex/NKS_FagsystemController.getModiaSosialLink';
 import getEncryptedPensjonLink from '@salesforce/apex/NKS_FagsystemController.postPensjonPidEncrypt';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { publishToAmplitude } from 'c/amplitude';
@@ -31,6 +30,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
     wiredGetUserSkills({ error, data }) {
         if (data) {
             this.userSkills = data;
+            this.filterLinks();
         } else if (error) {
             console.error('Problem on getting user skills', JSON.stringify(error));
         }
@@ -79,56 +79,39 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 .filter(Boolean)
         );
 
-        const allowedBySkill = new Set(['modia', 'gosys']);
+        const linkToSkills = new Map([
+            ['modia', []],
+            ['gosys', []],
+            ['speil', ['helse', 'internasjonal']],
+            ['aa-reg', ['arbeid', 'internasjonal']],
+            ['dinpensjon', ['pensjon', 'internasjonal']],
+            ['dinufore', ['ufoeretrygd', 'internasjonal']],
+            ['pesys', ['pensjon', 'ufoeretrygd', 'internasjonal']],
+            ['foreldrepenger', ['familie', 'pleiepenger', 'internasjonal']],
+            ['k9', ['familie', 'pleiepenger', 'internasjonal']],
+            ['barnetrygd', ['familie', 'pleiepenger', 'internasjonal']],
+            ['enslig', ['familie', 'pleiepenger', 'internasjonal']],
+            ['kontantstøtte', ['familie', 'pleiepenger', 'internasjonal']]
+        ]);
 
-        if (skillSet.has('internasjonal')) {
-            [
-                'modia',
-                'gosys',
-                'speil',
-                'aa-reg',
-                'dinpensjon',
-                'dinufore',
-                'pesys',
-                'foreldrepenger',
-                'k9',
-                'barnetrygd',
-                'enslig',
-                'kontantstøtte'
-            ].forEach((name) => allowedBySkill.add(name));
-        } else {
-            if (skillSet.has('arbeid')) allowedBySkill.add('aa-reg');
-            if (skillSet.has('helse')) allowedBySkill.add('speil');
-
-            if (skillSet.has('familie') || skillSet.has('pleiepenger')) {
-                ['enslig', 'kontantstøtte', 'barnetrygd', 'foreldrepenger', 'k9'].forEach((name) =>
-                    allowedBySkill.add(name)
-                );
-            }
-
-            if (skillSet.has('pensjon')) {
-                allowedBySkill.add('pesys');
-                allowedBySkill.add('dinpensjon');
-            }
-
-            if (skillSet.has('ufoeretrygd')) {
-                allowedBySkill.add('pesys');
-                allowedBySkill.add('dinufore');
-            }
-        }
-
-        const canSeeBySkill = (name) => allowedBySkill.has(String(name).toLowerCase());
+        const isAllowedBySkill = (linkName) => {
+            const key = String(linkName).toLowerCase();
+            const requiredSkills = linkToSkills.get(key);
+            if (!requiredSkills) return true;
+            if (requiredSkills.length === 0) return true;
+            return requiredSkills.some((skill) => skillSet.has(skill));
+        };
 
         const possibleLinks = [
-            { name: 'Modia', field: this.generateUrl('Modia'), show: !!this.personIdent && canSeeBySkill('Modia') },
-            { name: 'Gosys', field: this.generateUrl('Gosys'), show: !!this.personIdent && canSeeBySkill('Gosys') },
-            { name: 'SPEIL', field: this.generateUrl('Speil'), show: canSeeBySkill('SPEIL') },
+            { name: 'Modia', field: this.generateUrl('Modia'), show: !!this.personIdent },
+            { name: 'Gosys', field: this.generateUrl('Gosys'), show: !!this.personIdent },
+            { name: 'SPEIL', field: this.generateUrl('Speil'), show: true },
             {
                 name: 'AA-reg',
                 field: null,
                 eventFunc: this.handleAAClickOrKey,
                 title: 'AA-register',
-                show: !!this.personIdent && canSeeBySkill('AA-reg')
+                show: !!this.personIdent
             },
             {
                 name: 'DinPensjon',
@@ -136,7 +119,7 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 field: null,
                 eventFunc: this.handleDinPensjonClickOrKey,
                 title: 'Din Pensjon',
-                show: !!this.personIdent && canSeeBySkill('DinPensjon')
+                show: !!this.personIdent
             },
             {
                 name: 'DinUfore',
@@ -144,36 +127,35 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
                 eventFunc: this.handleDinUføretrygdClickOrKey,
                 field: null,
                 title: 'Din Uføretrygd',
-                show: !!this.personIdent && !!this.navIdent && canSeeBySkill('DinUfore')
+                show: !!this.personIdent && !!this.navIdent
             },
             {
                 name: 'Pesys',
                 field: null,
                 eventFunc: this.handlePesysClickOrKey,
                 title: 'Pesys',
-                show: !!this.personIdent && canSeeBySkill('Pesys')
+                show: !!this.personIdent
             },
-            {
-                name: 'Foreldrepenger',
-                field: this.generateUrl('Foreldrepenger'),
-                show: !!this.actorId && canSeeBySkill('Foreldrepenger')
-            },
-            { name: 'K9', field: this.generateUrl('K9'), show: !!this.actorId && canSeeBySkill('K9') },
-            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: canSeeBySkill('Barnetrygd') },
-            {
-                name: 'Enslig',
-                label: 'Enslig forsørger',
-                field: this.generateUrl('Enslig'),
-                show: canSeeBySkill('Enslig')
-            },
-            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: canSeeBySkill('Kontantstøtte') }
+            { name: 'Foreldrepenger', field: this.generateUrl('Foreldrepenger'), show: !!this.actorId },
+            { name: 'K9', field: this.generateUrl('K9'), show: !!this.actorId },
+            { name: 'Barnetrygd', field: this.generateUrl('Barnetrygd'), show: true },
+            { name: 'Enslig', label: 'Enslig forsørger', field: this.generateUrl('Enslig'), show: true },
+            { name: 'Kontantstøtte', field: this.generateUrl('Kontantstøtte'), show: true }
         ];
 
         const listOfFilter =
-            typeof this.filterList === 'string' ? this.filterList.replaceAll(' ', '').split(',') : this.filterList;
+            typeof this.filterList === 'string'
+                ? this.filterList.replaceAll(' ', '').split(',').filter(Boolean)
+                : Array.isArray(this.filterList)
+                ? this.filterList
+                : [];
 
         this.fagsystemLinks = possibleLinks
-            .filter((link) => (listOfFilter.length === 0 || listOfFilter.includes(link.name)) && link.show)
+            .filter((link) => {
+                if (!link.show) return false;
+                if (listOfFilter.length > 0 && !listOfFilter.includes(link.name)) return false;
+                return isAllowedBySkill(link.name);
+            })
             .map((link, index) => ({
                 ...link,
                 id: index,
