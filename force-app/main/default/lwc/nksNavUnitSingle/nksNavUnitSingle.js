@@ -43,7 +43,7 @@ export default class NksNavUnitSingle extends LightningElement {
         fields: '$wireFields'
     })
     wiredRecordInfo({ error, data }) {
-        if (data && this.wiredNavUnit?.data) {
+        if (data && !this.wiredNavUnit?.data) {
             this.isLoaded = false;
             refreshApex(this.wiredNavUnit);
             return;
