@@ -10,11 +10,4 @@
         <target>lightningCommunity__Page</target>
         <target>lightningCommunity__Default</target>
     </targets>
-    <targetConfigs>
-        <targetConfig
-            targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage,lightningCommunity__Default">
-            <property name="gifCount" type="string" label="GIF Count" default="2"
-                description="Number of GIFs to display" />
-        </targetConfig>
-    </targetConfigs>
 </LightningComponentBundle>

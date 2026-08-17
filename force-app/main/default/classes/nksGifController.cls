@@ -16,3 +16,15 @@ public with sharing class nksGifController {
         return gifUrlsByTitle;
     }
 }
+
+// public with sharing class nksGifController {
+//     @auraEnabled(cacheable=true)
+//     public static Map<String, String> getGifs() {
+//         List<StaticResource> gifs = [SELECT Name FROM StaticResource WHERE ContentType = 'image/gif'];
+//         Map<String, String> gifUrlsByTitle = new Map<String, String>();
+//         for (StaticResource gif : gifs) {
+//             gifUrlsByTitle.put(gif.Name, '/resource/' + gif.Name);
+//         }
+//         return gifUrlsByTitle;
+//     }
+// }

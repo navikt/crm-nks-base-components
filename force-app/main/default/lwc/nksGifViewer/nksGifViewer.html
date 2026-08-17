@@ -1,5 +1,7 @@
 <template>
-    <template for:each={gifs} for:item="gif">
-        <img key={gif.url} src={gif.url} alt={gif.title} title={gif.title} />
-    </template>
+    <div class="gif-container">
+        <template lwc:if={gif}>
+            <img src={gif.url} alt={gif.title} title={gif.title} />
+        </template>
+    </div>
 </template>

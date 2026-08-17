@@ -1,3 +1,10 @@
+.gif-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 img {
     margin: 0.5rem;
+    border-radius: 0.75rem;
 }

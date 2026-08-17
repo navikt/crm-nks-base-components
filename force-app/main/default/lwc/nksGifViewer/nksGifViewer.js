@@ -1,9 +1,7 @@
 import getGifs from '@salesforce/apex/nksGifController.getGifs';
-import { LightningElement, api } from 'lwc';
+import { LightningElement } from 'lwc';
 
 export default class NksGifViewer extends LightningElement {
-    @api gifCount;
-
     gifList;
     shuffledGifList;
     currentOffset = 0;
@@ -19,21 +17,24 @@ export default class NksGifViewer extends LightningElement {
     }
 
     changeOffset() {
-        if (this.gifCount >= this.gifList.length) {
-            this.currentOffset = 0;
+        if (!this.gifList.length) {
+            return;
         }
         const currentTime = Date.now();
-        this.currentOffset = Math.floor(currentTime / 5000) % this.gifList.length;
-        const remainingTime = 1000 * 5 - (currentTime - this.currentRoundedTime(1000 * 5).getTime());
+        this.currentOffset = Math.floor(currentTime / 3000) % this.gifList.length;
+        const remainingTime = 1000 * 3 - (currentTime - this.currentRoundedTime(1000 * 3).getTime());
         setTimeout(() => {
             this.incrementOffset();
             setInterval(() => {
                 this.incrementOffset();
-            }, 1000 * 5);
+            }, 1000 * 3);
         }, remainingTime);
     }
 
     incrementOffset() {
+        if (!this.gifList.length) {
+            return;
+        }
         this.currentOffset = (this.currentOffset + 1) % this.gifList.length;
     }
 
@@ -74,14 +75,7 @@ export default class NksGifViewer extends LightningElement {
         setTimeout(() => this.shuffle(), remainingTime);
     }
 
-    get gifs() {
-        if (this.shuffledGifList && this.gifCount) {
-            let tempList = [...this.shuffledGifList];
-            if (this.currentOffset + parseInt(this.gifCount) > this.shuffledGifList.length) {
-                tempList = [...this.shuffledGifList, ...this.shuffledGifList];
-            }
-            return tempList.slice(this.currentOffset, this.currentOffset + parseInt(this.gifCount));
-        }
-        return this.shuffledGifList || [];
+    get gif() {
+        return this.shuffledGifList ? this.shuffledGifList[this.currentOffset] : undefined;
     }
 }
