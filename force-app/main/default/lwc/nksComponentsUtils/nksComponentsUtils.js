@@ -41,13 +41,6 @@ export async function handleShowNotifications(
                   ? 'Samtalereferat er delt med bruker og henvendelsen er journalført'
                   : 'Henvendelsen er journalført';
             addNotification(notificationBoxTemplate, message, theme, 'success');
-        } else if (flowNameLower === 'nks_case_send_nav_task') {
-            addNotification(
-                notificationBoxTemplate,
-                'Oppgaven er lagret, og blir sendt når samtalereferat er opprettet.',
-                null,
-                'warning'
-            );
         } else if (flowNameLower.includes('task')) {
             const unitName = getOutputVariableValue(outputVariables, 'Selected_Unit_Name');
             const unitNumber = getOutputVariableValue(outputVariables, 'Selected_Unit_Number');
