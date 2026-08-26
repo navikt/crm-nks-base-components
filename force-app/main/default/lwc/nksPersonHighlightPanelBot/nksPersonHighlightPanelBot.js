@@ -82,16 +82,38 @@ export default class NksPersonHighlightPanelBot extends LightningElement {
         const linkToSkills = new Map([
             ['modia', []],
             ['gosys', []],
-            ['speil', ['helse', 'internasjonal']],
-            ['aa-reg', ['arbeid', 'internasjonal']],
-            ['dinpensjon', ['pensjon', 'internasjonal']],
-            ['dinufore', ['ufoeretrygd', 'internasjonal']],
-            ['pesys', ['pensjon', 'ufoeretrygd', 'internasjonal']],
-            ['foreldrepenger', ['familie', 'pleiepenger', 'internasjonal']],
-            ['k9', ['familie', 'pleiepenger', 'internasjonal']],
-            ['barnetrygd', ['familie', 'pleiepenger', 'internasjonal']],
-            ['enslig', ['familie', 'pleiepenger', 'internasjonal']],
-            ['kontantstøtte', ['familie', 'pleiepenger', 'internasjonal']]
+            ['speil', ['helse', 'internasjonal', 'nks_innsyn']],
+            ['aa-reg', []],
+            ['dinpensjon', ['pensjon', 'internasjonal', 'nks_innsyn']],
+            ['dinufore', ['ufoeretrygd', 'internasjonal', 'nks_innsyn']],
+            ['pesys', ['pensjon', 'ufoeretrygd', 'internasjonal', 'nks_innsyn']],
+            [
+                'foreldrepenger',
+                [
+                    'familie',
+                    'pleiepenger',
+                    'internasjonal',
+                    'nks_innsyn',
+                    'arbeidsgiversamhandler',
+                    'permittering_og_rekruttering',
+                    'sykefravaersoppfolging'
+                ]
+            ],
+            [
+                'k9',
+                [
+                    'familie',
+                    'pleiepenger',
+                    'internasjonal',
+                    'nks_innsyn',
+                    'arbeidsgiversamhandler',
+                    'permittering_og_rekruttering',
+                    'sykefravaersoppfolging'
+                ]
+            ],
+            ['barnetrygd', ['familie', 'pleiepenger', 'internasjonal', 'nks_innsyn']],
+            ['enslig', ['familie', 'pleiepenger', 'internasjonal', 'nks_innsyn']],
+            ['kontantstøtte', ['familie', 'pleiepenger', 'internasjonal', 'nks_innsyn']]
         ]);
 
         const isAllowedBySkill = (linkName) => {
