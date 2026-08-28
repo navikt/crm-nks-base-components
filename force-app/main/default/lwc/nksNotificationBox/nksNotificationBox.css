@@ -103,6 +103,11 @@
     border-color: var(--ac-alert-warning-border, var(--a-border-warning));
 }
 
+.navds-alert--error {
+    background-color: var(--ac-alert-error-bg, var(--a-surface-danger-subtle));
+    border-color: var(--ac-alert-error-border, var(--a-border-danger));
+}
+
 .navds-alert > .navds-alert__icon {
     align-self: flex-start;
     background: radial-gradient(circle, var(--a-surface-default) 47%, 0, transparent);
@@ -121,4 +126,8 @@
 
 .navds-alert--warning > .navds-alert__icon {
     color: var(--ac-alert-icon-warning-color, var(--a-icon-warning));
+}
+
+.navds-alert--error > .navds-alert__icon {
+    color: var(--ac-alert-icon-error-color, var(--a-icon-danger));
 }
