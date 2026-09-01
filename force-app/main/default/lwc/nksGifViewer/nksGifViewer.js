@@ -1,19 +1,77 @@
 import getGifs from '@salesforce/apex/nksGifController.getGifs';
+import approveGifMember from '@salesforce/apex/nksGifController.approveGifMember';
+import rejectGifMember from '@salesforce/apex/nksGifController.rejectGifMember';
+import isGifReject from '@salesforce/apex/nksGifController.isGifReject';
 import { LightningElement } from 'lwc';
 
 export default class NksGifViewer extends LightningElement {
     gifList;
     shuffledGifList;
     currentOffset = 0;
+    gifsFound = false;
+    hideGifs = true;
 
     connectedCallback() {
+        this.checkGifReject();
+    }
+
+    async checkGifReject() {
+        try {
+            this.hideGifs = await isGifReject();
+            if (!this.hideGifs) {
+                this.startGifRotation();
+            }
+        } catch (error) {
+            console.log('Gamer', error);
+        }
+    }
+
+    startGifRotation() {
+        if (this.gifList != null) {
+            return;
+        }
         getGifs().then((result) => {
+            if (result == null) {
+                this.gifsFound = false;
+                console.error('No GIFs found');
+                return;
+            }
+            this.gifsFound = true;
             this.gifList = Object.keys(result).map((key) => {
                 return { title: key, url: result[key] };
             });
             this.shuffle();
             this.changeOffset();
         });
+    }
+
+    buttonDisabled = false;
+
+    handleGifButton(event) {
+        this.buttonDisabled = true;
+        const value = event.target.value;
+
+        if (value === 'approve') {
+            approveGifMember()
+                .then(() => {
+                    console.log('User approved for GIFs');
+                    this.startGifRotation();
+                    this.buttonDisabled = false;
+                })
+                .catch((error) => {
+                    console.error('Error approving user for GIFs', error);
+                });
+        } else if (value === 'reject') {
+            rejectGifMember()
+                .then(() => {
+                    console.log('User rejected for GIFs');
+                    this.hideGifs = true;
+                    this.buttonDisabled = false;
+                })
+                .catch((error) => {
+                    console.error('Error rejecting user for GIFs', error);
+                });
+        }
     }
 
     changeOffset() {
