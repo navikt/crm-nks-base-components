@@ -15,6 +15,42 @@ public with sharing class nksGifController {
         }
         return gifUrlsByTitle;
     }
+
+    @AuraEnabled(cacheable=true)
+    public static Boolean isGifReject() {
+        String rejectedGroupName = 'NKS_GIF_rejected';
+
+        try {
+            List<Id> groups = new List<Id>();
+            Group g = [SELECT Id FROM Group WHERE DeveloperName = :rejectedGroupName LIMIT 1];
+            List<GroupMember> members = [SELECT Id FROM GroupMember WHERE GroupId = :g.Id AND UserOrGroupId = :UserInfo.getUserId()];
+            return !members.isEmpty();
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static void approveGifMember(){
+        addGroupMember('NKS_GIF_approved');
+    }
+
+    @AuraEnabled(cacheable=false)
+    public static void rejectGifMember(){
+        addGroupMember('NKS_GIF_rejected');
+    }
+
+    private static void addGroupMember(String groupName){
+        try {
+            Group g = [SELECT Id FROM Group WHERE DeveloperName = :groupName LIMIT 1];
+            GroupMember groupMember = new GroupMember();
+            groupMember.GroupId = g.Id;
+            groupMember.UserOrGroupId = UserInfo.getUserId();
+            insert groupMember;
+        } catch (Exception e) {
+            throw new AuraHandledException(e.getMessage());
+        }
+    }
 }
 
 // public with sharing class nksGifController {

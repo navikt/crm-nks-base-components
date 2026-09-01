@@ -1,7 +1,27 @@
 <template>
     <div class="gif-container">
-        <template lwc:if={gif}>
-            <img src={gif.url} alt={gif.title} title={gif.title} />
+        <template lwc:if={hideGifs}> </template>
+        <template lwc:else>
+            <template lwc:if={gifsFound}>
+                <img src={gif.url} alt={gif.title} title={gif.title} />
+            </template>
+            <template lwc:else>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem">
+                    <lightning-button
+                        label="Jeg vil se GIFs!"
+                        onclick={handleGifButton}
+                        value="approve"
+                        disabled={buttonDisabled}
+                    ></lightning-button>
+                    <lightning-button
+                        label="NEI, JEG HATER GIFS!"
+                        variant="destructive"
+                        onclick={handleGifButton}
+                        value="reject"
+                        disabled={buttonDisabled}
+                    ></lightning-button>
+                </div>
+            </template>
         </template>
     </div>
 </template>
