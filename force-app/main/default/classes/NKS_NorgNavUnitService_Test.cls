@@ -12,16 +12,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFromGeographicLocation('0573');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(unit.enhetNr, result.unit.enhetNr, 'Expected to get the unit same unit as in the mock');
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual(unit.enhetNr, result.unit.enhetNr, 'Expected to get the unit same unit as in the mock');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -36,16 +35,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFromGeographicLocation('0573', 'ANY', true);
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(unit.enhetNr, result.unit.enhetNr, 'Expected to get the unit same unit as in the mock');
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual(unit.enhetNr, result.unit.enhetNr, 'Expected to get the unit same unit as in the mock');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -60,35 +58,33 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFromGeographicLocation('0573', null, null);
         Test.stopTest();
 
-        System.assertEquals(false, result.success, 'Expected to get a failure');
-        System.assertEquals(null, result.unit, 'Expected to get NULL');
-        System.assertEquals(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+        Assert.areEqual(false, result.success, 'Expected to get a failure');
+        Assert.areEqual(null, result.unit, 'Expected to get NULL');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
     }
 
     @IsTest
     static void getNavUnitFromGeographicLocation_InternalServerError() {
-        SingleRequestMock httpMock = new SingleRequestMock(50, 'Internal Server Error', '', null);
+        SingleRequestMock httpMock = new SingleRequestMock(500, 'Internal Server Error', '', null);
 
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFromGeographicLocation('0573', null, null);
         Test.stopTest();
 
-        System.assertEquals(false, result.success, 'Expected to get a failure');
-        System.assertEquals(null, result.unit, 'Expected to get NULL');
-        System.assertEquals(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+        Assert.areEqual(false, result.success, 'Expected to get a failure');
+        Assert.areEqual(null, result.unit, 'Expected to get NULL');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
     }
 
     @IsTest
@@ -154,30 +150,21 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitContactInformationResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitContactInformation('12345');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(
-            unit.enhetNr,
-            result.contactInformation.enhetNr,
-            'Expected to get the same enhetNr as in the mock'
-        );
-        System.assertEquals(
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual(unit.enhetNr, result.contactInformation.enhetNr, 'Expected same enhetNr');
+        Assert.areEqual(
             'TESTVEIEN TEST 12 B, 0001 TEST',
             unit.postadresse.concatenatedAddress,
-            'Expected to have a formatted address'
+            'Expected formatted address'
         );
-        System.assertEquals(
-            2,
-            result.contactInformation.publikumsmottak.size(),
-            'Expected to have two publikums mottak'
-        );
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(2, result.contactInformation.publikumsmottak.size(), 'Expected two publikums mottak');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -187,16 +174,69 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitContactInformationResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitContactInformation('12345');
         Test.stopTest();
 
-        System.assertEquals(false, result.success, 'Expected to get a failure');
-        System.assertEquals(null, result.contactInformation, 'Expected to get NULL');
-        System.assertEquals(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+        Assert.areEqual(false, result.success, 'Expected to get a failure');
+        Assert.areEqual(null, result.contactInformation, 'Expected to get NULL');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+    }
+
+    @IsTest
+    static void getNavUnitContactInformationV2_Success() {
+        ApiMock.setTestMock('GET_KONTAKTINFORMASJON_V2', 200, 'OK');
+
+        NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
+        NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
+
+        Test.startTest();
+        result = service.getNavUnitContactInformationV2('0901');
+        Test.stopTest();
+
+        Assert.areEqual(true, result.success, 'Expected success');
+        Assert.areEqual('0901', result.contactInformation.enhetNr, 'Expected same enhetNr');
+        Assert.areEqual('Tjenngata', result.contactInformation.postadresse.gatenavn, 'Expected street name');
+        Assert.areEqual('9', result.contactInformation.postadresse.husnummer, 'Expected house number');
+        Assert.areEqual(null, result.errorMessage, 'Expected no error');
+    }
+
+    @IsTest
+    static void getNavUnitContactInformationV2_BlankUnitNumber() {
+        NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
+        NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
+
+        Test.startTest();
+        result = service.getNavUnitContactInformationV2('');
+        Test.stopTest();
+
+        Assert.areEqual(false, result.success, 'Expected failure');
+        Assert.areEqual('Enhetsnummer mangler.', result.errorMessage, 'Expected missing unit number message');
+        Assert.areEqual(null, result.contactInformation, 'Expected null contact information');
+    }
+
+    @IsTest
+    static void getNavUnitContactInformationV2_NotFound() {
+        Test.setMock(
+            HttpCalloutMock.class,
+            new SingleRequestMock(404, 'Not Found', '{"field":"x","message":"not found"}', null)
+        );
+
+        NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
+        NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 result;
+
+        Test.startTest();
+        result = service.getNavUnitContactInformationV2('9999');
+        Test.stopTest();
+
+        Assert.areEqual(false, result.success, 'Expected failure');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected error message');
+        Assert.isTrue(
+            result.errorMessage.contains('Kunne ikke finne enhetsinformasjon.'),
+            'Expected 404-specific message'
+        );
     }
 
     @IsTest
@@ -216,16 +256,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFromUnitNumber('1234');
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals('1234', result.unit.enhetNr, 'Expected to get the same enhetNr as in the mock');
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual('1234', result.unit.enhetNr, 'Expected to get the same enhetNr as in the mock');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -250,16 +289,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitsResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFilteredList(new List<String>{ '1234' }, new List<String>{ '1234' }, 'Test', false);
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(2, result.units.size(), 'Expected to get two units back');
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual(2, result.units.size(), 'Expected to get two units back');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -269,16 +307,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.NavUnitsResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitFilteredList(null, null, '', false);
         Test.stopTest();
 
-        System.assertEquals(false, result.success, 'Expected to get a failure');
-        System.assertEquals(null, result.units, 'Expected to get NULL');
-        System.assertEquals(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+        Assert.areEqual(false, result.success, 'Expected to get a failure');
+        Assert.areEqual(null, result.units, 'Expected to get NULL');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
     }
 
     @IsTest
@@ -301,17 +338,15 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.WorkAllocationResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitWorkAllocation(new NKS_NavUnitWorkAllocationInput());
         Test.stopTest();
 
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(true, result.success, 'Expected to get a success');
-        System.assertEquals(2, result.units.size(), 'Expected to get both the units in the mock');
-        System.assertEquals(null, result.errorMessage, 'Did not expected an error message');
+        Assert.areEqual(true, result.success, 'Expected to get a success');
+        Assert.areEqual(2, result.units.size(), 'Expected to get both the units in the mock');
+        Assert.areEqual(null, result.errorMessage, 'Did not expected an error message');
     }
 
     @IsTest
@@ -321,15 +356,14 @@ private with sharing class NKS_NorgNavUnitService_Test {
         Test.setMock(HttpCalloutMock.class, httpMock);
 
         NKS_NorgNavUnitService.WorkAllocationResponse result;
-
         NKS_NorgNavUnitService service = new NKS_NorgNavUnitService();
 
         Test.startTest();
         result = service.getNavUnitWorkAllocation(new NKS_NavUnitWorkAllocationInput());
         Test.stopTest();
 
-        System.assertEquals(false, result.success, 'Did not expect to get a success');
-        System.assertEquals(null, result.units, 'Expected to get NULL');
-        System.assertEquals(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
+        Assert.areEqual(false, result.success, 'Did not expect to get a success');
+        Assert.areEqual(null, result.units, 'Expected to get NULL');
+        Assert.areEqual(true, String.isNotBlank(result.errorMessage), 'Expected an error message to be set');
     }
 }

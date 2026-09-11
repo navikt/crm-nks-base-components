@@ -29,9 +29,7 @@ public with sharing class NKS_NavUnitSingleController {
     }
 
     @InvocableMethod(label='Fetch Nav Unit' category='Nav Unit')
-    public static List<NKS_NorgNavUnitService.NavUnitResponse> findUnits(
-        List<String> navUnitNumber
-    ) {
+    public static List<NKS_NorgNavUnitService.NavUnitResponse> findUnits(List<String> navUnitNumber) {
         return service.getNavUnitListFromUnitNumbers(navUnitNumber, true);
     }
 
@@ -44,8 +42,12 @@ public with sharing class NKS_NavUnitSingleController {
     public static NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 getContactInformationV2(
         String unitNumber
     ) {
-        if (unitNumber == null)
-            return null;
+        if (String.isBlank(unitNumber)) {
+            NKS_NorgNavUnitService.NavUnitContactInformationResponseV2 resp = new NKS_NorgNavUnitService.NavUnitContactInformationResponseV2();
+            resp.success = false;
+            resp.errorMessage = 'Enhetsnummer mangler.';
+            return resp;
+        }
         return service.getNavUnitContactInformationV2(unitNumber);
     }
 
@@ -56,7 +58,7 @@ public with sharing class NKS_NavUnitSingleController {
     ) {
         List<Object> objectList = getQueryValue(field, parentObject, parentRecordId);
 
-        if (true == objectList.isEmpty()) {
+        if (objectList.isEmpty()) {
             NKS_NorgNavUnitService.NavUnitResponse resp = new NKS_NorgNavUnitService.NavUnitResponse();
             resp.errorMessage = 'Kunne ikke finne bruker.';
             return resp;
@@ -75,7 +77,7 @@ public with sharing class NKS_NavUnitSingleController {
     ) {
         List<Object> objectList = getQueryValue(field, parentObject, parentRecordId);
 
-        if (true == objectList.isEmpty()) {
+        if (objectList.isEmpty()) {
             NKS_NorgNavUnitService.NavUnitResponse resp = new NKS_NorgNavUnitService.NavUnitResponse();
             resp.errorMessage = 'Kunne ikke finne enhetsnummer.';
             return resp;
@@ -95,24 +97,64 @@ public with sharing class NKS_NavUnitSingleController {
      */
     private static List<Object> getQueryValue(String field, String parentObject, String parentRecordId) {
         List<Object> values = new List<Object>();
-        String queryString = 'SELECT ' + field + ' FROM ' + parentObject + ' WHERE Id = :parentRecordId';
-        List<SObject> objList = Database.query(String.escapeSingleQuotes(queryString));
 
-        for (SObject obj : objList) {
-            Object value = getFieldValue(obj, field);
-            if (null != obj) {
-                values.add(value);
+        if (String.isBlank(field) || String.isBlank(parentObject) || String.isBlank(parentRecordId)) {
+            return values;
+        }
+
+        Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
+        if (!globalDescribe.containsKey(parentObject)) {
+            return values;
+        }
+
+        if (!isValidFieldExpression(field)) {
+            return values;
+        }
+
+        try {
+            String queryString = 'SELECT ' + field + ' FROM ' + parentObject + ' WHERE Id = :parentRecordId';
+            List<SObject> objList = Database.query(queryString);
+
+            for (SObject obj : objList) {
+                Object value = getFieldValue(obj, field);
+                if (value != null) {
+                    values.add(value);
+                }
             }
+        } catch (Exception e) {
+            return values;
         }
 
         return values;
     }
 
+    private static Boolean isValidFieldExpression(String fieldExpression) {
+        if (String.isBlank(fieldExpression)) {
+            return false;
+        }
+
+        for (String part : fieldExpression.split('\\.')) {
+            if (String.isBlank(part) || !Pattern.matches('^[a-zA-Z_][a-zA-Z0-9_]*$', part)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static Object getFieldValue(SObject obj, String fieldName) {
+        if (obj == null || String.isBlank(fieldName)) {
+            return null;
+        }
+
         List<String> fieldNameList = fieldName.split('\\.');
 
         if (1 < fieldNameList.size()) {
-            return getFieldValue(obj.getSObject(fieldNameList.remove(0)), String.join(fieldNameList, '.'));
+            SObject child = obj.getSObject(fieldNameList.remove(0));
+            if (child == null) {
+                return null;
+            }
+            return getFieldValue(child, String.join(fieldNameList, '.'));
         }
 
         return obj.get(fieldNameList[0]);

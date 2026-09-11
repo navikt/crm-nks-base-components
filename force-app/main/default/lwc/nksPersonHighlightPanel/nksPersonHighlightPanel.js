@@ -167,7 +167,7 @@ export default class NksPersonHighlightPanel extends LightningElement {
                     clickable: true,
                     tabindex: '0',
                     badgeContent: historikkData,
-                    badgeContentType: 'historicalPowerOfAttorney'
+                    badgeContentType: 'HistoricalPowerOfAttorney'
                 });
             }
 
@@ -244,7 +244,10 @@ export default class NksPersonHighlightPanel extends LightningElement {
                 writtenStandard: getFieldValue(data, WRITTEN_STANDARD_FIELD),
                 citizenship: this.capitalizeFirstLetter(getFieldValue(data, CITIZENSHIP_FIELD)),
                 maritalStatus: this.capitalizeFirstLetter(
-                    this.formatMaritalStatus(getFieldValue(data, MARITAL_STATUS_FIELD))
+                    this.formatMaritalStatus(
+                        getFieldValue(data, MARITAL_STATUS_FIELD),
+                        getFieldValue(data, GENDER_FIELD)
+                    )
                 ),
                 legalStatus: getFieldDisplayValue(data, LEGAL_STATUS_FIELD)
             };
@@ -384,12 +387,12 @@ export default class NksPersonHighlightPanel extends LightningElement {
         const className = !this.personDetails?.fullName
             ? 'confidentialBackground'
             : this.personDetails?.isDeceased
-              ? 'deadBackground'
-              : this.personDetails?.gender === 'Kvinne'
-                ? 'femaleBackground'
-                : this.personDetails?.gender === 'Mann'
-                  ? 'maleBackground'
-                  : 'unknownBackground';
+            ? 'deadBackground'
+            : this.personDetails?.gender === 'Kvinne'
+            ? 'femaleBackground'
+            : this.personDetails?.gender === 'Mann'
+            ? 'maleBackground'
+            : 'unknownBackground';
         genderWrapper.className = 'gender-wrapper ' + className;
     }
 
@@ -400,11 +403,18 @@ export default class NksPersonHighlightPanel extends LightningElement {
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
     }
 
-    formatMaritalStatus(str) {
-        if (typeof str !== 'string') {
-            return str;
+    formatMaritalStatus(status, gender) {
+        if (typeof status !== 'string') {
+            return status;
         }
-        return str.replace(/_/g, ' ').replace(' eller enkemann', '/-mann');
+
+        if (status === 'ENKE_ELLER_ENKEMANN') {
+            if (gender === 'Kvinne') return 'enke';
+            if (gender === 'Mann') return 'enkemann';
+            return 'enke/-mann';
+        }
+
+        return status.replace(/_/g, ' ');
     }
 
     setUuAlertText() {

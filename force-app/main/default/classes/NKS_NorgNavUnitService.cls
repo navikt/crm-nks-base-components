@@ -2,8 +2,8 @@
  * @description Service class for doing callouts to NORG2 related to NAV Units
  */
 public with sharing class NKS_NorgNavUnitService {
-    private final string API_CONFIG_NAME = 'NORG2_UNIT_API'; //API Config name to set when using the ApiController
-    private final string SERVICE_AUTH_HEADER = 'SaasToNavApiGw';
+    private static final string API_CONFIG_NAME = 'NORG2_UNIT_API'; //API Config name to set when using the ApiController
+    private static final string SERVICE_AUTH_HEADER = 'SaasToNavApiGw';
 
     /**
      * @description Get the unit related to the geographical location submitted
@@ -57,8 +57,6 @@ public with sharing class NKS_NorgNavUnitService {
         Integer statusCode = apiCtrl.getResponse().getStatusCode();
         String bodyString = apiCtrl.getResponse().getBody();
 
-        bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-
         if (statusCode == 200) {
             resp.success = true;
             resp.unit = (NKS_NavUnit) JSON.deserialize(bodyString, NKS_NavUnit.class);
@@ -104,12 +102,12 @@ public with sharing class NKS_NorgNavUnitService {
 
         Map<String, NKS_NavUnit> unitMap = new Map<String, NKS_NavUnit>();
         if (resp.units != null) {
-            for(NKS_NavUnit unit : resp.units) {
+            for (NKS_NavUnit unit : resp.units) {
                 unitMap.put(unit.enhetNr, unit);
             }
         }
 
-        for(String unitNr : unitNumbers) {
+        for (String unitNr : unitNumbers) {
             NavUnitResponse response = new NavUnitResponse();
             response.errorMessage = resp.errorMessage;
             response.success = resp.success;
@@ -177,6 +175,12 @@ public with sharing class NKS_NorgNavUnitService {
     public NavUnitContactInformationResponseV2 getNavUnitContactInformationV2(String unitNumber) {
         NavUnitContactInformationResponseV2 resp = new NavUnitContactInformationResponseV2();
 
+        if (String.isBlank(unitNumber)) {
+            resp.success = false;
+            resp.errorMessage = 'Enhetsnummer mangler.';
+            return resp;
+        }
+
         Map<String, String> paramMap = new Map<String, String>();
         paramMap.put('enhetsnummer', unitNumber);
 
@@ -189,11 +193,8 @@ public with sharing class NKS_NorgNavUnitService {
 
         if (statusCode == 200) {
             resp.success = true;
-
             String bodyString = apiCtrl.getResponse().getBody();
-
             if (String.isNotBlank(bodyString)) {
-                bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
                 resp.contactInformation = (NKS_NavUnitContactInformationV2) JSON.deserialize(
                     bodyString,
                     NKS_NavUnitContactInformationV2.class
@@ -264,7 +265,10 @@ public with sharing class NKS_NorgNavUnitService {
 
                 if (String.isNotBlank(bodyString)) {
                     bodyString = bodyString.replaceAll('\n', '\\\\r\\\\n');
-                    List<NKS_NavUnit> deserializedUnits = (List<NKS_NavUnit>) JSON.deserialize(bodyString, List<NKS_NavUnit>.class);
+                    List<NKS_NavUnit> deserializedUnits = (List<NKS_NavUnit>) JSON.deserialize(
+                        bodyString,
+                        List<NKS_NavUnit>.class
+                    );
                     resp.units = deserializedUnits != null ? deserializedUnits : new List<NKS_NavUnit>();
                 }
             } else {
@@ -283,7 +287,7 @@ public with sharing class NKS_NorgNavUnitService {
             logger.exception(e, null, CRM_ApplicationDomain.Domain.NKS);
             logger.publish();
         }
-    
+
         return resp;
     }
 
@@ -370,13 +374,16 @@ public with sharing class NKS_NorgNavUnitService {
             this.errorMessage = null;
         }
     }
-    
+
     public class NavUnitResponse {
-        @AuraEnabled @invocableVariable
+        @AuraEnabled
+        @invocableVariable
         public Boolean success;
-        @AuraEnabled @invocableVariable
+        @AuraEnabled
+        @invocableVariable
         public NKS_NavUnit unit;
-        @AuraEnabled @invocableVariable
+        @AuraEnabled
+        @invocableVariable
         public String errorMessage;
 
         public NavUnitResponse() {

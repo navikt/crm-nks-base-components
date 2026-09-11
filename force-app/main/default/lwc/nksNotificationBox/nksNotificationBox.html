@@ -2,7 +2,44 @@
     <div class="container">
         <template for:each={notificationList} for:item="notification">
             <div key={notification.id} class="navds-stack navds-vstack navds-stack-gap navds-stack-direction">
-                <template lwc:if={notification.isWarning}>
+                <template lwc:if={notification.isError}>
+                    <div
+                        role="alert"
+                        data-color="error"
+                        data-variant="error"
+                        class="navds-alert navds-alert--error navds-alert--medium"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="1em"
+                            height="1em"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            focusable="false"
+                            role="img"
+                            aria-labelledby="title-re"
+                            class="navds-alert__icon"
+                        >
+                            <title id="title-re">Feil</title>
+                            <path
+                                fill="currentColor"
+                                fill-rule="evenodd"
+                                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25m-.75 4.5a.75.75 0 0 1 1.5 0v5a.75.75 0 0 1-1.5 0zm.75 8a1 1 0 1 0 0 2 1 1 0 0 0 0-2"
+                                clip-rule="evenodd"
+                            ></path>
+                        </svg>
+                        <div
+                            class="navds-alert__wrapper navds-alert__wrapper--maxwidth navds-body-long navds-body-long--medium"
+                        >
+                            <span class="title">{notification.text}</span>
+                            &emsp; {notification.time} &emsp;
+                            <span lwc:if={notification.optionalText}>
+                                <b>Feilmelding:</b> {notification.optionalText}</span
+                            >
+                        </div>
+                    </div>
+                </template>
+                <template lwc:elseif={notification.isWarning}>
                     <div
                         role="alert"
                         data-color="warning"

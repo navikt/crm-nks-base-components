@@ -16,6 +16,59 @@ public with sharing class NKS_NavUnitContactInformationV2 {
     @AuraEnabled
     public Brukerkontakt brukerkontakt;
 
+    private static final Map<String, String> TJENESTETILBUD_MAP = new Map<String, String>{
+        'BARNEVERNTJENESTE' => 'Barneverntjeneste',
+        'FLYKTNINGTJENESTE' => 'Flyktningtjeneste',
+        'FENGSEL_OPPFOLGING' => 'Oppfølging av personer i fengsel',
+        'RUS_OPPFOLGING' => 'Oppfølging av personer med rusproblemer',
+        'PSYKISK_HELSE_OPPFOLGING' => 'Oppfølging av personer med psykisk helseproblemer',
+        'STARTLAN' => 'Startlån og tilskudd fra kommunen',
+        'SJOFARTSOPPGAVER' => 'Utstedelse av sjøfartsbok og formidling av sjøfolk',
+        'AKTIVITETSKORTET' => 'Aktivitetskortet for barn og unge',
+        'BOSTOTTE_HUSBANKEN' => 'Bostøtte fra Husbanken',
+        'BOSTOTTE_KOMMUNEN' => 'Bostøtte fra kommunen',
+        'PRIVATOKONOMI_FORVALTNING' => 'Frivillig og tvungen forvaltning av privatøkonomi',
+        'INTROPROGRAMMET' => 'Introduksjonsprogrammet',
+        'KOMMUNAL_BOLIG' => 'Kommunal bolig',
+        'KOMMUNAL_TILLEGGSPENSJON' => 'Kommunal tilleggspensjon',
+        'KOMMUNALT_FRIKORT_HELSETJENESTER' => 'Kommunalt frikort for helsetjenester',
+        'LEDSAGERBEVIS' => 'Ledsagerbevis',
+        'PARKERING_FORFLYTNINGSHEMMEDE' => 'Parkeringstillatelse for forflytningshemmede',
+        'REDUSERT_FORELDREBETALING' => 'Redusert foreldrebetaling i barnehage eller SFO',
+        'SKJENKEBEVILLING' => 'Skjenkebevilling',
+        'STOTTEKONTAKT' => 'Støttekontakt',
+        'TILRETTELAGT_TRANSPORT' => 'Tilrettelagt transport (TT-kort)'
+    };
+
+    private static String joinParts(List<String> parts) {
+        String result = '';
+
+        for (String part : parts) {
+            if (String.isBlank(part)) {
+                continue;
+            }
+
+            result += String.isBlank(result) ? part : ' ' + part;
+        }
+
+        return result;
+    }
+
+    private static String combineStreetAndPostal(List<String> streetParts, List<String> postalParts) {
+        String street = joinParts(streetParts);
+        String postal = joinParts(postalParts);
+
+        if (String.isBlank(street)) {
+            return postal;
+        }
+
+        if (String.isBlank(postal)) {
+            return street;
+        }
+
+        return street + ', ' + postal;
+    }
+
     public class Adresse {
         @AuraEnabled
         public String postnummer;
@@ -27,6 +80,40 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         public String postboksnummer;
         @AuraEnabled
         public String postboksanlegg;
+        @AuraEnabled
+        public String adresseTilleggsnavn;
+        @AuraEnabled
+        public String gatenavn;
+        @AuraEnabled
+        public String husbokstav;
+        @AuraEnabled
+        public String husnummer;
+
+        @AuraEnabled
+        public String concatenatedAddress {
+            get {
+                return concatAddress();
+            }
+            private set;
+        }
+
+        private String concatAddress() {
+            return NKS_NavUnitContactInformationV2.combineStreetAndPostal(
+                new List<String>{
+                    isPostboksadresse() ? 'Postboks' : null,
+                    postboksnummer,
+                    postboksanlegg,
+                    gatenavn,
+                    husnummer,
+                    husbokstav
+                },
+                new List<String>{ postnummer, poststed }
+            );
+        }
+
+        private Boolean isPostboksadresse() {
+            return String.isNotBlank(type) && type.equalsIgnoreCase('postboksadresse');
+        }
     }
 
     public class Brukerkontakt {
@@ -70,6 +157,17 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         public String husbokstav;
         @AuraEnabled
         public String adresseTilleggsnavn;
+
+        @AuraEnabled
+        public String concatenatedAddress {
+            get {
+                return NKS_NavUnitContactInformationV2.combineStreetAndPostal(
+                    new List<String>{ gatenavn, husnummer, husbokstav },
+                    new List<String>{ postnummer, poststed }
+                );
+            }
+            private set;
+        }
     }
 
     public class AapningstidV2 {
@@ -110,14 +208,17 @@ public with sharing class NKS_NavUnitContactInformationV2 {
     public class Tjenestetilbud {
         @AuraEnabled
         public String typeMapValue;
+
+        private String tempType;
+
         @AuraEnabled
         public String type {
             get {
-                return type;
+                return tempType;
             }
             set {
                 typeMapValue = value;
-                type = TjenestetilbudMap.get(value);
+                tempType = TJENESTETILBUD_MAP.containsKey(value) ? TJENESTETILBUD_MAP.get(value) : value;
             }
         }
     }
@@ -135,28 +236,4 @@ public with sharing class NKS_NavUnitContactInformationV2 {
         @AuraEnabled
         public String lenketekst;
     }
-
-    public static Map<String, String> TjenestetilbudMap = new Map<String, String>{
-        'BARNEVERNTJENESTE' => 'Barneverntjeneste',
-        'FLYKTNINGTJENESTE' => 'Flyktningtjeneste',
-        'FENGSEL_OPPFOLGING' => 'Oppfølging av personer i fengsel',
-        'RUS_OPPFOLGING' => 'Oppfølging av personer med rusproblemer',
-        'PSYKISK_HELSE_OPPFOLGING' => 'Oppfølging av personer med psykisk helseproblemer',
-        'STARTLAN' => 'Startlån og tilskudd fra kommunen',
-        'SJOFARTSOPPGAVER' => 'Utstedelse av sjøfartsbok og formidling av sjøfolk',
-        'AKTIVITETSKORTET' => 'Aktivitetskortet for barn og unge',
-        'BOSTOTTE_HUSBANKEN' => 'Bostøtte fra Husbanken',
-        'BOSTOTTE_KOMMUNEN' => 'Bostøtte fra kommunen',
-        'PRIVATOKONOMI_FORVALTNING' => 'Frivillig og tvungen forvaltning av privatøkonomi',
-        'INTROPROGRAMMET' => 'Introduksjonsprogrammet',
-        'KOMMUNAL_BOLIG' => 'Kommunal bolig',
-        'KOMMUNAL_TILLEGGSPENSJON' => 'Kommunal tilleggspensjon',
-        'KOMMUNALT_FRIKORT_HELSETJENESTER' => 'Kommunalt frikort for helsetjenester',
-        'LEDSAGERBEVIS' => 'Ledsagerbevis',
-        'PARKERING_FORFLYTNINGSHEMMEDE' => 'Parkeringstillatelse for forflytningshemmede',
-        'REDUSERT_FORELDREBETALING' => 'Redusert foreldrebetaling i barnehage eller SFO',
-        'SKJENKEBEVILLING' => 'Skjenkebevilling',
-        'STOTTEKONTAKT' => 'Støttekontakt',
-        'TILRETTELAGT_TRANSPORT' => 'Tilrettelagt transport (TT-kort)'
-    };
 }

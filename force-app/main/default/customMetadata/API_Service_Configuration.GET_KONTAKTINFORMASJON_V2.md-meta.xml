@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>GET KONTAKTINFORMASJON V2</label>
+    <protected>false</protected>
+    <values>
+        <field>API_Base_Configuration__c</field>
+        <value xsi:type="xsd:string">NORG2_UNIT_API</value>
+    </values>
+    <values>
+        <field>HTTP_Method__c</field>
+        <value xsi:type="xsd:string">GET</value>
+    </values>
+    <values>
+        <field>Has_Path_Parameters__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Mock_Response__c</field>
+        <value xsi:type="xsd:string">{
+  &quot;200&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: {
+      &quot;enhetNr&quot;: &quot;0901&quot;,
+      &quot;navn&quot;: &quot;Nav Risør&quot;,
+      &quot;telefonnummer&quot;: &quot;55553333&quot;,
+      &quot;telefonnummerKommentar&quot;: null,
+      &quot;epost&quot;: null,
+      &quot;postadresse&quot;: {
+        &quot;type&quot;: &quot;stedsadresse&quot;,
+        &quot;postnummer&quot;: &quot;4950&quot;,
+        &quot;poststed&quot;: &quot;RISØR&quot;,
+        &quot;gatenavn&quot;: &quot;Tjenngata&quot;,
+        &quot;husnummer&quot;: &quot;9&quot;,
+        &quot;husbokstav&quot;: null,
+        &quot;adresseTilleggsnavn&quot;: null
+      },
+      &quot;besoeksadresse&quot;: {
+        &quot;type&quot;: &quot;stedsadresse&quot;,
+        &quot;postnummer&quot;: &quot;4950&quot;,
+        &quot;poststed&quot;: &quot;RISØR&quot;,
+        &quot;gatenavn&quot;: &quot;Tjenngata&quot;,
+        &quot;husnummer&quot;: &quot;9&quot;,
+        &quot;husbokstav&quot;: null,
+        &quot;adresseTilleggsnavn&quot;: null
+      },
+      &quot;spesielleOpplysninger&quot;: null,
+      &quot;brukerkontakt&quot;: {
+        &quot;publikumsmottak&quot;: [
+          {
+            &quot;besoeksadresse&quot;: {
+              &quot;type&quot;: &quot;stedsadresse&quot;,
+              &quot;postnummer&quot;: &quot;4950&quot;,
+              &quot;poststed&quot;: &quot;Risør&quot;,
+              &quot;gatenavn&quot;: &quot;Tjenngata&quot;,
+              &quot;husnummer&quot;: &quot;9&quot;,
+              &quot;husbokstav&quot;: null,
+              &quot;adresseTilleggsnavn&quot;: null
+            },
+            &quot;aapningstider&quot;: [
+              {
+                &quot;dag&quot;: &quot;Mandag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;12:00&quot;,
+                &quot;til&quot;: &quot;14:30&quot;,
+                &quot;kommentar&quot;: &quot;&quot;,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Tirsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: null,
+                &quot;til&quot;: null,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: true,
+                &quot;kunTimeavtale&quot;: true
+              },
+              {
+                &quot;dag&quot;: &quot;Onsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;12:00&quot;,
+                &quot;til&quot;: &quot;14:30&quot;,
+                &quot;kommentar&quot;: &quot;&quot;,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              },
+              {
+                &quot;dag&quot;: &quot;Torsdag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: null,
+                &quot;til&quot;: null,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: true,
+                &quot;kunTimeavtale&quot;: true
+              },
+              {
+                &quot;dag&quot;: &quot;Fredag&quot;,
+                &quot;dato&quot;: null,
+                &quot;fra&quot;: &quot;12:00&quot;,
+                &quot;til&quot;: &quot;14:30&quot;,
+                &quot;kommentar&quot;: null,
+                &quot;stengt&quot;: false,
+                &quot;kunTimeavtale&quot;: false
+              }
+            ],
+            &quot;stedsbeskrivelse&quot;: &quot;NAV Risør&quot;,
+            &quot;adkomstbeskrivelse&quot;: &quot;Offentlig parkering foran bygget må benyttes.&quot;
+          }
+        ],
+        &quot;publikumskanaler&quot;: [],
+        &quot;brukertjenesteTilbud&quot;: {
+          &quot;tjenester&quot;: [
+            { &quot;type&quot;: &quot;FLYKTNINGTJENESTE&quot; },
+            { &quot;type&quot;: &quot;FENGSEL_OPPFOLGING&quot; },
+            { &quot;type&quot;: &quot;RUS_OPPFOLGING&quot; },
+            { &quot;type&quot;: &quot;PSYKISK_HELSE_OPPFOLGING&quot; },
+            { &quot;type&quot;: &quot;BOSTOTTE_HUSBANKEN&quot; },
+            { &quot;type&quot;: &quot;PRIVATOKONOMI_FORVALTNING&quot; },
+            { &quot;type&quot;: &quot;INTROPROGRAMMET&quot; },
+            { &quot;type&quot;: &quot;KOMMUNAL_BOLIG&quot; },
+            { &quot;type&quot;: &quot;SKJENKEBEVILLING&quot; }
+          ],
+          &quot;ytterligereInformasjon&quot;: &quot;&quot;
+        },
+        &quot;sosialhjelp&quot;: {
+          &quot;digitaleSoeknader&quot;: [],
+          &quot;papirsoeknadInformasjon&quot;: &quot;Papirsøknadsskjema kan levers i postkasse som tømmes hver dag kl. 13.30.&quot;
+        },
+        &quot;informasjonUtbetalinger&quot;: &quot;&quot;,
+        &quot;skriftspraak&quot;: &quot;NB&quot;
+      }
+    }
+  },
+  &quot;401&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: {
+      &quot;field&quot;: &quot;string&quot;,
+      &quot;message&quot;: &quot;string&quot;
+    }
+  },
+  &quot;404&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: {
+      &quot;field&quot;: &quot;string&quot;,
+      &quot;message&quot;: &quot;string&quot;
+    }
+  },
+  &quot;500&quot;: {
+    &quot;headers&quot;: null,
+    &quot;body&quot;: {
+      &quot;enhetNr&quot;: &quot;string&quot;,
+      &quot;navn&quot;: &quot;string&quot;,
+      &quot;telefonnummer&quot;: &quot;string&quot;,
+      &quot;telefonnummerKommentar&quot;: &quot;string&quot;,
+      &quot;epost&quot;: {
+        &quot;adresse&quot;: &quot;string&quot;,
+        &quot;kommentar&quot;: &quot;string&quot;,
+        &quot;kunIntern&quot;: true
+      },
+      &quot;postadresse&quot;: {
+        &quot;postnummer&quot;: &quot;string&quot;,
+        &quot;poststed&quot;: &quot;string&quot;,
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;postboksnummer&quot;: &quot;string&quot;,
+        &quot;postboksanlegg&quot;: &quot;string&quot;
+      },
+      &quot;besoeksadresse&quot;: {
+        &quot;postnummer&quot;: &quot;string&quot;,
+        &quot;poststed&quot;: &quot;string&quot;,
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;gatenavn&quot;: &quot;string&quot;,
+        &quot;husnummer&quot;: &quot;string&quot;,
+        &quot;husbokstav&quot;: &quot;string&quot;,
+        &quot;adresseTilleggsnavn&quot;: &quot;string&quot;
+      },
+      &quot;spesielleOpplysninger&quot;: &quot;string&quot;,
+      &quot;brukerkontakt&quot;: {
+        &quot;publikumsmottak&quot;: [
+          {
+            &quot;besoeksadresse&quot;: {
+              &quot;postnummer&quot;: &quot;string&quot;,
+              &quot;poststed&quot;: &quot;string&quot;,
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;gatenavn&quot;: &quot;string&quot;,
+              &quot;husnummer&quot;: &quot;string&quot;,
+              &quot;husbokstav&quot;: &quot;string&quot;,
+              &quot;adresseTilleggsnavn&quot;: &quot;string&quot;
+            },
+            &quot;aapningstider&quot;: [
+              {
+                &quot;dag&quot;: &quot;string&quot;,
+                &quot;dato&quot;: &quot;string&quot;,
+                &quot;fra&quot;: &quot;string&quot;,
+                &quot;til&quot;: &quot;string&quot;,
+                &quot;kommentar&quot;: &quot;string&quot;,
+                &quot;stengt&quot;: true,
+                &quot;kunTimeavtale&quot;: true
+              }
+            ],
+            &quot;stedsbeskrivelse&quot;: &quot;string&quot;,
+            &quot;adkomstbeskrivelse&quot;: &quot;string&quot;
+          }
+        ],
+        &quot;publikumskanaler&quot;: [
+          {
+            &quot;beskrivelse&quot;: &quot;string&quot;,
+            &quot;telefon&quot;: &quot;string&quot;,
+            &quot;epost&quot;: &quot;string&quot;,
+            &quot;sortOrder&quot;: 0
+          }
+        ],
+        &quot;brukertjenesteTilbud&quot;: {
+          &quot;tjenester&quot;: [
+            {
+              &quot;type&quot;: &quot;string&quot;
+            }
+          ],
+          &quot;ytterligereInformasjon&quot;: &quot;string&quot;
+        },
+        &quot;sosialhjelp&quot;: {
+          &quot;digitaleSoeknader&quot;: [
+            {
+              &quot;lenke&quot;: &quot;string&quot;,
+              &quot;lenketekst&quot;: &quot;string&quot;
+            }
+          ],
+          &quot;papirsoeknadInformasjon&quot;: &quot;string&quot;
+        },
+        &quot;informasjonUtbetalinger&quot;: &quot;string&quot;,
+        &quot;skriftspraak&quot;: &quot;string&quot;
+      }
+    }
+  }
+}</value>
+    </values>
+    <values>
+        <field>Service_Path__c</field>
+        <value xsi:type="xsd:string">/norg2/api/v2/enhet/{enhetsnummer}/kontaktinformasjon</value>
+    </values>
+</CustomMetadata>

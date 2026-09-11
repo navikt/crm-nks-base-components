@@ -15,6 +15,16 @@
                 type="String" default="NKS_Chat_Journal_Thread, NKS_Chat_Send_NAV_Task" />
             <property name="flowLabels" label="Label names for buttons, also seperated by commans"
                 type="String" default="NKS_Journal, NKS_Create_NAV_Task" />
+            <property name="buttonStylings"
+                label="Extra CSS classes per button, seperated by commas"
+                description="E.g. green or blue to match the color overrides used by the old aura flow buttons"
+                type="String" default="" />
+            <property name="fullButtonWidth"
+                label="Stretch buttons to full width instead of the default float-right"
+                type="Boolean" default="false" />
+            <property name="brandVariant" label="Use filled brand buttons instead of outline-brand"
+                description="Matches the variant='brand' style used by the old nksFlowStarter aura component"
+                type="Boolean" default="false" />
             <property name="setBorders" label="Set top and bottom borders" type="Boolean"
                 default="false" />
             <property name="showNotifications" label="Show error/success notifications for flows"

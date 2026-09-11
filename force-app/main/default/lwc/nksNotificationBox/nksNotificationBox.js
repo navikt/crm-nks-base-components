@@ -5,14 +5,17 @@ export default class NksNotificationBox extends LightningElement {
     count = 0;
 
     @api
-    addNotification(mainText, optionalText = null, isWarning = false) {
+    addNotification(mainText, optionalText = null, variant = 'success') {
         this.count++;
         this.notificationList.push({
             id: String(this.count),
             text: mainText,
             time: this.getCurrentTime(),
             optionalText: optionalText,
-            isWarning: isWarning
+            variant: variant,
+            isSuccess: variant === 'success',
+            isWarning: variant === 'warning',
+            isError: variant === 'error'
         });
     }
 
@@ -21,6 +24,16 @@ export default class NksNotificationBox extends LightningElement {
         this.notificationList = this.notificationList.filter(
             (item) => !item.text.toLowerCase().includes(inputText.toLowerCase())
         );
+    }
+
+    @api
+    clearNotifications() {
+        this.notificationList = [];
+    }
+
+    @api
+    clearNotificationsByVariant(...variants) {
+        this.notificationList = this.notificationList.filter((item) => !variants.includes(item.variant));
     }
 
     getCurrentTime() {
