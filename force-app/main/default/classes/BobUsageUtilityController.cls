@@ -8,14 +8,14 @@ public with sharing class BobUsageUtilityController {
         if (objectType == 'Case') {
             List<Case> cases = [SELECT Status FROM Case WHERE Id = :recordId LIMIT 1];
             return !cases.isEmpty() ? cases[0].Status : null;
-        } else if (objectType == 'LiveChatTranscript') {
-            List<LiveChatTranscript> chatTranscripts = [
+        } else if (objectType == 'MessagingSession') {
+            List<MessagingSession> messagingSessions = [
                 SELECT Status
-                FROM LiveChatTranscript
+                FROM MessagingSession
                 WHERE Id = :recordId
                 LIMIT 1
             ];
-            return !chatTranscripts.isEmpty() ? chatTranscripts[0].Status : null;
+            return !messagingSessions.isEmpty() ? messagingSessions[0].Status : null;
         } else {
             throw new AuraHandledException('Unsupported object type: ' + objectType);
         }

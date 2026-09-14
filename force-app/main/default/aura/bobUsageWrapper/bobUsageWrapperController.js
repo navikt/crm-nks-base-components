@@ -13,7 +13,7 @@
                         tabInfo.pageReference.attributes.objectApiName
                             ? tabInfo.pageReference.attributes.objectApiName
                             : null;
-                    if ((objectApiName !== 'Case' && objectApiName !== 'LiveChatTranscript') || !!tabInfo.isSubtab) {
+                    if ((objectApiName !== 'Case' && objectApiName !== 'MessagingSession') || !!tabInfo.isSubtab) {
                         return;
                     }
                     helper.getRecordStatus(component, tabInfo.recordId, (status) => {
@@ -41,7 +41,7 @@
 
         if (info && info.recordId && launcher && typeof launcher.openModal === 'function') {
             helper.getRecordStatus(component, info.recordId, (status) => {
-                if (status === 'Closed' || status === 'On Hold' || info.objectApiName === 'LiveChatTranscript') {
+                if (status === 'Closed' || status === 'On Hold' || info.objectApiName === 'MessagingSession') {
                     try {
                         launcher.openModal(info.recordId);
                     } catch (error) {
