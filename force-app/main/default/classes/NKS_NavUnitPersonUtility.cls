@@ -45,27 +45,6 @@ public with sharing class NKS_NavUnitPersonUtility {
     }
 
     /**
-     * @description Find the suggested unit to use for work allocation.
-     * @author Tor Håkon Sigurdsen | 15-12-2020
-     * @param personId
-     * @param themeGroupCode
-     * @param themeCode
-     * @param themeSubThemeCode
-     * @param taskType
-     * @return NKS_NorgNavUnitService.WorkAllocationResponse
-     */
-    public NKS_NorgNavUnitService.WorkAllocationResponse getWorkAllocation(
-        Id personId,
-        String themeGroupCode,
-        String themeCode,
-        String themeSubThemeCode,
-        String taskType
-    ) {
-        Person__c person = getPerson(personId);
-        return getWorkAllocation(person, themeGroupCode, themeCode, themeSubThemeCode, taskType);
-    }
-
-    /**
      * @description Find the suggested unit to use for work allocation. If no person, skip person related fields.
      * @author Tor Håkon Sigurdsen | 15-12-2020
      * @param person
@@ -184,20 +163,6 @@ public with sharing class NKS_NavUnitPersonUtility {
     }
 
     /**
-     * @description Reusable error response.
-     * @author Tor Håkon Sigurdsen | 16-12-2020
-     * @param errorMesage [String]
-     * @return NKS_NorgNavUnitService.WorkAllocationResponse
-     */
-    private NKS_NorgNavUnitService.WorkAllocationResponse workAllocationErrorResponse(String errorMesage) {
-        NKS_NorgNavUnitService.WorkAllocationResponse resp = new NKS_NorgNavUnitService.WorkAllocationResponse();
-        resp.success = false;
-        resp.errorMessage = errorMesage;
-
-        return resp;
-    }
-
-    /**
      * @description Check if we have access to view the Person.
      * @author Tor Håkon Sigurdsen | 16-12-2020
      * @param personId [String]
@@ -205,9 +170,7 @@ public with sharing class NKS_NavUnitPersonUtility {
      */
     private Boolean hasReadAccessToUser(String personId) {
         List<UserRecordAccess> access = [
-            SELECT RecordId, HasReadAccess
-            FROM UserRecordAccess
-            WHERE UserId = :UserInfo.getUserId() AND RecordId = :personId
+           SELECT HasReadAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId = :personId
         ];
         
         return !access.isEmpty() && access[0].HasReadAccess;

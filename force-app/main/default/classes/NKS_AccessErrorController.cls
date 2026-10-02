@@ -60,9 +60,7 @@ public without sharing class NKS_AccessErrorController {
 
     private static Boolean hasAccess(Id recordId) {
         List<UserRecordAccess> result = [
-            SELECT RecordId, HasReadAccess
-            FROM UserRecordAccess
-            WHERE UserId = :UserInfo.getUserId() AND RecordID = :recordId
+            SELECT HasReadAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordID = :recordId
         ];
 
         return !result.isEmpty() && result[0].HasReadAccess;
