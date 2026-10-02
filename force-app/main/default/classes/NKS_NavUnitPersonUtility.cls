@@ -170,7 +170,7 @@ public with sharing class NKS_NavUnitPersonUtility {
      */
     private Boolean hasReadAccessToUser(String personId) {
         List<UserRecordAccess> access = [
-           SELECT HasReadAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId = :personId
+           SELECT RecordId, HasReadAccess FROM UserRecordAccess WHERE UserId = :UserInfo.getUserId() AND RecordId = :personId
         ];
         
         return !access.isEmpty() && access[0].HasReadAccess;
