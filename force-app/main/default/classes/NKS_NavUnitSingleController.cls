@@ -102,8 +102,7 @@ public with sharing class NKS_NavUnitSingleController {
             return values;
         }
 
-        Map<String, Schema.SObjectType> globalDescribe = Schema.getGlobalDescribe();
-        if (!globalDescribe.containsKey(parentObject)) {
+        if (Type.forName(parentObject) == null) {
             return values;
         }
 

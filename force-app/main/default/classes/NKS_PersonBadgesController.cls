@@ -496,11 +496,7 @@ public with sharing class NKS_PersonBadgesController {
             List<Id> confidentialitySkillsIds,
             List<Id> originSkillsIds
         ) {
-            for (Skill skill : [
-                SELECT Id, DeveloperName
-                FROM Skill
-                WHERE DeveloperName IN :confidentialitySkillsName OR DeveloperName IN :originSkillsName
-            ]) {
+            for (Skill skill : getSpecialSkills(confidentialitySkillsName, originSkillsName)) {
                 if (confidentialitySkillsName.contains(skill.DeveloperName)) {
                     confidentialitySkillsIds.add(skill.Id);
                 }
@@ -687,6 +683,41 @@ public with sharing class NKS_PersonBadgesController {
             SObjectType type = Person__c.sObjectType;
             Map<String, Schema.SObjectField> mfields = type.getDescribe().fields.getMap();
             return mfields.get(fieldApiName).getDescribe().getLabel();
+        }
+
+        private List<Skill> getSpecialSkills(
+            List<String> confidentialitySkillsName,
+            List<String> originSkillsName
+        ) {
+           Set<String> skillNames = new Set<String>();
+            skillNames.addAll(confidentialitySkillsName);
+            skillNames.addAll(originSkillsName);
+            String cacheKey = 'NKSPersonBadgesSpecialSkills';
+
+            List<Skill> skills;
+            try {
+                skills = (List<Skill>) Cache.Org.get(cacheKey);
+            } catch (Exception e) {
+                skills = null;
+            }
+
+            if (skills != null) {
+                return skills;
+            }
+
+            skills = [
+                SELECT Id, DeveloperName
+                FROM Skill
+                WHERE DeveloperName IN :skillNames
+            ];
+
+            try {
+                Cache.Org.put(cacheKey, skills, 300);
+            } catch (Exception e) {
+                return skills;
+            }
+
+            return skills;
         }
     }
 
