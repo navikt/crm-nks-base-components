@@ -18,3 +18,7 @@
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
+
+.custom-spacing {
+    padding: 1.5rem 1rem;
+}
